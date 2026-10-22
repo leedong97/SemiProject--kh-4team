@@ -1,0 +1,1205 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Malgun Gothic', sans-serif;
+  background: linear-gradient(135deg, #eefaf4, #f4f8ff);
+  color: #34443d;
+}
+
+/* 전체 레이아웃 */
+#root>div {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 30px 25px;
+
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-areas:
+    "logo logo dash-menu dash-menu todo-menu todo-menu issue-menu issue-menu info-menu info-menu my-name my-name"
+    "calendar calendar calendar calendar calendar calendar calendar info info info info info"
+    "calendar calendar calendar calendar calendar calendar calendar todo todo todo todo todo";
+
+  grid-template-rows: 76px auto auto;
+  gap: 20px;
+}
+
+/* 상단 메뉴 배경 */
+#root>div::before {
+  content: "";
+  grid-column: 1 / -1;
+  grid-row: 1;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+/* 상단 공통 */
+.logo,
+.todo-menu,
+.info-menu,
+.my-name {
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-width: 0;
+}
+
+/* 회사 로고 */
+.logo {
+  grid-area: logo;
+  padding-left: 25px;
+}
+
+.logo h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #279b76;
+}
+
+/* 업무현황 메뉴 */
+.todo-menu {
+  grid-area: todo-menu;
+  justify-content: flex-start;
+  left: -10px;
+}
+
+/* 공지사항 메뉴 */
+.info-menu {
+  grid-area: info-menu;
+  justify-content: flex-start;
+  left: -10px;
+}
+
+/* 상단 메뉴 제목 */
+.todo-menu h3,
+.info-menu h3 {
+  margin: 0;
+  font-size: 15px;
+  color: #52675d;
+  font-weight: 500;
+  padding: 12px 15px;
+  border-radius: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.todo-menu h3:hover,
+.info-menu h3:hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+/* 사용자 이름 */
+.my-name {
+  grid-area: my-name;
+  justify-content: flex-end;
+  padding-right: 25px;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.my-name>h4 {
+  margin: 0;
+  color: #279b76;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+/* 로그아웃 하위 메뉴 */
+.log {
+  position: absolute;
+  top: 100%;
+  right: 10px;
+
+  width: 140px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+
+  padding: 10px;
+  text-align: center;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: 0.2s;
+}
+
+.log h4 {
+  margin: 0;
+  padding: 12px;
+  font-size: 14px;
+  color: #52675d;
+  font-weight: 400;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.log h4:hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+/* 사용자 이름에 마우스 올리면 표시 */
+.my-name:hover .log,
+.my-name:focus-within .log {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* 공통 콘텐츠 박스 */
+.calendar,
+.todo,
+.info {
+  background: white;
+  padding: 25px;
+  border-radius: 18px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  min-width: 0;
+}
+
+/* 캘린더 */
+.calendar {
+  grid-area: calendar;
+}
+
+.calendar table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 4px;
+  border: none;
+  text-align: center;
+}
+
+.calendar th {
+  background: #e6f7ef;
+  color: #34856a;
+  padding: 15px 0;
+  border: none;
+  border-radius: 8px;
+}
+
+.calendar td {
+  height: 65px;
+  border: none;
+  background: #f7faf9;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.calendar td:hover {
+  background: #c8f1df;
+  cursor: pointer;
+}
+
+/* 공지사항 - 위쪽 */
+.info {
+  grid-area: info;
+}
+
+/* 업무현황 - 아래쪽 */
+.todo {
+  grid-area: todo;
+}
+
+/* 카드 제목 */
+.todo h3,
+.info h3 {
+  margin: 0 0 20px;
+  font-size: 20px;
+  border-bottom: 2px solid #e6f5ee;
+  padding-bottom: 15px;
+}
+
+/* 목록 */
+.todo ol,
+.info ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: item;
+}
+
+.todo li,
+.info li {
+  counter-increment: item;
+  background: #f5faf7;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.todo li::before,
+.info li::before {
+  content: counter(item) ".";
+  color: #35b58a;
+  font-weight: bold;
+  margin-right: 12px;
+}
+
+.todo li:hover,
+.info li:hover {
+  background: #e0f5ea;
+  cursor: pointer;
+}
+
+/* 태블릿 */
+@media (max-width: 1100px) {
+  #root>div {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-areas:
+      "logo logo todo-menu info-menu . my-name"
+      "calendar calendar calendar calendar calendar calendar"
+      "info info info todo todo todo";
+    grid-template-rows: 76px auto auto;
+  }
+
+  .logo {
+    padding-left: 15px;
+  }
+
+  .my-name {
+    padding-right: 15px;
+  }
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  #root>div {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "logo logo"
+      "todo-menu info-menu"
+      "my-name my-name"
+      "calendar calendar"
+      "info info"
+      "todo todo";
+
+    grid-template-rows: auto;
+    padding: 15px;
+    gap: 12px;
+  }
+
+  #root>div::before {
+    grid-column: 1 / -1;
+    grid-row: 1 / 4;
+  }
+
+  .logo {
+    justify-content: center;
+    padding: 18px 0;
+  }
+
+  .my-name {
+    justify-content: center;
+    padding: 0 0 15px;
+  }
+
+  .log {
+    right: 50%;
+    transform: translateX(50%);
+  }
+
+  .calendar,
+  .todo,
+  .info {
+    padding: 15px;
+  }
+
+  .calendar td {
+    height: 45px;
+  }
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.day-name {
+  background: #e6f7ef;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.day {
+  min-height: 65px;
+  background: #f7faf9;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.day:hover {
+  background: #c8f1df;
+  cursor: pointer;
+}
+
+
+/* ==========================
+   공지사항 페이지
+========================== */
+
+.info-page {
+  grid-column: 2 / -2;
+  grid-row: 2 / 4;
+
+  width: 100%;
+  max-width: 950px;
+  justify-self: center;
+
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  min-width: 0;
+}
+
+/* 공지사항 제목 */
+.info-header {
+  border-bottom: 2px solid #e6f5ee;
+  padding-bottom: 20px;
+  margin-bottom: 25px;
+}
+
+.info-header h2 {
+  margin: 0 0 10px;
+  color: #279b76;
+  font-size: 25px;
+}
+
+.info-header p {
+  margin: 0;
+  color: #82948a;
+  font-size: 14px;
+}
+
+/* 공지사항 목록 */
+.info-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* 공지사항 한 줄 */
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+
+  background: #f5faf7;
+  border: 1px solid #edf5ef;
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  transition: 0.2s;
+}
+
+.info-item:hover {
+  background: #e9f8f0;
+}
+
+/* 공지사항 번호와 제목 */
+.info-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+  font-size: 15px;
+  color: #34443d;
+  overflow-wrap: anywhere;
+}
+
+/* 공지사항 번호 */
+.info-number {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+
+  width: 32px;
+  height: 32px;
+  background: #e0f5ea;
+  border-radius: 50%;
+
+  color: #279b76;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* 삭제 버튼 - 맨 오른쪽 */
+.info-delete {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 8px 15px;
+
+  background: white;
+  border: 1px solid #f1c6c6;
+  border-radius: 8px;
+
+  color: #d66b6b;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.info-delete:hover {
+  background: #fff0f0;
+  border-color: #e89b9b;
+}
+
+/* 페이지 번호 */
+.info-pages {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 30px 0 20px;
+}
+
+.info-pages button {
+  width: 38px;
+  height: 38px;
+
+  background: white;
+  border: 1px solid #dcebe2;
+  border-radius: 8px;
+
+  color: #52675d;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.info-pages button:hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+/* 현재 페이지 */
+.info-pages button.active {
+  background: #38b98c;
+  color: white;
+  border-color: #38b98c;
+}
+
+/* 공지사항이 없을 때 */
+.info-empty {
+  text-align: center;
+  padding: 35px;
+  color: #82948a;
+}
+
+/* 하단 등록 버튼 영역 */
+.info-bottom {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #e6f5ee;
+  padding-top: 22px;
+}
+
+/* 공지사항 등록 버튼 */
+.info-add {
+  display: inline-block;
+  padding: 12px 22px;
+
+  background: #38b98c;
+  border-radius: 9px;
+
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.info-add:hover {
+  background: #279b76;
+  color: white;
+}
+
+/* 태블릿 */
+@media (max-width: 1100px) {
+  .info-page {
+    grid-column: 1 / -1;
+    max-width: 950px;
+  }
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .info-page {
+    grid-column: 1 / -1;
+    padding: 20px 15px;
+  }
+
+  .info-item {
+    padding: 12px;
+  }
+
+  .info-title {
+    font-size: 13px;
+    gap: 8px;
+  }
+
+  .info-delete {
+    padding: 7px 10px;
+  }
+
+  .info-header h2 {
+    font-size: 22px;
+  }
+}
+
+
+/* 공지사항 등록 페이지 */
+.info-set-page {
+  grid-column: 2 / -2;
+  grid-row: 2 / 4;
+
+  width: 100%;
+  max-width: 800px;
+  justify-self: center;
+
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  min-width: 0;
+}
+
+.info-set-page h2 {
+  color: #279b76;
+  margin: 0 0 25px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e6f5ee;
+}
+
+.info-set-page input,
+.info-set-page textarea {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 20px;
+
+  background: #f7faf9;
+  border: 1px solid #dcebe2;
+  border-radius: 10px;
+
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.info-set-page textarea {
+  min-height: 250px;
+  resize: vertical;
+}
+
+.info-set-page input:focus,
+.info-set-page textarea:focus {
+  border-color: #48c9a0;
+  background: white;
+}
+
+.info-set-page button {
+  display: block;
+  margin-left: auto;
+  padding: 12px 30px;
+
+  background: #38b98c;
+  color: white;
+  border: none;
+  border-radius: 9px;
+
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.info-set-page button:hover {
+  background: #279b76;
+}
+
+@media (max-width: 1100px) {
+  .info-set-page {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .info-set-page {
+    padding: 20px 15px;
+  }
+}
+
+/* 메인 화면 공지사항 */
+.info li {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* 공지사항 검색 영역 */
+.info-search {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+/* 검색 입력창 */
+.info-search input {
+  width: 260px;
+  max-width: 100%;
+  padding: 12px 15px;
+
+  border: 1px solid #dcebe2;
+  border-radius: 9px;
+
+  background: #f7faf9;
+  font-size: 14px;
+  outline: none;
+}
+
+.info-search input:focus {
+  border-color: #48c9a0;
+  background: white;
+}
+
+/* 검색 버튼 */
+.info-search button {
+  padding: 12px 20px;
+
+  background: #38b98c;
+  color: white;
+  border: none;
+  border-radius: 9px;
+
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.info-search button:hover {
+  background: #279b76;
+}
+
+@media (max-width: 768px) {
+  .info-search input {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* ==========================
+   상단 메뉴 수정
+========================== */
+
+/* 메뉴 위치 */
+.dash-menu {
+  grid-area: dash-menu;
+}
+
+.issue-menu {
+  grid-area: issue-menu;
+}
+
+/* 상단 메뉴 4개 공통 */
+.dash-menu,
+.todo-menu,
+.issue-menu,
+.info-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  left: 0;
+  min-width: 0;
+}
+
+/* 메뉴 제목 */
+.dash-menu h3,
+.todo-menu h3,
+.issue-menu h3,
+.info-menu h3 {
+  margin: 0;
+  font-size: 15px;
+  color: #52675d;
+  font-weight: 500;
+  padding: 12px 15px;
+  border-radius: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* 메뉴에 마우스 올렸을 때 */
+.dash-menu h3:hover,
+.todo-menu h3:hover,
+.issue-menu h3:hover,
+.info-menu h3:hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+/* 메뉴 링크 */
+.dash-menu a,
+.todo-menu a,
+.issue-menu a,
+.info-menu a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 태블릿 */
+@media (max-width: 1100px) {
+  #root>div {
+    grid-template-areas:
+      "logo dash-menu todo-menu issue-menu info-menu my-name"
+      "calendar calendar calendar calendar calendar calendar"
+      "info info info todo todo todo";
+  }
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  #root>div {
+    grid-template-areas:
+      "logo logo"
+      "dash-menu todo-menu"
+      "issue-menu info-menu"
+      "my-name my-name"
+      "calendar calendar"
+      "info info"
+      "todo todo";
+
+    grid-template-rows: 60px auto auto auto auto auto auto;
+  }
+
+  #root>div::before {
+    grid-row: 1 / 5;
+  }
+
+  .info-page,
+  .info-set-page {
+    grid-row: 5;
+  }
+}
+
+/* 전체 이슈 페이지 */
+.issue-page {
+  grid-column: 1 / -1;
+  grid-row: 2 / span 2;
+  width: 100%;
+  min-width: 0;
+  background: white;
+  border-radius: 18px;
+  padding: 30px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* 상단 제목 영역 */
+.issue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid #e6f5ee;
+  padding-bottom: 20px;
+}
+
+.issue-header h1 {
+  font-size: 24px;
+  margin: 0 0 10px;
+  color: #279b76;
+  word-break: keep-all;
+}
+
+.issue-header p {
+  margin: 0;
+  font-size: 13px;
+  color: #82948a;
+}
+
+/* 전체 표시 버튼 */
+.issue-reset {
+  padding: 10px 18px;
+  background: white;
+  color: #52675d;
+  border: 1px solid #dcebe2;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.issue-reset:hover {
+  background: #e6f7ef;
+}
+
+/* 프로젝트 및 이슈 통계 */
+.issue-summary {
+  display: flex;
+  gap: 18px;
+  margin: 20px 0;
+  color: #52675d;
+  font-size: 13px;
+}
+
+/* 프로젝트 선택 및 검색 */
+.issue-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.issue-filter label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #52675d;
+}
+
+.issue-filter select,
+.issue-filter input {
+  width: 100%;
+  padding: 13px 15px;
+  background: #f7faf9;
+  border: 1px solid #dcebe2;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #34443d;
+  outline: none;
+}
+
+.issue-filter select:focus,
+.issue-filter input:focus {
+  border-color: #38b98c;
+  background: white;
+}
+
+/* 이슈 등록 */
+.issue-register {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f5faf7;
+  border-radius: 12px;
+}
+
+.issue-register h3 {
+  margin: 0 0 15px;
+  font-size: 16px;
+  color: #34443d;
+}
+
+.issue-register-form {
+  display: flex;
+  gap: 10px;
+}
+
+.issue-register-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #dcebe2;
+  border-radius: 8px;
+  outline: none;
+}
+
+.issue-register-form input:focus {
+  border-color: #38b98c;
+}
+
+.issue-register-form button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #38b98c;
+  color: white;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.issue-register-form button:hover {
+  background: #279b76;
+}
+
+/* 이슈 목록 */
+.issue-list-section {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.issue-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.issue-list-header h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.issue-list-header span {
+  font-size: 13px;
+  color: #279b76;
+  font-weight: bold;
+}
+
+/* 테이블 */
+.issue-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.issue-table th {
+  padding: 15px;
+  background: #e6f7ef;
+  color: #34856a;
+  font-size: 13px;
+  border-bottom: 1px solid #dcebe2;
+}
+
+.issue-table td {
+  padding: 15px;
+  border-bottom: 1px solid #edf5ef;
+  font-size: 13px;
+}
+
+.issue-table tbody tr:hover {
+  background: #f5faf7;
+}
+
+.issue-table th:first-child {
+  width: 160px;
+}
+
+.issue-table th:nth-child(2) {
+  width: 180px;
+}
+
+/* 검색 결과 없음 */
+.issue-table .issue-empty {
+  text-align: center;
+  padding: 40px;
+  color: #82948a;
+}
+
+/* 하단 설명 */
+.issue-footer {
+  margin-top: 25px;
+  color: #82948a;
+  font-size: 12px;
+}
+
+/* 태블릿 */
+@media (max-width: 1100px) {
+  .issue-page {
+      grid-column: 1 / -1;
+  }
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .issue-page {
+      grid-column: 1 / -1;
+      grid-row: 5;
+      padding: 18px;
+  }
+
+  .issue-header {
+      align-items: flex-start;
+  }
+
+  .issue-header h1 {
+      font-size: 20px;
+  }
+
+  .issue-register-form {
+      flex-direction: column;
+  }
+
+  .issue-table {
+      min-width: 550px;
+  }
+}
+
+/* 🔴 이슈 등록창 세로 배치 */
+.issue-register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.issue-register-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #dcebe2;
+  border-radius: 8px;
+  background: white;
+  font: inherit;
+  font-size: 14px;
+  resize: vertical;
+  outline: none;
+}
+
+.issue-register-form textarea:focus {
+  border-color: #38b98c;
+}
+
+.issue-register-form button {
+  align-self: flex-end;
+}
+
+/* 🔴 이슈 제목 링크 */
+.issue-title-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #279b76;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.issue-title-link:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+ 이슈 상세 페이지
+========================= */
+
+.issue-detail-page {
+  grid-column: 1 / -1;
+  grid-row: 2 / span 2;
+  min-width: 0;
+  width: 100%;
+  background: white;
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+/* 상세 페이지 제목 */
+.issue-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 2px solid #e6f5ee;
+  padding-bottom: 20px;
+  margin-bottom: 25px;
+}
+
+.issue-detail-header h1 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  color: #279b76;
+}
+
+.issue-detail-header p {
+  margin: 0;
+  color: #82948a;
+  font-size: 13px;
+}
+
+/* 상세 내용 */
+.issue-detail-content {
+  border: 1px solid #e6f5ee;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.issue-detail-row {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  border-bottom: 1px solid #edf5ef;
+}
+
+.issue-detail-row strong {
+  padding: 17px;
+  background: #f5faf7;
+  color: #52675d;
+  font-size: 14px;
+}
+
+.issue-detail-row span {
+  padding: 17px;
+  color: #34443d;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+/* 처리 상태 */
+.issue-detail-row .issue-status {
+  color: #279b76;
+  font-weight: bold;
+}
+
+/* 이슈 내용 */
+.issue-detail-description {
+  padding: 25px;
+}
+
+.issue-detail-description h3 {
+  font-size: 16px;
+  color: #279b76;
+  margin: 0 0 15px;
+}
+
+.issue-detail-description p {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  color: #34443d;
+  font-size: 14px;
+  min-height: 120px;
+}
+
+/* 버튼 */
+.issue-detail-header button,
+.issue-detail-bottom button {
+  padding: 12px 20px;
+  border: none;
+  background: #38b98c;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+.issue-detail-bottom {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 25px;
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .issue-detail-page {
+      grid-column: 1 / -1;
+      grid-row: 5;
+      padding: 18px;
+  }
+
+  .issue-detail-row {
+      grid-template-columns: 110px minmax(0, 1fr);
+  }
+
+  .issue-detail-header h1 {
+      font-size: 20px;
+  }
+}
