@@ -1,60 +1,58 @@
+import logo from './logo.svg';
+import './App.css';
 
-import { useState } from "react";
-import Sidebar from "./components/Sidebar";
-import AdminDashboard from "./pages/AdminDashboard";
-import "./App.css";
-import EmployeeManagement from "./pages/EmployeeManagement";
+import React, { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-const menuNames = {
-  dashboard: "대시보드",
-  projects: "프로젝트 관리",
-  "project-list": "프로젝트 목록",
-  "project-tasks": "업무 관리",
-  schedule: "일정 관리",
-  crm: "고객 관리 (CRM)",
-  hr: "인사 관리",
-  employees: "사원 관리",
-  departments: "부서 관리",
-  evaluations: "인사 평가",
-  finance: "재무 관리",
-  quality: "품질 관리",
-  admin: "관리자 페이지",
-  settings: "설정",
-};
+// 관리자 페이지의 공통 레이아웃
+import AdminLayout from "./admin/AdminLayout";
+
+// 관리자 페이지별 컴포넌트
+import Dashboard from "./admin/pages/Dashboard";
+import ProjectManagement from "./admin/pages/ProjectManagement";
+import ManagerAssignment from "./admin/pages/ManagerAssignment";
+
+// 프로젝트 및 직원 임시 데이터
+import { initialProjects, employees } from "./admin/data/mockData";
 
 function App() {
-  const [activeMenu, setActiveMenu] = useState("dashboard");
+  const [projects, setProjects] = useState(initialProjects);
 
   return (
-    <div style={{
-      display: "flex",
-      height: "100vh",
-      overflow: "hidden",
-    }}>
-      <Sidebar
-        activeMenu={activeMenu}
-        onMenuChange={setActiveMenu}
-      />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route
+            index
+            element={<Dashboard projects={projects} />}
+          />
 
-      <main className="app-content">
-        {activeMenu === "admin" ? (
-          <AdminDashboard   onMenuChange={setActiveMenu}/>
-        ) : activeMenu === "employees" ? (
-          <EmployeeManagement />
-        ) : (
-          <>
-            <h1>
-              {activeMenu === "dashboard"
-                ? "안녕하세요, 관리자님 👋"
-                : menuNames[activeMenu] ?? activeMenu}
-            </h1>
+          <Route
+            path="projects"
+            element={
+              <ProjectManagement
+                projects={projects}
+                setProjects={setProjects}
+              />
+            }
+          />
 
-            {/* 기존 기본 화면 내용은 그대로 유지 */}
-          </>
-        )}
-      </main>
-    </div>
+          <Route
+            path="assignments"
+            element={
+              <ManagerAssignment
+                projects={projects}
+                setProjects={setProjects}
+                employees={employees}
+              />
+            }
+          />
+        </Route>
+
+        {/* 다른 팀원 페이지의 Route는 여기에 유지 */}
+      </Routes>
+    </BrowserRouter>
   );
 }
 
-export default App
+export default App;
