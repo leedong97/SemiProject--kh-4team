@@ -1,0 +1,1025 @@
+/* ==========================
+   마이페이지
+   (클래스 이름은 모두 mp- 로 시작해서 다른 페이지와 겹치지 않아요)
+========================== */
+
+.mypage {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;              /* 메뉴바 줄까지 포함해서 맨 위부터 차지 */
+
+  width: 100%;
+  justify-self: stretch;
+  align-self: start;
+
+  background: white;
+  padding: 0 35px 35px;
+  border-radius: 18px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  min-width: 0;
+}
+
+/* 마이페이지일 때만: 맨 위 메뉴바(흰 박스와 메뉴 글자들)를 숨겨요.
+   메뉴는 아래 프로필 배너 안으로 옮겼어요 (Mypage.js 의 mp-nav) */
+#root>div:has(.mypage)::before,
+#root>div:has(.mypage) .logo,
+#root>div:has(.mypage) .dash-menu,
+#root>div:has(.mypage) .todo-menu,
+#root>div:has(.mypage) .issue-menu,
+#root>div:has(.mypage) .info-menu,
+#root>div:has(.mypage) .my-name {
+  display: none;
+}
+
+/* 상단 프로필 배너 */
+.mp-banner {
+  background: #2fae85;
+  color: white;
+  margin: 0 -35px;               /* 카드 좌우 끝까지 */
+  padding: 14px 35px 28px;
+  border-radius: 18px 18px 0 0;
+}
+
+/* 배너 안 메뉴 버튼 (대시보드·업무현황·이슈관리·공지사항) */
+.mp-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.mp-nav a {
+  padding: 10px 16px;
+  border-radius: 8px;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.mp-nav a:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.mp-crumb {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.mp-title {
+  margin: 4px 0 16px;
+  font-size: 25px;
+  letter-spacing: 1px;
+}
+
+.mp-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.mp-avatar {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.mp-name {
+  margin: 0;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.mp-name span {
+  font-size: 13px;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+/* 이름에 마우스를 올리면 로그아웃 표시 (메뉴바 .my-name/.log 와 같은 방식) */
+.mp-me {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+}
+
+.mp-logout {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 20;
+
+  width: 140px;
+  padding: 10px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: 0.2s;
+}
+
+.mp-logout h4 {
+  margin: 0;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #52675d;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.mp-logout h4:hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+.mp-me:hover .mp-logout,
+.mp-me:focus-within .mp-logout {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.mp-sub {
+  margin: 3px 0 0;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+/* 요약 숫자 */
+.mp-stats {
+  display: flex;
+  gap: 15px;
+  margin: 22px 0;
+}
+
+.mp-stat {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #f5faf7;
+  border: 1px solid #edf5ef;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.mp-stat-label {
+  font-size: 13px;
+  color: #82948a;
+}
+
+.mp-stat strong {
+  font-size: 22px;
+  color: #34443d;
+}
+
+.mp-stat small {
+  margin-left: 2px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #82948a;
+}
+
+/* 탭 */
+.mp-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.mp-tab {
+  flex: 1 1 auto;
+  padding: 11px 14px;
+  background: white;
+  border: 1px solid #dcebe2;
+  border-radius: 9px;
+  color: #52675d;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.mp-tab:hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+.mp-tab.active {
+  background: #38b98c;
+  border-color: #38b98c;
+  color: white;
+  font-weight: bold;
+}
+
+/* 탭 안쪽 영역 */
+.mp-panel h3 {
+  margin: 25px 0 15px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e6f5ee;
+  font-size: 18px;
+}
+
+.mp-panel h3:first-child {
+  margin-top: 0;
+}
+
+.mp-note {
+  margin: 22px 0 0;
+  font-size: 13px;
+  color: #82948a;
+  line-height: 1.5;
+}
+
+/* 달력 위쪽(이전/다음, 일정 등록) */
+.mp-cal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.mp-cal-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.mp-cal-nav button {
+  padding: 8px 14px;
+  background: white;
+  border: 1px solid #dcebe2;
+  border-radius: 8px;
+  color: #52675d;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.mp-cal-nav button:hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+.mp-add-btn {
+  padding: 11px 18px;
+  background: #38b98c;
+  border: none;
+  border-radius: 9px;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.mp-add-btn:hover {
+  background: #279b76;
+}
+
+/* 달력 격자 */
+.mp-cal {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: center;
+}
+
+/* 요일 줄 */
+.mp-cal-head {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+/* 한 주 = 위: 날짜 칸 7개 / 아래: 기간 막대(줄마다 한 칸 높이) */
+.mp-weekrow {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-auto-rows: auto;
+  column-gap: 5px;
+  row-gap: 3px;
+}
+
+.mp-weekrow .mp-day,
+.mp-weekrow .mp-blank {
+  grid-row: 1;
+}
+
+/* 기간 막대 */
+.mp-seg {
+  height: 15px;                  /* 막대 굵기 */
+  align-self: center;
+  z-index: 1;                    /* 날짜 칸 위에 올라오게 */
+  padding: 0 6px;
+  border: none;
+  border-radius: 0;
+  color: #2d3b34;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.mp-seg:hover {
+  filter: brightness(0.92);
+}
+
+.mp-seg.starts {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.mp-seg.ends {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.mp-seg.work { background: #d6e8fb; color: #1d4f91; }
+.mp-seg.personal { background: #fde6c8; color: #8a500f; }
+.mp-seg.leave { background: #f9d7e6; color: #9b2d5d; }
+.mp-seg.project { background: #dde1fa; color: #3a49a8; }
+
+.mp-week {
+  padding: 12px 0;
+  background: #e6f7ef;
+  color: #34856a;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.mp-week.sun,
+.mp-day.sun {
+  color: #d66b6b;
+}
+
+.mp-blank {
+  min-height: 92px;
+}
+
+.mp-day {
+  min-height: 92px;
+  background: #f7faf9;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: #34443d;
+  cursor: pointer;
+  transition: 0.2s;
+
+  position: relative;
+  display: flex;
+  align-items: flex-start;      /* 날짜 숫자는 칸의 왼쪽 위 */
+  justify-content: flex-start;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.mp-day.sun {
+  color: #d66b6b;
+}
+
+.mp-day:hover {
+  background: #c8f1df;
+}
+
+.mp-day.today {
+  background: #e0f5ea;
+  font-weight: bold;
+}
+
+.mp-day.selected {
+  border-color: #38b98c;
+  background: #c8f1df;
+}
+
+.mp-dots {
+  position: absolute;          /* 점은 칸의 오른쪽 위 (막대와 겹치지 않게) */
+  top: 10px;
+  right: 8px;
+  display: flex;
+  gap: 3px;
+  height: 6px;
+}
+
+.mp-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.mp-dot.work {
+  background: #4a90e2;
+}
+
+.mp-dot.personal {
+  background: #f0a04b;
+}
+
+.mp-dot.leave {
+  background: #d9689a;
+}
+
+.mp-dot.project {
+  background: #5b6ee1;
+}
+
+.mp-legend {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: #82948a;
+}
+
+.mp-legend-tip {
+  margin-left: 6px;
+  color: #279b76;
+}
+
+/* 선택한 날짜의 일정 */
+.mp-day-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 25px 0 12px;
+  padding-top: 20px;
+  border-top: 2px solid #e6f5ee;
+}
+
+.mp-panel .mp-day-head h3 {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.mp-day-head span {
+  font-size: 13px;
+  color: #82948a;
+}
+
+.mp-empty {
+  padding: 25px;
+  text-align: center;
+  color: #82948a;
+}
+
+.mp-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  background: #f5faf7;
+  border: 1px solid #edf5ef;
+  border-left-width: 4px;
+  border-radius: 10px;
+}
+
+.mp-item.work {
+  border-left-color: #4a90e2;
+}
+
+.mp-item.personal {
+  border-left-color: #f0a04b;
+}
+
+.mp-item.leave {
+  border-left-color: #d9689a;
+}
+
+.mp-item.project {
+  border-left-color: #5b6ee1;
+}
+
+.mp-item-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.mp-item-sub {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: #82948a;
+}
+
+.mp-del {
+  flex-shrink: 0;
+  padding: 8px 15px;
+  background: white;
+  border: 1px solid #f1c6c6;
+  border-radius: 8px;
+  color: #d66b6b;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.mp-del:hover {
+  background: #fff0f0;
+  border-color: #e89b9b;
+}
+
+/* 일정 등록 폼 */
+.mp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 20px;
+  background: #f7faf9;
+  border: 1px solid #edf5ef;
+  border-radius: 10px;
+}
+
+.mp-form h4 {
+  margin: 0;
+  color: #279b76;
+}
+
+.mp-form label,
+.mp-info label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #52675d;
+}
+
+.mp-form input,
+.mp-form select,
+.mp-info input {
+  width: 100%;
+  padding: 12px 15px;
+  background: white;
+  border: 1px solid #dcebe2;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.mp-form input:focus,
+.mp-form select:focus {
+  border-color: #48c9a0;
+}
+
+.mp-form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.mp-error {
+  margin: 0;
+  font-size: 13px;
+  color: #d66b6b;
+}
+
+.mp-submit {
+  align-self: flex-end;
+  padding: 12px 30px;
+  background: #38b98c;
+  border: none;
+  border-radius: 9px;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.mp-submit:hover {
+  background: #279b76;
+}
+
+/* 내 업무 */
+.mp-card {
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  background: #f5faf7;
+  border: 1px solid #edf5ef;
+  border-radius: 10px;
+}
+
+.mp-task {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.mp-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.mp-bar {
+  flex: 1;
+  height: 8px;
+  background: #dcebe2;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.mp-bar-fill {
+  height: 100%;
+  background: #38b98c;
+}
+
+.mp-progress span {
+  width: 40px;
+  text-align: right;
+  font-size: 13px;
+  color: #82948a;
+}
+
+.mp-badge {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.mp-badge.s-doing {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.mp-badge.s-done {
+  background: #e0f5ea;
+  color: #279b76;
+}
+
+.mp-badge.s-wait {
+  background: #eef2f0;
+  color: #52675d;
+}
+
+/* 내 정보(보기 전용) */
+.mp-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.mp-info input {
+  background: #f7faf9;
+  color: #52675d;
+}
+
+/* 직접 입력하는 칸(비밀번호)은 흰 배경 + 진한 글자 */
+.mp-info input:not([readonly]) {
+  background: white;
+  color: #34443d;
+}
+
+.mp-info input:not([readonly]):focus {
+  border-color: #48c9a0;
+}
+
+/* ---------- 추가 기능 ---------- */
+
+/* 일정 필터(전체/업무/개인) */
+.mp-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.mp-chip {
+  padding: 7px 16px;
+  background: white;
+  border: 1px solid #dcebe2;
+  border-radius: 999px;
+  color: #52675d;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.mp-chip:hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+.mp-chip.active {
+  background: #38b98c;
+  border-color: #38b98c;
+  color: white;
+}
+
+/* 일정 수정/삭제 버튼 묶음 */
+.mp-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.mp-edit {
+  padding: 8px 15px;
+  background: white;
+  border: 1px solid #cfe5da;
+  border-radius: 8px;
+  color: #279b76;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.mp-edit:hover {
+  background: #e6f7ef;
+}
+
+.mp-form-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.mp-cancel {
+  padding: 12px 24px;
+  background: white;
+  border: 1px solid #dcebe2;
+  border-radius: 9px;
+  color: #52675d;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.mp-cancel:hover {
+  background: #f7faf9;
+}
+
+/* 비밀번호 변경 성공 메시지 */
+.mp-ok {
+  margin: 0;
+  font-size: 13px;
+  color: #279b76;
+}
+
+/* 이번 주 근무 시간 막대 그래프 */
+.mp-bars {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 14px;
+  height: 220px;
+}
+
+.mp-bar-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.mp-bar-track {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  max-width: 44px;
+  background: #f7faf9;
+  border-radius: 8px 8px 0 0;
+}
+
+.mp-bar-v {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #38b98c;
+  border-radius: 8px 8px 0 0;
+}
+
+.mp-bar-val {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mp-bar-day {
+  font-size: 13px;
+  color: #82948a;
+}
+
+/* 연차 카드 3개 */
+.mp-leave-grid {
+  display: flex;
+  gap: 12px;
+}
+
+.mp-leave-card {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  background: #f5faf7;
+  border: 1px solid #edf5ef;
+  border-radius: 10px;
+}
+
+.mp-leave-card strong {
+  font-size: 22px;
+}
+
+.mp-leave-card small {
+  margin-left: 2px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #82948a;
+}
+
+.mp-leave-card.remain {
+  background: #e0f5ea;
+  border-color: #38b98c;
+}
+
+/* "전체 보기" 링크 */
+.mp-more {
+  display: inline-block;
+  margin-top: 4px;
+  color: #279b76;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.mp-more:hover {
+  text-decoration: underline;
+}
+
+/* 태블릿 */
+@media (max-width: 1100px) {
+  .mypage {
+    grid-column: 1 / -1;
+  }
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .mypage {
+    padding: 0 15px 20px;
+  }
+
+  .mp-banner {
+    margin: 0 -15px;
+    padding: 10px 15px 22px;
+  }
+
+  .mp-nav a {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .mp-stats {
+    gap: 8px;
+  }
+
+  .mp-stat {
+    padding: 10px;
+  }
+
+  .mp-stat strong {
+    font-size: 18px;
+  }
+
+  .mp-form-row {
+    flex-direction: column;
+  }
+
+  .mp-leave-grid {
+    flex-direction: column;
+  }
+
+  .mp-bars {
+    height: 180px;
+    gap: 8px;
+  }
+
+  .mp-day,
+  .mp-blank {
+    min-height: 70px;
+  }
+}
+
+/* 진행 중인 프로젝트 띠 */
+.mp-projects {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  background: #f7faf9;
+  border: 1px solid #edf5ef;
+  border-radius: 10px;
+}
+
+.mp-projects h4 {
+  margin: 0 0 2px;
+  font-size: 14px;
+  color: #279b76;
+}
+
+.mp-proj {
+  display: grid;
+  grid-template-columns: minmax(120px, 200px) 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 10px;
+  background: white;
+  border: 1px solid #edf5ef;
+  border-radius: 8px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.2s;
+  --c: #279b76;
+}
+
+/* 남은 기한 단계별 색: 같은 색은 항상 같은 뜻 */
+.mp-proj.ok     { --c: #279b76; }   /* 15일 이상 남음: 여유 */
+.mp-proj.warn   { --c: #d98a2b; }   /* 8~14일: 주의 */
+.mp-proj.danger { --c: #d66b6b; }   /* 7일 이내: 임박 */
+.mp-proj.idle   { --c: #a9b6af; }   /* 시작 전 / 종료 */
+
+.mp-proj:hover {
+  border-color: var(--c);
+}
+
+.mp-proj-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #34443d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mp-proj-track {
+  position: relative;
+  height: 10px;
+  background: #eef2f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.mp-proj-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--c);
+  border-radius: 999px;
+}
+
+.mp-proj-date strong {
+  color: var(--c);
+  margin-right: 2px;
+}
+
+.mp-proj-date {
+  font-size: 12px;
+  color: #82948a;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .mp-proj {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}

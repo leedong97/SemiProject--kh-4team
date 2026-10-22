@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import "./Login.css";
 
 function Signup() {
 
@@ -51,7 +52,7 @@ function Signup() {
         })
             .then(() => {
                 alert("회원가입이 완료되었어요");
-                navi("/");
+                navi("/login");
             })
             .catch((err) => {
                 if (err.response && err.response.status === 409) {
@@ -102,7 +103,7 @@ function Signup() {
                     </button>
 
                     <p>이미 계정이 있으신가요?</p>
-                    <Link to="/">로그인</Link>
+                    <Link to="/login">로그인</Link>
                 </div>
             </form>
         </div>

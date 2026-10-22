@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import "./Login.css";
 
 function Login() {
 
@@ -32,7 +33,7 @@ function Login() {
         setErrors({})
         axios.post('http://localhost:3333/login', values)
             .then(() => {
-                navi("/main")
+                navi("/") // 로그인 성공 → 대시보드(메인)로 이동
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
@@ -46,7 +47,7 @@ function Login() {
     return (
         <div className="login">
             <h2>로그인</h2>
-            <form onSubmit={handleSubmit}noValidate>
+            <form onSubmit={handleSubmit} noValidate>
                 <div className='email'>
                     <input type='email'
                         name='email'
