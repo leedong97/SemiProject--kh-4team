@@ -75,7 +75,7 @@ function ProjectManagement({
       endDate: form.endDate,
       budget: Number(form.budget || 0),
       description: form.description,
-      status: "승인 대기",
+      status: "배정 대기",
       progress: 0,
       plannedProgress: 0,
       managerId: null
@@ -83,7 +83,7 @@ function ProjectManagement({
 
     setProjects((prev) => [...prev, newProject]);
 
-    alert("프로젝트가 승인 대기로 등록되었습니다.");
+    alert("프로젝트가 등록되었습니다. 담당자를 배정할 수 있습니다.");
 
     setForm({
       customer: "",
@@ -95,17 +95,6 @@ function ProjectManagement({
     });
 
     setPage("list");
-  };
-
-  // 프로젝트 승인 및 반려
-  const changeStatus = (id, status) => {
-    setProjects((prev) =>
-      prev.map((project) =>
-        project.id === id
-          ? { ...project, status }
-          : project
-      )
-    );
   };
 
   // 프로젝트 삭제
@@ -242,35 +231,6 @@ function ProjectManagement({
                           >
                             상세보기
                           </button>
-
-                          {/* 승인 대기 프로젝트 */}
-                          {project.status === "승인 대기" && (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  changeStatus(
-                                    project.id,
-                                    "배정 대기"
-                                  )
-                                }
-                              >
-                                승인
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  changeStatus(
-                                    project.id,
-                                    "반려"
-                                  )
-                                }
-                              >
-                                반려
-                              </button>
-                            </>
-                          )}
 
                           {/* 담당자 배정 */}
                           {project.status === "배정 대기" && (
@@ -569,7 +529,7 @@ function ProjectManagement({
                 type="submit"
                 className="nexus-project-primary"
               >
-                승인 대기로 등록
+                담당자 배정 대기로 등록
               </button>
 
             </div>

@@ -1,70 +1,39 @@
-# Getting Started with Create React App
+# NEXUS ERP — project12 실행용
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Windows / Cursor에서 실행
 
-## Available Scripts
+1. 이 ZIP의 **내용물 전체**를 `C:\react\project12` 폴더에 압축 해제합니다. 압축을 풀었을 때 `C:\react\project12\package.json`이 존재해야 합니다.
+2. Cursor에서 `C:\react\project12` 폴더를 엽니다.
+3. CMD 터미널에서 실행합니다.
 
-In the project directory, you can run:
+```cmd
+cd /d C:\react\project12
+dir package.json
+npm install
+npm start
+```
 
-### `npm start`
+4. `http://localhost:3000`에 접속합니다.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+데모 로그인: `admin@demo.local` / `Demo1234!`
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+**MySQL과 별도의 API 서버가 필요하지 않습니다.** 데이터는 브라우저 localStorage에 저장됩니다. 실제 보안 인증 기능이 아니므로 실데이터를 넣지 마세요.
 
-### `npm test`
+## 수정 및 점검
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- ZIP 내부의 최상위 폴더를 없애고 `package.json`, `src`, `public`이 바로 보이도록 정리했습니다. 이전 `ENOENT` 오류를 방지하기 위한 수정입니다.
+- `public/index.html`을 한국어 ERP 제목으로 정리했습니다. React는 이 파일의 `root` 영역에 표시됩니다.
+- 루트의 기존 `index.html`은 `index_기존_참고용.html`로 이름을 변경했습니다. Create React App의 실행 화면과 혼동하지 않기 위해서입니다.
+- 기존 컴포넌트 `.js` 및 스타일 파일을 유지했습니다.
+- 모든 `src/*.js`의 JavaScript/JSX 구문을 정적 파서로 검사했습니다.
 
-### `npm run build`
+## 오류가 계속된다면
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- `ENOENT package.json`: 압축 해제 위치를 확인하세요.
+- `react-scripts is not recognized`: `npm install`이 정상 완료되었는지 확인하세요.
+- 포트 3000 사용 중: 다른 포트로 실행할지 터미널 질문에 답하세요.
+- 빈 화면: 브라우저 F12 > Console의 첫 번째 빨간 오류를 확인하세요.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 검증 범위
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+파일 구조, package.json 스크립트, JSX 구문을 검사했습니다. 이 실행 환경에서는 npm 패키지 다운로드가 캐시에 없어 `npm install`과 실제 브라우저 실행을 끝까지 검증하지 못했습니다.

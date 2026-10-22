@@ -1,0 +1,8 @@
+1. ZIP의 내용물 전체를 C:\react\project12 에 풀기
+2. C:\react\project12\package.json 존재 확인
+3. CMD 터미널:
+   cd /d C:\react\project12
+   npm install
+   npm start
+4. 브라우저: http://localhost:3000
+5. 데모 계정: admin@demo.local / Demo1234!

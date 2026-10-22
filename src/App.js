@@ -1,58 +1,183 @@
-import logo from './logo.svg';
-import './App.css';
-
 import React, { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-// 관리자 페이지의 공통 레이아웃
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import "./App.css";
+import "./MergedModules.css";
 import AdminLayout from "./admin/AdminLayout";
-
-// 관리자 페이지별 컴포넌트
 import Dashboard from "./admin/pages/Dashboard";
 import ProjectManagement from "./admin/pages/ProjectManagement";
 import ManagerAssignment from "./admin/pages/ManagerAssignment";
+import IssueManagement from "./components/IssueManagement";
+import HRManagement from "./components/HRManagement";
+import EmployeeEvaluation from "./components/EmployeeEvaluation";
+import Login from "./components/Login";
+import useErpData from "./useErpData";
+import useProjects from "./admin/data/useProjects";
 
-// 프로젝트 및 직원 임시 데이터
-import { initialProjects, employees } from "./admin/data/mockData";
+export default function App() {
+    // 로그인은 화면 시연용입니다. 실제 관리자 보안은 서버가 필요합니다.
+    const [loggedIn, setLoggedIn] = useState(false);
+    const { data, changeData, resetData } = useErpData();
+    const { projects, setProjects, resetProjects } = useProjects();
 
-function App() {
-  const [projects, setProjects] = useState(initialProjects);
+    function resetDemo() {
+        if (!window.confirm("모든 연습 데이터를 초기화할까요?")) return;
+        resetData();
+        resetProjects();
+    }
 
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route
-            index
-            element={<Dashboard projects={projects} />}
-          />
 
-          <Route
-            path="projects"
-            element={
-              <ProjectManagement
-                projects={projects}
-                setProjects={setProjects}
-              />
-            }
-          />
+    return (
+        <BrowserRouter>
+            <Routes>
 
-          <Route
-            path="assignments"
-            element={
-              <ManagerAssignment
-                projects={projects}
-                setProjects={setProjects}
-                employees={employees}
-              />
-            }
-          />
-        </Route>
+                {/* 로그인 */}
+                <Route
+                    path="/login"
+                    element={
+                        loggedIn ? (
+                            <Navigate to="/admin" replace />
+                        ) : (
+                            <Login
+                                onLogin={() => setLoggedIn(true)}
+                            />
+                        )
+                    }
+                />
 
-        {/* 다른 팀원 페이지의 Route는 여기에 유지 */}
-      </Routes>
-    </BrowserRouter>
-  );
+                {/* 관리자 페이지 */}
+                <Route
+                    path="/admin"
+                    element={
+                        loggedIn ? (
+                            <AdminLayout
+                                onLogout={() => setLoggedIn(false)}
+                            />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
+                    }
+                >
+
+                    {/* 대시보드 */}
+                    <Route
+                        index
+                        element={
+                            <Dashboard
+                                projects={projects}
+                                data={data}
+                            />
+                        }
+                    />
+
+                    {/* 프로젝트 관리 */}
+                    <Route
+                        path="projects"
+                        element={
+                            <ProjectManagement
+                                projects={projects}
+                                setProjects={setProjects}
+                            />
+                        }
+                    />
+
+                    {/* 담당자 배정 */}
+                    <Route
+                        path="assignments"
+                        element={
+                            <ManagerAssignment
+                                projects={projects}
+                                setProjects={setProjects}
+                                employees={data.employees.map(
+                                    (e) => ({
+                                        ...e,
+                                        role: e.role || e.position
+                                    })
+                                )}
+                            />
+                        }
+                    />
+
+                    {/* 이슈 관리 */}
+                    <Route
+                        path="issues"
+                        element={
+                            <div className="merge-erp-module">
+                                <IssueManagement
+                                    data={data}
+                                    changeData={changeData}
+                                />
+                            </div>
+                        }
+                    />
+
+                    {/* 직원 관리 */}
+                    <Route
+                        path="employees"
+                        element={
+                            <div className="merge-erp-module">
+                                <HRManagement
+                                    data={data}
+                                    changeData={changeData}
+                                />
+                            </div>
+                        }
+                    />
+
+                    {/* 직원 평가 */}
+                    <Route
+                        path="evaluations"
+                        element={
+                            <div className="merge-erp-module">
+                                <EmployeeEvaluation
+                                    data={data}
+                                    changeData={changeData}
+                                />
+                            </div>
+                        }
+                    />
+
+                    {/* 공지 관리 */}
+                    <Route
+                        path="boards"
+                        element={
+                            <div className="merge-placeholder">
+                                <h2>공지 관리</h2>
+                                <p>
+                                    이 메뉴는 기존 프로젝트의
+                                    확장 공간으로 남겨두었습니다.
+                                </p>
+                            </div>
+                        }
+                    />
+
+                    {/* 연습 데이터 관리 */}
+                    <Route
+                        path="settings"
+                        element={
+                            <div className="merge-placeholder">
+                                <h2>연습 데이터 관리</h2>
+                                <button onClick={resetDemo}>
+                                    샘플 데이터 초기화
+                                </button>
+                            </div>
+                        }
+                    />
+
+                </Route>
+
+                {/* 존재하지 않는 주소 처리 */}
+                <Route
+                    path="*"
+                    element={
+                        <Navigate
+                            to={loggedIn ? "/admin" : "/login"}
+                            replace
+                        />
+                    }
+                />
+
+            </Routes>
+        </BrowserRouter>
+    );
+
 }
-
-export default App;

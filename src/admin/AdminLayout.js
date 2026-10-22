@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import "./styles/Admin.css";
 
-function AdminLayout() {
+function AdminLayout({ onLogout }) {
 
   // 관리자 상단 메뉴
   const menus = [
@@ -12,7 +12,8 @@ function AdminLayout() {
     { name: "이슈 관리", path: "/admin/issues" },
     { name: "인사 관리", path: "/admin/employees" },
     { name: "직원 평가", path: "/admin/evaluations" },
-    { name: "공지 관리", path: "/admin/boards" }
+    { name: "공지 관리", path: "/admin/boards" },
+    { name: "데이터 초기화", path: "/admin/settings" }
   ];
 
   return (
@@ -32,9 +33,16 @@ function AdminLayout() {
             </div>
           </div>
 
-          <span className="nexus-admin-mode">
-            관리자 모드
-          </span>
+          <div className="nexus-admin-user">
+            <span className="nexus-admin-mode">
+              관리자 데모
+            </span>
+
+            <button type="button" onClick={onLogout}>
+              로그아웃
+            </button>
+
+          </div>
 
         </div>
 

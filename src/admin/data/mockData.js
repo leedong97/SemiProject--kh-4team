@@ -16,7 +16,7 @@ export const initialProjects = [
     {
       id: 3,
       name: "API 서버 연동",
-      status: "대기",
+      status: "배정 대기",
       progress: 0,
       managerId: null
     }

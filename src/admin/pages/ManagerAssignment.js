@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/ManagerAssignment.css";
+import { canLeadProject } from "../../utils/permissions";
 
 function ManagerAssignment({
     projects = [],
@@ -9,6 +10,11 @@ function ManagerAssignment({
 
     // 프로젝트 담당자 배정
     const assignManager = (projectId, managerId) => {
+
+        if (managerId !== null && !employees.some(e => e.id === managerId && canLeadProject(e))) {
+            window.alert("팀장 이상 직급만 담당자로 배정할 수 있습니다.");
+            return;
+        }
 
         setProjects((prev) =>
             prev.map((project) => {
@@ -40,7 +46,7 @@ function ManagerAssignment({
             <h1>담당자 배정</h1>
 
             <p className="nexus-assignment-description">
-                프로젝트별 담당자를 지정하고 배정 상태를 관리합니다.
+                팀장 이상 직급의 직원만 프로젝트 책임자로 배정할 수 있습니다.
             </p>
 
             <div className="nexus-assignment-card">
@@ -87,7 +93,7 @@ function ManagerAssignment({
                                             >
                                                 <option value="">담당자 선택</option>
 
-                                                {employees.map((employee) => (
+                                                {employees.filter(canLeadProject).map((employee) => (
                                                     <option
                                                         key={employee.id}
                                                         value={employee.id}
