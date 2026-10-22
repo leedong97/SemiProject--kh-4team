@@ -1,0 +1,29 @@
+/* project11에서 가져온 이슈/인사/평가 화면 공통 스타일 */
+.merge-erp-module{font-family:Arial,"Malgun Gothic",sans-serif;color:#172338}
+.merge-erp-module *,.login-page *{box-sizing:border-box}
+.merge-erp-module button,.login-page button{background:#245fe6;color:white;border:0;border-radius:8px;padding:10px 14px;cursor:pointer}
+.merge-erp-module input,.merge-erp-module select,.merge-erp-module textarea,.login-page input{min-width:0;padding:10px;border:1px solid #d6dfeb;border-radius:8px;background:white;font:inherit}
+.merge-erp-module label,.login-page label{display:flex;flex-direction:column;gap:6px;color:#475569}
+.merge-erp-module h1,.merge-erp-module h2,.merge-erp-module h3{margin:0 0 10px}
+.merge-erp-module p{line-height:1.5}
+.merge-erp-module .section-head { margin: 28px 0 18px; }
+.merge-erp-module .section-head p, .merge-erp-module .muted { color: #718096; }
+.merge-erp-module .panel { background: white; padding: 20px; margin: 14px 0; border: 1px solid #e4eaf2; border-radius: 12px; box-shadow: 0 3px 12px rgba(15,23,42,.025); }
+.merge-erp-module .form-row { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; }
+.merge-erp-module .form-row > input, .merge-erp-module .form-row > select, .merge-erp-module .form-row > label { flex: 1 1 140px; }
+.merge-erp-module .form-row > button { flex-shrink: 0; }
+.merge-erp-module .full { width: 100%; }
+.merge-erp-module .between { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.merge-erp-module .pill { background: #edf2ff; color: #3159a6; padding: 6px 10px; border-radius: 999px; font-size: 12px; }
+.merge-erp-module .secondary { background: #eaf0f8; color: #31405b; }
+.merge-erp-module .search { width: 100%; margin: 10px 0; }
+.merge-erp-module .history { border-bottom: 1px solid #edf0f5; padding: 7px 0; color: #5b667a; }
+.merge-erp-module .error { color: #c52e3c; }
+.merge-erp-module .warning { padding: 12px; border-radius: 8px; background: #fff4e0; color: #8a5810; }
+.merge-erp-module .employee-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #edf0f5; padding: 13px 0; gap: 12px; }
+.login-page{display:grid;min-height:100vh;place-items:center;padding:16px;background:#f5f7fb}
+.login-card{background:white;width:100%;max-width:420px;border:1px solid #e4eaf2;border-radius:16px;padding:32px;display:grid;gap:14px}
+.login-card .error{color:#b42335}.login-card .hint{font-size:12px;color:#718096;margin:0}
+.merge-erp-module .secondary{background:#eaf0f8;color:#31405b}
+.merge-erp-module .warning{padding:12px;border-radius:8px;background:#fff4e0;color:#8a5810}
+.merge-placeholder{background:white;border-radius:14px;padding:30px}.merge-placeholder button{background:#245fe6;color:white;border:0;border-radius:8px;padding:10px 14px;cursor:pointer}

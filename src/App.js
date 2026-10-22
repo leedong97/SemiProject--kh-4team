@@ -1,0 +1,46 @@
+import React, { useState } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import "./App.css";
+import "./MergedModules.css";
+import AdminLayout from "./admin/AdminLayout";
+import Dashboard from "./admin/pages/Dashboard";
+import ProjectManagement from "./admin/pages/ProjectManagement";
+import ManagerAssignment from "./admin/pages/ManagerAssignment";
+import IssueManagement from "./components/IssueManagement";
+import HRManagement from "./components/HRManagement";
+import EmployeeEvaluation from "./components/EmployeeEvaluation";
+import Login from "./components/Login";
+import useErpData from "./useErpData";
+import useProjects from "./admin/data/useProjects";
+
+export default function App() {
+    // 로그인은 화면 시연용입니다. 실제 관리자 보안은 서버가 필요합니다.
+    const [loggedIn, setLoggedIn] = useState(false);
+    const { data, changeData, resetData } = useErpData();
+    const { projects, setProjects, resetProjects } = useProjects();
+
+    function resetDemo() {
+        if (!window.confirm("모든 연습 데이터를 초기화할까요?")) return;
+        resetData();
+        resetProjects();
+    }
+
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/login" element={loggedIn ? <Navigate to="/admin" replace /> : <Login onLogin={() => setLoggedIn(true)} />} />
+                <Route path="/admin" element={loggedIn ? <AdminLayout onLogout={() => setLoggedIn(false)} /> : <Navigate to="/login" replace />}>
+                    <Route index element={<Dashboard projects={projects} data={data} />} />
+                    <Route path="projects" element={<ProjectManagement projects={projects} setProjects={setProjects} />} />
+                    <Route path="assignments" element={<ManagerAssignment projects={projects} setProjects={setProjects} employees={data.employees.map(e => ({ ...e, role: e.role || e.position }))} />} />
+                    <Route path="issues" element={<div className="merge-erp-module"><IssueManagement data={data} changeData={changeData} /></div>} />
+                    <Route path="employees" element={<div className="merge-erp-module"><HRManagement data={data} changeData={changeData} /></div>} />
+                    <Route path="evaluations" element={<div className="merge-erp-module"><EmployeeEvaluation data={data} changeData={changeData} /></div>} />
+                    <Route path="boards" element={<div className="merge-placeholder"><h2>공지 관리</h2><p>이 메뉴는 기존 프로젝트의 확장 공간으로 남겨두었습니다.</p></div>} />
+                    <Route path="settings" element={<div className="merge-placeholder"><h2>연습 데이터 관리</h2><button onClick={resetDemo}>샘플 데이터 초기화</button></div>} />
+                </Route>
+                <Route path="*" element={<Navigate to={loggedIn ? "/admin" : "/login"} replace />} />
+            </Routes>
+        </BrowserRouter>
+    );
+}
