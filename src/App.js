@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import "./MergedModules.css";
-import AdminLayout from "./admin/AdminLayout";
-import Dashboard from "./admin/pages/Dashboard";
-import ProjectManagement from "./admin/pages/ProjectManagement";
-import ManagerAssignment from "./admin/pages/ManagerAssignment";
-import IssueManagement from "./components/IssueManagement";
-import HRManagement from "./components/HRManagement";
-import EmployeeEvaluation from "./components/EmployeeEvaluation";
-import Login from "./components/Login";
-import useErpData from "./useErpData";
-import useProjects from "./admin/data/useProjects";
+import AdminLayout from "./jonho/AdminLayout";
+import Dashboard from "./jonho/pages/Dashboard";
+import ProjectManagement from "./jonho/pages/ProjectManagement";
+import ManagerAssignment from "./jonho/pages/ManagerAssignment";
+import IssueManagement from "./heeseung/components/IssueManagement";
+import HRManagement from "./heeseung/components/HRManagement";
+import EmployeeEvaluation from "./heeseung/components/EmployeeEvaluation";
+import Login from "./heeseung/components/Login";
+import useErpData from "./common/data/useErpData";
+import useProjects from "./jonho/data/useProjects";
 
 export default function App() {
     // 로그인은 화면 시연용입니다. 실제 관리자 보안은 서버가 필요합니다.
