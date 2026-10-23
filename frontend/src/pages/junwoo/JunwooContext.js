@@ -13,6 +13,36 @@ export function JunwooProvider({ children }) {
   const [info, setInfo] = useState([]);
   const [todo, setTodo] = useState([]);
 
+  /* MySQL 프로젝트 전체 조회 */
+  useEffect(() => {
+
+    const loadProjects = async () => {
+
+      try {
+
+        const response = await fetch(
+          'http://localhost:5000/api/projects'
+        );
+
+        if (!response.ok) {
+          throw new Error('프로젝트 조회 실패');
+        }
+
+        const data = await response.json();
+
+        setTodo(data);
+
+      } catch (error) {
+
+        console.error('프로젝트 불러오기 오류:', error);
+
+      }
+
+    };
+
+    loadProjects();
+
+  }, []);
 
   /* MySQL 공지사항 전체 조회 */
   useEffect(() => {

@@ -86,9 +86,29 @@ app.post('/api/notices', async (req, res) => {
 
     const { title, content, employee_id } = req.body;
 
-    if (!title?.trim() || !content?.trim()) {
+    // 제목과 내용 공백 검사
+    if (
+        typeof title !== 'string' ||
+        typeof content !== 'string' ||
+        !title.trim() ||
+        !content.trim()
+    ) {
         return res.status(400).json({
             message: '제목과 내용을 입력하세요.'
+        });
+    }
+
+    // 제목 글자 수 검사
+    if (title.trim().length > 200) {
+        return res.status(400).json({
+            message: '제목은 최대 200자까지 입력할 수 있습니다.'
+        });
+    }
+
+    // 내용 글자 수 검사
+    if (content.trim().length > 10000) {
+        return res.status(400).json({
+            message: '내용은 최대 10000자까지 입력할 수 있습니다.'
         });
     }
 
@@ -133,6 +153,7 @@ app.get('/api/notices/:id', async (req, res) => {
                 content,
                 employee_id AS author,
                 DATE_FORMAT(created_at, '%Y.%m.%d') AS date,
+                DATE_FORMAT(updated_at, '%Y.%m.%d %H:%i') AS updatedAt,
                 views,
                 is_pinned AS isPinned
             FROM notices
@@ -176,7 +197,9 @@ app.patch('/api/notices/:id/views', async (req, res) => {
 
         const [result] = await db.query(
             `UPDATE notices
-             SET views = COALESCE(views, 0) + 1
+             SET
+                 views = COALESCE(views, 0) + 1,
+                 updated_at = updated_at
              WHERE notice_id = ?`,
             [id]
         );
@@ -275,6 +298,20 @@ app.put('/api/notices/:id', async (req, res) => {
         });
     }
 
+    // 제목 글자 수 검사
+    if (title.trim().length > 200) {
+        return res.status(400).json({
+            message: '제목은 최대 200자까지 입력할 수 있습니다.'
+        });
+    }
+
+    // 내용 글자 수 검사
+    if (content.trim().length > 10000) {
+        return res.status(400).json({
+            message: '내용은 최대 10000자까지 입력할 수 있습니다.'
+        });
+    }
+
     try {
 
         const [result] = await db.query(`
@@ -366,6 +403,42 @@ app.patch('/api/notices/:id/pin', async (req, res) => {
 
 });
 
+/* 프로젝트 전체 조회 */
+app.get('/api/projects', async (req, res) => {
+
+    try {
+
+        const [rows] = await db.query(`
+            SELECT
+                project_id AS id,
+                title,
+                content,
+                created_by AS author,
+                manager_id AS managerId,
+                status,
+                priority,
+                project_progress AS progress,
+                views,
+                DATE_FORMAT(start_date, '%Y.%m.%d') AS startDate,
+                DATE_FORMAT(end_date, '%Y.%m.%d') AS endDate,
+                DATE_FORMAT(created_at, '%Y.%m.%d') AS date
+            FROM projects
+            ORDER BY project_id DESC
+        `);
+
+        res.json(rows);
+
+    } catch (error) {
+
+        console.error('프로젝트 조회 오류:', error);
+
+        res.status(500).json({
+            message: '프로젝트 조회 실패'
+        });
+
+    }
+
+});
 
 // 서버 실행
 app.listen(PORT, () => {

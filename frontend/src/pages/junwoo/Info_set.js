@@ -99,14 +99,20 @@ function Info_set({ info, onAddInfo }) {
                         placeholder="공지사항 제목을 입력하세요"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
+                        maxLength={200}
                     />
+
+                    <small>{title.length} / 200자</small>
 
                     <textarea
                         placeholder="공지사항 내용을 입력하세요"
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         rows="5"
+                        maxLength={10000}
                     />
+
+                    <small>{content.length} / 10000자</small>
 
                     <button onClick={handleAddInfo}>
                         + 공지사항 등록

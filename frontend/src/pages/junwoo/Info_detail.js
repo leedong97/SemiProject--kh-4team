@@ -160,6 +160,25 @@ function Info_detail({ info, onViewInfo }) {
                 content: editContent.trim()
             }));
 
+            // 수정 완료 후 MySQL에서 최신 수정일자 가져오기
+            try {
+                const response = await fetch(
+                    `http://localhost:5000/api/notices/${id}`
+                );
+
+                if (response.ok) {
+                    const updatedData = await response.json();
+
+                    setItem(prev => ({
+                        ...prev,
+                        updatedAt: updatedData.updatedAt ?? prev.updatedAt
+                    }));
+                }
+
+            } catch (error) {
+                console.error("수정일자 조회 오류:", error);
+            }
+
             setIsEditing(false);
 
             alert("공지사항 수정 완료.");
@@ -241,7 +260,7 @@ function Info_detail({ info, onViewInfo }) {
             {/* 공지사항 상세정보 */}
             <div className="info-detail-content">
 
-
+                {/* 공지사항 제목 */}
                 <div className="info-detail-row">
                     <strong>공지사항 제목</strong>
 
@@ -250,13 +269,17 @@ function Info_detail({ info, onViewInfo }) {
                             type="text"
                             value={editTitle}
                             onChange={(e) => setEditTitle(e.target.value)}
+                            maxLength={200}
                         />
                     ) : (
                         <span>{item.title}</span>
                     )}
 
-                </div>
+                    {isEditing && (
+                        <small>{editTitle.length} / 200자</small>
+                    )}
 
+                </div>
 
                 <div className="info-detail-row">
                     <strong>작성자</strong>
@@ -266,6 +289,11 @@ function Info_detail({ info, onViewInfo }) {
                 <div className="info-detail-row">
                     <strong>작성일자</strong>
                     <span>{item.date}</span>
+                </div>
+
+                <div className="info-detail-row">
+                    <strong>수정일자</strong>
+                    <span>{item.updatedAt || '-'}</span>
                 </div>
 
                 <div className="info-detail-row">
@@ -283,9 +311,14 @@ function Info_detail({ info, onViewInfo }) {
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value)}
                             rows={8}
+                            maxLength={10000}
                         />
                     ) : (
                         <p>{item.content}</p>
+                    )}
+
+                    {isEditing && (
+                        <small>{editContent.length} / 10000자</small>
                     )}
 
                 </div>
