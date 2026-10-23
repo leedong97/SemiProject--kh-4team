@@ -1,0 +1,294 @@
+.nexus-dashboard {
+  padding: 20px;
+  background: #f5f6f8;
+  color: #172438;
+}
+
+.nexus-dashboard-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.nexus-dashboard-title h2 {
+  font-size: 22px;
+  margin: 0 0 6px;
+}
+
+.nexus-dashboard-title p,
+.nexus-panel>p {
+  color: #7b8794;
+  font-size: 13px;
+}
+
+.nexus-dashboard-title>span {
+  background: #dcf5e6;
+  color: #189b5c;
+  border-radius: 15px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.nexus-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.nexus-stat-card,
+.nexus-panel {
+  background: white;
+  border: 1px solid #e5e8ed;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.nexus-stat-card p {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.nexus-stat-card h2 {
+  font-size: 28px;
+  margin: 10px 0 0;
+}
+
+.nexus-stat-card small {
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.nexus-search {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.nexus-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 16px;
+  border: 1px solid #d6dce5;
+  border-radius: 24px;
+}
+
+.nexus-search button,
+.nexus-filters button {
+  border: 1px solid #e2e5eb;
+  background: white;
+  border-radius: 20px;
+  padding: 9px 15px;
+  cursor: pointer;
+}
+
+.nexus-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.nexus-filters .selected {
+  background: #173d5e;
+  color: white;
+}
+
+.nexus-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.nexus-panel h3 {
+  font-size: 17px;
+  margin: 0 0 8px;
+}
+
+.nexus-project-card {
+  position: relative;
+  padding: 18px;
+  margin-top: 12px;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+}
+
+.nexus-project-card h4,
+.nexus-progress-item h4 {
+  margin: 8px 0;
+}
+
+.nexus-project-card p {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.nexus-project-card button {
+  background: #111;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.nexus-waiting {
+  color: #ef7a39;
+  background: #fff0e7;
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+.nexus-progress-item {
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.nexus-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 7px 0;
+  font-size: 12px;
+}
+
+.nexus-progress-row span:first-child {
+  width: 30px;
+}
+
+.nexus-progress-row span:last-child {
+  width: 38px;
+  text-align: right;
+}
+
+.nexus-progress-track {
+  flex: 1;
+  height: 9px;
+  background: #edf1f5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.nexus-progress-actual {
+  height: 100%;
+  background: #258fb5;
+}
+
+.nexus-progress-plan {
+  height: 100%;
+  background: #a8bfd1;
+}
+
+@media (max-width: 900px) {
+  .nexus-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 전체 선택: 미배정 + 진행 중 2개 영역 */
+.nexus-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+/* 진행 중 또는 배정 대기 선택: 하나의 영역만 전체 너비 */
+.nexus-dashboard-grid.single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 선택한 영역이 가로 너비를 넘지 않도록 */
+.nexus-dashboard-grid>* {
+  min-width: 0;
+}
+
+/* 진행률 영역도 기존 대시보드 카드와 동일하게 */
+.nexus-dashboard .nexus-progress-panel {
+  background: #ffffff;
+  border: 1px solid #e2e7ef;
+  border-radius: 14px;
+  padding: 20px;
+  box-sizing: border-box;
+  min-width: 0;
+  box-shadow: none;
+}
+
+/* 제목 및 설명 */
+.nexus-progress-panel h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #172438;
+}
+
+.nexus-progress-panel > p {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: #8490a5;
+}
+
+/* 프로젝트별 구분 */
+.nexus-progress-item {
+  padding: 16px 0;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.nexus-progress-item:last-child {
+  border-bottom: none;
+}
+
+/* 프로젝트명 */
+.nexus-progress-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.nexus-progress-heading h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #172438;
+}
+
+.nexus-progress-heading span {
+  font-size: 12px;
+  color: #526174;
+}
+
+/* 진행률 */
+.nexus-progress-row {
+  margin-bottom: 14px;
+}
+
+.nexus-progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: #526174;
+  font-size: 12px;
+}
+
+.nexus-progress-track {
+  width: 100%;
+  height: 8px;
+  background: #edf1f6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.nexus-progress-fill {
+  height: 100%;
+  border-radius: 8px;
+}
+
+.nexus-progress-fill.actual {
+  background: #173d5e;
+}
+
+.nexus-progress-fill.planned {
+  background: #8da9c4;
+}
