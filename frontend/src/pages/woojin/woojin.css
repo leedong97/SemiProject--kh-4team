@@ -1,0 +1,11 @@
+/* 우진 폴더 공통 바깥 틀 (로그인·회원가입·마이페이지) */
+.woojin-frame {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 30px 25px;
+}
+
+.woojin-frame,
+.woojin-frame * {
+  box-sizing: border-box;
+}

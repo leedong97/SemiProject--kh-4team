@@ -1,0 +1,318 @@
+/* =====================================================================
+   팀 공통 틀 (shared/TeamShell.js 전용)
+   - 위쪽 메뉴바(로고·메뉴·이름·로그아웃)와 12칸 그리드
+   - 모든 선택자 앞에 .team-shell 이 붙어 있어서, 관리자·로그인·마이페이지에는
+     영향을 주지 않아요.
+   - 원래 App.css 의 "상단 메뉴" 부분만 옮겨온 것입니다 (내용은 그대로).
+   ===================================================================== */
+
+body:has(.team-shell),
+body:has(.woojin-frame) {
+  font-family: 'Malgun Gothic', sans-serif;
+  background: linear-gradient(135deg, #eefaf4, #f4f8ff);
+  color: #34443d;
+}
+
+.team-shell, .team-shell * { box-sizing: border-box; }
+
+/* 전체 레이아웃 */
+
+.team-shell {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 30px 25px;
+
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-areas:
+    "logo logo dash-menu dash-menu todo-menu todo-menu issue-menu issue-menu info-menu info-menu my-name my-name"
+    "calendar calendar calendar calendar calendar calendar calendar info info info info info"
+    "calendar calendar calendar calendar calendar calendar calendar todo todo todo todo todo";
+
+  grid-template-rows: 76px auto auto;
+  gap: 20px;
+}
+
+/* 상단 메뉴 배경 */
+
+.team-shell::before {
+  content: "";
+  grid-column: 1 / -1;
+  grid-row: 1;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+/* 상단 공통 */
+
+.team-shell .logo,
+.team-shell .todo-menu,
+.team-shell .info-menu,
+.team-shell .my-name {
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-width: 0;
+}
+
+/* 회사 로고 */
+
+.team-shell .logo {
+  grid-area: logo;
+  padding-left: 25px;
+}
+
+.team-shell .logo h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #279b76;
+}
+
+/* 업무현황 메뉴 */
+
+.team-shell .todo-menu {
+  grid-area: todo-menu;
+  justify-content: flex-start;
+  left: -10px;
+}
+
+/* 공지사항 메뉴 */
+
+.team-shell .info-menu {
+  grid-area: info-menu;
+  justify-content: flex-start;
+  left: -10px;
+}
+
+/* 상단 메뉴 제목 */
+
+.team-shell .todo-menu h3,
+.team-shell .info-menu h3 {
+  margin: 0;
+  font-size: 15px;
+  color: #52675d;
+  font-weight: 500;
+  padding: 12px 15px;
+  border-radius: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.team-shell .todo-menu h3:hover,
+.team-shell .info-menu h3:hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+/* 사용자 이름 */
+
+.team-shell .my-name {
+  grid-area: my-name;
+  justify-content: flex-end;
+  padding-right: 25px;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.team-shell .my-name>h4 {
+  margin: 0;
+  color: #279b76;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+/* 로그아웃 하위 메뉴 */
+
+.team-shell .log {
+  position: absolute;
+  top: 100%;
+  right: 10px;
+
+  width: 140px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+
+  padding: 10px;
+  text-align: center;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: 0.2s;
+}
+
+.team-shell .log h4 {
+  margin: 0;
+  padding: 12px;
+  font-size: 14px;
+  color: #52675d;
+  font-weight: 400;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.team-shell .log h4:hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+/* 사용자 이름에 마우스 올리면 표시 */
+
+.team-shell .my-name:hover .log,
+.team-shell .my-name:focus-within .log {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* 태블릿 */
+
+@media (max-width: 1100px) {
+.team-shell {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-areas:
+      "logo logo todo-menu info-menu . my-name"
+      "calendar calendar calendar calendar calendar calendar"
+      "info info info todo todo todo";
+    grid-template-rows: 76px auto auto;
+  }
+.team-shell .logo {
+    padding-left: 15px;
+  }
+.team-shell .my-name {
+    padding-right: 15px;
+  }
+}
+
+/* 모바일 */
+
+@media (max-width: 768px) {
+.team-shell {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "logo logo"
+      "todo-menu info-menu"
+      "my-name my-name"
+      "calendar calendar"
+      "info info"
+      "todo todo";
+
+    grid-template-rows: auto;
+    padding: 15px;
+    gap: 12px;
+  }
+.team-shell::before {
+    grid-column: 1 / -1;
+    grid-row: 1 / 4;
+  }
+.team-shell .logo {
+    justify-content: center;
+    padding: 18px 0;
+  }
+.team-shell .my-name {
+    justify-content: center;
+    padding: 0 0 15px;
+  }
+.team-shell .log {
+    right: 50%;
+    transform: translateX(50%);
+  }
+}
+
+/* ==========================
+   상단 메뉴 수정
+========================== */
+/* 메뉴 위치 */
+
+.team-shell .dash-menu {
+  grid-area: dash-menu;
+}
+
+.team-shell .issue-menu {
+  grid-area: issue-menu;
+}
+
+/* 상단 메뉴 4개 공통 */
+
+.team-shell .dash-menu,
+.team-shell .todo-menu,
+.team-shell .issue-menu,
+.team-shell .info-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  left: 0;
+  min-width: 0;
+}
+
+/* 메뉴 제목 */
+
+.team-shell .dash-menu h3,
+.team-shell .todo-menu h3,
+.team-shell .issue-menu h3,
+.team-shell .info-menu h3 {
+  margin: 0;
+  font-size: 15px;
+  color: #52675d;
+  font-weight: 500;
+  padding: 12px 15px;
+  border-radius: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* 메뉴에 마우스 올렸을 때 */
+
+.team-shell .dash-menu h3:hover,
+.team-shell .todo-menu h3:hover,
+.team-shell .issue-menu h3:hover,
+.team-shell .info-menu h3:hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+/* 메뉴 링크 */
+
+.team-shell .dash-menu a,
+.team-shell .todo-menu a,
+.team-shell .issue-menu a,
+.team-shell .info-menu a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 태블릿 */
+
+@media (max-width: 1100px) {
+.team-shell {
+    grid-template-areas:
+      "logo dash-menu todo-menu issue-menu info-menu my-name"
+      "calendar calendar calendar calendar calendar calendar"
+      "info info info todo todo todo";
+  }
+}
+
+/* 모바일 */
+
+@media (max-width: 768px) {
+.team-shell {
+    grid-template-areas:
+      "logo logo"
+      "dash-menu todo-menu"
+      "issue-menu info-menu"
+      "my-name my-name"
+      "calendar calendar"
+      "info info"
+      "todo todo";
+
+    grid-template-rows: 60px auto auto auto auto auto auto;
+  }
+.team-shell::before {
+    grid-row: 1 / 5;
+  }
+}
