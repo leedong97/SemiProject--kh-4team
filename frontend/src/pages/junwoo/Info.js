@@ -1,134 +1,329 @@
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useJunwoo } from "./JunwooContext";
 
-function Info({ info, delInfo }) {
+function Info({ info, delInfo, onAddInfo }) {
 
+    const navigate = useNavigate();
+    const { pinInfo } = useJunwoo();
+
+    // 검색 및 페이지
+    const [search, setSearch] = useState("");
     const [pages, setPages] = useState(1);
-    const [search, setSearch] = useState('');
-    const [keyword, setKeyword] = useState('');
 
-    const searchInfo = [...info].reverse().filter((item) =>
-        item.title.toLowerCase().includes(keyword.toLowerCase())
-    );
+    // 새로운 공지사항
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
 
-    const searchBtn = () => {
-        setKeyword(search.trim());
-        setPages(1);
-    }
 
-    const totalPages = Math.ceil(searchInfo.length / 10);
+    /* 공지사항 제목 검색 + 상단 고정 정렬 */
+    const filteredInfo = [...info]
+        .filter(item =>
+            item.title.toLowerCase().includes(search.trim().toLowerCase())
+        )
+        .sort((a, b) => {
 
+            // 고정된 공지사항 먼저 표시
+            const pinnedA = Number(Boolean(a.isPinned));
+            const pinnedB = Number(Boolean(b.isPinned));
+
+            if (pinnedA !== pinnedB) {
+                return pinnedB - pinnedA;
+            }
+
+            // 같은 고정 상태라면 최신 글 먼저
+            return b.id - a.id;
+
+        });
+
+
+    // 페이지네이션 (10개씩)
+    const totalPages = Math.ceil(filteredInfo.length / 10);
     const currentPage = Math.min(pages, Math.max(totalPages, 1));
-
     const start = (currentPage - 1) * 10;
     const end = start + 10;
 
+
+    // 공지사항 등록
+    const handleAddInfo = async () => {
+
+        if (title.trim() === "") {
+            alert("공지사항 제목을 입력해주세요.");
+            return;
+        }
+
+        if (content.trim() === "") {
+            alert("공지사항 내용을 입력해주세요.");
+            return;
+        }
+
+        try {
+
+            const newId = await onAddInfo(
+                title.trim(),
+                content.trim()
+            );
+
+            setTitle("");
+            setContent("");
+
+            // 등록한 공지사항 상세 페이지로 이동
+            navigate(`/info/${newId}`);
+
+        } catch (error) {
+
+            console.error("공지사항 등록 오류:", error);
+            alert("공지사항 등록에 실패했습니다.");
+
+        }
+    };
+
+    // 검색 리셋
+    const handleReset = () => {
+        setSearch("");
+        setPages(1);
+    };
+
+
+    /* 공지사항 삭제 */
+    const handleDeleteInfo = async (id) => {
+
+        if (!window.confirm('정말 삭제하시겠습니까?')) {
+            return;
+        }
+
+        try {
+
+            await delInfo(id);
+
+            alert('공지사항이 삭제되었습니다.');
+
+        } catch (error) {
+
+            console.error('공지사항 삭제 오류:', error);
+            alert('공지사항 삭제에 실패했습니다.');
+
+        }
+
+    };
+
+
+    /* 공지사항 상단 고정 / 해제 */
+    const handlePinInfo = async (id, isPinned) => {
+
+        try {
+
+            await pinInfo(id, isPinned);
+
+            alert(
+                isPinned
+                    ? "공지사항이 상단에 고정되었습니다."
+                    : "공지사항 고정이 해제되었습니다."
+            );
+
+        } catch (error) {
+
+            console.error("공지사항 고정 오류:", error);
+            alert("공지사항 고정 설정에 실패했습니다.");
+
+        }
+
+    };
+
+
     return (
 
-        <div className="info-page">
+        <main className="info-page info-manage-page">
 
-            <div className="info-header">
-                <h2>공지사항</h2>
-                <p>사내 소식과 공지사항을 확인하세요.</p>
+            {/* 상단 제목 */}
+            <div className="info-header info-manage-header">
+                <div>
+                    <h1>공지사항 관리</h1>
+                    <p>
+                        사내 공지사항을 조회하고 관리할 수 있습니다.
+                    </p>
+                </div>
+
+                <button
+                    className="info-reset"
+                    onClick={handleReset}
+                >
+                    검색 리셋
+                </button>
             </div>
 
-            <div className="info-search">
+            {/* 공지사항 통계 */}
+            <div className="info-summary">
+                <span>전체 공지사항 {info.length}건</span>
+                <span>조회된 공지사항 {filteredInfo.length}건</span>
+            </div>
 
-                <input type="text"
-                    placeholder="제목 입력"
+            {/* 공지사항 검색 */}
+            <section className="info-filter">
+
+                <label htmlFor="info-search">
+                    공지사항 제목 검색
+                </label>
+
+                <input
+                    id="info-search"
+                    type="text"
+                    placeholder="공지사항 제목 검색"
                     value={search}
                     onChange={(e) => {
                         setSearch(e.target.value);
-
-                        if( e.target.value.trim() === '' ){
-                            setKeyword('');
-                            setPages(1);
-                        }
-
+                        setPages(1);
                     }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') searchBtn();
-                    }} />
+                />
 
-                <button onClick={searchBtn}>
-                    검색
-                </button>
+            </section>
 
-            </div>
+            {/* 공지사항 등록 */}
+            <section className="info-register">
 
-            <div className="info-list-head">
+                <h3>새로운 공지사항 등록</h3>
 
-                <div className="info-head-title">
-                    <span>번호</span>
-                    <span>제목</span>
+                <div className="info-register-form">
+
+                    <input
+                        type="text"
+                        placeholder="공지사항 제목을 입력하세요"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                    />
+
+                    <textarea
+                        placeholder="공지사항 내용을 입력하세요"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        rows="5"
+                    />
+
+                    <button onClick={handleAddInfo}>
+                        + 공지사항 등록
+                    </button>
+
+                </div>
+            </section>
+
+            {/* 공지사항 목록 */}
+            <section className="info-list-section">
+
+                <div className="info-list-header">
+                    <h3>공지사항 목록</h3>
+                    <span>{filteredInfo.length}건</span>
                 </div>
 
-                <span>작성자</span>
-                <span></span>
+                <table className="info-table">
 
-            </div>
+                    <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>공지사항 제목</th>
+                            <th>작성자</th>
+                            <th>작성일자</th>
+                            <th>조회수</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
 
-            <ol className="info-list">
-                {
-                    searchInfo.slice(start, end).map((item, index) => (
-                        <li key={item.id} className="info-item">
+                    <tbody>
+                        {filteredInfo.length > 0 ? (
 
-                            <div className="info-title">
-                                <span className="info-number">
-                                    {start + index + 1}
-                                </span>
+                            filteredInfo.slice(start, end).map((item, index) => (
+                                <tr key={item.id}>
 
-                                <Link to={`/info/${item.id}`}>
-                                    {item.title}
-                                </Link>
-                            </div>
+                                    <td>{start + index + 1}</td>
 
-                            <span className="info-author">
-                                {item.author}
-                            </span>
+                                    <td>
+                                        <button
+                                            className="info-title-link"
+                                            onClick={() =>
+                                                navigate(`/info/${item.id}`)
+                                            }
+                                        >
+                                            {Boolean(item.isPinned) && "📌 "}
+                                            {item.title}
+                                        </button>
+                                    </td>
 
-                            <button
-                                className="info-delete"
-                                onClick={() => delInfo(item.id)}>
-                                삭제
-                            </button>
+                                    <td>{item.author}</td>
 
-                        </li>
-                    ))
-                }
-            </ol>
+                                    <td>{item.date}</td>
 
-            {searchInfo.length === 0 &&
-                <p className="info-empty">
-                    {info.length === 0
-                        ? '등록된 공지사항이 없습니다.'
-                        : '검색 결과가 없습니다.'}
-                </p>
-            }
+                                    <td>{item.views ?? 0}</td>
 
-            <div className="info-pages">
-                {
-                    Array.from({ length: totalPages }, (_, i) => i + 1)
-                        .map((num) => (
+
+                                    <td>
+                                        {/* 상단 고정 버튼 */}
+                                        <button
+                                            onClick={() =>
+                                                handlePinInfo(
+                                                    item.id,
+                                                    !Boolean(item.isPinned)
+                                                )
+                                            }
+                                        >
+                                            {item.isPinned ? "고정 해제" : "📌 상단 고정"}
+                                        </button>
+
+                                        {/* 삭제 버튼 */}
+                                        <button
+                                            className="info-delete"
+                                            onClick={() => handleDeleteInfo(item.id)}
+                                        >
+                                            삭제
+                                        </button>
+                                    </td>
+
+
+                                </tr>
+                            ))
+
+                        ) : (
+
+                            <tr>
+                                <td colSpan="6" className="info-empty">
+                                    {info.length === 0
+                                        ? "등록된 공지사항이 없습니다."
+                                        : "검색 결과가 없습니다."}
+                                </td>
+                            </tr>
+
+                        )}
+                    </tbody>
+
+                </table>
+
+                {/* 페이지 번호 */}
+                {totalPages > 1 && (
+                    <div className="info-pages">
+
+                        {Array.from(
+                            { length: totalPages },
+                            (_, i) => i + 1
+                        ).map((num) => (
                             <button
                                 key={num}
-                                className={currentPage === num ? 'active' : ''}
-                                onClick={() => setPages(num)}>
+                                className={currentPage === num ? "active" : ""}
+                                onClick={() => setPages(num)}
+                            >
                                 {num}
                             </button>
-                        ))
-                }
-            </div>
+                        ))}
 
-            <div className="info-bottom">
-                <Link to="/info/set" className="info-add">
-                    + 공지사항 등록
-                </Link>
-            </div>
+                    </div>
+                )}
 
-        </div>
+            </section>
 
+            {/* 하단 설명 */}
+            <p className="info-footer">
+                공지사항 제목을 클릭하면 상세 내용을 확인할 수 있습니다.
+            </p>
+
+        </main>
     );
 }
 

@@ -1,12 +1,13 @@
+
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 
 function Todo_detail({ todo, onViewTodo }) {
 
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const [pages, setPages] = useState(1);
-
     const viewedId = useRef(null);
 
     useEffect(() => {
@@ -18,45 +19,83 @@ function Todo_detail({ todo, onViewTodo }) {
 
     }, [id, onViewTodo]);
 
-    // 현재 보고 있는 프로젝트
-    const item = todo.find(item => item.id === Number(id));
-
-    // 현재 프로젝트를 제외한 다른 프로젝트
-    const otherTodo = [...todo].reverse().filter(item =>
-        item.id !== Number(id)
+    // 현재 프로젝트
+    const item = todo.find(
+        item => item.id === Number(id)
     );
 
-    // 5개씩 페이지네이션
+    // 다른 프로젝트 목록
+    const otherTodo = [...todo].reverse().filter(
+        item => item.id !== Number(id)
+    );
+
+    // 페이지네이션
     const totalPages = Math.ceil(otherTodo.length / 5);
-
     const currentPage = Math.min(pages, Math.max(totalPages, 1));
-
     const start = (currentPage - 1) * 5;
     const end = start + 5;
 
     if (!item) {
-        return <h2>존재하지 않는 프로젝트입니다.</h2>;
+        return (
+            <main className="todo-page todo-detail-page">
+                <h2>존재하지 않는 프로젝트입니다.</h2>
+                <button onClick={() => navigate("/todo")}>
+                    목록으로 돌아가기
+                </button>
+            </main>
+        );
     }
 
     return (
-        <div className="todo-page todo-detail">
+        <main className="todo-page todo-detail-page">
 
-            <div className="todo-header">
-                <h2>{item.title}</h2>
+            {/* 상세보기 상단 */}
+            <div className="todo-detail-header">
 
-                <p>작성자 : {item.author}</p>
-                <p>작성일자 : {item.date}</p>
-                <p>조회수 : {item.views ?? 0}</p>
+                <div>
+                    <h1>프로젝트 상세정보</h1>
+                    <p>등록된 프로젝트의 내용을 확인할 수 있습니다.</p>
+                </div>
+
+                <button onClick={() => navigate("/todo")}>
+                    목록으로
+                </button>
+
             </div>
 
+            {/* 프로젝트 상세정보 */}
             <div className="todo-detail-content">
-                <p>{item.content}</p>
-            </div>
 
-            <hr />
+                <div className="todo-detail-row">
+                    <strong>프로젝트 제목</strong>
+                    <span>{item.title}</span>
+                </div>
+
+                <div className="todo-detail-row">
+                    <strong>작성자</strong>
+                    <span>{item.author}</span>
+                </div>
+
+                <div className="todo-detail-row">
+                    <strong>작성일자</strong>
+                    <span>{item.date}</span>
+                </div>
+
+                <div className="todo-detail-row">
+                    <strong>조회수</strong>
+                    <span>{item.views ?? 0}</span>
+                </div>
+
+                {/* 프로젝트 내용 */}
+                <div className="todo-detail-description">
+                    <h3>프로젝트 내용</h3>
+                    <p>{item.content}</p>
+                </div>
+
+            </div>
 
             {/* 다른 프로젝트 목록 */}
-            <div className="detail-other">
+            <div className="detail-other todo-detail-other">
 
                 <h3>다른 프로젝트</h3>
 
@@ -69,36 +108,32 @@ function Todo_detail({ todo, onViewTodo }) {
                 </div>
 
                 <ol className="todo-list">
-                    {
-                        otherTodo.slice(start, end).map((other, index) => (
-                            <li
-                                key={other.id}
-                                className="todo-item detail-columns"
-                            >
-                                <div className="todo-title">
-
-                                    <span className="todo-number">
-                                        {start + index + 1}
-                                    </span>
-
-                                    <Link
-                                        to={`/todo/${other.id}`}
-                                        onClick={() => {
-                                            setPages(1);
-                                            window.scrollTo(0, 0);
-                                        }}
-                                    >
-                                        {other.title}
-                                    </Link>
-
-                                </div>
-
-                                <span className="todo-author">
-                                    {other.author}
+                    {otherTodo.slice(start, end).map((other, index) => (
+                        <li
+                            key={other.id}
+                            className="todo-item detail-columns"
+                        >
+                            <div className="todo-title">
+                                <span className="todo-number">
+                                    {start + index + 1}
                                 </span>
-                            </li>
-                        ))
-                    }
+
+                                <Link
+                                    to={`/todo/${other.id}`}
+                                    onClick={() => {
+                                        setPages(1);
+                                        window.scrollTo(0, 0);
+                                    }}
+                                >
+                                    {other.title}
+                                </Link>
+                            </div>
+
+                            <span className="todo-author">
+                                {other.author}
+                            </span>
+                        </li>
+                    ))}
                 </ol>
 
                 {otherTodo.length === 0 &&
@@ -107,33 +142,36 @@ function Todo_detail({ todo, onViewTodo }) {
                     </p>
                 }
 
-                {/* 페이지 번호 */}
                 {totalPages > 1 &&
                     <div className="todo-pages">
-                        {
-                            Array.from(
-                                { length: totalPages },
-                                (_, i) => i + 1
-                            ).map(num => (
-                                <button
-                                    key={num}
-                                    className={currentPage === num ? 'active' : ''}
-                                    onClick={() => setPages(num)}
-                                >
-                                    {num}
-                                </button>
-                            ))
-                        }
+                        {Array.from(
+                            { length: totalPages },
+                            (_, i) => i + 1
+                        ).map(num => (
+                            <button
+                                key={num}
+                                className={currentPage === num ? "active" : ""}
+                                onClick={() => setPages(num)}
+                            >
+                                {num}
+                            </button>
+                        ))}
                     </div>
                 }
 
             </div>
 
-            <Link to="/todo" className="todo-detail-back">
-                목록으로
-            </Link>
+            {/* 하단 버튼 */}
+            <div className="todo-detail-bottom">
+                <button
+                    className="todo-detail-back"
+                    onClick={() => navigate("/todo")}
+                >
+                    프로젝트 목록으로 돌아가기
+                </button>
+            </div>
 
-        </div>
+        </main>
     );
 }
 

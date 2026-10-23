@@ -16,7 +16,7 @@ function TeamShell() {
 
       <div className='todo-menu'>
         <h3>
-          <Link to='/todo'>업무현황</Link>
+          <Link to='/todo'>프로젝트</Link>
         </h3>
       </div>
 

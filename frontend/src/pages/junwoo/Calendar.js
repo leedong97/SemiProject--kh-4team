@@ -102,7 +102,9 @@ function Calendar({ schedules = [] }) {
       {/* 선택한 날짜의 일정 */}
       <div className="calendar-schedule">
 
-        <h3>선택한 날짜의 일정</h3>
+        <h3>
+          {selectedDate ? `${selectedDate} 일정` : '선택한 날짜의 일정'}
+        </h3>
 
         {!selectedDate ? (
 
@@ -111,7 +113,6 @@ function Calendar({ schedules = [] }) {
         ) : (
 
           <>
-            <h4>{selectedDate}</h4>
 
             {selectedSchedules.length === 0 ? (
 

@@ -1,0 +1,375 @@
+
+const express = require('express');
+const cors = require('cors');
+const db = require('./db');
+
+require('dotenv').config();
+
+const app = express();
+
+// React와 연결
+app.use(cors({
+    origin: 'http://localhost:3000'
+}));
+
+// JSON 데이터 사용
+app.use(express.json());
+
+// 기본 서버 확인
+app.get('/', (req, res) => {
+    res.send('COMAND ERP 서버 실행 중!');
+});
+
+// MySQL 연결 확인
+app.get('/api/db-check', async (req, res) => {
+
+    try {
+        const [rows] = await db.query(
+            'SELECT 1 AS connected'
+        );
+
+        res.json({
+            message: 'MySQL 연결 성공!',
+            connected: rows[0].connected === 1
+        });
+
+    } catch (error) {
+        console.error('DB 연결 오류:', error);
+
+        res.status(500).json({
+            message: 'MySQL 연결 실패'
+        });
+    }
+
+});
+
+// 서버 실행
+const PORT = process.env.PORT || 5000;
+
+
+/* 공지사항 전체 조회 */
+app.get('/api/notices', async (req, res) => {
+
+    try {
+
+        const [rows] = await db.query(`
+            SELECT
+                notice_id AS id,
+                title,
+                content,
+                employee_id AS author,
+                DATE_FORMAT(created_at, '%Y.%m.%d') AS date,
+                views,
+                is_pinned AS isPinned
+                FROM notices
+                ORDER BY notice_id DESC
+        `);
+
+        res.json(rows);
+
+    } catch (error) {
+
+        console.error('공지사항 조회 오류:', error);
+
+        res.status(500).json({
+            message: '공지사항 조회 실패'
+        });
+
+    }
+
+});
+
+
+
+/* 공지사항 등록 */
+app.post('/api/notices', async (req, res) => {
+
+    const { title, content, employee_id } = req.body;
+
+    if (!title?.trim() || !content?.trim()) {
+        return res.status(400).json({
+            message: '제목과 내용을 입력하세요.'
+        });
+    }
+
+    try {
+
+        const [result] = await db.query(
+            `INSERT INTO notices (title, content, employee_id)
+             VALUES (?, ?, ?)`,
+            [title.trim(), content.trim(), employee_id]
+        );
+
+        res.status(201).json({
+            message: '공지사항 등록 성공!',
+            id: result.insertId
+        });
+
+    } catch (error) {
+
+        console.error('공지사항 등록 오류:', error);
+
+        res.status(500).json({
+            message: '공지사항 등록 실패'
+        });
+
+    }
+
+});
+
+
+
+/* 공지사항 상세 조회 */
+app.get('/api/notices/:id', async (req, res) => {
+
+    const { id } = req.params;
+
+    try {
+
+        const [rows] = await db.query(`
+            SELECT
+                notice_id AS id,
+                title,
+                content,
+                employee_id AS author,
+                DATE_FORMAT(created_at, '%Y.%m.%d') AS date,
+                views,
+                is_pinned AS isPinned
+            FROM notices
+            WHERE notice_id = ?
+        `, [id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                message: '존재하지 않는 공지사항입니다.'
+            });
+        }
+
+        res.json(rows[0]);
+
+    } catch (error) {
+
+        console.error('공지사항 상세 조회 오류:', error);
+
+        res.status(500).json({
+            message: '공지사항 상세 조회 실패'
+        });
+
+    }
+
+});
+
+
+
+/* 공지사항 조회수 증가 */
+app.patch('/api/notices/:id/views', async (req, res) => {
+
+    const id = Number(req.params.id);
+
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        return res.status(400).json({
+            message: '잘못된 공지사항 번호입니다.'
+        });
+    }
+
+    try {
+
+        const [result] = await db.query(
+            `UPDATE notices
+             SET views = COALESCE(views, 0) + 1
+             WHERE notice_id = ?`,
+            [id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: '존재하지 않는 공지사항입니다.'
+            });
+        }
+
+        const [rows] = await db.query(
+            'SELECT views FROM notices WHERE notice_id = ?',
+            [id]
+        );
+
+        res.json({
+            views: rows[0].views
+        });
+
+    } catch (error) {
+
+        console.error('조회수 증가 오류:', error);
+
+        res.status(500).json({
+            message: '조회수 증가 실패'
+        });
+
+    }
+
+});
+
+
+/* 공지사항 삭제 */
+app.delete('/api/notices/:id', async (req, res) => {
+
+    const id = Number(req.params.id);
+
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        return res.status(400).json({
+            message: '잘못된 공지사항 번호입니다.'
+        });
+    }
+
+    try {
+
+        const [result] = await db.query(
+            'DELETE FROM notices WHERE notice_id = ?',
+            [id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: '존재하지 않는 공지사항입니다.'
+            });
+        }
+
+        res.json({
+            message: '공지사항 삭제 성공!'
+        });
+
+    } catch (error) {
+
+        console.error('공지사항 삭제 오류:', error);
+
+        res.status(500).json({
+            message: '공지사항 삭제 실패'
+        });
+
+    }
+
+});
+
+
+/* 공지사항 수정 */
+app.put('/api/notices/:id', async (req, res) => {
+
+    const id = Number(req.params.id);
+    const { title, content } = req.body;
+
+    // 공지사항 번호 확인
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        return res.status(400).json({
+            message: '잘못된 공지사항 번호입니다.'
+        });
+    }
+
+    // 제목과 내용 확인
+    if (
+        typeof title !== 'string' ||
+        typeof content !== 'string' ||
+        !title.trim() ||
+        !content.trim()
+    ) {
+        return res.status(400).json({
+            message: '제목과 내용을 입력하세요.'
+        });
+    }
+
+    try {
+
+        const [result] = await db.query(`
+            UPDATE notices
+            SET
+                title = ?,
+                content = ?,
+                updated_at = NOW()
+            WHERE notice_id = ?
+        `, [title.trim(), content.trim(), id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: '존재하지 않는 공지사항입니다.'
+            });
+        }
+
+        res.json({
+            message: '공지사항 수정 성공!',
+            id: id
+        });
+
+    } catch (error) {
+
+        console.error('공지사항 수정 오류:', error);
+
+        res.status(500).json({
+            message: '공지사항 수정 실패'
+        });
+
+    }
+
+});
+
+
+/* 공지사항 상단 고정 설정 */
+app.patch('/api/notices/:id/pin', async (req, res) => {
+
+    const id = Number(req.params.id);
+    const { isPinned } = req.body;
+
+    // 공지사항 번호 확인
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        return res.status(400).json({
+            message: '잘못된 공지사항 번호입니다.'
+        });
+    }
+
+    // 고정 여부 확인
+    if (typeof isPinned !== 'boolean') {
+        return res.status(400).json({
+            message: '고정 여부를 확인해주세요.'
+        });
+    }
+
+    try {
+
+        const [result] = await db.query(`
+            UPDATE notices
+            SET
+                is_pinned = ?,
+                updated_at = NOW()
+            WHERE notice_id = ?
+        `, [isPinned ? 1 : 0, id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: '존재하지 않는 공지사항입니다.'
+            });
+        }
+
+        res.json({
+            message: isPinned
+                ? '공지사항 상단 고정 성공!'
+                : '공지사항 상단 고정 해제!',
+            id,
+            isPinned
+        });
+
+    } catch (error) {
+
+        console.error('공지사항 고정 오류:', error);
+
+        res.status(500).json({
+            message: '공지사항 고정 설정 실패'
+        });
+
+    }
+
+});
+
+
+// 서버 실행
+app.listen(PORT, () => {
+    console.log(`서버 실행: http://localhost:${PORT}`);
+});
+
+
