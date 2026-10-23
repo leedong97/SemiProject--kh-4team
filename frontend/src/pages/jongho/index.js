@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import './MergedModules.css';
-import AdminLayout from './admin/AdminLayout';
-import Dashboard from './admin/pages/Dashboard';
-import ProjectManagement from './admin/pages/ProjectManagement';
-import ManagerAssignment from './admin/pages/ManagerAssignment';
-import IssueManagement from './components/IssueManagement';
-import HRManagement from './components/HRManagement';
-import EmployeeEvaluation from './components/EmployeeEvaluation';
+import './styles/jongho.css';
+import AdminLayout from './components/AdminLayout';
+import Dashboard from './pages/Dashboard';
+import ProjectManagement from './pages/ProjectManagement';
+import ManagerAssignment from './pages/ManagerAssignment';
+import IssueManagement from '../heeseung/components/IssueManagement';
+import HRManagement from '../heeseung/components/HRManagement';
+import EmployeeEvaluation from '../heeseung/components/EmployeeEvaluation';
 import { JonghoProvider, useJongho } from './JonghoContext';
 
 // 종호 담당: 관리자 페이지(/admin/...)
@@ -64,7 +64,7 @@ function SettingsRoute() {
   return (
     <div className="merge-placeholder">
       <h2>연습 데이터 관리</h2>
-      <button onClick={resetDemo}>샘플 데이터 초기화</button>
+      <button className="btn btn-outline" onClick={resetDemo}>샘플 데이터 초기화</button>
     </div>
   );
 }
