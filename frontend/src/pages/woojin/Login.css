@@ -1,0 +1,95 @@
+/* ===== 로그인/회원가입 스타일 (Login.css) =====
+   팀 App.css 는 건드리지 않고, 로그인·회원가입 전용으로 따로 뒀어요.
+   클래스가 .login / .signup 안쪽에만 적용돼서 다른 페이지와 겹치지 않아요. */
+
+.login, .signup {
+    --main-color: #2f6fed;
+    --main-color-dark: #1f56c4;
+    --error-color: #e53935;
+    --border-color: #d0d5dd;
+}
+
+/* 이 두 페이지 안에서만 padding이 칸 크기를 키우지 않게 해요 */
+.login, .login *,
+.signup, .signup * {
+    box-sizing: border-box;
+}
+
+/* 카드 전체 (바깥 div) */
+.login, .signup {
+    width: min(400px, calc(100% - 32px));
+    margin: 80px auto;
+    padding: 32px 28px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.login h2, .signup h2 {
+    margin: 0 0 8px;
+    text-align: center;
+}
+
+/* 입력창: 한 줄에 하나씩, 칸 가득 */
+.login input, .signup input {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    font-size: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.login input:focus, .signup input:focus {
+    outline: none;
+    border-color: var(--main-color);
+    box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.15);
+}
+
+/* 빨간 오류 문구 (입력창 바로 아래) */
+.login .error, .signup .error {
+    margin: 6px 0 0;
+    font-size: 13px;
+    text-align: left;
+    color: var(--error-color);
+}
+
+/* 버튼 */
+.btn-login, .btn-signup {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--main-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-login:hover, .btn-signup:hover {
+    background: var(--main-color-dark);
+}
+
+/* "가입된 계정이 없으신가요?" 문구와 Sign up 링크 */
+.login p, .signup p {
+    margin: 20px 0 4px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.login a, .signup a {
+    display: block;
+    text-align: center;
+    font-weight: 600;
+    color: var(--main-color);
+    text-decoration: none;
+}
+
+/* 카드 배경 (바깥 틀은 Frame.js / woojin.css 가 맡아요) */
+.login, .signup {
+    background: #fff;
+}
