@@ -7,14 +7,16 @@ function Todo_set({ todo, onAddTodo }) {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [search, setSearch] = useState("");
+    const [isSaving, setIsSaving] = useState(false);
 
     // 프로젝트 제목 검색
-    const filteredTodo = [...todo].reverse().filter((item) =>
+    const filteredTodo = todo.filter((item) =>
         item.title.toLowerCase().includes(search.trim().toLowerCase())
     );
 
-    // 프로젝트 등록
-    const handleAddTodo = () => {
+
+    /* 프로젝트 등록 */
+    const handleAddTodo = async () => {
 
         if (title.trim() === "") {
             alert("프로젝트 제목을 입력해주세요.");
@@ -26,11 +28,33 @@ function Todo_set({ todo, onAddTodo }) {
             return;
         }
 
-        onAddTodo(title.trim(), content.trim());
+        if (title.trim().length > 200) {
+            alert("프로젝트 제목은 최대 200자까지 입력할 수 있습니다.");
+            return;
+        }
 
-        setTitle("");
-        setContent("");
+        if (isSaving) return;
+
+        setIsSaving(true);
+
+        try {
+            await onAddTodo(title.trim(), content.trim());
+
+            alert("프로젝트가 등록되었습니다!");
+
+            setTitle("");
+            setContent("");
+
+        } catch (error) {
+            console.error("프로젝트 등록 오류:", error);
+            alert(error.message || "프로젝트 등록에 실패했습니다.");
+
+        } finally {
+            setIsSaving(false);
+        }
+
     };
+
 
     // 검색 초기화
     const handleReset = () => {
@@ -97,8 +121,8 @@ function Todo_set({ todo, onAddTodo }) {
                         rows="5"
                     />
 
-                    <button onClick={handleAddTodo}>
-                        + 프로젝트 등록
+                    <button onClick={handleAddTodo} disabled={isSaving}>
+                        {isSaving ? "등록 중..." : "+ 프로젝트 등록"}
                     </button>
 
                 </div>

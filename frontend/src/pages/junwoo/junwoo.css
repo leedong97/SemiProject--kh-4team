@@ -3064,3 +3064,721 @@
     flex: 1;
   }
 }
+
+
+/* ====================================================================
+   COMAND ERP 프로젝트 전용 공지사항 디자인 통일 (2026-10-24)
+   - 기존 공지사항 CSS를 수정하지 않고, 최종 공지사항 디자인을 프로젝트에 적용
+   - Todo / Todo_set / Todo_detail의 현재 className과 호환
+   - 필요할 경우 이 블록만 제거하여 원상 복구 가능
+   ==================================================================== */
+/* 1. 공지사항 공통 */
+:is(.todo-page, .todo-manage-page),
+.todo-set-page {
+  width: 100%;
+  max-width: 1100px;
+  min-width: 0;
+  margin-inline: auto;
+  padding: 34px;
+  color: #34443d;
+  background: #fff;
+  border: 1px solid #e6f0e9;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(31, 94, 67, .07);
+}
+
+:is(.todo-page, .todo-manage-page) *,
+.todo-set-page * {
+  box-sizing: border-box;
+}
+
+:is(.todo-page, .todo-manage-page) button,
+.todo-set-page button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+:is(.todo-page, .todo-manage-page) button:disabled,
+.todo-set-page button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+:is(.todo-page, .todo-manage-page) :is(button, input, textarea, a):focus-visible,
+.todo-set-page :is(button, input, textarea, a):focus-visible {
+  outline: 3px solid rgba(56, 185, 140, .28);
+  outline-offset: 2px;
+}
+
+/* 2. 페이지 상단 제목과 우측 버튼 */
+.todo-manage-header,
+.todo-detail-header,
+.todo-set-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 23px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #e6f0e9;
+}
+
+.todo-manage-header h1,
+.todo-detail-header h1,
+.todo-set-header h1 {
+  margin: 0 0 8px;
+  font-size: 25px;
+  line-height: 1.35;
+  color: #247e61;
+}
+
+.todo-manage-header p,
+.todo-detail-header p,
+.todo-set-header p {
+  margin: 0;
+  color: #789086;
+  font-size: 13px;
+}
+
+.todo-reset,
+.todo-set-page .todo-set-reset,
+.todo-detail-header>button {
+  margin: 0;
+  padding: 10px 15px;
+  background: #fff;
+  border: 1px solid #cfe4d8;
+  border-radius: 9px;
+  color: #39765a;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background .2s, border-color .2s;
+}
+
+.todo-reset:hover,
+.todo-set-page .todo-set-reset:hover,
+.todo-detail-header>button:hover {
+  background: #eaf7f0;
+  border-color: #9fd5b8;
+}
+
+/* 3. 총 건수 / 검색 */
+.todo-summary,
+.todo-set-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 23px;
+}
+
+.todo-summary span,
+.todo-set-summary span {
+  padding: 9px 13px;
+  border-radius: 9px;
+  background: #f0faf4;
+  border: 1px solid #e1f0e7;
+  color: #428267;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.todo-filter,
+.todo-set-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 26px;
+}
+
+.todo-filter label,
+.todo-set-filter label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #45675a;
+}
+
+:is(.todo-page, .todo-manage-page) input,
+:is(.todo-page, .todo-manage-page) textarea,
+.todo-set-page input,
+.todo-set-page textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #d7e8dc;
+  border-radius: 10px;
+  outline: none;
+  background: #fbfdfb;
+  color: #33483d;
+  font: inherit;
+  font-size: 14px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+:is(.todo-page, .todo-manage-page) input:focus,
+:is(.todo-page, .todo-manage-page) textarea:focus,
+.todo-set-page input:focus,
+.todo-set-page textarea:focus {
+  background: #fff;
+  border-color: #38b98c;
+  box-shadow: 0 0 0 3px rgba(56, 185, 140, .1);
+}
+
+:is(.todo-page, .todo-manage-page) input::placeholder,
+:is(.todo-page, .todo-manage-page) textarea::placeholder,
+.todo-set-page input::placeholder,
+.todo-set-page textarea::placeholder {
+  color: #9baa9f;
+}
+
+:is(.todo-page, .todo-manage-page) textarea,
+.todo-set-page textarea {
+  min-height: 125px;
+  resize: vertical;
+  line-height: 1.65;
+}
+
+/* 4. 등록 폼 */
+.todo-register,
+.todo-set-register {
+  margin: 0 0 30px;
+  padding: 24px;
+  border: 1px solid #e1eee5;
+  border-radius: 14px;
+  background: #fbfdfb;
+}
+
+.todo-register h3,
+.todo-set-register h3,
+.todo-list-header h3,
+.todo-set-list-header h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #315e49;
+}
+
+.todo-register-form,
+.todo-set-register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 17px;
+}
+
+.todo-register-form textarea,
+.todo-set-register-form textarea {
+  min-height: 140px;
+}
+
+.todo-register-form>button,
+.todo-set-page .todo-set-register-form>button {
+  align-self: flex-end;
+  width: auto;
+  margin: 4px 0 0;
+  padding: 12px 20px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  background: #38b98c;
+  border: 1px solid #38b98c;
+  border-radius: 9px;
+  transition: background .2s, transform .2s;
+}
+
+.todo-register-form>button:hover,
+.todo-set-page .todo-set-register-form>button:hover {
+  background: #279b76;
+  transform: translateY(-1px);
+}
+
+/* 5. 공지사항 목록 테이블 */
+.todo-list-section,
+.todo-set-list-section {
+  margin-top: 24px;
+  overflow-x: auto;
+}
+
+.todo-list-header,
+.todo-set-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.todo-list-header>span,
+.todo-set-list-header>span {
+  font-size: 13px;
+  color: #789086;
+}
+
+.todo-table,
+.todo-set-table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: center;
+}
+
+.todo-table thead,
+.todo-set-table thead {
+  background: #eef8f2;
+}
+
+.todo-table th,
+.todo-set-table th {
+  padding: 14px 10px;
+  color: #3d795c;
+  border-top: 1px solid #e0eee5;
+  border-bottom: 1px solid #d7e9dd;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.todo-table td,
+.todo-set-table td {
+  padding: 14px 10px;
+  border-bottom: 1px solid #edf2ee;
+  color: #53695d;
+  vertical-align: middle;
+}
+
+.todo-table tbody tr:hover,
+.todo-set-table tbody tr:hover {
+  background: #f7fcf8;
+}
+
+.todo-table td:nth-child(2),
+.todo-set-table td:nth-child(2) {
+  text-align: left;
+}
+
+.todo-title-link,
+.todo-set-table td a {
+  display: inline-block;
+  padding: 3px 0;
+  color: #345a47;
+  border: 0;
+  background: none;
+  text-decoration: none;
+  font-weight: 600;
+  text-align: left;
+  word-break: break-word;
+}
+
+.todo-title-link:hover,
+.todo-set-table td a:hover {
+  color: #20976a;
+  text-decoration: underline;
+}
+
+/* 현재 JSX의 고정 버튼에는 className이 없으므로 마지막 관리 칸으로 지정 */
+.todo-table td:last-child {
+  white-space: nowrap;
+}
+
+.todo-table td:last-child>button:not(.todo-delete) {
+  margin: 2px 6px 2px 0;
+  padding: 8px 10px;
+  background: #eaf7f0;
+  border: 1px solid #bfe5cc;
+  color: #277e57;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.todo-table td:last-child>button:not(.todo-delete):hover {
+  background: #d9f2e3;
+}
+
+.todo-table .todo-delete {
+  margin: 2px 0;
+  padding: 8px 12px;
+  color: #c85e5e;
+  background: #fff8f8;
+  border: 1px solid #f1cece;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.todo-table .todo-delete:hover {
+  background: #ffeded;
+  border-color: #eab0b0;
+}
+
+.todo-empty,
+.todo-set-empty {
+  padding: 36px 12px !important;
+  text-align: center;
+  color: #8a9a90;
+}
+
+.todo-footer {
+  margin: 22px 0 0;
+  padding-top: 15px;
+  border-top: 1px solid #ecf2ee;
+  font-size: 12px;
+  color: #82968a;
+}
+
+/* 6. 페이지네이션 */
+:is(.todo-page, .todo-manage-page)s {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 24px 0 10px;
+}
+
+:is(.todo-page, .todo-manage-page)s button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #d5e7d9;
+  border-radius: 9px;
+  background: #fff;
+  color: #587766;
+  font-size: 13px;
+  transition: .2s;
+}
+
+:is(.todo-page, .todo-manage-page)s button:hover {
+  background: #edf8f1;
+  color: #238663;
+}
+
+:is(.todo-page, .todo-manage-page)s button.active,
+:is(.todo-page, .todo-manage-page)s button.active:hover {
+  background: #38b98c;
+  border-color: #38b98c;
+  color: #fff;
+}
+
+/* 7. 상세 화면 */
+.todo-detail-content {
+  padding: 8px 24px;
+  background: #fbfdfb;
+  border: 1px solid #e3eee7;
+  border-radius: 13px;
+}
+
+.todo-detail-row {
+  display: grid;
+  grid-template-columns: 125px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  min-height: 61px;
+  padding: 13px 0;
+  border-bottom: 1px solid #e9f0eb;
+}
+
+.todo-detail-row strong {
+  font-size: 13px;
+  color: #53806a;
+}
+
+.todo-detail-row span {
+  font-size: 14px;
+  color: #384d40;
+  overflow-wrap: anywhere;
+}
+
+.todo-detail-row input {
+  margin: 0;
+}
+
+.todo-detail-description {
+  padding: 23px 0 25px;
+}
+
+.todo-detail-description h3 {
+  margin: 0 0 14px;
+  color: #315e49;
+  font-size: 15px;
+}
+
+.todo-detail-description p {
+  margin: 0;
+  min-height: 105px;
+  line-height: 1.8;
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.todo-detail-description textarea {
+  margin: 0;
+  min-height: 180px;
+}
+
+/* 수정 / 저장 / 취소 버튼 */
+.todo-detail-edit {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 20px 0 32px;
+}
+
+.todo-detail-edit button {
+  padding: 11px 19px;
+  border: 1px solid #38b98c;
+  border-radius: 9px;
+  background: #38b98c;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  transition: background .2s;
+}
+
+.todo-detail-edit button:hover:not(:disabled) {
+  background: #279b76;
+}
+
+.todo-detail-edit button:nth-child(2) {
+  background: #fff;
+  color: #587766;
+  border-color: #d0e4d7;
+}
+
+.todo-detail-edit button:nth-child(2):hover:not(:disabled) {
+  background: #eff7f1;
+}
+
+/* 다른 공지사항 */
+.todo-detail-other {
+  margin-top: 18px;
+}
+
+.todo-detail-other>h3 {
+  margin: 0 0 15px;
+  font-size: 17px;
+  color: #315e49;
+}
+
+.todo-detail-other .detail-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  align-items: center;
+  gap: 12px;
+}
+
+.todo-detail-other .todo-list-head {
+  padding: 12px 16px;
+  border-radius: 9px;
+  background: #edf8f1;
+  color: #4b8061;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.todo-detail-other .todo-head-title {
+  display: flex;
+  gap: 18px;
+}
+
+.todo-detail-other .todo-item {
+  padding: 13px 16px;
+  margin: 8px 0;
+  border: 1px solid #ebf2ed;
+  border-radius: 9px;
+}
+
+.todo-detail-other .todo-title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.todo-detail-other .todo-number {
+  flex: 0 0 30px;
+}
+
+.todo-detail-other .todo-title a {
+  min-width: 0;
+  color: #345a47;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.todo-detail-other .todo-title a:hover {
+  text-decoration: underline;
+  color: #279b76;
+}
+
+.todo-detail-other .todo-author {
+  text-align: center;
+  font-size: 13px;
+  color: #718a7a;
+}
+
+.todo-detail-bottom {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  padding-top: 23px;
+  border-top: 1px solid #e8f0ea;
+}
+
+.todo-detail-back {
+  padding: 11px 20px;
+  color: #37795b;
+  border: 1px solid #cce3d3;
+  border-radius: 9px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.todo-detail-back:hover {
+  background: #eaf7f0;
+}
+
+/* 8. 등록 및 관리 화면 하단 */
+.todo-set-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 20px;
+  margin-top: 25px;
+  border-top: 1px solid #e6f0e9;
+}
+
+.todo-set-footer a {
+  color: #288764;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.todo-set-footer a:hover {
+  text-decoration: underline;
+}
+
+/* 9. 반응형 */
+@media (max-width: 800px) {
+
+  :is(.todo-page, .todo-manage-page),
+  .todo-set-page {
+    padding: 22px 18px;
+  }
+
+  .todo-register,
+  .todo-set-register {
+    padding: 18px;
+  }
+
+  .todo-manage-header h1,
+  .todo-detail-header h1,
+  .todo-set-header h1 {
+    font-size: 22px;
+  }
+
+  .todo-detail-content {
+    padding: 6px 16px;
+  }
+
+  .todo-detail-row {
+    grid-template-columns: 95px minmax(0, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 520px) {
+
+  :is(.todo-page, .todo-manage-page),
+  .todo-set-page {
+    padding: 18px 13px;
+  }
+
+  .todo-detail-row {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .todo-detail-other .detail-columns {
+    grid-template-columns: minmax(0, 1fr) 65px;
+  }
+
+  .todo-detail-other .todo-head-title {
+    gap: 10px;
+  }
+
+  .todo-register-form>button,
+  .todo-set-page .todo-set-register-form>button {
+    align-self: stretch;
+  }
+
+  .todo-detail-edit button {
+    flex: 1;
+  }
+}
+
+/* 프로젝트 상세 페이지: JSX의 기존 하단 버튼 배열에 맞춘 간격 및 취소 스타일 */
+.team-shell .todo-detail-page .todo-detail-bottom {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 24px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid #e8f0ea;
+}
+
+/* 수정 / 저장 버튼 */
+.team-shell .todo-detail-page .todo-detail-bottom button {
+  margin: 0;
+  padding: 11px 19px;
+  border: 1px solid #38b98c;
+  border-radius: 9px;
+  background: #38b98c;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button:hover:not(:disabled) {
+  background: #279b76;
+}
+
+/* 취소 버튼(수정 모드)과 목록으로 돌아가기 버튼은 보조 버튼 스타일 */
+.team-shell .todo-detail-page .todo-detail-bottom button:nth-child(2),
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back {
+  background: #fff;
+  color: #587766;
+  border-color: #d0e4d7;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button:nth-child(2):hover:not(:disabled),
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back:hover:not(:disabled) {
+  background: #eff7f1;
+  color: #37795b;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button:disabled,
+.team-shell .todo-set-page button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* 상세 수정 입력창: 기존 디자인 유지하면서 레이아웃 넘침 방지 */
+.team-shell .todo-detail-page .todo-detail-row input,
+.team-shell .todo-detail-page .todo-detail-description textarea {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 520px) {
+  .team-shell .todo-detail-page .todo-detail-bottom button {
+    flex: 1 1 auto;
+  }
+}

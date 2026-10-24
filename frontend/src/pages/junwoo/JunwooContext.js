@@ -206,25 +206,87 @@ export function JunwooProvider({ children }) {
     return data;
   };
 
-  // 프로젝트 등록
-  const addTodo = (title, content) => {
 
+  /* 프로젝트 등록 */
+  const addTodo = async (title, content) => {
+
+    // 테스트용 직원번호 (추후 로그인 정보 연결)
+    const created_by = 1;
+
+    const response = await fetch(
+      'http://localhost:5000/api/projects',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title,
+          content,
+          created_by
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || '프로젝트 등록 실패');
+    }
+
+    // React 화면에도 등록한 프로젝트 반영
     const newTodo = {
-      id: Date.now(),
-      title: title,
-      content: content,
+      id: data.id,
+      title,
+      content,
       date: new Date().toLocaleDateString('ko-KR'),
-      author: '관리자',
-      views: 0
+      author: created_by,
+      views: 0,
+      progress: 0
     };
 
-    setTodo(prev => [...prev, newTodo]);
+    setTodo(prev => [newTodo, ...prev]);
 
-    return newTodo.id;
+    return data.id;
   };
+
 
   const delTodo = (id) => {
     setTodo(prev => prev.filter(item => item.id !== id));
+  };
+
+
+  /* 프로젝트 수정 */
+  const updateTodo = async (id, title, content) => {
+
+    const response = await fetch(
+      `http://localhost:5000/api/projects/${id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title,
+          content
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || '프로젝트 수정 실패');
+    }
+
+    // React 화면에도 수정 내용 반영
+    setTodo(prev => prev.map(item =>
+      item.id === id
+        ? { ...item, title, content }
+        : item
+    ));
+
+    return data;
   };
 
 
@@ -255,16 +317,41 @@ export function JunwooProvider({ children }) {
   }, []);
 
 
-  // 프로젝트 조회수 증가
-  const viewTodo = useCallback((id) => {
+
+  /* 프로젝트 조회수 증가 */
+  const viewTodo = useCallback(async (id) => {
+
+    const response = await fetch(
+      `http://localhost:5000/api/projects/${id}/views`,
+      {
+        method: 'PATCH'
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || '조회수 증가 실패');
+    }
+
+    // React 화면에도 조회수 반영
     setTodo(prev => prev.map(item =>
       item.id === id
-        ? { ...item, views: (item.views ?? 0) + 1 }
+        ? { ...item, views: data.views }
         : item
     ));
+
+    return data.views;
+
   }, []);
 
-  const value = { info, todo, addInfo, delInfo, updateInfo, pinInfo, addTodo, delTodo, viewInfo, viewTodo };
+
+  const value = {
+    info, todo,
+    addInfo, delInfo, updateInfo, pinInfo,
+    addTodo, delTodo, updateTodo,
+    viewInfo, viewTodo
+  };
 
   return <JunwooContext.Provider value={value}>{children}</JunwooContext.Provider>;
 }

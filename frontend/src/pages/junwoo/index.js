@@ -25,8 +25,8 @@ function TodoSetRoute() {
   return <Todo_set todo={todo} onAddTodo={addTodo} />;
 }
 function TodoDetailRoute() {
-  const { todo, viewTodo } = useJunwoo();
-  return <Todo_detail todo={todo} onViewTodo={viewTodo} />;
+  const { todo, viewTodo, updateTodo } = useJunwoo();
+  return <Todo_detail todo={todo} onViewTodo={viewTodo} onUpdateTodo={updateTodo} />;
 }
 function InfoRoute() {
   const { info, delInfo, addInfo } = useJunwoo();

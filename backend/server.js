@@ -440,6 +440,238 @@ app.get('/api/projects', async (req, res) => {
 
 });
 
+
+/* 프로젝트 상세 조회 */
+app.get('/api/projects/:id', async (req, res) => {
+
+    const id = Number(req.params.id);
+
+    // 프로젝트 번호 확인
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        return res.status(400).json({
+            message: '잘못된 프로젝트 번호입니다.'
+        });
+    }
+
+    try {
+
+        const [rows] = await db.query(`
+            SELECT
+                project_id AS id,
+                title,
+                content,
+                created_by AS author,
+                manager_id AS managerId,
+                status,
+                priority,
+                project_progress AS progress,
+                views,
+                DATE_FORMAT(start_date, '%Y.%m.%d') AS startDate,
+                DATE_FORMAT(end_date, '%Y.%m.%d') AS endDate,
+                DATE_FORMAT(created_at, '%Y.%m.%d') AS date,
+                DATE_FORMAT(updated_at, '%Y.%m.%d %H:%i') AS updatedAt
+            FROM projects
+            WHERE project_id = ?
+        `, [id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                message: '존재하지 않는 프로젝트입니다.'
+            });
+        }
+
+        res.json(rows[0]);
+
+    } catch (error) {
+
+        console.error('프로젝트 상세 조회 오류:', error);
+
+        res.status(500).json({
+            message: '프로젝트 상세 조회 실패'
+        });
+
+    }
+
+});
+
+
+/* 프로젝트 조회수 증가 */
+app.patch('/api/projects/:id/views', async (req, res) => {
+
+    const id = Number(req.params.id);
+
+    // 프로젝트 번호 확인
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        return res.status(400).json({
+            message: '잘못된 프로젝트 번호입니다.'
+        });
+    }
+
+    try {
+
+        const [result] = await db.query(`
+            UPDATE projects
+            SET
+                views = COALESCE(views, 0) + 1,
+                updated_at = updated_at
+            WHERE project_id = ?
+        `, [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: '존재하지 않는 프로젝트입니다.'
+            });
+        }
+
+        const [rows] = await db.query(
+            'SELECT views FROM projects WHERE project_id = ?',
+            [id]
+        );
+
+        res.json({
+            views: rows[0].views
+        });
+
+    } catch (error) {
+
+        console.error('프로젝트 조회수 증가 오류:', error);
+
+        res.status(500).json({
+            message: '프로젝트 조회수 증가 실패'
+        });
+
+    }
+
+});
+
+
+/* 프로젝트 등록 */
+app.post('/api/projects', async (req, res) => {
+
+    const { title, content, created_by } = req.body;
+
+    // 제목과 내용 공백 검사
+    if (
+        typeof title !== 'string' ||
+        typeof content !== 'string' ||
+        !title.trim() ||
+        !content.trim()
+    ) {
+        return res.status(400).json({
+            message: '프로젝트 제목과 내용을 입력하세요.'
+        });
+    }
+
+    // 제목 글자 수 검사
+    if (title.trim().length > 200) {
+        return res.status(400).json({
+            message: '제목은 최대 200자까지 입력할 수 있습니다.'
+        });
+    }
+
+    // 작성자 번호 검사
+    if (
+        !Number.isSafeInteger(created_by) ||
+        created_by <= 0
+    ) {
+        return res.status(400).json({
+            message: '올바른 작성자 번호가 필요합니다.'
+        });
+    }
+
+    try {
+
+        const [result] = await db.query(`
+            INSERT INTO projects
+                (title, content, created_by, project_progress, views)
+            VALUES (?, ?, ?, 0, 0)
+        `, [title.trim(), content.trim(), created_by]);
+
+        res.status(201).json({
+            message: '프로젝트 등록 성공!',
+            id: result.insertId
+        });
+
+    } catch (error) {
+
+        console.error('프로젝트 등록 오류:', error);
+
+        res.status(500).json({
+            message: '프로젝트 등록 실패'
+        });
+
+    }
+
+});
+
+
+/* 프로젝트 수정 */
+app.put('/api/projects/:id', async (req, res) => {
+
+    const id = Number(req.params.id);
+    const { title, content } = req.body;
+
+    // 프로젝트 번호 확인
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        return res.status(400).json({
+            message: '잘못된 프로젝트 번호입니다.'
+        });
+    }
+
+    // 제목과 내용 공백 검사
+    if (
+        typeof title !== 'string' ||
+        typeof content !== 'string' ||
+        !title.trim() ||
+        !content.trim()
+    ) {
+        return res.status(400).json({
+            message: '프로젝트 제목과 내용을 입력하세요.'
+        });
+    }
+
+    // 제목 글자 수 검사
+    if (title.trim().length > 200) {
+        return res.status(400).json({
+            message: '제목은 최대 200자까지 입력할 수 있습니다.'
+        });
+    }
+
+    try {
+
+        const [result] = await db.query(`
+            UPDATE projects
+            SET
+                title = ?,
+                content = ?,
+                updated_at = NOW()
+            WHERE project_id = ?
+        `, [title.trim(), content.trim(), id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: '존재하지 않는 프로젝트입니다.'
+            });
+        }
+
+        res.json({
+            message: '프로젝트 수정 성공!',
+            id: id
+        });
+
+    } catch (error) {
+
+        console.error('프로젝트 수정 오류:', error);
+
+        res.status(500).json({
+            message: '프로젝트 수정 실패'
+        });
+
+    }
+
+});
+
+
 // 서버 실행
 app.listen(PORT, () => {
     console.log(`서버 실행: http://localhost:${PORT}`);
