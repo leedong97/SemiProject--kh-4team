@@ -27,6 +27,7 @@ function Info_detail({ info, onViewInfo }) {
     const [editTitle, setEditTitle] = useState("");
     const [editContent, setEditContent] = useState("");
     const [isSaving, setIsSaving] = useState(false);
+    const [editEventDate, setEditEventDate] = useState("");
 
     // 현재 공지사항
 
@@ -122,6 +123,7 @@ function Info_detail({ info, onViewInfo }) {
         setEditTitle(item.title);
         setEditContent(item.content);
         setIsEditing(true);
+        setEditEventDate(item.eventDate || "");
     };
 
     /* 수정 취소 */
@@ -151,13 +153,15 @@ function Info_detail({ info, onViewInfo }) {
             await updateInfo(
                 Number(id),
                 editTitle.trim(),
-                editContent.trim()
+                editContent.trim(),
+                editEventDate || null
             );
 
             setItem(prev => ({
                 ...prev,
                 title: editTitle.trim(),
-                content: editContent.trim()
+                content: editContent.trim(),
+                eventDate: editEventDate || null
             }));
 
             // 수정 완료 후 MySQL에서 최신 수정일자 가져오기
@@ -290,6 +294,24 @@ function Info_detail({ info, onViewInfo }) {
                     <strong>작성일자</strong>
                     <span>{item.date}</span>
                 </div>
+
+
+                {/* 공지사항 행사일 */}
+                <div className="info-detail-row">
+                    <strong>행사일</strong>
+
+                    {isEditing ? (
+                        <input
+                            type="date"
+                            value={editEventDate}
+                            onChange={(e) => setEditEventDate(e.target.value)}
+                            disabled={isSaving}
+                        />
+                    ) : (
+                        <span>{item.eventDate || "미지정"}</span>
+                    )}
+                </div>
+
 
                 <div className="info-detail-row">
                     <strong>수정일자</strong>

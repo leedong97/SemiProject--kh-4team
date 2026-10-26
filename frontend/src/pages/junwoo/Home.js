@@ -1,5 +1,6 @@
+
 import { Link } from 'react-router-dom';
-import Calendar from './Calendar';
+import DashboardCalendar from './DashboardCalendar';
 
 function Home({ info, todo }) {
 
@@ -7,8 +8,10 @@ function Home({ info, todo }) {
 
     <>
 
-      <Calendar />
+      {/* 캘린더 */}
+      <DashboardCalendar />
 
+      {/* 프로젝트 */}
       <div className='todo'>
         <h3>프로젝트</h3>
         <ol>
@@ -24,6 +27,7 @@ function Home({ info, todo }) {
         </ol>
       </div>
 
+      {/* 공지사항 */}
       <div className='info'>
         <h3>공지사항</h3>
         <ol>
@@ -40,7 +44,9 @@ function Home({ info, todo }) {
       </div>
 
     </>
+
   );
+
 }
 
 export default Home;

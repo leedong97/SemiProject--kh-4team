@@ -1,12 +1,17 @@
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useJunwoo } from "./JunwooContext";
 
 function Info({ info, delInfo, onAddInfo }) {
 
     const navigate = useNavigate();
+    const location = useLocation();
+
     const { pinInfo } = useJunwoo();
+
+    // 캘린더에서 선택한 날짜
+    const selectedEventDate = location.state?.eventDate || "";
 
     // 검색 및 페이지
     const [search, setSearch] = useState("");
@@ -17,14 +22,25 @@ function Info({ info, delInfo, onAddInfo }) {
     const [content, setContent] = useState("");
 
 
+    const [eventDate, setEventDate] = useState(selectedEventDate);
+
+    // 캘린더에서 전달받은 날짜가 변경되면 반영
+    useEffect(() => {
+        if (selectedEventDate) {
+            setEventDate(selectedEventDate);
+        }
+    }, [selectedEventDate]);
+
+
     /* 공지사항 제목 검색 + 상단 고정 정렬 */
+
     const filteredInfo = [...info]
         .filter(item =>
             item.title.toLowerCase().includes(search.trim().toLowerCase())
         )
         .sort((a, b) => {
 
-            // 고정된 공지사항 먼저 표시
+            // 중요 공지사항 항상 최상단
             const pinnedA = Number(Boolean(a.isPinned));
             const pinnedB = Number(Boolean(b.isPinned));
 
@@ -32,10 +48,12 @@ function Info({ info, delInfo, onAddInfo }) {
                 return pinnedB - pinnedA;
             }
 
-            // 같은 고정 상태라면 최신 글 먼저
-            return b.id - a.id;
-
+            // 마지막 수정일 기준 최신순
+            return (
+                Number(b.sortAt ?? 0) - Number(a.sortAt ?? 0)
+            ) || (b.id - a.id);
         });
+
 
 
     // 페이지네이션 (10개씩)
@@ -62,11 +80,14 @@ function Info({ info, delInfo, onAddInfo }) {
 
             const newId = await onAddInfo(
                 title.trim(),
-                content.trim()
+                content.trim(),
+                eventDate || null
             );
 
             setTitle("");
             setContent("");
+            setEventDate("");
+
 
             // 등록한 공지사항 상세 페이지로 이동
             navigate(`/info/${newId}`);
@@ -74,7 +95,7 @@ function Info({ info, delInfo, onAddInfo }) {
         } catch (error) {
 
             console.error("공지사항 등록 오류:", error);
-            alert("공지사항 등록에 실패했습니다.");
+            alert(error.message || "공지사항 등록에 실패했습니다.");
 
         }
     };
@@ -199,6 +220,28 @@ function Info({ info, delInfo, onAddInfo }) {
                         onChange={(e) => setContent(e.target.value)}
                         rows="5"
                     />
+
+
+                    {/* 공지사항 행사 날짜 */}
+                    <div className="info-date-field">
+
+                        <label htmlFor="info-event-date">
+                            행사 날짜 (선택사항)
+                        </label>
+
+                        <input
+                            id="info-event-date"
+                            type="date"
+                            value={eventDate}
+                            onChange={(e) => setEventDate(e.target.value)}
+                        />
+
+                        <small>
+                            날짜를 지정하면 대시보드 캘린더에 표시됩니다.
+                        </small>
+
+                    </div>
+
 
                     <button onClick={handleAddInfo}>
                         + 공지사항 등록

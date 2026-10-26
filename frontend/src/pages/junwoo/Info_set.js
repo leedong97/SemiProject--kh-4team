@@ -7,6 +7,8 @@ function Info_set({ info, onAddInfo }) {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [search, setSearch] = useState("");
+    // 공지사항 행사일
+    const [eventDate, setEventDate] = useState("");
 
     // 공지사항 제목 검색
     const filteredInfo = [...info].reverse().filter((item) =>
@@ -28,12 +30,13 @@ function Info_set({ info, onAddInfo }) {
 
         try {
 
-            await onAddInfo(title.trim(), content.trim());
+            await onAddInfo(title.trim(), content.trim(), eventDate || null);
 
             alert('공지사항 등록 완료.');
 
             setTitle("");
             setContent("");
+            setEventDate("");
 
         } catch (error) {
 
@@ -92,6 +95,12 @@ function Info_set({ info, onAddInfo }) {
 
                 <h3>새로운 공지사항 등록</h3>
 
+                <h3>새로운 공지사항 등록</h3>
+
+                <p style={{ color: 'red', fontSize: '25px', fontWeight: 'bold' }}>
+                    ★ 날짜 입력 테스트 ★
+                </p>
+
                 <div className="info-set-register-form">
 
                     <input
@@ -113,6 +122,30 @@ function Info_set({ info, onAddInfo }) {
                     />
 
                     <small>{content.length} / 10000자</small>
+
+
+
+                    {/* 공지사항 행사 날짜 */}
+                    <div className="info-set-date-field">
+
+                        <label htmlFor="eventDate">
+                            행사 날짜 (선택사항)
+                        </label>
+
+                        <input
+                            id="eventDate"
+                            type="date"
+                            value={eventDate}
+                            onChange={(e) => setEventDate(e.target.value)}
+                        />
+
+                        <small>
+                            날짜를 지정하면 대시보드 캘린더에 표시됩니다.
+                        </small>
+
+                    </div>
+
+
 
                     <button onClick={handleAddInfo}>
                         + 공지사항 등록

@@ -1,10 +1,15 @@
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function Todo({ todo, delTodo, onAddTodo }) {
 
     const navigate = useNavigate();
+
+    const location = useLocation();
+
+    // 캘린더에서 선택한 날짜
+    const selectedDate = location.state?.startDate || "";
 
     // 검색 및 페이지
     const [search, setSearch] = useState("");
@@ -14,10 +19,22 @@ function Todo({ todo, delTodo, onAddTodo }) {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
 
+    // 프로젝트 시작일과 종료일
+    const [startDate, setStartDate] = useState(selectedDate);
+    const [endDate, setEndDate] = useState(selectedDate);
+
+    // 프로젝트 삭제 중 상태
+    const [deletingId, setDeletingId] = useState(null);
+
     // 프로젝트 제목 검색
-    const filteredTodo = [...todo].reverse().filter((item) =>
-        item.title.toLowerCase().includes(search.trim().toLowerCase())
-    );
+    const filteredTodo = [...todo]
+        .filter(item =>
+            item.title.toLowerCase().includes(search.trim().toLowerCase())
+        )
+        .sort((a, b) =>
+            (Number(b.sortAt ?? 0) - Number(a.sortAt ?? 0)) ||
+            (b.id - a.id)
+        );
 
     // 페이지네이션 (10개씩)
     const totalPages = Math.ceil(filteredTodo.length / 10);
@@ -25,8 +42,9 @@ function Todo({ todo, delTodo, onAddTodo }) {
     const start = (currentPage - 1) * 10;
     const end = start + 10;
 
-    // 프로젝트 등록
-    const handleAddTodo = () => {
+
+    /* 프로젝트 등록 */
+    const handleAddTodo = async () => {
 
         if (title.trim() === "") {
             alert("프로젝트 제목을 입력해주세요.");
@@ -38,19 +56,89 @@ function Todo({ todo, delTodo, onAddTodo }) {
             return;
         }
 
-        const newId = onAddTodo(title.trim(), content.trim());
+        if (title.trim().length > 200) {
+            alert("제목은 최대 200자까지 입력할 수 있습니다.");
+            return;
+        }
 
-        setTitle("");
-        setContent("");
+        // 프로젝트 날짜 검사
+        if (!startDate || !endDate) {
+            alert("프로젝트 시작일과 종료일을 선택해주세요.");
+            return;
+        }
 
-        // 등록한 프로젝트 상세 페이지로 이동
-        navigate(`/todo/${newId}`);
+        if (endDate < startDate) {
+            alert("종료일은 시작일보다 빠를 수 없습니다.");
+            return;
+        }
+
+        try {
+
+            const newId = await onAddTodo(
+                title.trim(),
+                content.trim(),
+                startDate,
+                endDate
+            );
+
+            setTitle("");
+            setContent("");
+            setStartDate("");
+            setEndDate("");
+
+            alert("프로젝트가 등록되었습니다!");
+
+            navigate(`/todo/${newId}`);
+
+        } catch (error) {
+
+            console.error("프로젝트 등록 오류:", error);
+            alert(error.message || "프로젝트 등록 실패");
+
+        }
+
     };
+
 
     // 검색 리셋
     const handleReset = () => {
         setSearch("");
         setPages(1);
+    };
+
+
+    /* 프로젝트 삭제 */
+    const handleDeleteTodo = async (id) => {
+
+        // 중복 삭제 방지
+        if (deletingId !== null) return;
+
+        // 삭제 확인창
+        if (!window.confirm("정말 이 프로젝트를 삭제하시겠습니까?")) {
+            return;
+        }
+
+        setDeletingId(id);
+
+        try {
+
+            // MySQL 프로젝트 삭제
+            await delTodo(id);
+
+            alert("프로젝트가 삭제되었습니다!");
+
+        } catch (error) {
+
+            console.error("프로젝트 삭제 오류:", error);
+
+            alert(error.message || "프로젝트 삭제에 실패했습니다.");
+
+        } finally {
+
+            setDeletingId(null);
+
+        }
+
     };
 
     return (
@@ -120,8 +208,42 @@ function Todo({ todo, delTodo, onAddTodo }) {
                         rows="5"
                     />
 
+
+                    {/* 프로젝트 일정 설정 */}
+                    <div className="todo-date-fields">
+
+                        <div>
+                            <label htmlFor="todo-start-date">
+                                프로젝트 시작일
+                            </label>
+
+                            <input
+                                id="todo-start-date"
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="todo-end-date">
+                                프로젝트 종료일
+                            </label>
+
+                            <input
+                                id="todo-end-date"
+                                type="date"
+                                value={endDate}
+                                min={startDate || undefined}
+                                onChange={(e) => setEndDate(e.target.value)}
+                            />
+                        </div>
+
+                    </div>
+
+
                     <button onClick={handleAddTodo}>
-                        + 프로젝트 등록
+                        + 프로젝트 요청
                     </button>
 
                 </div>
@@ -174,12 +296,15 @@ function Todo({ todo, delTodo, onAddTodo }) {
                                     <td>{item.views ?? 0}</td>
 
                                     <td>
+
                                         <button
                                             className="todo-delete"
-                                            onClick={() => delTodo(item.id)}
+                                            onClick={() => handleDeleteTodo(item.id)}
+                                            disabled={deletingId !== null}
                                         >
-                                            삭제
+                                            {deletingId === item.id ? "삭제 중..." : "삭제"}
                                         </button>
+
                                     </td>
 
                                 </tr>

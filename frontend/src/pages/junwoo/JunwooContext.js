@@ -75,8 +75,9 @@ export function JunwooProvider({ children }) {
 
 
 
+
   /* 공지사항 등록 */
-  const addInfo = async (title, content) => {
+  const addInfo = async (title, content, eventDate = null) => {
 
     // 테스트용 직원번호
     const employee_id = 1;
@@ -91,7 +92,8 @@ export function JunwooProvider({ children }) {
         body: JSON.stringify({
           title,
           content,
-          employee_id
+          employee_id,
+          eventDate
         })
       }
     );
@@ -102,20 +104,22 @@ export function JunwooProvider({ children }) {
       throw new Error(data.message || '공지사항 등록 실패');
     }
 
+    // React 화면에도 등록한 공지사항 반영
     const newInfo = {
       id: data.id,
       title,
       content,
       date: new Date().toLocaleDateString('ko-KR'),
       author: employee_id,
-      views: 0
+      views: 0,
+      eventDate,
+      sortAt: Date.now() / 1000,
     };
 
     setInfo(prev => [...prev, newInfo]);
 
     return data.id;
   };
-
 
 
   /* 공지사항 삭제 */
@@ -141,7 +145,7 @@ export function JunwooProvider({ children }) {
 
 
   /* 공지사항 수정 */
-  const updateInfo = async (id, title, content) => {
+  const updateInfo = async (id, title, content, eventDate) => {
 
     const response = await fetch(
       `http://localhost:5000/api/notices/${id}`,
@@ -152,7 +156,8 @@ export function JunwooProvider({ children }) {
         },
         body: JSON.stringify({
           title,
-          content
+          content,
+          eventDate
         })
       }
     );
@@ -163,12 +168,29 @@ export function JunwooProvider({ children }) {
       throw new Error(data.message || '공지사항 수정 실패');
     }
 
-    // React 화면에도 수정 내용 반영
-    setInfo(prev => prev.map(item =>
-      item.id === id
-        ? { ...item, title, content }
-        : item
-    ));
+
+    /* React 화면에도 수정 내용 반영 */
+
+    setInfo(prev =>
+      prev.map(item =>
+        item.id === id
+          ? {
+            ...item,
+            title,
+            content,
+            eventDate: eventDate === undefined
+              ? item.eventDate
+              : eventDate,
+            sortAt: Date.now() / 1000
+          }
+          : item
+      ).sort((a, b) =>
+        (Number(a.sortAt ?? 0) - Number(b.sortAt ?? 0)) ||
+        (a.id - b.id)
+      )
+    );
+
+
 
     return data;
   };
@@ -207,8 +229,9 @@ export function JunwooProvider({ children }) {
   };
 
 
+
   /* 프로젝트 등록 */
-  const addTodo = async (title, content) => {
+  const addTodo = async (title, content, startDate, endDate) => {
 
     // 테스트용 직원번호 (추후 로그인 정보 연결)
     const created_by = 1;
@@ -223,7 +246,9 @@ export function JunwooProvider({ children }) {
         body: JSON.stringify({
           title,
           content,
-          created_by
+          created_by,
+          startDate,
+          endDate
         })
       }
     );
@@ -242,7 +267,12 @@ export function JunwooProvider({ children }) {
       date: new Date().toLocaleDateString('ko-KR'),
       author: created_by,
       views: 0,
-      progress: 0
+      progress: 0,
+      status: '예정',
+      priority: '보통',
+      startDate,
+      endDate,
+      sortAt: Date.now() / 1000,
     };
 
     setTodo(prev => [newTodo, ...prev]);
@@ -251,13 +281,46 @@ export function JunwooProvider({ children }) {
   };
 
 
-  const delTodo = (id) => {
-    setTodo(prev => prev.filter(item => item.id !== id));
+
+
+  /* 프로젝트 삭제 */
+  const delTodo = async (id) => {
+
+    const response = await fetch(
+      `http://localhost:5000/api/projects/${id}`,
+      {
+        method: 'DELETE'
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || '프로젝트 삭제 실패');
+    }
+
+    // MySQL 삭제 성공 후 React 화면에서도 제거
+    setTodo(prev =>
+      prev.filter(item => item.id !== id)
+    );
+
+    return data;
   };
 
 
+
+
   /* 프로젝트 수정 */
-  const updateTodo = async (id, title, content) => {
+  const updateTodo = async (
+    id,
+    title,
+    content,
+    status,
+    priority,
+    progress,
+    startDate,
+    endDate
+  ) => {
 
     const response = await fetch(
       `http://localhost:5000/api/projects/${id}`,
@@ -268,7 +331,12 @@ export function JunwooProvider({ children }) {
         },
         body: JSON.stringify({
           title,
-          content
+          content,
+          status,
+          priority,
+          progress,
+          startDate,
+          endDate
         })
       }
     );
@@ -279,15 +347,39 @@ export function JunwooProvider({ children }) {
       throw new Error(data.message || '프로젝트 수정 실패');
     }
 
-    // React 화면에도 수정 내용 반영
-    setTodo(prev => prev.map(item =>
-      item.id === id
-        ? { ...item, title, content }
-        : item
-    ));
+
+    /* React 화면에도 수정 내용 반영 */
+
+    setTodo(prev =>
+      prev.map(item =>
+        item.id === id
+          ? {
+            ...item,
+            title,
+            content,
+            status: status ?? item.status,
+            priority: priority ?? item.priority,
+            progress: progress ?? item.progress,
+            startDate: startDate === undefined
+              ? item.startDate
+              : startDate?.replace(/-/g, ".") ?? null,
+            endDate: endDate === undefined
+              ? item.endDate
+              : endDate?.replace(/-/g, ".") ?? null,
+            sortAt: Date.now() / 1000
+          }
+          : item
+      ).sort((a, b) =>
+        (Number(b.sortAt ?? 0) - Number(a.sortAt ?? 0)) ||
+        (b.id - a.id)
+      )
+    );
+
+
 
     return data;
   };
+
 
 
   /* 공지사항 조회수 증가 */

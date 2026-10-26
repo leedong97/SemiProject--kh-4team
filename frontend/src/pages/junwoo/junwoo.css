@@ -3782,3 +3782,366 @@
     flex: 1 1 auto;
   }
 }
+
+
+/* =========================================
+   프로젝트 수정 화면 - 공지사항 디자인 통일
+========================================= */
+
+/* 수정, 저장, 취소 버튼 영역 */
+.team-shell .todo-detail-page .todo-detail-edit {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 20px 0 32px;
+}
+
+/* 수정 완료, 수정 버튼 */
+.team-shell .todo-detail-page .todo-detail-edit button {
+  padding: 11px 19px;
+  background: #38b98c;
+  color: white;
+  border: 1px solid #38b98c;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.team-shell .todo-detail-page .todo-detail-edit button:hover:not(:disabled) {
+  background: #279b76;
+}
+
+/* 취소 버튼 */
+.team-shell .todo-detail-page .todo-detail-edit button:nth-child(2) {
+  background: white;
+  color: #587766;
+  border-color: #d0e4d7;
+}
+
+.team-shell .todo-detail-page .todo-detail-edit button:nth-child(2):hover:not(:disabled) {
+  background: #eff7f1;
+}
+
+/* 프로젝트 수정 입력창 */
+.team-shell .todo-detail-page .todo-detail-row input,
+.team-shell .todo-detail-page .todo-detail-row select,
+.team-shell .todo-detail-page .todo-detail-description textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px 14px;
+  background: #fbfdfb;
+  border: 1px solid #d7e8dc;
+  border-radius: 10px;
+  color: #33483d;
+  font: inherit;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+  transition: 0.2s;
+}
+
+/* 선택창 커서 */
+.team-shell .todo-detail-page .todo-detail-row select {
+  cursor: pointer;
+}
+
+/* 입력창 포커스 */
+.team-shell .todo-detail-page .todo-detail-row input:focus,
+.team-shell .todo-detail-page .todo-detail-row select:focus,
+.team-shell .todo-detail-page .todo-detail-description textarea:focus {
+  background: white;
+  border-color: #38b98c;
+  box-shadow: 0 0 0 3px rgba(56, 185, 140, 0.1);
+}
+
+/* 내용 입력창 */
+.team-shell .todo-detail-page .todo-detail-description textarea {
+  min-height: 180px;
+  resize: vertical;
+  line-height: 1.7;
+}
+
+/* 저장 중 버튼 */
+.team-shell .todo-detail-page .todo-detail-edit button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* 모바일 */
+@media (max-width: 520px) {
+  .team-shell .todo-detail-page .todo-detail-edit button {
+    flex: 1;
+  }
+}
+
+/* 프로젝트 목록으로 돌아가기 버튼 - 공지사항과 동일하게 */
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back {
+  padding: 12px 20px;
+  background: #38b98c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+/* 마우스 올렸을 때 */
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back:hover:not(:disabled) {
+  background: #279b76;
+  color: white;
+}
+
+/* 공지사항 행사일 입력 */
+.info-set-date-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.info-set-date-field label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.info-set-date-field input[type="date"] {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.info-set-date-field small {
+  color: #888;
+  font-size: 12px;
+}
+
+/* 캘린더 프로젝트 상세 페이지 링크 */
+.calendar-schedule .calendar-project-link,
+.calendar-schedule .calendar-notice-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+
+/* ==================================
+   캘린더 프로젝트 / 공지사항 링크
+================================== */
+
+.calendar-schedule .calendar-project-link,
+.calendar-schedule .calendar-notice-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #374151;
+  font: inherit;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+/* 제목에 마우스를 올렸을 때 */
+.calendar-schedule .calendar-project-link:hover,
+.calendar-schedule .calendar-notice-link:hover {
+  color: #15966c;
+  text-decoration: none;
+}
+
+
+/* ==================================
+   캘린더 프로젝트 등록 버튼
+================================== */
+
+.calendar-schedule .calendar-add-project-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin-top: 15px;
+  padding: 11px 18px;
+
+  background: #15966c;
+  color: white;
+  border: 1px solid #15966c;
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: all 0.2s;
+}
+
+/* 버튼에 마우스를 올렸을 때 */
+.calendar-schedule .calendar-add-project-btn:hover {
+  background: #107653;
+  border-color: #107653;
+  box-shadow: 0 4px 10px rgba(21, 150, 108, 0.18);
+  transform: translateY(-1px);
+}
+
+/* 버튼 클릭 시 */
+.calendar-schedule .calendar-add-project-btn:active {
+  transform: translateY(0);
+}
+
+/* 키보드 접근성 */
+.calendar-schedule .calendar-project-link:focus-visible,
+.calendar-schedule .calendar-notice-link:focus-visible,
+.calendar-schedule .calendar-add-project-btn:focus-visible {
+  outline: 2px solid #15966c;
+  outline-offset: 3px;
+}
+
+
+/* ==================================
+   캘린더 일정 종류별 색상
+================================== */
+
+/* 캘린더 상단 색상 안내 */
+.calendar-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.calendar-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.calendar-legend .legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* 날짜 안에 여러 개의 점 배치 */
+.calendar-grid .day {
+  position: relative;
+}
+
+.calendar-grid .day .schedule-dots {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+/* 공통 점 스타일 */
+.calendar-grid .day .schedule-dots .schedule-dot {
+  position: static;
+  display: block;
+  width: 6px;
+  height: 6px;
+  margin: 0;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transform: none;
+  background: #94a3b8;
+}
+
+/* 업무 - 파란색 */
+.calendar-grid .day .schedule-dots .schedule-dot--work,
+.calendar-legend .legend-dot--work {
+  background: #3b82f6;
+}
+
+/* 개인 - 주황색 */
+.calendar-grid .day .schedule-dots .schedule-dot--personal,
+.calendar-legend .legend-dot--personal {
+  background: #f59e0b;
+}
+
+/* 휴가 - 분홍색 */
+.calendar-grid .day .schedule-dots .schedule-dot--leave,
+.calendar-legend .legend-dot--leave {
+  background: #ec4899;
+}
+
+/* 프로젝트 - 초록색 */
+.calendar-grid .day .schedule-dots .schedule-dot--project,
+.calendar-legend .legend-dot--project {
+  background: #10b981;
+}
+
+/* 공지사항 - 보라색 */
+.calendar-grid .day .schedule-dots .schedule-dot--notice,
+.calendar-legend .legend-dot--notice {
+  background: #8b5cf6;
+}
+
+
+/* 캘린더 등록 버튼 묶음 */
+.calendar-schedule .calendar-register-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* 기존 프로젝트 버튼 여백 조정 */
+.calendar-schedule .calendar-register-actions .calendar-add-project-btn {
+  margin-top: 0;
+}
+
+/* 공지사항 등록 버튼 */
+.calendar-schedule .calendar-add-notice-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+  padding: 11px 18px;
+
+  background: #8b5cf6;
+  color: white;
+  border: 1px solid #8b5cf6;
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* 마우스 hover */
+.calendar-schedule .calendar-add-notice-btn:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.2);
+  transform: translateY(-1px);
+}
+
+.calendar-schedule .calendar-add-notice-btn:active {
+  transform: translateY(0);
+}

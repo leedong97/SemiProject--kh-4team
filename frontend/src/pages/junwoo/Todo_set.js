@@ -6,6 +6,9 @@ function Todo_set({ todo, onAddTodo }) {
 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    // 프로젝트 일정
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
     const [search, setSearch] = useState("");
     const [isSaving, setIsSaving] = useState(false);
 
@@ -33,17 +36,42 @@ function Todo_set({ todo, onAddTodo }) {
             return;
         }
 
+        // 시작일 검사
+        if (startDate === "") {
+            alert("프로젝트 시작일을 선택해주세요.");
+            return;
+        }
+
+        // 종료일 검사
+        if (endDate === "") {
+            alert("프로젝트 종료일을 선택해주세요.");
+            return;
+        }
+
+        // 날짜 순서 검사
+        if (endDate < startDate) {
+            alert("종료일은 시작일보다 빠를 수 없습니다.");
+            return;
+        }
+
         if (isSaving) return;
 
         setIsSaving(true);
 
         try {
-            await onAddTodo(title.trim(), content.trim());
+            await onAddTodo(
+                title.trim(),
+                content.trim(),
+                startDate,
+                endDate
+            );
 
             alert("프로젝트가 등록되었습니다!");
 
             setTitle("");
             setContent("");
+            setStartDate("");
+            setEndDate("");
 
         } catch (error) {
             console.error("프로젝트 등록 오류:", error);
@@ -121,6 +149,42 @@ function Todo_set({ todo, onAddTodo }) {
                         rows="5"
                     />
 
+
+                    {/* 프로젝트 일정 설정 */}
+                    <div className="todo-set-date-fields">
+
+                        <div>
+                            <label htmlFor="project-start-date">
+                                프로젝트 시작일
+                            </label>
+
+                            <input
+                                id="project-start-date"
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                disabled={isSaving}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="project-end-date">
+                                프로젝트 종료일
+                            </label>
+
+                            <input
+                                id="project-end-date"
+                                type="date"
+                                value={endDate}
+                                min={startDate || undefined}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                disabled={isSaving}
+                            />
+                        </div>
+
+                    </div>
+
+                    {/* 중복 등록이 안되게 삼항연산자로 막아놓기 */}
                     <button onClick={handleAddTodo} disabled={isSaving}>
                         {isSaving ? "등록 중..." : "+ 프로젝트 등록"}
                     </button>
