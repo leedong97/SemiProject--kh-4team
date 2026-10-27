@@ -22,8 +22,14 @@ function DashboardRoute() {
   return <Dashboard projects={projects} data={data} />;
 }
 function ProjectsRoute() {
-  const { projects, setProjects } = useJongho();
-  return <ProjectManagement projects={projects} setProjects={setProjects} />;
+  const { projects, setProjects, data } = useJongho();
+  return (
+    <ProjectManagement
+      projects={projects}
+      setProjects={setProjects}
+      employees={data.employees}
+    />
+  );
 }
 function AssignmentsRoute() {
   const { projects, setProjects, data } = useJongho();

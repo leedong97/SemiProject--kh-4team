@@ -273,7 +273,11 @@ export default function Dashboard({ projects = [], data }) {
                                         </td>
 
                                         <td>
-                                            {issue.priority}
+                                            <span className="merge-erp-module">
+                                                <span className={"pill issue-priority issue-priority-" + issue.priority}>
+                                                    {issue.priority}
+                                                </span>
+                                            </span>
                                         </td>
                                     </tr>
 

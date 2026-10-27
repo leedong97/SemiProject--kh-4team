@@ -1,4 +1,7 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+
+// 백엔드 주소 (Login.js 와 같은 서버)
+const API_BASE = 'http://localhost:3333';
 
 // 종호 페이지(관리자)가 같이 쓰는 데이터 상자
 // 샘플 데이터(initialData, initialProjects)와 저장 로직을 이 파일 한 곳에서 관리합니다.
@@ -24,7 +27,7 @@ export const initialProjects = [
     {
       id: 3,
       name: "API 서버 연동",
-      status: "배정 대기",
+      status: "예정",
       progress: 0,
       managerId: null
     }
@@ -65,6 +68,36 @@ function readData() {
 
 function useErpData() {
     const [data, setData] = useState(readData);
+
+    // 직원 목록과 평가 목록은 DB(백엔드 API)에서 가져와 덮어씁니다.
+    // 서버가 꺼져 있으면 저장된 데이터를 그대로 씁니다.
+    useEffect(() => {
+        let cancelled = false;
+
+        async function loadFromServer() {
+            try {
+                const [empRes, evalRes, issueRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/admin/employees`),
+                    fetch(`${API_BASE}/api/admin/evaluations`),
+                    fetch(`${API_BASE}/api/admin/issues`),
+                ]);
+                if (!empRes.ok || !evalRes.ok || !issueRes.ok) throw new Error("API 응답 오류");
+
+                const employees = await empRes.json();
+                const evaluations = await evalRes.json();
+                // 서버 이슈에는 댓글·작업 이력이 없으므로 빈 배열을 채워 이슈 화면이 깨지지 않게 합니다.
+                const issues = (await issueRes.json()).map(issue => ({ comments: [], history: [], ...issue }));
+                if (!cancelled) {
+                    setData(prev => ({ ...prev, employees, evaluations, issues }));
+                }
+            } catch (error) {
+                console.warn("서버에서 데이터를 가져오지 못했습니다. 저장된 데이터를 사용합니다.", error);
+            }
+        }
+
+        loadFromServer();
+        return () => { cancelled = true; };
+    }, []);
 
     // 모든 변경은 이 함수 하나로 처리해 데이터와 감사 로그를 함께 저장합니다.
     function changeData(action, updater) {
@@ -119,6 +152,24 @@ export function useJongho() {
 export function JonghoProvider({ children }) {
   const { data, changeData, resetData } = useErpData();
   const { projects, setProjects, resetProjects } = useProjects();
+
+  // 프로젝트 목록은 DB(백엔드 API)에서 가져와 대시보드와 담당자 배정에 씁니다.
+  // 서버가 꺼져 있으면 저장된 프로젝트를 그대로 씁니다.
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API_BASE}/api/admin/projects`)
+      .then(res => {
+        if (!res.ok) throw new Error("API 응답 오류");
+        return res.json();
+      })
+      .then(list => {
+        if (!cancelled) setProjects(list);
+      })
+      .catch(error => {
+        console.warn("서버에서 프로젝트를 가져오지 못했습니다. 저장된 데이터를 사용합니다.", error);
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   function resetDemo() {
     if (!window.confirm("모든 연습 데이터를 초기화할까요?")) return;

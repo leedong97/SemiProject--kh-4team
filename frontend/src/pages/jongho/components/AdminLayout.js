@@ -1,7 +1,9 @@
 import React from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 function AdminLayout({ onLogout }) {
+
+  const navigate = useNavigate();
 
   // 관리자 상단 메뉴
   const menus = [
@@ -33,8 +35,15 @@ function AdminLayout({ onLogout }) {
           </div>
 
           <div className="nexus-admin-user">
-            <span className="badge badge-outline">
-              관리자 데모
+            <span className="badge badge-outline"
+              role="button"
+              tabIndex={0}
+              style={{ cursor: "pointer" }}
+              title="일반 페이지로 이동"
+              onClick={() => navigate("/")}
+              onKeyDown={(e) => { if (e.key === "Enter") navigate("/"); }}
+            >
+              관리자 데모(일반 페이지로 이동)
             </span>
 
             <button className="btn btn-outline" type="button" onClick={onLogout}>

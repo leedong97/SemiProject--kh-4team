@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { canLeadProject } from "../shared/permissions";
 
 function ProjectManagement({
   projects = [],
@@ -74,7 +75,7 @@ function ProjectManagement({
       endDate: form.endDate,
       budget: Number(form.budget || 0),
       description: form.description,
-      status: "배정 대기",
+      status: "예정 ",
       progress: 0,
       plannedProgress: 0,
       managerId: null
@@ -193,6 +194,7 @@ function ProjectManagement({
                     <th>프로젝트명</th>
                     <th>고객사</th>
                     <th>상태</th>
+                    <th>담당자</th>
                     <th>진행률</th>
                     <th>관리</th>
                   </tr>
@@ -210,6 +212,16 @@ function ProjectManagement({
                         <span className="badge badge-info">
                           {project.status}
                         </span>
+                      </td>
+
+                      <td>
+                        {(() => {
+                          if (project.managerId == null) return "미배정";
+                          const manager = employees.find((e) => String(e.id) === String(project.managerId));
+                          if (!manager) return `ID: ${project.managerId}`;
+                          if (!canLeadProject(manager)) return `직급 미달 담당자 (${manager.name})`;
+                          return manager.name;
+                        })()}
                       </td>
 
                       <td>
@@ -232,7 +244,7 @@ function ProjectManagement({
                           </button>
 
                           {/* 담당자 배정 */}
-                          {project.status === "배정 대기" && (
+                          {project.status === "예정" && (
                             <button className="btn btn-outline btn-sm"
                               type="button"
                               onClick={() =>
@@ -261,7 +273,7 @@ function ProjectManagement({
 
                   {filteredProjects.length === 0 && (
                     <tr>
-                      <td colSpan="5">
+                      <td colSpan="6">
                         등록된 프로젝트가 없습니다.
                       </td>
                     </tr>
