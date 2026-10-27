@@ -1,7 +1,4 @@
-/* ==========================
-   마이페이지
-   (클래스 이름은 모두 mp- 로 시작해서 다른 페이지와 겹치지 않아요)
-========================== */
+/* 마이페이지 스타일 (클래스 접두사 mp-) */
 
 .mypage {
   width: 100%;
@@ -17,7 +14,7 @@
 .mp-banner {
   background: #2fae85;
   color: white;
-  margin: 0 -35px;               /* 카드 좌우 끝까지 */
+  margin: 0 -35px;
   padding: 14px 35px 28px;
   border-radius: 18px 18px 0 0;
 }
@@ -311,9 +308,9 @@
 
 /* 기간 막대 */
 .mp-seg {
-  height: 15px;                  /* 막대 굵기 */
+  height: 15px;
   align-self: center;
-  z-index: 1;                    /* 날짜 칸 위에 올라오게 */
+  z-index: 1;
   padding: 0 6px;
   border: none;
   border-radius: 0;
@@ -380,7 +377,7 @@
 
   position: relative;
   display: flex;
-  align-items: flex-start;      /* 날짜 숫자는 칸의 왼쪽 위 */
+  align-items: flex-start;
   justify-content: flex-start;
   padding: 6px 8px;
   text-align: left;
@@ -405,7 +402,7 @@
 }
 
 .mp-dots {
-  position: absolute;          /* 점은 칸의 오른쪽 위 (막대와 겹치지 않게) */
+  position: absolute;
   top: 10px;
   right: 8px;
   display: flex;
@@ -667,6 +664,12 @@
 .mp-badge.s-wait {
   background: #eef2f0;
   color: #52675d;
+}
+
+/* 고정 공지 배지 */
+.mp-badge.s-pin {
+  background: #fff1d6;
+  color: #9a5b00;
 }
 
 /* 내 정보(보기 전용) */
@@ -948,20 +951,16 @@
   border-radius: 8px;
   font: inherit;
   text-align: left;
-  cursor: pointer;
+  cursor: default;
   transition: 0.2s;
   --c: #279b76;
 }
 
 /* 남은 기한 단계별 색: 같은 색은 항상 같은 뜻 */
-.mp-proj.ok     { --c: #279b76; }   /* 15일 이상 남음: 여유 */
-.mp-proj.warn   { --c: #d98a2b; }   /* 8~14일: 주의 */
-.mp-proj.danger { --c: #d66b6b; }   /* 7일 이내: 임박 */
-.mp-proj.idle   { --c: #a9b6af; }   /* 시작 전 / 종료 */
-
-.mp-proj:hover {
-  border-color: var(--c);
-}
+.mp-proj.ok     { --c: #279b76; }
+.mp-proj.warn   { --c: #d98a2b; }
+.mp-proj.danger { --c: #d66b6b; }
+.mp-proj.idle   { --c: #a9b6af; }
 
 .mp-proj-name {
   font-size: 14px;
