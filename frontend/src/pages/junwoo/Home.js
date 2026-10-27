@@ -4,8 +4,12 @@ import DashboardCalendar from './DashboardCalendar';
 
 function Home({ info, todo }) {
 
-  return (
+  // 최신 프로젝트 3개
+  const latestTodo = [...todo]
+    .sort((a, b) => Number(b.id) - Number(a.id))
+    .slice(0, 3);
 
+  return (
     <>
 
       {/* 캘린더 */}
@@ -16,7 +20,7 @@ function Home({ info, todo }) {
         <h3>프로젝트</h3>
         <ol>
           {
-            [...todo].reverse().slice(0, 3).map((item) => (
+            latestTodo.map((item) => (
               <li key={item.id}>
                 <Link to={`/todo/${item.id}`}>
                   {item.title}
@@ -44,9 +48,7 @@ function Home({ info, todo }) {
       </div>
 
     </>
-
   );
-
 }
 
 export default Home;

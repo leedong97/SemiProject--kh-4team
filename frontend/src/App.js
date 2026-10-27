@@ -16,6 +16,8 @@ import * as dong from './pages/dong';
 import * as junwoo from './pages/junwoo';
 import * as jongho from './pages/jongho';
 
+import Preview from "./pages/preview/Preview";
+
 
 const members = [woojin, heeseung, dong, junwoo, jongho];
 

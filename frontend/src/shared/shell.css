@@ -13,7 +13,10 @@ body:has(.woojin-frame) {
   color: #34443d;
 }
 
-.team-shell, .team-shell * { box-sizing: border-box; }
+.team-shell,
+.team-shell * {
+  box-sizing: border-box;
+}
 
 /* 전체 레이아웃 */
 
@@ -171,7 +174,7 @@ body:has(.woojin-frame) {
 /* 태블릿 */
 
 @media (max-width: 1100px) {
-.team-shell {
+  .team-shell {
     grid-template-columns: repeat(6, minmax(0, 1fr));
     grid-template-areas:
       "logo logo todo-menu info-menu . my-name"
@@ -179,10 +182,12 @@ body:has(.woojin-frame) {
       "info info info todo todo todo";
     grid-template-rows: 76px auto auto;
   }
-.team-shell .logo {
+
+  .team-shell .logo {
     padding-left: 15px;
   }
-.team-shell .my-name {
+
+  .team-shell .my-name {
     padding-right: 15px;
   }
 }
@@ -190,7 +195,7 @@ body:has(.woojin-frame) {
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell {
+  .team-shell {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
       "logo logo"
@@ -204,19 +209,23 @@ body:has(.woojin-frame) {
     padding: 15px;
     gap: 12px;
   }
-.team-shell::before {
+
+  .team-shell::before {
     grid-column: 1 / -1;
     grid-row: 1 / 4;
   }
-.team-shell .logo {
+
+  .team-shell .logo {
     justify-content: center;
     padding: 18px 0;
   }
-.team-shell .my-name {
+
+  .team-shell .my-name {
     justify-content: center;
     padding: 0 0 15px;
   }
-.team-shell .log {
+
+  .team-shell .log {
     right: 50%;
     transform: translateX(50%);
   }
@@ -289,7 +298,7 @@ body:has(.woojin-frame) {
 /* 태블릿 */
 
 @media (max-width: 1100px) {
-.team-shell {
+  .team-shell {
     grid-template-areas:
       "logo dash-menu todo-menu issue-menu info-menu my-name"
       "calendar calendar calendar calendar calendar calendar"
@@ -300,7 +309,7 @@ body:has(.woojin-frame) {
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell {
+  .team-shell {
     grid-template-areas:
       "logo logo"
       "dash-menu todo-menu"
@@ -312,7 +321,100 @@ body:has(.woojin-frame) {
 
     grid-template-rows: 60px auto auto auto auto auto auto;
   }
-.team-shell::before {
+
+  .team-shell::before {
     grid-row: 1 / 5;
   }
+}
+
+/* 회사 로고 */
+.team-shell .company-logo {
+  grid-area: logo;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  width: 100%;
+  height: 100%;
+  padding-left: 20px;
+
+  position: relative;
+  z-index: 1;
+
+  min-width: 0;
+  text-decoration: none;
+}
+
+/* 로고 이미지 */
+.team-shell .company-logo img {
+  display: block;
+  width: 250px;
+  max-width: 100%;
+  height: auto;
+  max-height: 90px;
+  object-fit: contain;
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .team-shell .company-logo {
+    justify-content: center;
+    padding-left: 0;
+  }
+
+  .team-shell .company-logo img {
+    max-height: 45px;
+  }
+}
+
+/* COMMAND ERP 상단 메뉴 테마: shared/shell.css 맨 아래에 추가
+   주의: 공통 shell.css이므로 팀 전체 화면에 영향을 줄 수 있습니다. */
+
+body:has(.team-shell) {
+  background: linear-gradient(135deg, #F5F9FF 0%, #EEF5FF 55%, #F8FBFF 100%);
+  color: #263A56;
+}
+
+.team-shell::before {
+  border: 1px solid #E2ECF8;
+  box-shadow: 0 9px 28px rgba(15, 55, 110, .07);
+}
+
+.team-shell .dash-menu h3,
+.team-shell .todo-menu h3,
+.team-shell .issue-menu h3,
+.team-shell .info-menu h3 {
+  color: #385577;
+}
+
+.team-shell .dash-menu h3:hover,
+.team-shell .todo-menu h3:hover,
+.team-shell .issue-menu h3:hover,
+.team-shell .info-menu h3:hover {
+  background: #EAF4FF;
+  color: #087BDF;
+}
+
+.team-shell .my-name>h4 {
+  color: #087BDF;
+}
+
+.team-shell .my-name>h4 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.team-shell .log {
+  border: 1px solid #E0EAF7;
+  box-shadow: 0 10px 24px rgba(15, 55, 110, .11);
+}
+
+.team-shell .log h4 {
+  color: #385577;
+}
+
+.team-shell .log h4:hover {
+  background: #EAF4FF;
+  color: #087BDF;
 }

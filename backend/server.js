@@ -180,15 +180,17 @@ app.get('/api/notices', async (req, res) => {
 
         const [rows] = await db.query(`
             SELECT
-                notice_id AS id,
-                title,
-                content,
-                employee_id AS author,
-                DATE_FORMAT(created_at, '%Y.%m.%d') AS date,
-                views,
-                is_pinned AS isPinned
-                FROM notices
-                ORDER BY COALESCE(updated_at, created_at) DESC, notice_id DESC
+                n.notice_id AS id,
+                n.title,
+                n.content,
+                COALESCE(e.employee_name, '알 수 없음') AS author,
+                DATE_FORMAT(n.created_at, '%Y.%m.%d') AS date,
+                n.views,
+                n.is_pinned AS isPinned
+            FROM notices n
+            LEFT JOIN employees e
+                ON n.employee_id = e.employee_id
+            ORDER BY n.notice_id DESC
         `);
 
         res.json(rows);
@@ -304,18 +306,18 @@ app.get('/api/notices/:id', async (req, res) => {
 
         const [rows] = await db.query(`
             SELECT
-                UNIX_TIMESTAMP(COALESCE(updated_at, created_at)) AS sortAt,
-                notice_id AS id,
-                title,
-                content,
-                DATE_FORMAT(event_date, '%Y-%m-%d') AS eventDate,
-                employee_id AS author,
-                DATE_FORMAT(created_at, '%Y.%m.%d') AS date,
-                DATE_FORMAT(updated_at, '%Y.%m.%d %H:%i') AS updatedAt,
-                views,
-                is_pinned AS isPinned
-            FROM notices
-            WHERE notice_id = ?
+                n.notice_id AS id,
+                n.title,
+                n.content,
+                COALESCE(e.employee_name, '알 수 없음') AS author,
+                DATE_FORMAT(n.created_at, '%Y.%m.%d') AS date,
+                DATE_FORMAT(n.updated_at, '%Y.%m.%d %H:%i') AS updatedAt,
+                n.views,
+                n.is_pinned AS isPinned
+            FROM notices n
+            LEFT JOIN employees e
+                ON n.employee_id = e.employee_id
+            WHERE n.notice_id = ?
         `, [id]);
 
         if (rows.length === 0) {
@@ -594,22 +596,40 @@ app.get('/api/projects', async (req, res) => {
     try {
 
         const [rows] = await db.query(`
-            SELECT
-                UNIX_TIMESTAMP(COALESCE(updated_at, created_at)) AS sortAt,
-                project_id AS id,
-                project_title AS title,
-                project_content AS content,
-                created_by AS author,
-                manager_id AS managerId,
-                status,
-                priority,
-                project_progress AS progress,
-                views,
-                DATE_FORMAT(start_date, '%Y.%m.%d') AS startDate,
-                DATE_FORMAT(end_date, '%Y.%m.%d') AS endDate,
-                DATE_FORMAT(created_at, '%Y.%m.%d') AS date
-            FROM projects
-            ORDER BY COALESCE(updated_at, created_at) DESC, project_id DESC
+            
+SELECT
+    p.project_id AS id,
+    p.project_title AS title,
+    p.project_content AS content,
+
+    p.created_by AS authorId,
+    COALESCE(a.employee_name, '직원 정보 없음') AS author,
+
+    p.manager_id AS managerId,
+    CASE
+        WHEN p.manager_id IS NULL THEN '미지정'
+        ELSE COALESCE(m.employee_name, '직원 정보 없음')
+    END AS managerName,
+
+    p.status,
+    p.priority,
+    p.project_progress AS progress,
+    p.views,
+
+    DATE_FORMAT(p.start_date, '%Y.%m.%d') AS startDate,
+    DATE_FORMAT(p.end_date, '%Y.%m.%d') AS endDate,
+    DATE_FORMAT(p.created_at, '%Y.%m.%d') AS date
+
+FROM projects p
+
+LEFT JOIN employees a
+    ON p.created_by = a.employee_id
+
+LEFT JOIN employees m
+    ON p.manager_id = m.employee_id
+
+ORDER BY p.project_id DESC
+
         `);
 
         res.json(rows);
@@ -642,23 +662,43 @@ app.get('/api/projects/:id', async (req, res) => {
     try {
 
         const [rows] = await db.query(`
-            SELECT
-                project_id AS id,
-                project_title AS title,
-                project_content AS content,
-                created_by AS author,
-                manager_id AS managerId,
-                status,
-                priority,
-                project_progress AS progress,
-                views,
-                DATE_FORMAT(start_date, '%Y.%m.%d') AS startDate,
-                DATE_FORMAT(end_date, '%Y.%m.%d') AS endDate,
-                DATE_FORMAT(created_at, '%Y.%m.%d') AS date,
-                DATE_FORMAT(updated_at, '%Y.%m.%d %H:%i') AS updatedAt
-            FROM projects
-            WHERE project_id = ?
+            
+SELECT
+    p.project_id AS id,
+    p.project_title AS title,
+    p.project_content AS content,
+
+    p.created_by AS authorId,
+    COALESCE(a.employee_name, '직원 정보 없음') AS author,
+
+    p.manager_id AS managerId,
+    CASE
+        WHEN p.manager_id IS NULL THEN '미지정'
+        ELSE COALESCE(m.employee_name, '직원 정보 없음')
+    END AS managerName,
+
+    p.status,
+    p.priority,
+    p.project_progress AS progress,
+    p.views,
+
+    DATE_FORMAT(p.start_date, '%Y.%m.%d') AS startDate,
+    DATE_FORMAT(p.end_date, '%Y.%m.%d') AS endDate,
+    DATE_FORMAT(p.created_at, '%Y.%m.%d') AS date,
+    DATE_FORMAT(p.updated_at, '%Y.%m.%d %H:%i') AS updatedAt
+
+FROM projects p
+
+LEFT JOIN employees a
+    ON p.created_by = a.employee_id
+
+LEFT JOIN employees m
+    ON p.manager_id = m.employee_id
+
+WHERE p.project_id = ?
+
         `, [id]);
+
 
         if (rows.length === 0) {
             return res.status(404).json({
@@ -666,7 +706,23 @@ app.get('/api/projects/:id', async (req, res) => {
             });
         }
 
-        res.json(rows[0]);
+        // 프로젝트 참여 직원 이름 조회
+        const [memberRows] = await db.query(`
+    SELECT
+        e.employee_name AS name
+    FROM project_members pm
+    JOIN employees e
+        ON pm.employee_id = e.employee_id
+    WHERE pm.project_id = ?
+    ORDER BY pm.employee_id ASC
+`, [id]);
+
+        // 기존 프로젝트 정보 + 참여 직원 명단 반환
+        res.json({
+            ...rows[0],
+            memberNames: memberRows.map(member => member.name)
+        });
+
 
     } catch (error) {
 
@@ -739,7 +795,9 @@ app.post('/api/projects', async (req, res) => {
         content,
         created_by,
         startDate,
-        endDate
+        endDate,
+        status,
+        priority
     } = req.body;
 
     // 제목과 내용 공백 검사
@@ -791,6 +849,17 @@ app.post('/api/projects', async (req, res) => {
         });
     }
 
+    if (!["예정", "진행중", "완료", "보류"].includes(status)) {
+        return res.status(400).json({
+            message: "올바른 프로젝트 상태를 선택하세요."
+        });
+    }
+
+    if (!["낮음", "보통", "높음"].includes(priority)) {
+        return res.status(400).json({
+            message: "올바른 우선순위를 선택하세요."
+        });
+    }
 
     try {
 
@@ -802,21 +871,25 @@ app.post('/api/projects', async (req, res) => {
         created_by,
         start_date,
         end_date,
+        status,
+        priority,
         project_progress,
         views
     )
-    VALUES (?, ?, ?, ?, ?, 0, 0)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0)
 `, [
             title.trim(),
             content.trim(),
             created_by,
             startDate,
-            endDate
+            endDate,
+            status,
+            priority
         ]);
 
 
         res.status(201).json({
-            message: '프로젝트 등록 성공!',
+            message: '프로젝트 등록 완료.',
             id: result.insertId
         });
 

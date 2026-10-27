@@ -66,7 +66,7 @@ function Todo_set({ todo, onAddTodo }) {
                 endDate
             );
 
-            alert("프로젝트가 등록되었습니다!");
+            alert("프로젝트가 등록되었습니다.");
 
             setTitle("");
             setContent("");

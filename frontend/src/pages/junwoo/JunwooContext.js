@@ -231,7 +231,14 @@ export function JunwooProvider({ children }) {
 
 
   /* 프로젝트 등록 */
-  const addTodo = async (title, content, startDate, endDate) => {
+  const addTodo = async (
+    title,
+    content,
+    startDate,
+    endDate,
+    status,
+    priority
+  ) => {
 
     // 테스트용 직원번호 (추후 로그인 정보 연결)
     const created_by = 1;
@@ -248,7 +255,9 @@ export function JunwooProvider({ children }) {
           content,
           created_by,
           startDate,
-          endDate
+          endDate,
+          status,
+          priority
         })
       }
     );
@@ -268,8 +277,8 @@ export function JunwooProvider({ children }) {
       author: created_by,
       views: 0,
       progress: 0,
-      status: '예정',
-      priority: '보통',
+      status,
+      priority,
       startDate,
       endDate,
       sortAt: Date.now() / 1000,

@@ -260,20 +260,7 @@ function Calendar({ schedules = [] }) {
                 }
               })}
             >
-              + 프로젝트 요청
-            </button>
-
-            {/* 공지사항 등록 */}
-            <button
-              type="button"
-              className="calendar-add-notice-btn"
-              onClick={() => navigate("/info", {
-                state: {
-                  eventDate: selectedDate
-                }
-              })}
-            >
-              + 공지사항 등록
+              + 프로젝트 등록 요청
             </button>
 
           </div>

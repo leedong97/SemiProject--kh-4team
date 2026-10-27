@@ -4145,3 +4145,1597 @@
 .calendar-schedule .calendar-add-notice-btn:active {
   transform: translateY(0);
 }
+
+.info-table th:nth-child(2),
+.info-table td:nth-child(2) {
+  text-align: center;
+}
+
+.info-title-link {
+  width: auto;
+  text-align: center;
+}
+
+/* 프로젝트 제목 열 가운데 정렬 */
+.todo-table th:nth-child(3),
+.todo-table td:nth-child(3) {
+  text-align: center;
+}
+
+/* 프로젝트 제목 버튼 가운데 정렬 */
+.todo-table td:nth-child(1) .todo-title-link {
+  display: inline-block;
+  width: auto;
+  text-align: center;
+}
+
+/* 프로젝트 목록 테이블 너비 조정 */
+.team-shell .todo-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+/* 번호 */
+.team-shell .todo-table th:nth-child(1) {
+  width: 7%;
+}
+
+/* 프로젝트 ID */
+.team-shell .todo-table th:nth-child(2) {
+  width: 11%;
+}
+
+/* 프로젝트 제목 */
+.team-shell .todo-table th:nth-child(3) {
+  width: 34%;
+  text-align: center;
+}
+
+.team-shell .todo-table td:nth-child(3) {
+  text-align: center;
+}
+
+.team-shell .todo-table .todo-title-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* 작성자 */
+.team-shell .todo-table th:nth-child(4) {
+  width: 12%;
+}
+
+/* 작성일자 */
+.team-shell .todo-table th:nth-child(5) {
+  width: 17%;
+}
+
+/* 조회수 */
+.team-shell .todo-table th:nth-child(6) {
+  width: 9%;
+}
+
+/* 관리 */
+.team-shell .todo-table th:nth-child(7) {
+  width: 10%;
+}
+
+/* ======================================================================
+   COMMAND ERP | Brand Blue Theme
+   2026-10-27 | 준우 페이지 전용 색상 테마
+
+   사용 방법: 현재 src/pages/junwoo/junwoo.css 파일 맨 아래에 통째로 추가.
+   기존 CSS를 지우지 마세요! (현재 수정된 프로젝트 목록 레이아웃 보존)
+   기존 CSS의 간격, grid, 크기, display, 기능은 변경하지 않습니다.
+   ====================================================================== */
+
+.team-shell {
+  --command-navy: #0B2551;
+  --command-blue: #087BDF;
+  --command-cyan: #00B8E8;
+  --command-ink: #263A56;
+  --command-muted: #6E83A1;
+  --command-border: #DCE9F8;
+  --command-light: #EEF6FF;
+  --command-shadow: 0 10px 28px rgba(15, 55, 110, .07);
+}
+
+/* ---- 원본 CSS에서 색상이 지정된 기존 요소를 모두 새 팔레트로 변경 ---- */
+
+.team-shell .calendar th {
+  background: #EAF4FF;
+  color: #1C69BA;
+}
+
+.team-shell .calendar td {
+  background: #F6FAFF;
+}
+
+.team-shell .calendar td:hover {
+  background: #D6EAFF;
+}
+
+.team-shell .todo h3,
+.team-shell .info h3 {
+  border-bottom: 2px solid #E5F0FC;
+}
+
+.team-shell .todo li,
+.team-shell .info li {
+  background: #F4F9FF;
+}
+
+.team-shell .todo li::before,
+.team-shell .info li::before {
+  color: #098BD6;
+}
+
+.team-shell .todo li:hover,
+.team-shell .info li:hover {
+  background: #E3F2FF;
+}
+
+.team-shell .day-name {
+  background: #EAF4FF;
+}
+
+.team-shell .day {
+  background: #F6FAFF;
+}
+
+.team-shell .day:hover {
+  background: #D6EAFF;
+}
+
+.team-shell .info-header {
+  border-bottom: 2px solid #E5F0FC;
+}
+
+.team-shell .info-header h2 {
+  color: #087BDF;
+}
+
+.team-shell .info-header p {
+  color: #7C8FA6;
+}
+
+.team-shell .info-item {
+  background: #F4F9FF;
+  border: 1px solid #EFF6FE;
+}
+
+.team-shell .info-item:hover {
+  background: #EDF3FA;
+}
+
+.team-shell .info-title {
+  color: #263A56;
+}
+
+.team-shell .info-number {
+  background: #E3F2FF;
+  color: #087BDF;
+}
+
+.team-shell .info-delete {
+  border: 1px solid #F1C6C6;
+  color: #D66B6B;
+}
+
+.team-shell .info-delete:hover {
+  background: #FFF0F0;
+  border-color: #E89B9B;
+}
+
+.team-shell .info-pages button {
+  border: 1px solid #DCE9F8;
+  color: #536881;
+}
+
+.team-shell .info-pages button:hover {
+  background: #EAF4FF;
+  color: #087BDF;
+}
+
+.team-shell .info-pages button.active {
+  background: #1689EC;
+  border-color: #1689EC;
+}
+
+.team-shell .info-empty {
+  color: #7C8FA6;
+}
+
+.team-shell .info-bottom {
+  border-top: 1px solid #E5F0FC;
+}
+
+.team-shell .info-add {
+  background: #1689EC;
+}
+
+.team-shell .info-add:hover {
+  background: #087BDF;
+}
+
+.team-shell .info-set-page h2 {
+  color: #087BDF;
+  border-bottom: 2px solid #E5F0FC;
+}
+
+.team-shell .info-set-page input,
+.team-shell .info-set-page textarea {
+  background: #F6FAFF;
+  border: 1px solid #DCE9F8;
+}
+
+.team-shell .info-set-page input:focus,
+.team-shell .info-set-page textarea:focus {
+  border-color: #00A9E8;
+}
+
+.team-shell .info-set-page button {
+  background: #1689EC;
+}
+
+.team-shell .info-set-page button:hover {
+  background: #087BDF;
+}
+
+.team-shell .info-search input {
+  border: 1px solid #DCE9F8;
+  background: #F6FAFF;
+}
+
+.team-shell .info-search input:focus {
+  border-color: #00A9E8;
+}
+
+.team-shell .info-search button {
+  background: #1689EC;
+}
+
+.team-shell .info-search button:hover {
+  background: #087BDF;
+}
+
+.team-shell .info-detail .info-header h2 {
+  color: #087BDF;
+}
+
+.team-shell .info-detail .info-header p {
+  color: #7C8FA6;
+}
+
+.team-shell .info-detail-content {
+  color: #263A56;
+}
+
+.team-shell .info-detail hr {
+  border-top: 1px solid #E5F0FC;
+}
+
+.team-shell .info-detail-back {
+  background: #1689EC;
+}
+
+.team-shell .info-detail-back:hover {
+  background: #087BDF;
+}
+
+.team-shell .info-title a {
+  color: #263A56;
+}
+
+.team-shell .info-title a:visited {
+  color: #263A56;
+}
+
+.team-shell .info-title a:hover {
+  color: #087BDF;
+}
+
+.team-shell .info-list-head {
+  border-bottom: 2px solid #E5F0FC;
+  color: #536881;
+}
+
+.team-shell .info-author {
+  color: #536881;
+}
+
+.team-shell .todo-header {
+  border-bottom: 2px solid #E5F0FC;
+}
+
+.team-shell .todo-header h2 {
+  color: #087BDF;
+}
+
+.team-shell .todo-header p {
+  color: #7C8FA6;
+}
+
+.team-shell .todo-search input {
+  border: 1px solid #DCE9F8;
+  background: #F6FAFF;
+}
+
+.team-shell .todo-search input:focus {
+  border-color: #00A9E8;
+}
+
+.team-shell .todo-search button {
+  background: #1689EC;
+}
+
+.team-shell .todo-search button:hover {
+  background: #087BDF;
+}
+
+.team-shell .todo-list-head {
+  border-bottom: 2px solid #E5F0FC;
+  color: #536881;
+}
+
+.team-shell .todo-item {
+  background: #F4F9FF;
+  border: 1px solid #EFF6FE;
+}
+
+.team-shell .todo-item:hover {
+  background: #EDF3FA;
+}
+
+.team-shell .todo-number {
+  background: #E3F2FF;
+  color: #087BDF;
+}
+
+.team-shell .todo-title a,
+.team-shell .todo-title a:visited {
+  color: #263A56;
+}
+
+.team-shell .todo-title a:hover {
+  color: #087BDF;
+}
+
+.team-shell .todo-author {
+  color: #536881;
+}
+
+.team-shell .todo-delete {
+  border: 1px solid #F1C6C6;
+  color: #D66B6B;
+}
+
+.team-shell .todo-delete:hover {
+  background: #FFF0F0;
+  border-color: #E89B9B;
+}
+
+.team-shell .todo-empty {
+  color: #7C8FA6;
+}
+
+.team-shell .todo-pages button {
+  border: 1px solid #DCE9F8;
+  color: #536881;
+}
+
+.team-shell .todo-pages button:hover {
+  background: #EAF4FF;
+  color: #087BDF;
+}
+
+.team-shell .todo-pages button.active {
+  background: #1689EC;
+  border-color: #1689EC;
+}
+
+.team-shell .todo-button {
+  border-top: 1px solid #E5F0FC;
+}
+
+.team-shell .todo-add {
+  background: #1689EC;
+}
+
+.team-shell .todo-add:hover {
+  background: #087BDF;
+}
+
+.team-shell .todo-set-page h2 {
+  color: #087BDF;
+  border-bottom: 2px solid #E5F0FC;
+}
+
+.team-shell .todo-set-page input,
+.team-shell .todo-set-page textarea {
+  background: #F6FAFF;
+  border: 1px solid #DCE9F8;
+}
+
+.team-shell .todo-set-page input:focus,
+.team-shell .todo-set-page textarea:focus {
+  border-color: #00A9E8;
+}
+
+.team-shell .todo-set-page button {
+  background: #1689EC;
+}
+
+.team-shell .todo-set-page button:hover {
+  background: #087BDF;
+}
+
+.team-shell .todo-detail .todo-header h2 {
+  color: #087BDF;
+}
+
+.team-shell .todo-detail .todo-header p {
+  color: #7C8FA6;
+}
+
+.team-shell .todo-detail-content {
+  color: #263A56;
+}
+
+.team-shell .todo-detail hr {
+  border-top: 1px solid #E5F0FC;
+}
+
+.team-shell .todo-detail-back {
+  background: #1689EC;
+}
+
+.team-shell .todo-detail-back:hover {
+  background: #087BDF;
+}
+
+.team-shell .todo li a,
+.team-shell .info li a {
+  color: #263A56;
+}
+
+.team-shell .todo li a:visited,
+.team-shell .info li a:visited {
+  color: #263A56;
+}
+
+.team-shell .todo li a:hover,
+.team-shell .info li a:hover {
+  color: #087BDF;
+}
+
+.team-shell .detail-other h3 {
+  color: #263A56;
+}
+
+.team-shell .calendar-top h2 {
+  color: #087BDF;
+}
+
+.team-shell .calendar-top button {
+  background: #EAF4FF;
+  color: #087BDF;
+}
+
+.team-shell .calendar-top button:hover {
+  background: #D6EAFF;
+}
+
+.team-shell .calendar-area .day.selected {
+  background: #D6EAFF;
+  color: #087BDF;
+}
+
+.team-shell .schedule-dot {
+  background: #1689EC;
+}
+
+.team-shell .calendar-schedule h3 {
+  border-bottom: 2px solid #E5F0FC;
+  color: #087BDF;
+}
+
+.team-shell .calendar-schedule h4 {
+  color: #087BDF;
+}
+
+.team-shell .calendar-schedule p {
+  color: #7C8FA6;
+}
+
+.team-shell .calendar-schedule li {
+  background: #F4F9FF;
+}
+
+.team-shell .calendar-schedule li strong {
+  color: #087BDF;
+}
+
+.team-shell .schedule-form input {
+  border: 1px solid #DCE9F8;
+  background: #F6FAFF;
+}
+
+.team-shell .schedule-form input:focus {
+  border-color: #00A9E8;
+}
+
+.team-shell .schedule-form button {
+  background: #1689EC;
+}
+
+.team-shell .schedule-form button:hover {
+  background: #087BDF;
+}
+
+.team-shell .calendar-schedule .schedule-delete {
+  border: 1px solid #F1C6C6;
+  color: #D66B6B;
+}
+
+.team-shell .calendar-schedule .schedule-delete:hover {
+  background: #FFF0F0;
+}
+
+.team-shell .todo-detail-header,
+.team-shell .info-detail-header {
+  border-bottom: 2px solid #E5F0FC;
+}
+
+.team-shell .todo-detail-header h1,
+.team-shell .info-detail-header h1 {
+  color: #087BDF;
+}
+
+.team-shell .todo-detail-header p,
+.team-shell .info-detail-header p {
+  color: #7C8FA6;
+}
+
+.team-shell .todo-detail-page .todo-detail-content,
+.team-shell .info-detail-page .info-detail-content {
+  border: 1px solid #E5F0FC;
+}
+
+.team-shell .todo-detail-row,
+.team-shell .info-detail-row {
+  border-bottom: 1px solid #EFF6FE;
+}
+
+.team-shell .todo-detail-row strong,
+.team-shell .info-detail-row strong {
+  background: #F4F9FF;
+  color: #536881;
+}
+
+.team-shell .todo-detail-row span,
+.team-shell .info-detail-row span {
+  color: #263A56;
+}
+
+.team-shell .todo-detail-description h3,
+.team-shell .info-detail-description h3 {
+  color: #087BDF;
+}
+
+.team-shell .todo-detail-page .todo-detail-description p,
+.team-shell .info-detail-page .info-detail-description p {
+  color: #263A56;
+}
+
+.team-shell .todo-detail-page .detail-other h3,
+.team-shell .info-detail-page .detail-other h3 {
+  color: #263A56;
+}
+
+.team-shell .todo-detail-header button,
+.team-shell .info-detail-header button,
+.team-shell .todo-detail-bottom button,
+.team-shell .info-detail-bottom button {
+  background: #1689EC;
+}
+
+.team-shell .todo-detail-header button:hover,
+.team-shell .info-detail-header button:hover,
+.team-shell .todo-detail-bottom button:hover,
+.team-shell .info-detail-bottom button:hover {
+  background: #087BDF;
+}
+
+.team-shell .todo-detail-page button:focus-visible,
+.team-shell .info-detail-page button:focus-visible,
+.team-shell .todo-detail-page a:focus-visible,
+.team-shell .info-detail-page a:focus-visible {
+  outline: 2px solid #087BDF;
+}
+
+.team-shell :is(.info-manage-header,
+  .todo-manage-header,
+  .info-set-header,
+  .todo-set-header) {
+  border-bottom: 1px solid #E5F0FC;
+}
+
+.team-shell :is(.info-manage-header,
+  .todo-manage-header,
+  .info-set-header,
+  .todo-set-header) h1 {
+  color: #087BDF;
+}
+
+.team-shell :is(.info-manage-header,
+  .todo-manage-header,
+  .info-set-header,
+  .todo-set-header) p {
+  color: #7C8FA6;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page,
+  .info-set-page,
+  .todo-set-page) :is(.info-reset,
+  .todo-reset,
+  .info-set-reset,
+  .todo-set-reset) {
+  border: 1px solid #DCE9F8;
+  color: #536881;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page,
+  .info-set-page,
+  .todo-set-page) :is(.info-reset,
+  .todo-reset,
+  .info-set-reset,
+  .todo-set-reset):hover {
+  background: #EAF4FF;
+  color: #087BDF;
+}
+
+.team-shell :is(.info-summary,
+  .todo-summary,
+  .info-set-summary,
+  .todo-set-summary) {
+  color: #536881;
+}
+
+.team-shell :is(.info-filter,
+  .todo-filter,
+  .info-set-filter,
+  .todo-set-filter) label {
+  color: #536881;
+}
+
+.team-shell :is(.info-filter,
+  .todo-filter,
+  .info-set-filter,
+  .todo-set-filter,
+  .info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) :is(input, textarea) {
+  background: #F6FAFF;
+  border: 1px solid #DCE9F8;
+  color: #263A56;
+}
+
+.team-shell :is(.info-filter,
+  .todo-filter,
+  .info-set-filter,
+  .todo-set-filter,
+  .info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) :is(input, textarea):focus {
+  border-color: #1689EC;
+}
+
+.team-shell :is(.info-register,
+  .todo-register,
+  .info-set-register,
+  .todo-set-register) {
+  background: #F4F9FF;
+}
+
+.team-shell :is(.info-register,
+  .todo-register,
+  .info-set-register,
+  .todo-set-register) h3 {
+  color: #263A56;
+}
+
+.team-shell :is(.info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) button {
+  background: #1689EC;
+}
+
+.team-shell :is(.info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) button:hover {
+  background: #087BDF;
+}
+
+.team-shell :is(.info-list-header,
+  .todo-list-header,
+  .info-set-list-header,
+  .todo-set-list-header) h3 {
+  color: #263A56;
+}
+
+.team-shell :is(.info-list-header,
+  .todo-list-header,
+  .info-set-list-header,
+  .todo-set-list-header) span {
+  color: #087BDF;
+}
+
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) th {
+  background: #EAF4FF;
+  border-bottom: 1px solid #DCE9F8;
+  color: #1C69BA;
+}
+
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) td {
+  border-bottom: 1px solid #EFF6FE;
+  color: #263A56;
+}
+
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) tbody tr:hover {
+  background: #F4F9FF;
+}
+
+.team-shell :is(.info-title-link,
+  .todo-title-link) {
+  color: #087BDF;
+}
+
+.team-shell :is(.info-set-table,
+  .todo-set-table) a {
+  color: #087BDF;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-delete, .todo-delete) {
+  border: 1px solid #F1C6C6;
+  color: #D66B6B;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-delete, .todo-delete):hover {
+  background: #FFF0F0;
+  border-color: #E89B9B;
+}
+
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) :is(.info-empty,
+  .todo-empty,
+  .info-set-empty,
+  .todo-set-empty) {
+  color: #7C8FA6;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-pages, .todo-pages) button {
+  border: 1px solid #DCE9F8;
+  color: #536881;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-pages, .todo-pages) button:hover {
+  background: #EAF4FF;
+  color: #087BDF;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-pages, .todo-pages) button.active {
+  background: #1689EC;
+  border-color: #1689EC;
+}
+
+.team-shell :is(.info-footer,
+  .todo-footer) {
+  color: #7C8FA6;
+}
+
+.team-shell :is(.info-set-footer,
+  .todo-set-footer) {
+  border-top: 1px solid #E5F0FC;
+}
+
+.team-shell :is(.info-set-footer,
+  .todo-set-footer) a {
+  background: #1689EC;
+}
+
+.team-shell :is(.info-set-footer,
+  .todo-set-footer) a:hover {
+  background: #087BDF;
+}
+
+.info-page,
+.info-set-page {
+  color: #263A56;
+  border: 1px solid #E5EFFB;
+  box-shadow: 0 8px 28px rgba(20, 76, 147, .07);
+}
+
+.info-page :is(button, input, textarea, a):focus-visible,
+.info-set-page :is(button, input, textarea, a):focus-visible {
+  outline: 3px solid rgba(8, 123, 223, .28);
+}
+
+.info-manage-header,
+.info-detail-header,
+.info-set-header {
+  border-bottom: 1px solid #E5EFFB;
+}
+
+.info-manage-header h1,
+.info-detail-header h1,
+.info-set-header h1 {
+  color: #136BB9;
+}
+
+.info-manage-header p,
+.info-detail-header p,
+.info-set-header p {
+  color: #7085A2;
+}
+
+.info-reset,
+.info-set-page .info-set-reset,
+.info-detail-header>button {
+  border: 1px solid #CFE2F9;
+  color: #226DB7;
+}
+
+.info-reset:hover,
+.info-set-page .info-set-reset:hover,
+.info-detail-header>button:hover {
+  background: #EDF6FF;
+  border-color: #A7CFF7;
+}
+
+.info-summary span,
+.info-set-summary span {
+  background: #F0F7FF;
+  border: 1px solid #DDEBFC;
+  color: #2F74B9;
+}
+
+.info-filter label,
+.info-set-filter label {
+  color: #3C618A;
+}
+
+.info-page input,
+.info-page textarea,
+.info-set-page input,
+.info-set-page textarea {
+  border: 1px solid #D9E7F7;
+  background: #FBFDFF;
+  color: #253B58;
+}
+
+.info-page input:focus,
+.info-page textarea:focus,
+.info-set-page input:focus,
+.info-set-page textarea:focus {
+  border-color: #1689EC;
+  box-shadow: 0 0 0 3px rgba(8, 123, 223, .1);
+}
+
+.info-page input::placeholder,
+.info-page textarea::placeholder,
+.info-set-page input::placeholder,
+.info-set-page textarea::placeholder {
+  color: #9BAEC5;
+}
+
+.info-register,
+.info-set-register {
+  border: 1px solid #E1EDFA;
+  background: #FBFDFF;
+}
+
+.info-register h3,
+.info-set-register h3,
+.info-list-header h3,
+.info-set-list-header h3 {
+  color: #274D7A;
+}
+
+.info-register-form>button,
+.info-set-page .info-set-register-form>button {
+  background: #1689EC;
+  border: 1px solid #1689EC;
+}
+
+.info-register-form>button:hover,
+.info-set-page .info-set-register-form>button:hover {
+  background: #087BDF;
+}
+
+.info-list-header>span,
+.info-set-list-header>span {
+  color: #7085A2;
+}
+
+.info-table thead,
+.info-set-table thead {
+  background: #EEF7FF;
+}
+
+.info-table th,
+.info-set-table th {
+  color: #395A7D;
+  border-top: 1px solid #E1EDFA;
+  border-bottom: 1px solid #D9E9F9;
+}
+
+.info-table td,
+.info-set-table td {
+  border-bottom: 1px solid #EDF4FC;
+  color: #536881;
+}
+
+.info-table tbody tr:hover,
+.info-set-table tbody tr:hover {
+  background: #F8FBFF;
+}
+
+.info-title-link,
+.info-set-table td a {
+  color: #2B527D;
+}
+
+.info-title-link:hover,
+.info-set-table td a:hover {
+  color: #0987CE;
+}
+
+.info-table td:last-child>button:not(.info-delete) {
+  background: #EDF6FF;
+  border: 1px solid #C2DEF9;
+  color: #1F6CBA;
+}
+
+.info-table td:last-child>button:not(.info-delete):hover {
+  background: #DCEEFF;
+}
+
+.info-table .info-delete {
+  color: #C85E5E;
+  background: #FFF8F8;
+  border: 1px solid #F1CECE;
+}
+
+.info-table .info-delete:hover {
+  background: #FFEDED;
+  border-color: #EAB0B0;
+}
+
+.info-empty,
+.info-set-empty {
+  color: #5691CE;
+}
+
+.info-footer {
+  border-top: 1px solid #EDF4FC;
+  color: #4D8BCB;
+}
+
+.info-pages button {
+  border: 1px solid #D5E7FA;
+  color: #526C8A;
+}
+
+.info-pages button:hover {
+  background: #F1F8FF;
+  color: #2079C9;
+}
+
+.info-pages button.active,
+.info-pages button.active:hover {
+  background: #1689EC;
+  border-color: #1689EC;
+}
+
+.info-detail-content {
+  background: #FBFDFF;
+  border: 1px solid #E5EFFA;
+}
+
+.info-detail-row {
+  border-bottom: 1px solid #EAF3FE;
+}
+
+.info-detail-row strong {
+  color: #4077AA;
+}
+
+.info-detail-row span {
+  color: #2E435E;
+}
+
+.info-detail-description h3 {
+  color: #274D7A;
+}
+
+.info-detail-edit button {
+  border: 1px solid #1689EC;
+  background: #1689EC;
+}
+
+.info-detail-edit button:hover:not(:disabled) {
+  background: #087BDF;
+}
+
+.info-detail-edit button:nth-child(2) {
+  color: #526C8A;
+  border-color: #D0E3F9;
+}
+
+.info-detail-edit button:nth-child(2):hover:not(:disabled) {
+  background: #EEF6FF;
+}
+
+.info-detail-other>h3 {
+  color: #274D7A;
+}
+
+.info-detail-other .info-list-head {
+  background: #F1F8FF;
+  color: #326EAC;
+}
+
+.info-detail-other .info-item {
+  border: 1px solid #ECF4FD;
+}
+
+.info-detail-other .info-title a {
+  color: #2B527D;
+}
+
+.info-detail-other .info-title a:hover {
+  color: #087BDF;
+}
+
+.info-detail-other .info-author {
+  color: #387CC3;
+}
+
+.info-detail-bottom {
+  border-top: 1px solid #E6EFF9;
+}
+
+.info-detail-back {
+  color: #286DB6;
+  border: 1px solid #CDE2F9;
+}
+
+.info-detail-back:hover {
+  background: #EDF6FF;
+}
+
+.info-set-footer {
+  border-top: 1px solid #E5EFFB;
+}
+
+.info-set-footer a {
+  color: #1977C5;
+}
+
+:is(.todo-page, .todo-manage-page),
+.todo-set-page {
+  color: #263A56;
+  border: 1px solid #E5EFFB;
+  box-shadow: 0 8px 28px rgba(20, 76, 147, .07);
+}
+
+:is(.todo-page, .todo-manage-page) :is(button, input, textarea, a):focus-visible,
+.todo-set-page :is(button, input, textarea, a):focus-visible {
+  outline: 3px solid rgba(8, 123, 223, .28);
+}
+
+.todo-manage-header,
+.todo-detail-header,
+.todo-set-header {
+  border-bottom: 1px solid #E5EFFB;
+}
+
+.todo-manage-header h1,
+.todo-detail-header h1,
+.todo-set-header h1 {
+  color: #136BB9;
+}
+
+.todo-manage-header p,
+.todo-detail-header p,
+.todo-set-header p {
+  color: #7085A2;
+}
+
+.todo-reset,
+.todo-set-page .todo-set-reset,
+.todo-detail-header>button {
+  border: 1px solid #CFE2F9;
+  color: #226DB7;
+}
+
+.todo-reset:hover,
+.todo-set-page .todo-set-reset:hover,
+.todo-detail-header>button:hover {
+  background: #EDF6FF;
+  border-color: #A7CFF7;
+}
+
+.todo-summary span,
+.todo-set-summary span {
+  background: #F0F7FF;
+  border: 1px solid #DDEBFC;
+  color: #2F74B9;
+}
+
+.todo-filter label,
+.todo-set-filter label {
+  color: #3C618A;
+}
+
+:is(.todo-page, .todo-manage-page) input,
+:is(.todo-page, .todo-manage-page) textarea,
+.todo-set-page input,
+.todo-set-page textarea {
+  border: 1px solid #D9E7F7;
+  background: #FBFDFF;
+  color: #253B58;
+}
+
+:is(.todo-page, .todo-manage-page) input:focus,
+:is(.todo-page, .todo-manage-page) textarea:focus,
+.todo-set-page input:focus,
+.todo-set-page textarea:focus {
+  border-color: #1689EC;
+  box-shadow: 0 0 0 3px rgba(8, 123, 223, .1);
+}
+
+:is(.todo-page, .todo-manage-page) input::placeholder,
+:is(.todo-page, .todo-manage-page) textarea::placeholder,
+.todo-set-page input::placeholder,
+.todo-set-page textarea::placeholder {
+  color: #9BAEC5;
+}
+
+.todo-register,
+.todo-set-register {
+  border: 1px solid #E1EDFA;
+  background: #FBFDFF;
+}
+
+.todo-register h3,
+.todo-set-register h3,
+.todo-list-header h3,
+.todo-set-list-header h3 {
+  color: #274D7A;
+}
+
+.todo-register-form>button,
+.todo-set-page .todo-set-register-form>button {
+  background: #1689EC;
+  border: 1px solid #1689EC;
+}
+
+.todo-register-form>button:hover,
+.todo-set-page .todo-set-register-form>button:hover {
+  background: #087BDF;
+}
+
+.todo-list-header>span,
+.todo-set-list-header>span {
+  color: #7085A2;
+}
+
+.todo-table thead,
+.todo-set-table thead {
+  background: #EEF7FF;
+}
+
+.todo-table th,
+.todo-set-table th {
+  color: #395A7D;
+  border-top: 1px solid #E1EDFA;
+  border-bottom: 1px solid #D9E9F9;
+}
+
+.todo-table td,
+.todo-set-table td {
+  border-bottom: 1px solid #EDF4FC;
+  color: #536881;
+}
+
+.todo-table tbody tr:hover,
+.todo-set-table tbody tr:hover {
+  background: #F8FBFF;
+}
+
+.todo-title-link,
+.todo-set-table td a {
+  color: #2B527D;
+}
+
+.todo-title-link:hover,
+.todo-set-table td a:hover {
+  color: #0987CE;
+}
+
+.todo-table td:last-child>button:not(.todo-delete) {
+  background: #EDF6FF;
+  border: 1px solid #C2DEF9;
+  color: #1F6CBA;
+}
+
+.todo-table td:last-child>button:not(.todo-delete):hover {
+  background: #DCEEFF;
+}
+
+.todo-table .todo-delete {
+  color: #C85E5E;
+  background: #FFF8F8;
+  border: 1px solid #F1CECE;
+}
+
+.todo-table .todo-delete:hover {
+  background: #FFEDED;
+  border-color: #EAB0B0;
+}
+
+.todo-empty,
+.todo-set-empty {
+  color: #5691CE;
+}
+
+.todo-footer {
+  border-top: 1px solid #EDF4FC;
+  color: #4D8BCB;
+}
+
+:is(.todo-page, .todo-manage-page)s button {
+  border: 1px solid #D5E7FA;
+  color: #526C8A;
+}
+
+:is(.todo-page, .todo-manage-page)s button:hover {
+  background: #F1F8FF;
+  color: #2079C9;
+}
+
+:is(.todo-page, .todo-manage-page)s button.active,
+:is(.todo-page, .todo-manage-page)s button.active:hover {
+  background: #1689EC;
+  border-color: #1689EC;
+}
+
+.todo-detail-content {
+  background: #FBFDFF;
+  border: 1px solid #E5EFFA;
+}
+
+.todo-detail-row {
+  border-bottom: 1px solid #EAF3FE;
+}
+
+.todo-detail-row strong {
+  color: #4077AA;
+}
+
+.todo-detail-row span {
+  color: #2E435E;
+}
+
+.todo-detail-description h3 {
+  color: #274D7A;
+}
+
+.todo-detail-edit button {
+  border: 1px solid #1689EC;
+  background: #1689EC;
+}
+
+.todo-detail-edit button:hover:not(:disabled) {
+  background: #087BDF;
+}
+
+.todo-detail-edit button:nth-child(2) {
+  color: #526C8A;
+  border-color: #D0E3F9;
+}
+
+.todo-detail-edit button:nth-child(2):hover:not(:disabled) {
+  background: #EEF6FF;
+}
+
+.todo-detail-other>h3 {
+  color: #274D7A;
+}
+
+.todo-detail-other .todo-list-head {
+  background: #F1F8FF;
+  color: #326EAC;
+}
+
+.todo-detail-other .todo-item {
+  border: 1px solid #ECF4FD;
+}
+
+.todo-detail-other .todo-title a {
+  color: #2B527D;
+}
+
+.todo-detail-other .todo-title a:hover {
+  color: #087BDF;
+}
+
+.todo-detail-other .todo-author {
+  color: #387CC3;
+}
+
+.todo-detail-bottom {
+  border-top: 1px solid #E6EFF9;
+}
+
+.todo-detail-back {
+  color: #286DB6;
+  border: 1px solid #CDE2F9;
+}
+
+.todo-detail-back:hover {
+  background: #EDF6FF;
+}
+
+.todo-set-footer {
+  border-top: 1px solid #E5EFFB;
+}
+
+.todo-set-footer a {
+  color: #1977C5;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom {
+  border-top: 1px solid #E6EFF9;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button {
+  border: 1px solid #1689EC;
+  background: #1689EC;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button:hover:not(:disabled) {
+  background: #087BDF;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button:nth-child(2),
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back {
+  color: #526C8A;
+  border-color: #D0E3F9;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button:nth-child(2):hover:not(:disabled),
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back:hover:not(:disabled) {
+  background: #EEF6FF;
+  color: #286DB6;
+}
+
+/* ---- 브랜드 통일: 카드 및 입력 인터랙션 정돈 ---- */
+
+.team-shell .calendar,
+.team-shell .info,
+.team-shell .todo,
+.team-shell .calendar-schedule,
+.team-shell .info-page,
+.team-shell .todo-page,
+.team-shell .info-set-page,
+.team-shell .todo-set-page,
+.team-shell .info-detail-page,
+.team-shell .todo-detail-page,
+.team-shell .info-manage-page,
+.team-shell .todo-manage-page {
+  border-color: var(--command-border);
+  box-shadow: var(--command-shadow);
+}
+
+.team-shell .calendar-area .day.selected,
+.team-shell .calendar .day.selected {
+  background: #D6EAFF;
+  color: #086BC4;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px #9BC9FA;
+}
+
+.team-shell .calendar-area .day:not(.selected):hover,
+.team-shell .calendar .day:not(.selected):hover {
+  background: #EBF5FF;
+}
+
+.team-shell .schedule-dot {
+  background: var(--command-blue);
+}
+
+.team-shell .info-item:hover,
+.team-shell .todo-item:hover,
+.team-shell .info li:hover,
+.team-shell .todo li:hover {
+  background-color: #EDF6FF;
+}
+
+.team-shell :is(.info-search input, .todo-search input,
+  .info-filter input, .todo-filter input,
+  .info-register-form input, .todo-register-form input,
+  .info-register-form textarea, .todo-register-form textarea,
+  .info-set-register-form input, .todo-set-register-form input,
+  .info-set-register-form textarea, .todo-set-register-form textarea,
+  .info-detail-row input, .todo-detail-row input,
+  .info-detail-description textarea, .todo-detail-description textarea):focus-visible {
+  outline: 2px solid var(--command-blue);
+  outline-offset: 1px;
+  border-color: var(--command-blue);
+  box-shadow: 0 0 0 3px rgba(8, 123, 223, .13);
+}
+
+.team-shell :is(.info-search button, .todo-search button,
+  .info-register-form > button, .todo-register-form > button,
+  .info-set-register-form > button, .todo-set-register-form > button):not(:disabled) {
+  transition: background-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+.team-shell :is(.info-search button, .todo-search button,
+  .info-register-form > button, .todo-register-form > button,
+  .info-set-register-form > button, .todo-set-register-form > button):not(:disabled):hover {
+  box-shadow: 0 4px 13px rgba(8, 123, 223, .19);
+}
+
+/* 삭제 버튼은 의미 보존을 위해 붉은 계열 유지 */
+.team-shell :is(.info-delete, .todo-delete, .schedule-delete):hover {
+  background: #FFF0F0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .team-shell :is(.info-search button, .todo-search button,
+    .info-register-form > button, .todo-register-form > button,
+    .info-set-register-form > button, .todo-set-register-form > button) {
+    transition: none;
+  }
+}
+
+/* ==========================
+   공지사항 페이지 너비 확장
+========================== */
+
+.team-shell .info-page {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ==========================
+   프로젝트 목록으로 돌아가기 버튼
+========================== */
+
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 22px;
+  background: #1689EC !important;
+  color: #ffffff !important;
+  border: 1px solid #1689EC !important;
+  border-radius: 9px;
+
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* 마우스를 올렸을 때 */
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back:hover {
+  background: #087BDF !important;
+  border-color: #087BDF !important;
+  color: #ffffff !important;
+}
+
+/* ==========================
+   선택한 날짜의 일정 - 블루 테마
+========================== */
+
+/* 일정 박스 제목 */
+.team-shell .calendar-schedule h3 {
+  color: #087bdf;
+  border-bottom: 2px solid #e1edff;
+}
+
+/* 일정이 없을 때 안내 문구 */
+.team-shell .calendar-schedule p {
+  color: #8293aa;
+}
+
+/* 프로젝트 등록 요청 버튼 */
+.team-shell .calendar-schedule .calendar-add-project-btn,
+.team-shell .calendar-register-actions .calendar-add-project-btn {
+  background: #1689ec !important;
+  color: #ffffff !important;
+  border: 1px solid #1689ec !important;
+  border-radius: 9px;
+
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+/* 마우스를 올렸을 때 */
+.team-shell .calendar-schedule .calendar-add-project-btn:hover,
+.team-shell .calendar-register-actions .calendar-add-project-btn:hover {
+  background: #0866c2 !important;
+  border-color: #0866c2 !important;
+  color: #ffffff !important;
+}
+
+/* 프로젝트 상태 및 우선순위 */
+.team-shell .todo-select-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.team-shell .todo-select-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b2551;
+}
+
+.team-shell .todo-select-field select {
+  width: 100%;
+  height: 48px;
+  padding: 0 15px;
+  border: 1px solid #d7e4f5;
+  border-radius: 10px;
+  background: #f4f9ff;
+  color: #0b2551;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.team-shell .todo-select-field select:focus {
+  border-color: #1689ec;
+  box-shadow: 0 0 0 3px rgba(22, 137, 236, 0.1);
+}
