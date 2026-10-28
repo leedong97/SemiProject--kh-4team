@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-function Todo({ todo, delTodo, onAddTodo }) {
+function Todo({ todo, onAddTodo }) {
 
     const navigate = useNavigate();
 
@@ -19,6 +19,8 @@ function Todo({ todo, delTodo, onAddTodo }) {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
 
+    const [isSaving, setIsSaving] = useState(false);
+
     // 프로젝트 상태와 우선순위
     const [status, setStatus] = useState("예정");
     const [priority, setPriority] = useState("보통");
@@ -26,9 +28,6 @@ function Todo({ todo, delTodo, onAddTodo }) {
     // 프로젝트 시작일과 종료일
     const [startDate, setStartDate] = useState(selectedDate);
     const [endDate, setEndDate] = useState(selectedDate);
-
-    // 프로젝트 삭제 중 상태
-    const [deletingId, setDeletingId] = useState(null);
 
     // 프로젝트 제목 검색
     const filteredTodo = [...todo]
@@ -50,6 +49,9 @@ function Todo({ todo, delTodo, onAddTodo }) {
     /* 프로젝트 등록 */
     const handleAddTodo = async () => {
 
+        // 이미 등록 중이면 추가 요청하지 않음
+        if (isSaving) return;
+
         if (title.trim() === "") {
             alert("프로젝트 제목을 입력해주세요.");
             return;
@@ -65,7 +67,6 @@ function Todo({ todo, delTodo, onAddTodo }) {
             return;
         }
 
-        // 프로젝트 날짜 검사
         if (!startDate || !endDate) {
             alert("프로젝트 시작일과 종료일을 선택해주세요.");
             return;
@@ -76,8 +77,10 @@ function Todo({ todo, delTodo, onAddTodo }) {
             return;
         }
 
-        try {
+        // 입력값 검사가 끝났으므로 등록 시작
+        setIsSaving(true);
 
+        try {
             const newId = await onAddTodo(
                 title.trim(),
                 content.trim(),
@@ -94,17 +97,18 @@ function Todo({ todo, delTodo, onAddTodo }) {
             setStatus("예정");
             setPriority("보통");
 
-            alert("프로젝트가 등록되었습니다!");
+            alert("프로젝트가 등록되었습니다.");
 
             navigate(`/todo/${newId}`);
 
         } catch (error) {
-
             console.error("프로젝트 등록 오류:", error);
             alert(error.message || "프로젝트 등록 실패");
 
+        } finally {
+            // 성공하든 실패하든 등록 중 상태 해제
+            setIsSaving(false);
         }
-
     };
 
 
@@ -114,50 +118,15 @@ function Todo({ todo, delTodo, onAddTodo }) {
         setPages(1);
     };
 
-
-    /* 프로젝트 삭제 */
-    const handleDeleteTodo = async (id) => {
-
-        // 중복 삭제 방지
-        if (deletingId !== null) return;
-
-        // 삭제 확인창
-        if (!window.confirm("정말 이 프로젝트를 삭제하시겠습니까?")) {
-            return;
-        }
-
-        setDeletingId(id);
-
-        try {
-
-            // MySQL 프로젝트 삭제
-            await delTodo(id);
-
-            alert("프로젝트가 삭제되었습니다!");
-
-        } catch (error) {
-
-            console.error("프로젝트 삭제 오류:", error);
-
-            alert(error.message || "프로젝트 삭제에 실패했습니다.");
-
-        } finally {
-
-            setDeletingId(null);
-
-        }
-
-    };
-
     return (
         <main className="todo-page todo-manage-page">
 
             {/* 상단 제목 */}
             <div className="todo-header todo-manage-header">
                 <div>
-                    <h1>프로젝트 관리</h1>
+                    <h1>프로젝트</h1>
                     <p>
-                        사내 프로젝트를 조회하고 관리할 수 있습니다.
+                        사내 프로젝트를 조회할 수 있습니다.
                     </p>
                 </div>
 
@@ -280,8 +249,12 @@ function Todo({ todo, delTodo, onAddTodo }) {
                     </div>
 
 
-                    <button onClick={handleAddTodo}>
-                        + 프로젝트 등록 요청
+                    <button
+                        type="button"
+                        onClick={handleAddTodo}
+                        disabled={isSaving}
+                    >
+                        {isSaving ? "등록 중…" : "+ 프로젝트 등록 요청"}
                     </button>
 
                 </div>
@@ -306,7 +279,6 @@ function Todo({ todo, delTodo, onAddTodo }) {
                             <th>작성자</th>
                             <th>작성일자</th>
                             <th>조회수</th>
-                            <th>관리</th>
                         </tr>
                     </thead>
 
@@ -338,8 +310,6 @@ function Todo({ todo, delTodo, onAddTodo }) {
                                     <td>{item.date}</td>
                                     <td>{item.views ?? 0}</td>
 
-                                    {/* 기존 관리 버튼 코드는 그대로 유지 */}
-
                                 </tr>
                             ))
 
@@ -347,7 +317,7 @@ function Todo({ todo, delTodo, onAddTodo }) {
                         ) : (
 
                             <tr>
-                                <td colSpan="7" className="todo-empty">
+                                <td colSpan="6" className="todo-empty">
                                     {todo.length === 0
                                         ? "등록된 프로젝트가 없습니다."
                                         : "검색 결과가 없습니다."}

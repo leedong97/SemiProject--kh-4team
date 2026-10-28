@@ -4187,7 +4187,7 @@
 
 /* 프로젝트 제목 */
 .team-shell .todo-table th:nth-child(3) {
-  width: 34%;
+  width: 44%;
   text-align: center;
 }
 
@@ -4216,11 +4216,6 @@
 /* 조회수 */
 .team-shell .todo-table th:nth-child(6) {
   width: 9%;
-}
-
-/* 관리 */
-.team-shell .todo-table th:nth-child(7) {
-  width: 10%;
 }
 
 /* ======================================================================

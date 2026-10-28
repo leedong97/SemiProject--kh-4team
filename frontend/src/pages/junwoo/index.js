@@ -30,7 +30,7 @@ function TodoDetailRoute() {
 }
 function InfoRoute() {
   const { info, delInfo, addInfo } = useJunwoo();
-  return <Info info={info} delInfo={delInfo} onAddInfo={addInfo} />;
+  return <Info info={info} onAddInfo={addInfo} />;
 }
 function InfoSetRoute() {
   const { info, addInfo } = useJunwoo();

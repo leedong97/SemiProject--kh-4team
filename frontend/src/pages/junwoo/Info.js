@@ -25,13 +25,35 @@ function Info({ info = [] }) {
     const start = (currentPage - 1) * 10;
     const end = start + 10;
 
+    const handleReset = () => {
+        setSearch("");
+        setPages(1);
+    };
+
     return (
 
-        <main className="info-page">
+        <main className="info-page info-manage-page">
 
-            {/* 상단 제목 */}
-            <div className="info-header">
-                <h1>공지사항</h1>
+            {/* 상단 제목과 검색 리셋 */}
+            <div className="info-header info-manage-header">
+                <div>
+                    <h1>공지사항</h1>
+                    <p>사내 공지사항을 조회할 수 있습니다.</p>
+                </div>
+
+                <button
+                    type="button"
+                    className="info-reset"
+                    onClick={handleReset}
+                >
+                    검색 리셋
+                </button>
+            </div>
+
+            {/* 전체 건수와 검색 결과 건수 */}
+            <div className="info-summary">
+                <span>전체 공지사항 {info.length}개</span>
+                <span>조회된 공지사항 {filteredInfo.length}개</span>
             </div>
 
             {/* 공지사항 검색 */}

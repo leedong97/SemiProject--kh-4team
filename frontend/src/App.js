@@ -1,40 +1,81 @@
-import { Navigate, useRoutes } from 'react-router-dom';
+
+import { Navigate, useRoutes, useLocation } from 'react-router-dom';
 import TeamShell from './shared/TeamShell';
 
-// ─────────────────────────────────────────────────────────────
-//  이 파일은 "참조만" 합니다. 각자 자기 폴더(pages/이름)의 index.js 만 가져와요.
-//  새 페이지를 만들 때는 이 파일이 아니라 자기 폴더의 index.js 를 고치세요.
-//
-//  각 폴더의 index.js 는 아래 3가지를 내보냅니다 (없으면 생략 가능)
-//   - Provider         : 그 사람 페이지들이 같이 쓰는 데이터(state)를 담는 상자
-//   - shellRoutes      : 위쪽 메뉴바가 있는 화면들 (대시보드, 업무, 이슈, 공지...)
-//   - standaloneRoutes : 메뉴바 없이 자기 화면 전체를 쓰는 곳 (로그인, 마이페이지, 관리자)
-// ─────────────────────────────────────────────────────────────
+// 기존 팀원 페이지
 import * as woojin from './pages/woojin';
 import * as heeseung from './pages/heeseung';
 import * as dong from './pages/dong';
 import * as junwoo from './pages/junwoo';
 import * as jongho from './pages/jongho';
 
-import Preview from "./pages/preview/Preview";
+// 고객용 데모 페이지
+import { previewRoutes } from './pages/preview';
 
+// 이커머스 맛보기
+import PricingPage from "./pages/pricing/PricingPage";
 
 const members = [woojin, heeseung, dong, junwoo, jongho];
 
 function App() {
+
+  const location = useLocation();
+
   const element = useRoutes([
-    // 팀 공통 메뉴바가 붙는 화면들
-    { element: <TeamShell />, children: members.flatMap((m) => m.shellRoutes || []) },
-    // 메뉴바 없이 혼자 쓰는 화면들
-    ...members.flatMap((m) => m.standaloneRoutes || []),
-    // 없는 주소는 메인으로
-    { path: '*', element: <Navigate to="/" replace /> },
+
+
+
+    // 1. 고객 확인용 데모 화면
+    ...previewRoutes,
+
+    // 이커머스 요금제 페이지
+    {
+      path: '/pricing',
+      element: <PricingPage />
+    },
+
+    // 2. 기존 ERP 공통 메뉴 화면
+    {
+      element: <TeamShell />,
+      children: members.flatMap(m => m.shellRoutes || [])
+    },
+
+    // 3. 기존 팀원별 독립 페이지
+    ...members.flatMap(m => m.standaloneRoutes || []),
+
+    // 4. 잘못된 주소는 메인으로
+    {
+      path: '*',
+      element: <Navigate to="/" replace />
+    }
+
   ]);
 
-  // 각 사람의 Provider 를 바깥쪽부터 겹겹이 감싸줘요.
+  // 고객용 데모는 DB Provider 없이 실행
+  if (
+    location.pathname === '/preview' ||
+    location.pathname.startsWith('/preview/')
+  ) {
+    return element;
+  }
+
+  if (
+    location.pathname === '/preview' ||
+    location.pathname.startsWith('/preview/') ||
+    location.pathname === '/pricing' ||
+    location.pathname.startsWith('/pricing/')
+  ) {
+    return element;
+  }
+
+  // 기존 ERP는 Provider 그대로 유지
   return members.reduceRight((inner, m) => {
     const Provider = m.Provider;
-    return Provider ? <Provider>{inner}</Provider> : inner;
+
+    return Provider
+      ? <Provider>{inner}</Provider>
+      : inner;
+
   }, element);
 }
 

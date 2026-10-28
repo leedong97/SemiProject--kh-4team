@@ -9,6 +9,8 @@ function Todo_set({ todo, onAddTodo }) {
     // 프로젝트 일정
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [status, setStatus] = useState("예정");
+    const [priority, setPriority] = useState("보통");
     const [search, setSearch] = useState("");
     const [isSaving, setIsSaving] = useState(false);
 
@@ -63,7 +65,9 @@ function Todo_set({ todo, onAddTodo }) {
                 title.trim(),
                 content.trim(),
                 startDate,
-                endDate
+                endDate,
+                status,
+                priority
             );
 
             alert("프로젝트가 등록되었습니다.");

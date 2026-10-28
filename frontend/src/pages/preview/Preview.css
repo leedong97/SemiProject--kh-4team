@@ -1,0 +1,388 @@
+/* ==========================
+   COMMAND ERP PREVIEW
+========================== */
+
+.preview-page {
+    min-height: 100vh;
+    padding: 30px 25px 60px;
+
+    background: linear-gradient(135deg, #edf5ff, #f7fbff);
+    color: #223954;
+    font-family: 'Malgun Gothic', sans-serif;
+}
+
+.preview-page * {
+    box-sizing: border-box;
+}
+
+/* 상단 메뉴 */
+
+.preview-header {
+    max-width: 1300px;
+    min-height: 76px;
+    margin: 0 auto;
+
+    padding: 12px 25px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(11, 37, 81, 0.07);
+}
+
+.preview-logo {
+    display: block;
+    width: 185px;
+    max-height: 55px;
+    object-fit: contain;
+}
+
+.preview-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 35px;
+}
+
+.preview-nav a {
+    color: #334d6b;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+
+    padding: 10px;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.preview-nav a:hover {
+    color: #087bdf;
+    background: #eaf4ff;
+}
+
+.preview-user {
+    font-size: 14px;
+    font-weight: 600;
+    color: #087bdf;
+    white-space: nowrap;
+}
+
+/* 콘텐츠 */
+
+.preview-content {
+    max-width: 1300px;
+    margin: 30px auto 0;
+}
+
+.preview-heading {
+    margin-bottom: 25px;
+}
+
+.preview-heading h1 {
+    margin: 0 0 8px;
+    color: #0b2551;
+    font-size: 28px;
+}
+
+.preview-heading p {
+    margin: 0;
+    color: #8192a7;
+    font-size: 14px;
+}
+
+/* 메인 그리드 */
+
+.preview-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 22px;
+    align-items: start;
+}
+
+.preview-left,
+.preview-right {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* 콘텐츠 카드 */
+
+.preview-card {
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 18px;
+    border: 1px solid #e5eef9;
+
+    box-shadow: 0 6px 24px rgba(11, 37, 81, 0.06);
+    min-width: 0;
+}
+
+.preview-card h2 {
+    font-size: 20px;
+    color: #087bdf;
+
+    margin: 0 0 22px;
+    padding-bottom: 15px;
+
+    border-bottom: 2px solid #e1edff;
+}
+
+/* 캘린더 */
+
+.preview-month {
+    text-align: center;
+    font-size: 19px;
+    color: #0b2551;
+    margin: 10px 0 20px;
+}
+
+.preview-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 7px;
+}
+
+.preview-weekday {
+    padding: 12px 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    background: #eaf4ff;
+    color: #087bdf;
+    border-radius: 8px;
+}
+
+.preview-day {
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f6f9fe;
+    color: #455f7d;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.preview-day.today {
+    background: #1689ec;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* 목록 */
+
+.preview-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    background: #f4f8ff;
+    border: 1px solid #e4eef9;
+
+    padding: 16px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+
+    color: #344f70;
+    font-size: 14px;
+}
+
+.preview-list-item:last-child {
+    margin-bottom: 0;
+}
+
+.preview-list-item:hover {
+    background: #eaf4ff;
+}
+
+.preview-tag {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border-radius: 8px;
+
+    background: #e0efff;
+    color: #087bdf;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* 하단 문구 */
+
+.preview-footer {
+    text-align: center;
+    color: #93a6bb;
+    font-size: 13px;
+    margin-top: 45px;
+}
+
+/* 태블릿 */
+
+@media (max-width: 1100px) {
+    .preview-header {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .preview-nav {
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+}
+
+/* 모바일 */
+
+@media (max-width: 768px) {
+    .preview-page {
+        padding: 15px;
+    }
+
+    .preview-header {
+        padding: 20px 15px;
+    }
+
+    .preview-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-card {
+        padding: 20px 15px;
+    }
+
+    .preview-nav {
+        gap: 5px;
+    }
+
+    .preview-nav a {
+        font-size: 13px;
+    }
+
+    .preview-day {
+        min-height: 40px;
+    }
+
+    .preview-weekday {
+        font-size: 12px;
+        padding: 9px 0;
+    }
+}
+
+.preview-page .preview-list-item a,
+.preview-page .preview-card a {
+    color: #0b2551;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.preview-page .preview-list-item a:hover,
+.preview-page .preview-card a:hover {
+    color: #1689ec;
+}
+
+.preview-page .preview-nav a.active {
+    color: #087bdf;
+    background: #eaf4ff;
+}
+
+/* 헤더 정렬 */
+.preview-page .preview-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.preview-page .preview-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: auto;
+}
+
+.preview-page .preview-header-actions .preview-user {
+    margin: 0;
+    color: #536881;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+/* 요금제 이동 버튼 */
+.preview-page .preview-pricing-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 16px;
+
+    border: 1px solid #cfe2f9;
+    border-radius: 9px;
+    background: #fff;
+    color: #087bdf;
+
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.preview-page .preview-pricing-link:visited {
+    color: #087bdf;
+}
+
+.preview-page .preview-pricing-link:hover {
+    background: #edf6ff;
+    border-color: #a7cff7;
+}
+
+.preview-page .preview-pricing-link:focus-visible {
+    outline: 3px solid #087bdf;
+    outline-offset: 3px;
+}
+
+/* 작은 화면에서는 메뉴를 아래 줄로 */
+@media (max-width: 768px) {
+    .preview-page .preview-header {
+        gap: 16px;
+    }
+
+    .preview-page .preview-header-actions {
+        gap: 10px;
+    }
+
+    .preview-page .preview-header-actions .preview-user {
+        display: none;
+    }
+
+    .preview-page .preview-header .preview-nav {
+        order: 3;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .preview-page .preview-pricing-link {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .preview-page .preview-pricing-link {
+        transition: none;
+    }
+}

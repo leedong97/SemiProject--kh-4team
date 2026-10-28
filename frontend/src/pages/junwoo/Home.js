@@ -17,7 +17,7 @@ function Home({ info, todo }) {
 
       {/* 프로젝트 */}
       <div className='todo'>
-        <h3>프로젝트</h3>
+        <h3 style={{ color: '#0084ff' }}>프로젝트</h3>
         <ol>
           {
             latestTodo.map((item) => (
@@ -33,7 +33,7 @@ function Home({ info, todo }) {
 
       {/* 공지사항 */}
       <div className='info'>
-        <h3>공지사항</h3>
+        <h3 style={{ color: '#0084ff' }}>공지사항</h3>
         <ol>
           {
             [...info].reverse().slice(0, 3).map((item) => (
