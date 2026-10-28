@@ -35,14 +35,35 @@ function Calendar({ schedules = [] }) {
   // 이전 달 / 다음 달
   const changeMonth = (num) => {
 
+    // 오늘이 있는 달로 이동하고 오늘 날짜 선택
+    const goToToday = () => {
+      const now = new Date();
+
+      setMonth(new Date(now.getFullYear(), now.getMonth(), 1));
+
+      setSelectedDate(
+        `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
+      );
+    };
+
     setMonth(new Date(year, monthNumber - 1 + num, 1));
     setSelectedDate('');
   };
 
+  const goToToday = () => {
+    const now = new Date();
+
+    setMonth(new Date(now.getFullYear(), now.getMonth(), 1));
+
+    setSelectedDate(
+      `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
+    );
+  };
+
   // 선택한 날짜의 일정 가져오기
-  const selectedSchedules = schedules.filter(item =>
-    item.date === selectedDate
-  ).sort((a, b) => a.time.localeCompare(b.time));
+  const selectedSchedules = schedules
+    .filter(item => item.date === selectedDate)
+    .sort((a, b) => (a.time || "").localeCompare(b.time || ""));
 
   console.log("선택한 날짜:", selectedDate);
   console.log("해당 날짜의 일정:", selectedSchedules);
@@ -59,17 +80,33 @@ function Calendar({ schedules = [] }) {
       <div className="calendar">
 
         <div className="calendar-top">
+          <div className="calendar-month-nav">
+            <button
+              type="button"
+              aria-label="이전 달"
+              onClick={() => changeMonth(-1)}
+            >
+              ‹
+            </button>
 
-          <button onClick={() => changeMonth(-1)}>
-            이전
+            <h2>{year}년 {monthNumber}월</h2>
+
+            <button
+              type="button"
+              aria-label="다음 달"
+              onClick={() => changeMonth(1)}
+            >
+              ›
+            </button>
+          </div>
+
+          <button
+            type="button"
+            className="calendar-today-btn"
+            onClick={goToToday}
+          >
+            오늘
           </button>
-
-          <h2>{year}년 {monthNumber}월</h2>
-
-          <button onClick={() => changeMonth(1)}>
-            다음
-          </button>
-
         </div>
 
 
@@ -270,7 +307,7 @@ function Calendar({ schedules = [] }) {
       </div>
 
     </div>
-      );
+  );
 }
 
 export default Calendar;

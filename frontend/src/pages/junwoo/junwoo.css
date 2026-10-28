@@ -5734,3 +5734,82 @@
   border-color: #1689ec;
   box-shadow: 0 0 0 3px rgba(22, 137, 236, 0.1);
 }
+
+.team-shell .calendar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.team-shell .calendar-top .calendar-month-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.team-shell .calendar .calendar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.team-shell .calendar .calendar-month-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.team-shell .calendar .calendar-top h2 {
+  margin: 0;
+  color: #0b2551;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.team-shell .calendar .calendar-top button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  min-width: 36px;
+  padding: 0 10px;
+  border: 1px solid #cfe2f9;
+  border-radius: 8px;
+  background: #fff;
+  color: #087bdf;
+  cursor: pointer;
+}
+
+.team-shell .calendar .calendar-month-nav button {
+  font-size: 23px;
+}
+
+.team-shell .calendar .calendar-top .calendar-today-btn {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.team-shell .calendar .calendar-top button:hover {
+  background: #edf6ff;
+  border-color: #a7cff7;
+}
+
+.team-shell .calendar .calendar-top button:focus-visible {
+  outline: 2px solid #087bdf;
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .team-shell .calendar .calendar-month-nav {
+    gap: 8px;
+  }
+
+  .team-shell .calendar .calendar-top h2 {
+    font-size: 16px;
+  }
+}
