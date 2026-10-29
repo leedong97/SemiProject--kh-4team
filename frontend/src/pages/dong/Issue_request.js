@@ -57,7 +57,9 @@ function IssueRequest({ projects, setIssues }) {
         navigate(`/issue/${issue.id}`);
     };
 
-    return (
+
+
+        return (
         <main className="issue-page">
             <section className="issue-register">
                 <h3>새로운 이슈 등록</h3>
