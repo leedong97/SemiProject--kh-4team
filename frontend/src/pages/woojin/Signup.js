@@ -45,7 +45,7 @@ function Signup() {
 
         setErrors({})
 
-        axios.post('http://localhost:3333/signup', {
+        axios.post('http://localhost:3333/api/signup', {
             name: values.name.trim(),
             email: values.email.trim(),
             password: values.password

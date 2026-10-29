@@ -31,7 +31,7 @@ function Login() {
         }
 
         setErrors({})
-        axios.post('http://localhost:3333/login', values)
+        axios.post('http://localhost:3333/api/login', values)
             .then(() => {
                 navi("/") // 로그인 성공 → 대시보드(메인)로 이동
             })
