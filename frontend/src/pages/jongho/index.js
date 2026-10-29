@@ -1,36 +1,50 @@
+import { Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import './MergedModules.css';
-import AdminLayout from './admin/AdminLayout';
-import Dashboard from './admin/pages/Dashboard';
-import ProjectManagement from './admin/pages/ProjectManagement';
-import ManagerAssignment from './admin/pages/ManagerAssignment';
-import IssueManagement from './components/IssueManagement';
-import HRManagement from './components/HRManagement';
-import EmployeeEvaluation from './components/EmployeeEvaluation';
+import './styles/jongho.css';
+import AdminLayout from './components/AdminLayout';
+import Dashboard from './pages/Dashboard';
+import ProjectManagement from './pages/ProjectManagement';
+import ManagerAssignment from './pages/ManagerAssignment';
+import Notices from './pages/Notices';
+import AdminAudit from './pages/AdminAudit';
+import Workload from './pages/Workload';
+import IssueManagement from '../heeseung/components/IssueManagement';
+import HRManagement from '../heeseung/components/HRManagement';
+import EmployeeEvaluation from '../heeseung/components/EmployeeEvaluation';
 import { JonghoProvider, useJongho } from './JonghoContext';
 
 // 종호 담당: 관리자 페이지(/admin/...)
-// 관리자 로그인은 우진의 로그인 페이지(/login)를 같이 쓰도록 정리했어요.
-// (지금은 로그인 검사 없이 /admin 에 바로 들어갈 수 있어요. 서버 연결 후 보호 예정)
+// 로컬 개발용: 로그인 검사 없이 바로 관리자 화면을 보여줍니다.
+// 프론트에서 로그인 상태를 확인하며, 실제 API 권한은 백엔드에서 다시 검사합니다.
 
 function AdminRoute() {
   const navigate = useNavigate();
-  return <AdminLayout onLogout={() => navigate('/login')} />;
+  return <AdminLayout onLogout={() => { sessionStorage.removeItem('nexus_token'); sessionStorage.removeItem('nexus_role'); navigate('/login'); }} />;
 }
 function DashboardRoute() {
   const { projects, data } = useJongho();
   return <Dashboard projects={projects} data={data} />;
 }
 function ProjectsRoute() {
-  const { projects, setProjects } = useJongho();
-  return <ProjectManagement projects={projects} setProjects={setProjects} />;
+  const { projects, setProjects, data, createProject, updateProject, removeProject } = useJongho();
+  return (
+    <ProjectManagement
+      projects={projects}
+      setProjects={setProjects}
+      createProject={createProject}
+      updateProject={updateProject}
+      removeProject={removeProject}
+      employees={data.employees}
+    />
+  );
 }
 function AssignmentsRoute() {
-  const { projects, setProjects, data } = useJongho();
+  const { projects, setProjects, data, createProject, updateProject, removeProject } = useJongho();
   return (
     <ManagerAssignment
       projects={projects}
       setProjects={setProjects}
+      updateProject={updateProject}
       employees={data.employees.map((e) => ({ ...e, role: e.role || e.position }))}
     />
   );
@@ -63,8 +77,8 @@ function SettingsRoute() {
   const { resetDemo } = useJongho();
   return (
     <div className="merge-placeholder">
-      <h2>연습 데이터 관리</h2>
-      <button onClick={resetDemo}>샘플 데이터 초기화</button>
+      <h2>브라우저 연습 데이터 관리</h2><p>DB 데이터는 삭제되지 않습니다. 인사·이슈·평가의 화면 변경은 현재 DB 저장이 연결되지 않았습니다.</p>
+      <button className="btn btn-outline" onClick={resetDemo}>샘플 데이터 초기화</button>
     </div>
   );
 }
@@ -82,16 +96,10 @@ export const standaloneRoutes = [
       { path: 'issues', element: <IssuesRoute /> },
       { path: 'employees', element: <EmployeesRoute /> },
       { path: 'evaluations', element: <EvaluationsRoute /> },
-      {
-        path: 'boards',
-        element: (
-          <div className="merge-placeholder">
-            <h2>공지 관리</h2>
-            <p>이 메뉴는 기존 프로젝트의 확장 공간으로 남겨두었습니다.</p>
-          </div>
-        ),
-      },
+      { path: 'boards',element: <Notices />,},
       { path: 'settings', element: <SettingsRoute /> },
+      { path: 'audit', element: <AdminAudit /> },
+      { path: 'workload', element: <Workload /> },
     ],
   },
 ];

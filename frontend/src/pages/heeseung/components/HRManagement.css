@@ -1,0 +1,738 @@
+
+/* ============================================
+   HRManagement.css
+   NEXUS ERP - 인사 관리
+
+   1. 전체 화면
+   2. 페이지 제목
+   3. 공통 카드
+   4. 입력 폼
+   5. 버튼
+   6. 직원별 업무량
+   7. 담당 업무
+   8. 휴가 관리
+   9. 반응형
+============================================ */
+
+
+/* ============================================
+   1. 인사 관리 전체 화면
+============================================ */
+
+.hr-management {
+    --hr-primary: #245fe6;
+    --hr-primary-hover: #1b4bc2;
+    --hr-text: #172338;
+    --hr-muted: #64748b;
+    --hr-border: #e2e8f0;
+    --hr-background: #f7f9fc;
+    --hr-white: #ffffff;
+
+    width: 100%;
+    min-width: 0;
+    padding: 28px;
+    box-sizing: border-box;
+
+    background: var(--hr-background);
+    color: var(--hr-text);
+
+    font-family:
+        "Pretendard",
+        "Noto Sans KR",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+/* 내부 요소 크기 계산 통일 */
+
+.hr-management *,
+.hr-management *::before,
+.hr-management *::after {
+    box-sizing: border-box;
+}
+
+
+/* ============================================
+   2. 페이지 제목
+============================================ */
+
+.hr-management .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 26px;
+    padding: 6px 0 20px;
+
+    border-bottom: 1px solid var(--hr-border);
+}
+
+.hr-management .hr-eyebrow {
+    display: inline-block;
+
+    margin-bottom: 10px;
+
+    color: var(--hr-primary);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.hr-management .section-head h2 {
+    margin: 0 0 9px;
+
+    color: #0f172a;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.hr-management .section-head p {
+    margin: 0;
+
+    color: var(--hr-muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+
+/* ============================================
+   3. 공통 카드
+============================================ */
+
+.hr-management .panel {
+    min-width: 0;
+
+    margin-bottom: 22px;
+    padding: 26px;
+
+    background: var(--hr-white);
+
+    border: 1px solid var(--hr-border);
+    border-radius: 16px;
+
+    box-shadow:
+        0 3px 12px rgba(15, 23, 42, 0.025);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.hr-management .panel:hover {
+    border-color: #d6ddeb;
+
+    box-shadow:
+        0 6px 20px rgba(15, 23, 42, 0.04);
+}
+
+.hr-management .panel h3 {
+    margin: 0 0 18px;
+
+    color: #172338;
+    font-size: 18px;
+    font-weight: 750;
+    letter-spacing: -0.4px;
+}
+
+.hr-management .panel > h3:first-child {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #edf1f6;
+}
+
+.hr-management .muted {
+    color: var(--hr-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+
+/* ============================================
+   4. 입력 폼 공통
+============================================ */
+
+/*
+   신규 직원 등록
+   담당 업무 등록
+   휴가 신청 등록
+
+   기존 JSX의 form-row 클래스를 그대로 사용
+*/
+
+.hr-management .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+
+    gap: 14px;
+}
+
+.hr-management form.panel.form-row {
+    align-items: end;
+}
+
+/* 폼 제목은 한 줄 전체 사용 */
+
+.hr-management .form-row .full {
+    flex: 0 0 100%;
+    width: 100%;
+
+    margin-bottom: 8px;
+}
+
+/* input, select 기본 스타일 */
+
+.hr-management input,
+.hr-management select,
+.hr-management textarea {
+    min-width: 0;
+    height: 44px;
+
+    padding: 0 13px;
+
+    background: #ffffff;
+    color: #334155;
+
+    border: 1px solid #dce3ed;
+    border-radius: 9px;
+
+    outline: none;
+
+    font-size: 13px;
+    font-family: inherit;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/* 폼 안의 입력 요소 자동 너비 */
+
+.hr-management form.form-row > input,
+.hr-management form.form-row > select,
+.hr-management form.form-row > label {
+    flex: 1 1 175px;
+}
+
+/* placeholder 색상 */
+
+.hr-management input::placeholder,
+.hr-management textarea::placeholder {
+    color: #94a3b8;
+}
+
+/* 입력창 선택 효과 */
+
+.hr-management input:focus,
+.hr-management select:focus,
+.hr-management textarea:focus {
+    border-color: var(--hr-primary);
+
+    box-shadow:
+        0 0 0 3px rgba(36, 95, 230, 0.09);
+}
+
+/* 날짜 입력 영역 */
+
+.hr-management form.form-row > label {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    color: #475569;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.hr-management form.form-row > label input {
+    width: 100%;
+}
+
+/* 비활성 입력 요소 */
+
+.hr-management input:disabled,
+.hr-management select:disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+
+/* ============================================
+   5. 버튼 공통
+============================================ */
+
+.hr-management button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+    padding: 0 20px;
+
+    background: var(--hr-primary);
+    color: #ffffff;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    font-size: 13px;
+    font-weight: 700;
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.hr-management button:hover {
+    background: var(--hr-primary-hover);
+
+    box-shadow:
+        0 4px 12px rgba(36, 95, 230, 0.16);
+}
+
+.hr-management button:active {
+    transform: translateY(1px);
+}
+
+/* 반려 버튼 등 보조 버튼 */
+
+.hr-management button.secondary {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: #e2e8f0;
+}
+
+.hr-management button.secondary:hover {
+    background: #e2e8f0;
+    box-shadow: none;
+}
+
+.hr-management button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+
+/* ============================================
+   6. 직원별 업무량
+============================================ */
+
+/*
+   employee-row:
+   직원 정보와 업무량을 한 줄로 출력
+
+   hr-workload:
+   미완료 이슈 / 담당 업무 / 마감 임박
+*/
+
+.hr-management .employee-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 22px;
+
+    min-width: 0;
+    padding: 20px 0;
+
+    border-bottom: 1px solid #edf1f6;
+}
+
+.hr-management .employee-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.hr-management .employee-row:first-of-type {
+    padding-top: 10px;
+}
+
+/* 직원 이름, 소속, 직급 */
+
+.hr-management .hr-employee-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.hr-management .hr-employee-info > strong {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #172338;
+    font-size: 15px;
+    font-weight: 750;
+}
+
+.hr-management .hr-employee-info .muted {
+    margin: 0 0 9px;
+    line-height: 1.7;
+}
+
+/* 재직 상태 */
+
+.hr-management .hr-status {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 5px 10px;
+
+    background: #ecfdf5;
+    color: #047857;
+
+    border: 1px solid #d1fae5;
+    border-radius: 6px;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* 업무량 카드 3개 */
+
+.hr-management .hr-workload {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(105px, 1fr));
+
+    gap: 10px;
+
+    width: min(100%, 390px);
+    flex-shrink: 0;
+}
+
+.hr-management .hr-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 83px;
+    padding: 13px 10px;
+
+    background: #f6f9ff;
+
+    border: 1px solid #edf1fa;
+    border-radius: 10px;
+}
+
+.hr-management .hr-count strong {
+    margin-bottom: 6px;
+
+    color: #1b4bc2;
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.hr-management .hr-count span {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* 마감 임박 업무량 강조 */
+
+.hr-management .hr-count.hr-warning {
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.hr-management .hr-count.hr-warning strong {
+    color: #ea580c;
+}
+
+.hr-management .hr-count.hr-warning span {
+    color: #9a3412;
+}
+
+
+/* ============================================
+   7. 직원 담당 업무 상세
+============================================ */
+
+.hr-management .hr-task-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.hr-management .hr-task-info > strong {
+    display: block;
+
+    margin-bottom: 9px;
+
+    color: #172338;
+    font-size: 14px;
+    font-weight: 750;
+}
+
+.hr-management .hr-task-info .muted {
+    margin: 0 0 8px;
+
+    font-size: 12px;
+}
+
+.hr-management .hr-task-info > p:not(.muted) {
+    margin: 6px 0 0;
+
+    color: #475569;
+    font-size: 13px;
+    line-height: 1.7;
+
+    overflow-wrap: anywhere;
+}
+
+/* 마감 임박 표시 */
+
+.hr-management .hr-due {
+    display: inline-flex;
+    align-items: center;
+
+    margin-top: 10px;
+    padding: 5px 10px;
+
+    background: #fff7ed;
+    color: #c2410c;
+
+    border: 1px solid #fed7aa;
+    border-radius: 6px;
+
+    font-size: 11px;
+    font-weight: 750;
+}
+
+/* 업무 상태 변경 select */
+
+.hr-management .employee-row > select {
+    flex: 0 0 135px;
+    width: 135px;
+    max-width: 100%;
+}
+
+
+/* ============================================
+   8. 휴가 승인 관리
+============================================ */
+
+.hr-management .hr-leave-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.hr-management .hr-leave-info > strong {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #172338;
+    font-size: 15px;
+    font-weight: 750;
+}
+
+.hr-management .hr-leave-info .muted {
+    margin: 0 0 10px;
+}
+
+/* 휴가 승인 상태 기본 */
+
+.hr-management .hr-leave-status {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 11px;
+
+    border-radius: 7px;
+    border: 1px solid transparent;
+
+    font-size: 11px;
+    font-weight: 750;
+}
+
+/* 승인 대기 */
+
+.hr-management .hr-leave-status.pending {
+    background: #fff7ed;
+    color: #c2410c;
+    border-color: #fed7aa;
+}
+
+/* 승인 완료 */
+
+.hr-management .hr-leave-status.approved {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #a7f3d0;
+}
+
+/* 반려 */
+
+.hr-management .hr-leave-status.rejected {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+/* 승인, 반려 버튼 */
+
+.hr-management .hr-actions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    flex-shrink: 0;
+}
+
+.hr-management .hr-actions button {
+    min-width: 70px;
+    min-height: 38px;
+    padding: 0 14px;
+}
+
+
+/* ============================================
+   9. 태블릿 화면
+============================================ */
+
+@media (max-width: 950px) {
+
+    .hr-management {
+        padding: 22px;
+    }
+
+    .hr-management .panel {
+        padding: 22px;
+    }
+
+    .hr-management .employee-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .hr-management .hr-workload {
+        width: 100%;
+    }
+
+    .hr-management .employee-row > select {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+
+    .hr-management .hr-actions {
+        width: 100%;
+    }
+}
+
+
+/* ============================================
+   10. 모바일 화면
+============================================ */
+
+@media (max-width: 600px) {
+
+    .hr-management {
+        padding: 14px;
+    }
+
+    .hr-management .section-head {
+        margin-bottom: 18px;
+    }
+
+    .hr-management .section-head h2 {
+        font-size: 25px;
+    }
+
+    .hr-management .panel {
+        margin-bottom: 16px;
+        padding: 18px;
+        border-radius: 12px;
+    }
+
+    .hr-management .panel h3 {
+        font-size: 16px;
+    }
+
+    .hr-management .form-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .hr-management form.form-row > input,
+    .hr-management form.form-row > select,
+    .hr-management form.form-row > label {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+
+    .hr-management form.form-row > button {
+        width: 100%;
+    }
+
+    .hr-management .employee-row {
+        padding: 17px 0;
+    }
+
+    .hr-management .hr-workload {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+    }
+
+    .hr-management .hr-count {
+        min-height: 76px;
+        padding: 10px 5px;
+    }
+
+    .hr-management .hr-count strong {
+        font-size: 20px;
+    }
+
+    .hr-management .hr-count span {
+        font-size: 10px;
+    }
+
+    .hr-management .hr-actions {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .hr-management .hr-actions button {
+        flex: 1;
+    }
+}
+
+
+/* ============================================
+   11. 접근성 및 기타
+============================================ */
+
+/* 키보드로 이동했을 때 선택 위치 표시 */
+
+.hr-management button:focus-visible,
+.hr-management input:focus-visible,
+.hr-management select:focus-visible {
+    outline: 2px solid var(--hr-primary);
+    outline-offset: 2px;
+}
+
+/* 긴 직원 이름이나 업무명이 있어도 레이아웃 유지 */
+
+.hr-management .employee-row strong,
+.hr-management .employee-row p {
+    overflow-wrap: anywhere;
+}
+
+/* 불필요한 가로 스크롤 방지 */
+
+.hr-management .panel,
+.hr-management .form-row,
+.hr-management .employee-row {
+    max-width: 100%;
+}

@@ -1,20 +1,24 @@
+import { API_BASE } from '../../../../shared/config';
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-// 연락처 입력 기준
+// 전화번호 모양 검사: 010-1234-5678 / 01012345678 / 011-123-4567 처럼 숫자 10~11자리
+// 왜 화면에서도 검사하나요? 서버까지 가기 전에 바로 알려 줘서 빠르고 친절해요.
+// (하지만 진짜 검사는 서버에서도 한 번 더 해요. 브라우저 검사는 누구나 우회할 수 있어서요)
 const PHONE_PATTERN = /^01[016789]-?\d{3,4}-?\d{4}$/;
-const MAX_ADDRESS_LENGTH = 100;
+const MAX_ADDRESS_LENGTH = 100; // 주소 최대 글자 수
 
-// 연락처·주소 수정 폼
+// 내 연락처(전화번호, 주소)를 보여 주고 고칠 수 있는 폼
 function ContactForm({ user }) {
     const [form, setForm] = useState({ phone: "", address: "" });
-    const [msg, setMsg] = useState(null);
+    const [msg, setMsg] = useState(null); // { type: "ok" | "error", text }
     const [saving, setSaving] = useState(false);
 
+    // 처음 열릴 때 서버에서 내 전화번호·주소를 가져와요
     useEffect(() => {
-        if (user.isDummy) return;
+        if (user.isDummy) return; // 로그인 없이 들어온 더미 사용자는 가져올 정보가 없어요
         axios
-            .get("http://localhost:3333/api/profile", { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/profile`, { params: { employeeId: user.id } })
             .then((res) => setForm({ phone: res.data.phone || "", address: res.data.address || "" }))
             .catch(() => setMsg({ type: "error", text: "연락처를 불러오지 못했어요." }));
     }, [user.id, user.isDummy]);
@@ -40,8 +44,9 @@ function ContactForm({ user }) {
 
         setSaving(true);
         axios
-            .put("http://localhost:3333/api/profile", { employeeId: user.id, phone, address })
+            .put(`${API_BASE}/api/profile`, { employeeId: user.id, phone, address })
             .then((res) => {
+                // 서버가 보기 좋게 고쳐 준 값(예: 하이픈 추가)으로 화면을 맞춰요
                 setForm({ phone: res.data.phone || "", address: res.data.address || "" });
                 setMsg({ type: "ok", text: "저장했어요." });
             })
@@ -52,6 +57,7 @@ function ContactForm({ user }) {
             .finally(() => setSaving(false));
     };
 
+    // 로그인하지 않고 주소로 바로 들어온 경우(더미 사용자)에는 저장할 대상이 없어요
     if (user.isDummy) {
         return <p className="mp-note">연락처는 로그인한 뒤에 입력할 수 있어요.</p>;
     }

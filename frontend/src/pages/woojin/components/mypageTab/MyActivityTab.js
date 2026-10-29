@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 
-// 내 활동 탭 (이슈·공지)
 function MyActivityTab({ myIssues, myNotices }) {
     return (
         <section className="mp-panel">
@@ -27,6 +26,7 @@ function MyActivityTab({ myIssues, myNotices }) {
                         <p className="mp-item-title">{n.title}</p>
                         <p className="mp-item-sub">{n.date}</p>
                     </div>
+                    {/* 고정 공지(is_pinned = 1)만 오른쪽에 "고정" 배지를 보여 줘요 */}
                     {n.pinned && <span className="mp-badge s-pin">📌 고정</span>}
                 </div>
             ))}

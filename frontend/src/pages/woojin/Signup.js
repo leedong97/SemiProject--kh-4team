@@ -1,9 +1,9 @@
+import { API_BASE } from '../../shared/config';
 import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
-// 회원가입 화면
 function Signup() {
 
     const navi = useNavigate()
@@ -46,7 +46,7 @@ function Signup() {
 
         setErrors({})
 
-        axios.post('http://localhost:3333/api/signup', {
+        axios.post(`${API_BASE}/api/signup`, {
             name: values.name.trim(),
             email: values.email.trim(),
             password: values.password
@@ -59,6 +59,7 @@ function Signup() {
                 if (err.response && err.response.status === 409) {
                     setErrors({ email: "이미 가입된 이메일이에요" });
                 } else if (err.response && err.response.status === 400) {
+                    // 서버가 입력 검사에서 막은 경우: 서버가 보낸 안내 문구를 그대로 보여 줘요
                     setErrors({ signup: err.response.data.message });
                 } else {
                     setErrors({ signup: "서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요" });

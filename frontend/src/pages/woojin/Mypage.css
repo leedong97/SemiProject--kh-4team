@@ -1,4 +1,8 @@
-/* 마이페이지 스타일 (클래스 접두사 mp-) */
+/* 마이페이지 파란색 팔레트: 주색 #245fe6 / 진한색 #1b4bc2 / 연한 틴트 (관리자 화면과 동일) */
+/* ==========================
+   마이페이지
+   (클래스 이름은 모두 mp- 로 시작해서 다른 페이지와 겹치지 않아요)
+========================== */
 
 .mypage {
   width: 100%;
@@ -12,9 +16,9 @@
 
 /* 상단 프로필 배너 */
 .mp-banner {
-  background: #2fae85;
+  background: linear-gradient(135deg, #2a63e8 0%, #4f86f0 100%);
   color: white;
-  margin: 0 -35px;
+  margin: 0 -35px;               /* 카드 좌우 끝까지 */
   padding: 14px 35px 28px;
   border-radius: 18px 18px 0 0;
 }
@@ -119,14 +123,14 @@
   padding: 12px;
   font-size: 14px;
   font-weight: 400;
-  color: #52675d;
+  color: #4d566c;
   border-radius: 8px;
   cursor: pointer;
 }
 
 .mp-logout h4:hover {
-  background: #e6f7ef;
-  color: #279b76;
+  background: #e4eaf9;
+  color: #245fe6;
 }
 
 .mp-me:hover .mp-logout,
@@ -155,27 +159,27 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  background: #f5faf7;
-  border: 1px solid #edf5ef;
+  background: #f4f6fb;
+  border: 1px solid #eceff6;
   border-radius: 10px;
   padding: 14px 16px;
 }
 
 .mp-stat-label {
   font-size: 13px;
-  color: #82948a;
+  color: #808696;
 }
 
 .mp-stat strong {
   font-size: 22px;
-  color: #34443d;
+  color: #303748;
 }
 
 .mp-stat small {
   margin-left: 2px;
   font-size: 13px;
   font-weight: 400;
-  color: #82948a;
+  color: #808696;
 }
 
 /* 탭 */
@@ -190,22 +194,22 @@
   flex: 1 1 auto;
   padding: 11px 14px;
   background: white;
-  border: 1px solid #dcebe2;
+  border: 1px solid #dae0ed;
   border-radius: 9px;
-  color: #52675d;
+  color: #4d566c;
   font-size: 14px;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .mp-tab:hover {
-  background: #e6f7ef;
-  color: #279b76;
+  background: #e4eaf9;
+  color: #245fe6;
 }
 
 .mp-tab.active {
-  background: #38b98c;
-  border-color: #38b98c;
+  background: #3b78f0;
+  border-color: #3b78f0;
   color: white;
   font-weight: bold;
 }
@@ -214,7 +218,7 @@
 .mp-panel h3 {
   margin: 25px 0 15px;
   padding-bottom: 12px;
-  border-bottom: 2px solid #e6f5ee;
+  border-bottom: 2px solid #e4eaf7;
   font-size: 18px;
 }
 
@@ -225,7 +229,7 @@
 .mp-note {
   margin: 22px 0 0;
   font-size: 13px;
-  color: #82948a;
+  color: #808696;
   line-height: 1.5;
 }
 
@@ -248,21 +252,21 @@
 .mp-cal-nav button {
   padding: 8px 14px;
   background: white;
-  border: 1px solid #dcebe2;
+  border: 1px solid #dae0ed;
   border-radius: 8px;
-  color: #52675d;
+  color: #4d566c;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .mp-cal-nav button:hover {
-  background: #e6f7ef;
-  color: #279b76;
+  background: #e4eaf9;
+  color: #245fe6;
 }
 
 .mp-add-btn {
   padding: 11px 18px;
-  background: #38b98c;
+  background: #3b78f0;
   border: none;
   border-radius: 9px;
   color: white;
@@ -274,7 +278,7 @@
 }
 
 .mp-add-btn:hover {
-  background: #279b76;
+  background: #245fe6;
 }
 
 /* 달력 격자 */
@@ -308,13 +312,13 @@
 
 /* 기간 막대 */
 .mp-seg {
-  height: 15px;
+  height: 15px;                  /* 막대 굵기 */
   align-self: center;
-  z-index: 1;
+  z-index: 1;                    /* 날짜 칸 위에 올라오게 */
   padding: 0 6px;
   border: none;
   border-radius: 0;
-  color: #2d3b34;
+  color: #2a303e;
   font: inherit;
   font-size: 11px;
   font-weight: 700;
@@ -348,8 +352,8 @@
 
 .mp-week {
   padding: 12px 0;
-  background: #e6f7ef;
-  color: #34856a;
+  background: #e4eaf9;
+  color: #1b4bc2;
   border-radius: 8px;
   font-size: 14px;
 }
@@ -365,19 +369,19 @@
 
 .mp-day {
   min-height: 92px;
-  background: #f7faf9;
+  background: #f7f8fa;
   border: 1px solid transparent;
   border-radius: 8px;
   font: inherit;
   font-size: 15px;
   font-weight: 600;
-  color: #34443d;
+  color: #303748;
   cursor: pointer;
   transition: 0.2s;
 
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: flex-start;      /* 날짜 숫자는 칸의 왼쪽 위 */
   justify-content: flex-start;
   padding: 6px 8px;
   text-align: left;
@@ -388,21 +392,21 @@
 }
 
 .mp-day:hover {
-  background: #c8f1df;
+  background: #c3d2f6;
 }
 
 .mp-day.today {
-  background: #e0f5ea;
+  background: #dde5f8;
   font-weight: bold;
 }
 
 .mp-day.selected {
-  border-color: #38b98c;
-  background: #c8f1df;
+  border-color: #3b78f0;
+  background: #c3d2f6;
 }
 
 .mp-dots {
-  position: absolute;
+  position: absolute;          /* 점은 칸의 오른쪽 위 (막대와 겹치지 않게) */
   top: 10px;
   right: 8px;
   display: flex;
@@ -436,12 +440,12 @@
 .mp-legend {
   margin: 12px 0 0;
   font-size: 13px;
-  color: #82948a;
+  color: #808696;
 }
 
 .mp-legend-tip {
   margin-left: 6px;
-  color: #279b76;
+  color: #245fe6;
 }
 
 /* 선택한 날짜의 일정 */
@@ -451,7 +455,7 @@
   align-items: baseline;
   margin: 25px 0 12px;
   padding-top: 20px;
-  border-top: 2px solid #e6f5ee;
+  border-top: 2px solid #e4eaf7;
 }
 
 .mp-panel .mp-day-head h3 {
@@ -462,13 +466,13 @@
 
 .mp-day-head span {
   font-size: 13px;
-  color: #82948a;
+  color: #808696;
 }
 
 .mp-empty {
   padding: 25px;
   text-align: center;
-  color: #82948a;
+  color: #808696;
 }
 
 .mp-item {
@@ -478,8 +482,8 @@
   gap: 15px;
   padding: 14px 18px;
   margin-bottom: 10px;
-  background: #f5faf7;
-  border: 1px solid #edf5ef;
+  background: #f4f6fb;
+  border: 1px solid #eceff6;
   border-left-width: 4px;
   border-radius: 10px;
 }
@@ -509,7 +513,7 @@
 .mp-item-sub {
   margin: 3px 0 0;
   font-size: 13px;
-  color: #82948a;
+  color: #808696;
 }
 
 .mp-del {
@@ -536,14 +540,14 @@
   gap: 12px;
   margin-top: 18px;
   padding: 20px;
-  background: #f7faf9;
-  border: 1px solid #edf5ef;
+  background: #f7f8fa;
+  border: 1px solid #eceff6;
   border-radius: 10px;
 }
 
 .mp-form h4 {
   margin: 0;
-  color: #279b76;
+  color: #245fe6;
 }
 
 .mp-form label,
@@ -553,7 +557,7 @@
   flex-direction: column;
   gap: 6px;
   font-size: 13px;
-  color: #52675d;
+  color: #4d566c;
 }
 
 .mp-form input,
@@ -562,7 +566,7 @@
   width: 100%;
   padding: 12px 15px;
   background: white;
-  border: 1px solid #dcebe2;
+  border: 1px solid #dae0ed;
   border-radius: 10px;
   font: inherit;
   font-size: 14px;
@@ -571,7 +575,7 @@
 
 .mp-form input:focus,
 .mp-form select:focus {
-  border-color: #48c9a0;
+  border-color: #6f9bf5;
 }
 
 .mp-form-row {
@@ -588,7 +592,7 @@
 .mp-submit {
   align-self: flex-end;
   padding: 12px 30px;
-  background: #38b98c;
+  background: #3b78f0;
   border: none;
   border-radius: 9px;
   color: white;
@@ -598,15 +602,15 @@
 }
 
 .mp-submit:hover {
-  background: #279b76;
+  background: #245fe6;
 }
 
 /* 내 업무 */
 .mp-card {
   padding: 16px 18px;
   margin-bottom: 10px;
-  background: #f5faf7;
-  border: 1px solid #edf5ef;
+  background: #f4f6fb;
+  border: 1px solid #eceff6;
   border-radius: 10px;
 }
 
@@ -627,21 +631,21 @@
 .mp-bar {
   flex: 1;
   height: 8px;
-  background: #dcebe2;
+  background: #dae0ed;
   border-radius: 999px;
   overflow: hidden;
 }
 
 .mp-bar-fill {
   height: 100%;
-  background: #38b98c;
+  background: #3b78f0;
 }
 
 .mp-progress span {
   width: 40px;
   text-align: right;
   font-size: 13px;
-  color: #82948a;
+  color: #808696;
 }
 
 .mp-badge {
@@ -657,13 +661,13 @@
 }
 
 .mp-badge.s-done {
-  background: #e0f5ea;
-  color: #279b76;
+  background: #dde5f8;
+  color: #245fe6;
 }
 
 .mp-badge.s-wait {
-  background: #eef2f0;
-  color: #52675d;
+  background: #eeeff2;
+  color: #4d566c;
 }
 
 /* 고정 공지 배지 */
@@ -680,18 +684,18 @@
 }
 
 .mp-info input {
-  background: #f7faf9;
-  color: #52675d;
+  background: #f7f8fa;
+  color: #4d566c;
 }
 
 /* 직접 입력하는 칸(비밀번호)은 흰 배경 + 진한 글자 */
 .mp-info input:not([readonly]) {
   background: white;
-  color: #34443d;
+  color: #303748;
 }
 
 .mp-info input:not([readonly]):focus {
-  border-color: #48c9a0;
+  border-color: #6f9bf5;
 }
 
 /* ---------- 추가 기능 ---------- */
@@ -707,22 +711,22 @@
 .mp-chip {
   padding: 7px 16px;
   background: white;
-  border: 1px solid #dcebe2;
+  border: 1px solid #dae0ed;
   border-radius: 999px;
-  color: #52675d;
+  color: #4d566c;
   font-size: 13px;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .mp-chip:hover {
-  background: #e6f7ef;
-  color: #279b76;
+  background: #e4eaf9;
+  color: #245fe6;
 }
 
 .mp-chip.active {
-  background: #38b98c;
-  border-color: #38b98c;
+  background: #3b78f0;
+  border-color: #3b78f0;
   color: white;
 }
 
@@ -736,16 +740,16 @@
 .mp-edit {
   padding: 8px 15px;
   background: white;
-  border: 1px solid #cfe5da;
+  border: 1px solid #ccd4e8;
   border-radius: 8px;
-  color: #279b76;
+  color: #245fe6;
   font-size: 13px;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .mp-edit:hover {
-  background: #e6f7ef;
+  background: #e4eaf9;
 }
 
 .mp-form-btns {
@@ -757,22 +761,22 @@
 .mp-cancel {
   padding: 12px 24px;
   background: white;
-  border: 1px solid #dcebe2;
+  border: 1px solid #dae0ed;
   border-radius: 9px;
-  color: #52675d;
+  color: #4d566c;
   font-size: 14px;
   cursor: pointer;
 }
 
 .mp-cancel:hover {
-  background: #f7faf9;
+  background: #f7f8fa;
 }
 
 /* 비밀번호 변경 성공 메시지 */
 .mp-ok {
   margin: 0;
   font-size: 13px;
-  color: #279b76;
+  color: #245fe6;
 }
 
 /* 이번 주 근무 시간 막대 그래프 */
@@ -798,7 +802,7 @@
   flex: 1;
   width: 100%;
   max-width: 44px;
-  background: #f7faf9;
+  background: #f7f8fa;
   border-radius: 8px 8px 0 0;
 }
 
@@ -807,7 +811,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: #38b98c;
+  background: #3b78f0;
   border-radius: 8px 8px 0 0;
 }
 
@@ -818,7 +822,7 @@
 
 .mp-bar-day {
   font-size: 13px;
-  color: #82948a;
+  color: #808696;
 }
 
 /* 연차 카드 3개 */
@@ -834,8 +838,8 @@
   flex-direction: column;
   gap: 4px;
   padding: 14px 16px;
-  background: #f5faf7;
-  border: 1px solid #edf5ef;
+  background: #f4f6fb;
+  border: 1px solid #eceff6;
   border-radius: 10px;
 }
 
@@ -847,19 +851,19 @@
   margin-left: 2px;
   font-size: 13px;
   font-weight: 400;
-  color: #82948a;
+  color: #808696;
 }
 
 .mp-leave-card.remain {
-  background: #e0f5ea;
-  border-color: #38b98c;
+  background: #dde5f8;
+  border-color: #3b78f0;
 }
 
 /* "전체 보기" 링크 */
 .mp-more {
   display: inline-block;
   margin-top: 4px;
-  color: #279b76;
+  color: #245fe6;
   font-size: 13px;
   text-decoration: none;
 }
@@ -929,15 +933,15 @@
   gap: 8px;
   margin-bottom: 18px;
   padding: 14px 16px;
-  background: #f7faf9;
-  border: 1px solid #edf5ef;
+  background: #f7f8fa;
+  border: 1px solid #eceff6;
   border-radius: 10px;
 }
 
 .mp-projects h4 {
   margin: 0 0 2px;
   font-size: 14px;
-  color: #279b76;
+  color: #245fe6;
 }
 
 .mp-proj {
@@ -947,25 +951,25 @@
   gap: 14px;
   padding: 8px 10px;
   background: white;
-  border: 1px solid #edf5ef;
+  border: 1px solid #eceff6;
   border-radius: 8px;
   font: inherit;
   text-align: left;
   cursor: default;
   transition: 0.2s;
-  --c: #279b76;
+  --c: #245fe6;
 }
 
 /* 남은 기한 단계별 색: 같은 색은 항상 같은 뜻 */
-.mp-proj.ok     { --c: #279b76; }
-.mp-proj.warn   { --c: #d98a2b; }
-.mp-proj.danger { --c: #d66b6b; }
-.mp-proj.idle   { --c: #a9b6af; }
+.mp-proj.ok     { --c: #245fe6; }   /* 15일 이상 남음: 여유 */
+.mp-proj.warn   { --c: #d98a2b; }   /* 8~14일: 주의 */
+.mp-proj.danger { --c: #d66b6b; }   /* 7일 이내: 임박 */
+.mp-proj.idle   { --c: #a7acb8; }   /* 시작 전 / 종료 */
 
 .mp-proj-name {
   font-size: 14px;
   font-weight: 700;
-  color: #34443d;
+  color: #303748;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -974,7 +978,7 @@
 .mp-proj-track {
   position: relative;
   height: 10px;
-  background: #eef2f0;
+  background: #eeeff2;
   border-radius: 999px;
   overflow: hidden;
 }
@@ -995,7 +999,7 @@
 
 .mp-proj-date {
   font-size: 12px;
-  color: #82948a;
+  color: #808696;
   white-space: nowrap;
 }
 
