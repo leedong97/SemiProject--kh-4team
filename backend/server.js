@@ -1637,9 +1637,12 @@ app.use("/api", (req, res) => {
 // 병합 변경: 정적 파일 등록 중복 제거, 모든 API 아래로 배치.
 // React 빌드 파일: backend/build 폴더 기준
 const path = require("path");
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, "..", "frontend", "build")));
+
 app.get("/{*splat}", (req, res) => {
-    res.sendFile(path.join(__dirname, "build", "index.html"));
+    res.sendFile(
+        path.join(__dirname, "..", "frontend", "build", "index.html")
+    );
 });
 
 // ===== [submain 화면 제공 끝] =====

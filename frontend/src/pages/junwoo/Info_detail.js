@@ -32,7 +32,7 @@ function Info_detail({ info = [], onViewInfo }) {
             try {
 
                 const response = await fetch(
-                    `http://localhost:5000/api/notices/${id}`
+                    `http://localhost:3333/api/notices/${id}`
                 );
 
                 if (response.status === 404) {

@@ -18,7 +18,7 @@ function DashboardCalendar() {
             try {
 
                 const response = await fetch(
-                    'http://localhost:5000/api/dashboard/schedules',
+                    'http://localhost:3333/api/dashboard/schedules',
                     {
                         signal: controller.signal,
                         cache: 'no-store'

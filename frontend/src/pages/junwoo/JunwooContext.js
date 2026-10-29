@@ -21,7 +21,7 @@ export function JunwooProvider({ children }) {
       try {
 
         const response = await fetch(
-          'http://localhost:5000/api/projects'
+          'http://localhost:3333/api/projects'
         );
 
         if (!response.ok) {
@@ -52,7 +52,7 @@ export function JunwooProvider({ children }) {
       try {
 
         const response = await fetch(
-          'http://localhost:5000/api/notices'
+          'http://localhost:3333/api/notices'
         );
 
         if (!response.ok) {
@@ -83,7 +83,7 @@ export function JunwooProvider({ children }) {
     const employee_id = 1;
 
     const response = await fetch(
-      'http://localhost:5000/api/notices',
+      'http://localhost:3333/api/notices',
       {
         method: 'POST',
         headers: {
@@ -126,7 +126,7 @@ export function JunwooProvider({ children }) {
   const delInfo = async (id) => {
 
     const response = await fetch(
-      `http://localhost:5000/api/notices/${id}`,
+      `http://localhost:3333/api/notices/${id}`,
       {
         method: 'DELETE'
       }
@@ -148,7 +148,7 @@ export function JunwooProvider({ children }) {
   const updateInfo = async (id, title, content, eventDate) => {
 
     const response = await fetch(
-      `http://localhost:5000/api/notices/${id}`,
+      `http://localhost:3333/api/notices/${id}`,
       {
         method: 'PUT',
         headers: {
@@ -200,7 +200,7 @@ export function JunwooProvider({ children }) {
   const pinInfo = async (id, isPinned) => {
 
     const response = await fetch(
-      `http://localhost:5000/api/notices/${id}/pin`,
+      `http://localhost:3333/api/notices/${id}/pin`,
       {
         method: 'PATCH',
         headers: {
@@ -244,7 +244,7 @@ export function JunwooProvider({ children }) {
     const created_by = 1;
 
     const response = await fetch(
-      'http://localhost:5000/api/projects',
+      'http://localhost:3333/api/projects',
       {
         method: 'POST',
         headers: {
@@ -296,7 +296,7 @@ export function JunwooProvider({ children }) {
   const delTodo = async (id) => {
 
     const response = await fetch(
-      `http://localhost:5000/api/projects/${id}`,
+      `http://localhost:3333/api/projects/${id}`,
       {
         method: 'DELETE'
       }
@@ -332,7 +332,7 @@ export function JunwooProvider({ children }) {
   ) => {
 
     const response = await fetch(
-      `http://localhost:5000/api/projects/${id}`,
+      `http://localhost:3333/api/projects/${id}`,
       {
         method: 'PUT',
         headers: {
@@ -395,7 +395,7 @@ export function JunwooProvider({ children }) {
   const viewInfo = useCallback(async (id) => {
 
     const response = await fetch(
-      `http://localhost:5000/api/notices/${id}/views`,
+      `http://localhost:3333/api/notices/${id}/views`,
       {
         method: 'PATCH'
       }
@@ -423,7 +423,7 @@ export function JunwooProvider({ children }) {
   const viewTodo = useCallback(async (id) => {
 
     const response = await fetch(
-      `http://localhost:5000/api/projects/${id}/views`,
+      `http://localhost:3333/api/projects/${id}/views`,
       {
         method: 'PATCH'
       }
