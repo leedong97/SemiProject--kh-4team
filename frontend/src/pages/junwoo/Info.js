@@ -1,135 +1,178 @@
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function Info({ info, delInfo }) {
+function Info({ info = [] }) {
 
+    const navigate = useNavigate();
+
+    // 검색 및 페이지
+    const [search, setSearch] = useState("");
     const [pages, setPages] = useState(1);
-    const [search, setSearch] = useState('');
-    const [keyword, setKeyword] = useState('');
 
-    const searchInfo = [...info].reverse().filter((item) =>
-        item.title.toLowerCase().includes(keyword.toLowerCase())
-    );
+    // 공지사항 제목 검색 + 최신순 정렬
+    const filteredInfo = [...info]
+        .filter(item =>
+            item.title.toLowerCase().includes(search.trim().toLowerCase())
+        )
+        .sort((a, b) => b.id - a.id);
 
-    const searchBtn = () => {
-        setKeyword(search.trim());
-        setPages(1);
-    }
-
-    const totalPages = Math.ceil(searchInfo.length / 10);
+    // 페이지네이션 (10개씩)
+    const totalPages = Math.ceil(filteredInfo.length / 10);
 
     const currentPage = Math.min(pages, Math.max(totalPages, 1));
 
     const start = (currentPage - 1) * 10;
     const end = start + 10;
 
+    const handleReset = () => {
+        setSearch("");
+        setPages(1);
+    };
+
     return (
 
-        <div className="info-page">
+        <main className="info-page info-manage-page">
 
-            <div className="info-header">
-                <h2>공지사항</h2>
-                <p>사내 소식과 공지사항을 확인하세요.</p>
+            {/* 상단 제목과 검색 리셋 */}
+            <div className="info-header info-manage-header">
+                <div>
+                    <h1>공지사항</h1>
+                    <p>사내 공지사항을 조회할 수 있습니다.</p>
+                </div>
+
+                <button
+                    type="button"
+                    className="info-reset"
+                    onClick={handleReset}
+                >
+                    검색 리셋
+                </button>
             </div>
 
-            <div className="info-search">
+            {/* 전체 건수와 검색 결과 건수 */}
+            <div className="info-summary">
+                <span>전체 공지사항 {info.length}개</span>
+                <span>조회된 공지사항 {filteredInfo.length}개</span>
+            </div>
 
-                <input type="text"
-                    placeholder="제목 입력"
+            {/* 공지사항 검색 */}
+            <section className="info-filter">
+
+                <label htmlFor="info-search">
+                    공지사항 제목 검색
+                </label>
+
+                <input
+                    id="info-search"
+                    type="text"
+                    placeholder="공지사항 제목 검색"
                     value={search}
                     onChange={(e) => {
                         setSearch(e.target.value);
-
-                        if( e.target.value.trim() === '' ){
-                            setKeyword('');
-                            setPages(1);
-                        }
-
+                        setPages(1);
                     }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') searchBtn();
-                    }} />
+                />
 
-                <button onClick={searchBtn}>
-                    검색
-                </button>
+            </section>
 
-            </div>
+            {/* 공지사항 목록 */}
+            <section className="info-list-section">
 
-            <div className="info-list-head">
-
-                <div className="info-head-title">
-                    <span>번호</span>
-                    <span>제목</span>
+                <div className="info-list-header">
+                    <h3>공지사항 목록</h3>
+                    <span>총 {filteredInfo.length}건</span>
                 </div>
 
-                <span>작성자</span>
-                <span></span>
+                <table className="info-table">
 
-            </div>
+                    <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>공지사항 제목</th>
+                            <th>작성자</th>
+                            <th>작성일자</th>
+                            <th>조회수</th>
+                        </tr>
+                    </thead>
 
-            <ol className="info-list">
-                {
-                    searchInfo.slice(start, end).map((item, index) => (
-                        <li key={item.id} className="info-item">
+                    <tbody>
 
-                            <div className="info-title">
-                                <span className="info-number">
-                                    {start + index + 1}
-                                </span>
+                        {filteredInfo.length > 0 ? (
 
-                                <Link to={`/info/${item.id}`}>
-                                    {item.title}
-                                </Link>
-                            </div>
+                            filteredInfo.slice(start, end).map((item, index) => (
 
-                            <span className="info-author">
-                                {item.author}
-                            </span>
+                                <tr key={item.id}>
 
-                            <button
-                                className="info-delete"
-                                onClick={() => delInfo(item.id)}>
-                                삭제
-                            </button>
+                                    <td>{start + index + 1}</td>
 
-                        </li>
-                    ))
-                }
-            </ol>
+                                    <td>
+                                        <button
+                                            className="info-title-link"
+                                            onClick={() =>
+                                                navigate(`/info/${item.id}`)
+                                            }
+                                        >
+                                            {item.title}
+                                        </button>
+                                    </td>
 
-            {searchInfo.length === 0 &&
-                <p className="info-empty">
-                    {info.length === 0
-                        ? '등록된 공지사항이 없습니다.'
-                        : '검색 결과가 없습니다.'}
-                </p>
-            }
+                                    <td>{item.author}</td>
 
-            <div className="info-pages">
-                {
-                    Array.from({ length: totalPages }, (_, i) => i + 1)
-                        .map((num) => (
+                                    <td>{item.date}</td>
+
+                                    <td>{item.views ?? 0}</td>
+
+                                </tr>
+
+                            ))
+
+                        ) : (
+
+                            <tr>
+                                <td colSpan="5" className="info-empty">
+                                    {info.length === 0
+                                        ? "등록된 공지사항이 없습니다."
+                                        : "검색 결과가 없습니다."}
+                                </td>
+                            </tr>
+
+                        )}
+
+                    </tbody>
+
+                </table>
+
+                {/* 페이지네이션 */}
+                {totalPages > 1 && (
+
+                    <div className="info-pages">
+
+                        {Array.from(
+                            { length: totalPages },
+                            (_, i) => i + 1
+                        ).map(num => (
+
                             <button
                                 key={num}
-                                className={currentPage === num ? 'active' : ''}
-                                onClick={() => setPages(num)}>
+                                className={currentPage === num ? "active" : ""}
+                                onClick={() => setPages(num)}
+                            >
                                 {num}
                             </button>
-                        ))
-                }
-            </div>
 
-            <div className="info-bottom">
-                <Link to="/info/set" className="info-add">
-                    + 공지사항 등록
-                </Link>
-            </div>
+                        ))}
 
-        </div>
+                    </div>
+
+                )}
+
+            </section>
+
+        </main>
 
     );
+
 }
 
 export default Info;

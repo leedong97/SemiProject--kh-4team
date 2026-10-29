@@ -17,24 +17,24 @@ function HomeRoute() {
   return <Home info={info} todo={todo} />;
 }
 function TodoRoute() {
-  const { todo, delTodo } = useJunwoo();
-  return <Todo todo={todo} delTodo={delTodo} />;
+  const { todo, delTodo, addTodo } = useJunwoo();
+  return <Todo todo={todo} delTodo={delTodo} onAddTodo={addTodo} />;
 }
 function TodoSetRoute() {
-  const { addTodo } = useJunwoo();
-  return <Todo_set onAddTodo={addTodo} />;
+  const { todo, addTodo } = useJunwoo();
+  return <Todo_set todo={todo} onAddTodo={addTodo} />;
 }
 function TodoDetailRoute() {
-  const { todo, viewTodo } = useJunwoo();
-  return <Todo_detail todo={todo} onViewTodo={viewTodo} />;
+  const { todo, viewTodo, updateTodo } = useJunwoo();
+  return <Todo_detail todo={todo} onViewTodo={viewTodo} onUpdateTodo={updateTodo} />;
 }
 function InfoRoute() {
-  const { info, delInfo } = useJunwoo();
-  return <Info info={info} delInfo={delInfo} />;
+  const { info, delInfo, addInfo } = useJunwoo();
+  return <Info info={info} onAddInfo={addInfo} />;
 }
 function InfoSetRoute() {
-  const { addInfo } = useJunwoo();
-  return <Info_set onAddInfo={addInfo} />;
+  const { info, addInfo } = useJunwoo();
+  return <Info_set info={info} onAddInfo={addInfo} />;
 }
 function InfoDetailRoute() {
   const { info, viewInfo } = useJunwoo();

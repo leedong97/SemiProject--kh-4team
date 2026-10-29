@@ -8,6 +8,13 @@ function TeamShell() {
   return (
     <div className="team-shell">
 
+      <Link to="/" className="company-logo">
+        <img
+          src="/images/command-logo.png"
+          alt="COMMAND ERP"
+        />
+      </Link>
+
       <div className='dash-menu'>
         <h3>
           <Link to="/">대시보드</Link>
@@ -16,7 +23,7 @@ function TeamShell() {
 
       <div className='todo-menu'>
         <h3>
-          <Link to='/todo'>업무현황</Link>
+          <Link to='/todo'>프로젝트</Link>
         </h3>
       </div>
 

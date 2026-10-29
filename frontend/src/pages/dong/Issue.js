@@ -101,7 +101,7 @@ function Issue({ projects, issues, setIssues }) {
 
             <div className="issue-header">
                 <div>
-                    <h1>SI 프로젝트 이슈 목록</h1>
+                    <h1>SI 프로젝트 이슈 관리</h1>
                     <p>
                         프로젝트별 이슈를 조회하고 관리할 수 있습니다.
                     </p>
