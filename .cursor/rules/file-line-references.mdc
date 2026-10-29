@@ -1,0 +1,14 @@
+---
+description: Require exact file paths and line numbers in code guidance
+alwaysApply: true
+---
+
+# File and line references
+
+- When explaining where to add, remove, or change code, always identify the exact file path and current line number.
+- Include a clickable file link when the interface supports it.
+- Show the existing code and the replacement code when practical.
+- If edits shift line numbers, state that the number is based on the current file contents.
+- When the user asks a question, requests an explanation, or asks what should change, do not edit project code automatically.
+- For question-style requests, inspect read-only and explain the exact file, current line, proposed code, and reason.
+- Edit project code only when the user explicitly asks to apply, implement, modify, fix, or otherwise make the change.
