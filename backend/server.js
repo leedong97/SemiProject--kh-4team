@@ -1,3 +1,15 @@
+// ============================================================
+// 병합 코드 구역 안내 (브랜치 출처 기준)
+// 1. 공통 설정: woojin의 환경변수·DB 연결 방식을 기준으로 통합
+// 2. woojin: 로그인·회원가입·일정·개인 정보 API 및 관련 함수
+// 3. submain: 프로젝트·이슈 조회 API
+// 4. 병합 시 추가: 미등록 API의 404 처리
+// 5. submain: React 정적 파일 및 페이지 라우트
+// 6. 공통 서버 시작: 병합 시 DB 확인 추가, 중복 listen 제거
+// 브랜치 출처 표시이며 개별 코드의 실제 작성자를 증명하지는 않음.
+// ============================================================
+
+// ===== [공통 설정 시작 | woojin 기준] =====
 require("dotenv").config({ path: require("path").join(__dirname, "..", ".env") });
 
 // 서버 기본 설정
@@ -23,6 +35,13 @@ const pool = mysql.createPool({
     waitForConnections: true,
     connectionLimit: 5,
 });
+
+// ===== [공통 설정 끝] =====
+
+// ===== [woojin 시작] =====
+// 범위: health, login, schedules, leaves, my-projects, my-tasks,
+//       my-issues, my-notices, my-attendance, profile, signup
+// 아래 검증 상수·함수도 woojin 코드에 포함됩니다.
 
 // 서버·DB 연결 확인
 app.get("/api/health", async (req, res) => {
@@ -476,6 +495,113 @@ app.post("/api/signup", async (req, res) => {
     }
 });
 
-// 서버 시작
+// ===== [woojin 끝] =====
+
+// ===== [submain API 시작] =====
+// 범위: GET /api/projects, GET /api/issues
+// 병합 변경: SQL과 응답은 유지하고 db.query 콜백을 공통 pool의 await 방식으로 변경.
+
+app.get("/api/projects", async (req, res) => {
+    const sql = `
+        SELECT
+            p.project_id AS id,
+            p.project_title AS name,
+            c.customer_name AS customerName
+        FROM projects p
+        LEFT JOIN customers c
+            ON p.customer_id = c.customer_id
+        ORDER BY p.project_id
+    `;
+
+    try {
+        const [rows] = await pool.query(sql);
+        res.json(rows);
+    } catch (err) {
+        console.error("프로젝트 조회 실패:", err);
+        res.status(500).json({ message: "프로젝트 조회 실패" });
+    }
+});
+
+
+// =====================================================
+// 이슈 조회 API
+// =====================================================
+app.get("/api/issues", async (req, res) => {
+    const sql = `
+        SELECT
+            i.issue_id AS id,
+            i.project_id AS projectId,
+            i.issue_title AS title,
+            i.issue_description AS description,
+            i.issue_priority AS priority,
+            i.issue_status AS status,
+            i.issue_created_at AS createdAt,
+
+            e.employee_id AS reporterId,
+            e.employee_name AS reporterName,
+            e.employee_grade AS reporterGrade,
+            e.employee_phone AS reporterPhone,
+
+            p.project_title AS projectName,
+            c.customer_name AS customerName
+
+        FROM issues i
+
+        LEFT JOIN employees e
+            ON i.reporter_id = e.employee_id
+
+        LEFT JOIN projects p
+            ON i.project_id = p.project_id
+
+        LEFT JOIN customers c
+            ON p.customer_id = c.customer_id
+
+        ORDER BY i.issue_id
+    `;
+
+    try {
+        const [rows] = await pool.query(sql);
+        res.json(rows);
+    } catch (err) {
+        console.error("이슈 조회 실패:", err);
+        res.status(500).json({ message: "이슈 조회 실패" });
+    }
+});
+
+
+// =====================================================
+
+// ===== [submain API 끝] =====
+
+// ===== [병합 시 추가한 공통 처리 시작] =====
+// 등록되지 않은 API 요청 처리
+app.use("/api", (req, res) => {
+    res.status(404).json({ ok: false, message: "API를 찾을 수 없어요." });
+});
+
+// ===== [병합 시 추가한 공통 처리 끝] =====
+
+// ===== [submain 화면 제공 시작] =====
+// 병합 변경: 정적 파일 등록 중복 제거, 모든 API 아래로 배치.
+// React 빌드 파일: backend/build 폴더 기준
+const path = require("path");
+app.use(express.static(path.join(__dirname, "build")));
+app.get("/{*splat}", (req, res) => {
+    res.sendFile(path.join(__dirname, "build", "index.html"));
+});
+
+// ===== [submain 화면 제공 끝] =====
+
+// ===== [공통 서버 시작 | 병합 시 정리] =====
+// 두 브랜치의 서버 실행을 하나로 통합. DB 연결 확인 후 시작하도록 변경.
+// DB 연결 확인 후 서버를 한 번만 시작
 const PORT = Number(process.env.PORT) || 3333;
-app.listen(PORT, () => console.log(`서버 실행 중: http://localhost:${PORT}`));
+async function start() {
+    await pool.query("SELECT 1");
+    app.listen(PORT, () => console.log(`서버 실행 중: http://localhost:${PORT}`));
+}
+start().catch(async (err) => {
+    console.error("서버 시작 실패:", err.code, err.message);
+    await pool.end().catch(() => {});
+    process.exitCode = 1;
+});

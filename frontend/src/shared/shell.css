@@ -6,6 +6,7 @@
    - 원래 App.css 의 "상단 메뉴" 부분만 옮겨온 것입니다 (내용은 그대로).
    ===================================================================== */
 
+   
 body:has(.team-shell),
 body:has(.woojin-frame) {
   font-family: 'Malgun Gothic', sans-serif;

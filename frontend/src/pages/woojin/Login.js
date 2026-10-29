@@ -2,16 +2,16 @@ import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
-import { saveLoginUser } from "./getLoginUser";
 
-// 로그인 화면
 function Login() {
 
     const navi = useNavigate()
+    //로그인이 끝나면 다른 화면으로 이동할 때 사용한다.
 
     const [values, setValues] = useState({
         email: '',
         password: ''
+        //입력한 이메일과 비밀번호를 저장한다, 처음에는 빈 문자열이다
     })
     const [errors, setErrors] = useState({});
 
@@ -31,14 +31,9 @@ function Login() {
         }
 
         setErrors({})
-        axios.post('http://localhost:3333/api/login', values)
-            .then((res) => {
-                saveLoginUser(res.data.user);
-                if (res.data.user.employee_role === "관리자") {
-                    navi("/admin");
-                } else {
-                    navi("/");
-                }
+        axios.post('http://localhost:3333/login', values)
+            .then(() => {
+                navi("/") // 로그인 성공 → 대시보드(메인)로 이동
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
@@ -61,6 +56,7 @@ function Login() {
                         placeholder='email 을 입력하세요' />
                     {errors.email && <p className='error'>{errors.email}</p>}
 
+
                     <input type='password'
                         name='password'
                         value={values.password}
@@ -79,6 +75,7 @@ function Login() {
                     </Link>
 
                 </div>
+
 
             </form>
 
