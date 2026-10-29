@@ -14,6 +14,8 @@ function AdminLayout({ onLogout }) {
     { name: "인사 관리", path: "/admin/employees" },
     { name: "직원 평가", path: "/admin/evaluations" },
     { name: "공지 관리", path: "/admin/boards" },
+    { name: "업무량 분석", path: "/admin/workload" },
+    { name: "감사 로그", path: "/admin/audit" },
     { name: "데이터 초기화", path: "/admin/settings" }
   ];
 
@@ -43,7 +45,7 @@ function AdminLayout({ onLogout }) {
               onClick={() => navigate("/")}
               onKeyDown={(e) => { if (e.key === "Enter") navigate("/"); }}
             >
-              관리자 데모(일반 페이지로 이동)
+              일반 페이지로 이동
             </span>
 
             <button className="btn btn-outline" type="button" onClick={onLogout}>

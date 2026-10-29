@@ -8,7 +8,7 @@ function Info({ info, delInfo }) {
     const [search, setSearch] = useState('');
     const [keyword, setKeyword] = useState('');
 
-    const searchInfo = [...info].reverse().filter((item) =>
+    const searchInfo = [...info].filter((item) =>
         item.title.toLowerCase().includes(keyword.toLowerCase())
     );
 
@@ -88,11 +88,7 @@ function Info({ info, delInfo }) {
                                 {item.author}
                             </span>
 
-                            <button
-                                className="info-delete"
-                                onClick={() => delInfo(item.id)}>
-                                삭제
-                            </button>
+
 
                         </li>
                     ))
@@ -121,11 +117,7 @@ function Info({ info, delInfo }) {
                 }
             </div>
 
-            <div className="info-bottom">
-                <Link to="/info/set" className="info-add">
-                    + 공지사항 등록
-                </Link>
-            </div>
+
 
         </div>
 

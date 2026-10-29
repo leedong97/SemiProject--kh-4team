@@ -1,5 +1,11 @@
-// junwoo 폴더 (아직 비어 있어요). 여기에 자기 API 파일을 만들고 아래 routes 에 추가하세요.
-// 예) const myRouter = require('./my'); routes: [{ prefix: '/api/junwoo', router: myRouter }]
+// 공지사항 API 라우터를 서버에 전달합니다.
+const noticesRouter = require("./notices");
+
 module.exports = {
-  routes: [],
+    routes: [
+        {
+            prefix: "/api/notices",
+            router: noticesRouter
+        }
+    ]
 };

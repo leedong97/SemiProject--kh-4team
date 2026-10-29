@@ -1,14 +1,72 @@
-import React from "react";
+import React, { useState } from "react";
 import { canLeadProject } from "../shared/permissions";
 
 function ManagerAssignment({
     projects = [],
     setProjects,
+    updateProject,
     employees = []
 }) {
 
+    // ===== 정렬 =====
+    const [sortKey, setSortKey] = useState(null);
+    const [sortDir, setSortDir] = useState("asc");
+
+    // 검색어
+    const [search, setSearch] = useState("");
+
+    // 담당자 칸에 보이는 글자 그대로
+    const getManagerLabel = (project) => {
+        if (project.managerId == null) return "미배정";
+        const manager = employees.find((e) => String(e.id) === String(project.managerId));
+        if (!manager) return `ID: ${project.managerId}`;
+        if (!canLeadProject(manager)) return `직급 미달 담당자 (${manager.name})`;
+        return manager.name;
+    };
+
+    // 정렬용 값
+    const getSortValue = (project) => {
+        if (sortKey === "manager") return getManagerLabel(project);
+        if (sortKey === "assigned") {
+            const manager = employees.find((e) => String(e.id) === String(project.managerId));
+            return manager && canLeadProject(manager) ? "배정 완료" : "배정 없음";
+        }
+        return project[sortKey] ?? "";
+    };
+
+    // 화면에 보일 프로젝트 목록 (필터 후 정렬)
+    const sortedProjects = projects
+        .filter((project) =>
+            project.status !== "승인 대기" &&
+            project.status !== "반려"
+        )
+        .filter((project) => {
+            const keyword = search.toLowerCase();
+            return (
+                (project.name || "").toLowerCase().includes(keyword) ||
+                (project.customer || "").toLowerCase().includes(keyword)
+            );
+        })
+        .sort((a, b) => {
+            if (!sortKey) return 0;
+            const result = String(getSortValue(a)).localeCompare(String(getSortValue(b)), "ko");
+            return sortDir === "asc" ? result : -result;
+        });
+
+    // 헤더 클릭: 같은 항목이면 방향 전환, 다른 항목이면 오름차순
+    const changeSort = (key) => {
+        if (sortKey === key) {
+            setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
+        } else {
+            setSortKey(key);
+            setSortDir("asc");
+        }
+    };
+
+    const sortMark = (key) => (sortKey === key ? (sortDir === "asc" ? " ▲" : " ▼") : "");
+
     // 프로젝트 담당자 배정
-    const assignManager = (projectId, managerId) => {
+    const assignManager = async (projectId, managerId) => {
 
         //완료된 프로젝트는 담당자 재배정 불가
 
@@ -34,31 +92,14 @@ function ManagerAssignment({
             return;
         }
 
-        setProjects((prev) =>
-            prev.map((project) => {
-
-                // 선택한 프로젝트인지 확인
-                if (project.id === projectId) {
-
-                    return {
-                        ...project,
-
-                        // 담당자 ID 저장
-                        managerId: managerId,
-
-                        // 담당자가 있으면 진행중으로 변경
-                        // 담당자를 해제하면 배정 대기로 변경
-                        status: project.status === "보류"
-                            ? "보류"
-                            : managerId !== null
-                                ? "진행중"
-                                : "예정"
-                    };
-                }
-
-                return project;
-            })
-        );
+        try {
+            await updateProject(projectId, {
+                managerId: managerId,
+                status: currentProject.status === '보류' ? '보류' : managerId !== null ? '진행중' : '예정'
+            });
+        } catch (error) {
+            alert('DB 담당자 변경 실패: ' + error.message);
+        }
     };
     return (
         <div className="nexus-assignment">
@@ -70,26 +111,28 @@ function ManagerAssignment({
             </p>
 
             <div className="card">
-
+                <input
+                    className="nexus-project-input"
+                    placeholder="프로젝트명 또는 고객사 검색"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    style={{ marginBottom: "16px" }}
+                />
                 <div className="nexus-assignment-table-wrap">
 
                     <table className="nexus-assignment-table">
 
                         <thead>
                             <tr>
-                                <th>프로젝트명</th>
-                                <th>진행 상태</th>
-                                <th>담당자</th>
-                                <th>배정 상태</th>
+                                <th onClick={() => changeSort("name")} style={{ cursor: "pointer" }}>프로젝트명{sortMark("name")}</th>
+                                <th onClick={() => changeSort("status")} style={{ cursor: "pointer" }}>진행 상태{sortMark("status")}</th>
+                                <th onClick={() => changeSort("manager")} style={{ cursor: "pointer" }}>담당자{sortMark("manager")}</th>
+                                <th onClick={() => changeSort("assigned")} style={{ cursor: "pointer" }}>배정 상태{sortMark("assigned")}</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {projects
-                                .filter((project) =>
-                                    project.status !== "승인 대기" &&
-                                    project.status !== "반려"
-                                )
+                            {sortedProjects
                                 .map((project) => {
                                     // 드롭다운 선택지(팀장 이상)에 있는 담당자만 실제 배정으로 인정
                                     const currentManager = employees.find(

@@ -1,3 +1,4 @@
+import { adminRequest } from './adminApi';
 import { createContext, useContext, useState, useEffect } from 'react';
 
 // 백엔드 주소 (Login.js 와 같은 서버)
@@ -67,34 +68,25 @@ function readData() {
 }
 
 function useErpData() {
-    const [data, setData] = useState(readData);
+    const [data, setData] = useState(initialData);
 
-    // 직원 목록과 평가 목록은 DB(백엔드 API)에서 가져와 덮어씁니다.
-    // 서버가 꺼져 있으면 저장된 데이터를 그대로 씁니다.
+    // API 하나가 실패해도 나머지 목록은 정상 표시합니다.
     useEffect(() => {
         let cancelled = false;
-
         async function loadFromServer() {
-            try {
-                const [empRes, evalRes, issueRes] = await Promise.all([
-                    fetch(`${API_BASE}/api/admin/employees`),
-                    fetch(`${API_BASE}/api/admin/evaluations`),
-                    fetch(`${API_BASE}/api/admin/issues`),
-                ]);
-                if (!empRes.ok || !evalRes.ok || !issueRes.ok) throw new Error("API 응답 오류");
-
-                const employees = await empRes.json();
-                const evaluations = await evalRes.json();
-                // 서버 이슈에는 댓글·작업 이력이 없으므로 빈 배열을 채워 이슈 화면이 깨지지 않게 합니다.
-                const issues = (await issueRes.json()).map(issue => ({ comments: [], history: [], ...issue }));
-                if (!cancelled) {
-                    setData(prev => ({ ...prev, employees, evaluations, issues }));
+            const names = ['employees', 'evaluations', 'issues'];
+            for (const name of names) {
+                try {
+                    const rows = await adminRequest('/' + name);
+                    if (!cancelled && Array.isArray(rows)) {
+                        const items = name === 'issues' ? rows.map(issue => ({ comments: [], history: [], ...issue })) : rows;
+                        setData(prev => ({ ...prev, [name]: items }));
+                    }
+                } catch (error) {
+                    console.error(name + ' 목록 오류:', error.message);
                 }
-            } catch (error) {
-                console.warn("서버에서 데이터를 가져오지 못했습니다. 저장된 데이터를 사용합니다.", error);
             }
         }
-
         loadFromServer();
         return () => { cancelled = true; };
     }, []);
@@ -105,7 +97,7 @@ function useErpData() {
             const next = updater(previous);
             const logs = [{ id: Date.now() + Math.random(), action, at: new Date().toLocaleString("ko-KR") }, ...previous.logs].slice(0, 100);
             const result = { ...next, logs };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(result));
+            // 인사·평가 정보가 브라우저에 남지 않도록 localStorage에 저장하지 않습니다.
             return result;
         });
     }
@@ -118,29 +110,40 @@ function useErpData() {
     return { data, changeData, resetData };
 }
 
-const KEY = "nexus_merged_projects_v1";
-
 function useProjects() {
-    const [projects, setProjectsState] = useState(() => {
+    const [projects, setProjectsState] = useState([]);
+    const [projectError, setProjectError] = useState('');
+    async function loadProjects() {
         try {
-            const saved = JSON.parse(localStorage.getItem(KEY));
-            return Array.isArray(saved) ? saved : initialProjects;
+            const rows = await adminRequest('/projects');
+            setProjectsState(Array.isArray(rows) ? rows : []);
+            setProjectError('');
         } catch (error) {
-            return initialProjects;
+            setProjectError(error.message);
+            console.error('프로젝트 조회 오류:', error);
         }
-    });
+    }
+    useEffect(() => {
+        loadProjects();
+    }, []);
+    // 서버 변경 성공 후 다시 조회해 DB와 화면을 일치시킵니다.
+    async function createProject(project) {
+        await adminRequest('/projects', { method: 'POST', body: JSON.stringify(project) });
+        await loadProjects();
+    }
+    async function updateProject(id, changes) {
+        await adminRequest('/projects/' + id, { method: 'PATCH', body: JSON.stringify(changes) });
+        await loadProjects();
+    }
+    async function removeProject(id) {
+        await adminRequest('/projects/' + id, { method: 'DELETE' });
+        await loadProjects();
+    }
+    // 기존 함수명을 유지하되 DB 반영이 필요한 곳은 위 함수를 사용합니다.
     function setProjects(next) {
-        setProjectsState(previous => {
-            const value = typeof next === "function" ? next(previous) : next;
-            localStorage.setItem(KEY, JSON.stringify(value));
-            return value;
-        });
+        setProjectsState(previous => (typeof next === 'function' ? next(previous) : next));
     }
-    function resetProjects() {
-        localStorage.removeItem(KEY);
-        setProjectsState(initialProjects);
-    }
-    return { projects, setProjects, resetProjects };
+    return { projects, setProjects, resetProjects: loadProjects, createProject, updateProject, removeProject, projectError };
 }
 
 const JonghoContext = createContext(null);
@@ -151,25 +154,7 @@ export function useJongho() {
 
 export function JonghoProvider({ children }) {
   const { data, changeData, resetData } = useErpData();
-  const { projects, setProjects, resetProjects } = useProjects();
-
-  // 프로젝트 목록은 DB(백엔드 API)에서 가져와 대시보드와 담당자 배정에 씁니다.
-  // 서버가 꺼져 있으면 저장된 프로젝트를 그대로 씁니다.
-  useEffect(() => {
-    let cancelled = false;
-    fetch(`${API_BASE}/api/admin/projects`)
-      .then(res => {
-        if (!res.ok) throw new Error("API 응답 오류");
-        return res.json();
-      })
-      .then(list => {
-        if (!cancelled) setProjects(list);
-      })
-      .catch(error => {
-        console.warn("서버에서 프로젝트를 가져오지 못했습니다. 저장된 데이터를 사용합니다.", error);
-      });
-    return () => { cancelled = true; };
-  }, []);
+  const { projects, setProjects, resetProjects, createProject, updateProject, removeProject, projectError } = useProjects();
 
   function resetDemo() {
     if (!window.confirm("모든 연습 데이터를 초기화할까요?")) return;
@@ -177,7 +162,7 @@ export function JonghoProvider({ children }) {
     resetProjects();
   }
 
-  const value = { data, changeData, projects, setProjects, resetDemo };
+  const value = { data, changeData, projects, setProjects, resetDemo, createProject, updateProject, removeProject, projectError };
 
   return <JonghoContext.Provider value={value}>{children}</JonghoContext.Provider>;
 }

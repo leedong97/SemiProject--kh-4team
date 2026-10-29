@@ -28,7 +28,7 @@ function Home({ info, todo }) {
         <h3>공지사항</h3>
         <ol>
           {
-            [...info].reverse().slice(0, 3).map((item) => (
+            [...info].slice(0, 3).map((item) => (
               <li key={item.id}>
                 <Link to={`/info/${item.id}`}>
                   {item.title}

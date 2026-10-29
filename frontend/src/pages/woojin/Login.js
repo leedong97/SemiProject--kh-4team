@@ -32,7 +32,13 @@ function Login() {
 
         setErrors({})
         axios.post('http://localhost:3333/login', values)
-            .then(() => {
+            .then((response) => {
+                if (response.data.result !== 'success' || !response.data.token) {
+                    setErrors({ login: '이메일 또는 비밀번호를 확인하세요' });
+                    return;
+                }
+                sessionStorage.setItem('nexus_token', response.data.token);
+                sessionStorage.setItem('nexus_role', response.data.role || '');
                 navi("/") // 로그인 성공 → 대시보드(메인)로 이동
             })
             .catch((err) => {

@@ -1,187 +1,437 @@
-import React, { useState } from "react";
 
+import React, { useState } from "react";
+import "./HRManagement.css";
+
+// 인사 관리 컴포넌트
 export default function HRManagement({ data, changeData }) {
+
+    // 직원 등록 입력값
     const [name, setName] = useState("");
     const [team, setTeam] = useState("개발팀");
     const [position, setPosition] = useState("");
     const [rank, setRank] = useState("사원");
+
+    // 휴가 신청 입력값
     const [leaveEmployee, setLeaveEmployee] = useState("");
     const [leaveStart, setLeaveStart] = useState("");
     const [leaveEnd, setLeaveEnd] = useState("");
+
+    // 담당 업무 등록 입력값
     const [taskEmployee, setTaskEmployee] = useState("");
     const [taskTitle, setTaskTitle] = useState("");
     const [taskStart, setTaskStart] = useState("");
     const [taskEnd, setTaskEnd] = useState("");
     const [taskDescription, setTaskDescription] = useState("");
 
-    // 두 날짜 구간이 서로 겹치는지 확인합니다.
+    // 상위 컴포넌트에서 받은 데이터
+    const employees = data.employees || [];
+    const issues = data.issues || [];
+    const tasks = data.tasks || [];
+    const leaves = data.leaves || [];
+
+    // 두 날짜 구간이 겹치는지 확인
     function overlaps(aStart, aEnd, bStart, bEnd) {
+
+        if (!aStart || !aEnd || !bStart || !bEnd) {
+            return false;
+        }
+
         return aStart <= bEnd && bStart <= aEnd;
     }
 
-    // 이슈와 별도로 직원에게 담당 업무를 등록합니다.
-    function addTask(event) {
-        event.preventDefault();
-        if (!taskEmployee || !taskTitle.trim() || !taskStart || !taskEnd || taskStart > taskEnd) {
-            window.alert("담당 업무와 날짜를 올바르게 입력하세요.");
-            return;
-        }
-        const employeeId = Number(taskEmployee);
-        const conflict = data.leaves.some(x => x.employeeId === employeeId && x.status !== "반려" && overlaps(taskStart, taskEnd, x.startDate || x.date, x.endDate || x.date));
-        if (conflict && !window.confirm("해당 직원의 휴가 일정과 겹칩니다. 업무를 등록할까요?")) return;
-        changeData("담당 업무 등록", old => ({
-            ...old,
-            tasks: [{ id: Date.now(), employeeId, title: taskTitle.trim(), startDate: taskStart, endDate: taskEnd, description: taskDescription, status: "예정" }, ...(old.tasks || [])]
-        }));
-        setTaskTitle("");
-        setTaskDescription("");
+    // 오늘 날짜를 YYYY-MM-DD 형식으로 반환
+    function getToday() {
+
+        const today = new Date();
+
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+
+        return year + "-" + month + "-" + day;
     }
 
+    // 오늘부터 7일 뒤 날짜를 반환
+    function getSevenDaysLater() {
+
+        const date = new Date();
+
+        date.setDate(date.getDate() + 7);
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+
+        return year + "-" + month + "-" + day;
+    }
+
+    // 마감일까지 7일 이하 남았는지 검사
+    function isDueSoon(endDate) {
+
+        if (!endDate) {
+            return false;
+        }
+
+        return (
+            endDate >= getToday() &&
+            endDate <= getSevenDaysLater()
+        );
+    }
+
+    // 직원 등록
     function addEmployee(event) {
 
         event.preventDefault();
 
+        if (!name.trim()) {
+            window.alert("직원 이름을 입력하세요.");
+            return;
+        }
+
+        // 같은 팀의 동명이인 확인
+        const duplicateEmployee = employees.some(
+            employee =>
+                employee.name === name.trim() &&
+                employee.team === team &&
+                employee.status !== "퇴사"
+        );
+
+        if (duplicateEmployee) {
+
+            const confirmed = window.confirm(
+                "같은 팀에 동일한 이름의 직원이 있습니다.\n" +
+                "그래도 등록하시겠습니까?"
+            );
+
+            if (!confirmed) {
+                return;
+            }
+        }
+
         const employee = {
             id: Date.now(),
             name: name.trim(),
-            team,
+            team: team,
             position: position.trim(),
             role: position.trim(),
-            rank,
+            rank: rank,
             status: "재직"
         };
 
-
-        if (!employee.name) {
-            return;
-        }
-
-        // 기존 직원 목록에 새로운 직원 추가
-        changeData(
-            "직원 등록: " + employee.name,
-
-            old => ({
-                ...old,
-
-                employees: [
-                    ...old.employees,
-                    employee
-                ]
-            })
-        );
+        changeData("직원 등록: " + employee.name, old => ({
+            ...old,
+            employees: [
+                ...(old.employees || []),
+                employee
+            ]
+        }));
 
         setName("");
         setPosition("");
+
+        window.alert("직원이 등록되었습니다.");
     }
 
-
-
-    function requestLeave(event) {
-
+    // 담당 업무 등록
+    function addTask(event) {
 
         event.preventDefault();
 
-
-        if (!leaveEmployee || !leaveStart || !leaveEnd || leaveStart > leaveEnd) {
-            window.alert("휴가 시작일과 종료일을 확인하세요.");
+        if (
+            !taskEmployee ||
+            !taskTitle.trim() ||
+            !taskStart ||
+            !taskEnd ||
+            taskStart > taskEnd
+        ) {
+            window.alert("담당 업무와 날짜를 확인하세요.");
             return;
         }
 
-        // 휴가 기간에 예정된 담당 업무가 있는지 확인합니다.
-        const conflictingTasks = (data.tasks || []).filter(x =>
-            x.employeeId === Number(leaveEmployee) && x.status !== "완료" &&
-            overlaps(leaveStart, leaveEnd, x.startDate, x.endDate)
+        const employeeId = Number(taskEmployee);
+
+        const employee = employees.find(
+            x => x.id === employeeId
         );
-        if (conflictingTasks.length > 0) {
-            const names = conflictingTasks.map(x => x.title).join(", ");
-            if (!window.confirm("휴가 기간에 담당 업무가 있습니다: " + names + "\n그래도 신청할까요?")) return;
+
+        if (!employee || employee.status === "퇴사") {
+            window.alert("업무를 배정할 수 없는 직원입니다.");
+            return;
         }
 
-        // 새로운 휴가 신청 데이터 생성
+        // 해당 직원의 휴가와 업무 날짜 비교
+        const conflictingLeaves = leaves.filter(
+            leave =>
+                leave.employeeId === employeeId &&
+                leave.status !== "반려" &&
+                overlaps(
+                    taskStart,
+                    taskEnd,
+                    leave.startDate || leave.date,
+                    leave.endDate || leave.date
+                )
+        );
+
+        if (conflictingLeaves.length > 0) {
+
+            const details = conflictingLeaves.map(
+                leave =>
+                    (leave.startDate || leave.date) +
+                    " ~ " +
+                    (leave.endDate || leave.date) +
+                    " (" + leave.status + ")"
+            ).join("\n");
+
+            const confirmed = window.confirm(
+                "휴가 일정과 겹칩니다.\n\n" +
+                details +
+                "\n\n그래도 업무를 등록할까요?"
+            );
+
+            if (!confirmed) {
+                return;
+            }
+        }
+
+        changeData("담당 업무 등록", old => ({
+            ...old,
+            tasks: [
+                {
+                    id: Date.now(),
+                    employeeId: employeeId,
+                    title: taskTitle.trim(),
+                    startDate: taskStart,
+                    endDate: taskEnd,
+                    description: taskDescription,
+                    status: "예정"
+                },
+                ...(old.tasks || [])
+            ]
+        }));
+
+        setTaskTitle("");
+        setTaskStart("");
+        setTaskEnd("");
+        setTaskDescription("");
+
+        window.alert("담당 업무가 등록되었습니다.");
+    }
+
+    // 담당 업무 상태 변경
+    function changeTaskStatus(id, status) {
+
+        changeData("담당 업무 상태 변경", old => ({
+            ...old,
+            tasks: (old.tasks || []).map(
+                task =>
+                    task.id === id
+                        ? { ...task, status: status }
+                        : task
+            )
+        }));
+    }
+
+    // 휴가 신청
+    function requestLeave(event) {
+
+        event.preventDefault();
+
+        if (
+            !leaveEmployee ||
+            !leaveStart ||
+            !leaveEnd ||
+            leaveStart > leaveEnd
+        ) {
+            window.alert("휴가 기간을 확인하세요.");
+            return;
+        }
+
+        const employeeId = Number(leaveEmployee);
+
+        const employee = employees.find(
+            x => x.id === employeeId
+        );
+
+        if (!employee || employee.status === "퇴사") {
+            window.alert("휴가를 신청할 수 없는 직원입니다.");
+            return;
+        }
+
+        // 기존 휴가와 기간이 겹치는지 확인
+        const duplicateLeave = leaves.some(
+            leave =>
+                leave.employeeId === employeeId &&
+                leave.status !== "반려" &&
+                overlaps(
+                    leaveStart,
+                    leaveEnd,
+                    leave.startDate || leave.date,
+                    leave.endDate || leave.date
+                )
+        );
+
+        if (duplicateLeave) {
+            window.alert("이미 신청한 휴가 기간과 겹칩니다.");
+            return;
+        }
+
+        // 휴가 기간과 담당 업무 비교
+        const conflictingTasks = tasks.filter(
+            task =>
+                task.employeeId === employeeId &&
+                task.status !== "완료" &&
+                overlaps(
+                    leaveStart,
+                    leaveEnd,
+                    task.startDate,
+                    task.endDate
+                )
+        );
+
+        if (conflictingTasks.length > 0) {
+
+            const details = conflictingTasks.map(
+                task =>
+                    task.title +
+                    " (" +
+                    task.startDate +
+                    " ~ " +
+                    task.endDate +
+                    ")"
+            ).join("\n");
+
+            const confirmed = window.confirm(
+                "휴가 기간에 담당 업무가 있습니다.\n\n" +
+                details +
+                "\n\n그래도 신청하시겠습니까?"
+            );
+
+            if (!confirmed) {
+                return;
+            }
+        }
+
         const leave = {
             id: Date.now(),
-            employeeId: Number(leaveEmployee),
+            employeeId: employeeId,
             startDate: leaveStart,
             endDate: leaveEnd,
             status: "대기"
         };
-        changeData(
-            "휴가 신청 등록",
 
-            old => ({
-                ...old,
-
-                leaves: [
-                    leave,
-                    ...old.leaves
-                ]
-            })
-        );
+        changeData("휴가 신청 등록", old => ({
+            ...old,
+            leaves: [
+                leave,
+                ...(old.leaves || [])
+            ]
+        }));
 
         setLeaveStart("");
         setLeaveEnd("");
+
+        window.alert("휴가 신청이 등록되었습니다.");
     }
 
-
+    // 휴가 승인 또는 반려
     function approveLeave(id, status) {
-        changeData("휴가 " + status, old => ({ ...old, leaves: old.leaves.map(x => x.id === id ? { ...x, status } : x) }));
+
+        const leave = leaves.find(
+            x => x.id === id
+        );
+
+        if (!leave || leave.status !== "대기") {
+            window.alert("처리할 수 없는 휴가입니다.");
+            return;
+        }
+
+        const confirmed = window.confirm(
+            "휴가를 " + status + " 처리하시겠습니까?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        changeData("휴가 " + status, old => ({
+            ...old,
+            leaves: (old.leaves || []).map(
+                x =>
+                    x.id === id && x.status === "대기"
+                        ? { ...x, status: status }
+                        : x
+            )
+        }));
     }
 
-
+    // 화면 출력
     return (
-        <section>
 
-            {/* ========================== */}
-            {/* 인사 관리 페이지 제목 */}
-            {/* ========================== */}
+        <section className="hr-management">
 
+            {/* 페이지 제목 */}
             <div className="section-head">
-                <h2>인사 관리</h2>
 
-                <p>
-                    직원 등록 · 업무량 · 휴가 승인
-                </p>
+                <div>
+                    <span className="hr-eyebrow">
+                        WORKSPACE / HUMAN RESOURCES
+                    </span>
+
+                    <h2>인사 관리</h2>
+
+                    <p>
+                        직원 등록 · 업무량 · 휴가 승인
+                    </p>
+                </div>
+
             </div>
 
-            {/* ========================== */}
-            {/* 1. 새로운 직원 등록 */}
-            {/* ========================== */}
-
+            {/* 직원 등록 */}
             <form
                 className="panel form-row"
                 onSubmit={addEmployee}
             >
 
-                {/* 직원 이름 입력 */}
+                <h3 className="full">
+                    신규 직원 등록
+                </h3>
+
                 <input
                     placeholder="직원 이름"
                     value={name}
-                    onChange={e =>
-                        setName(e.target.value)
-                    }
+                    onChange={e => setName(e.target.value)}
                     required
                 />
 
-                {/* 직원 직무 입력 */}
                 <input
                     placeholder="직무"
                     value={position}
-                    onChange={e =>
-                        setPosition(e.target.value)
-                    }
+                    onChange={e => setPosition(e.target.value)}
                 />
 
-                {/* 직무와 직급은 별도로 관리합니다. */}
-                <select value={rank} onChange={e => setRank(e.target.value)}>
-                    { ["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>) }
+                <select
+                    value={rank}
+                    onChange={e => setRank(e.target.value)}
+                >
+
+                    {[
+                        "사원",
+                        "대리",
+                        "과장",
+                        "차장",
+                        "팀장",
+                        "부장",
+                        "이사",
+                        "대표"
+                    ].map(x => (
+                        <option key={x}>{x}</option>
+                    ))}
+
                 </select>
 
-                {/* 직원 소속 팀 선택 */}
                 <select
                     value={team}
-                    onChange={e =>
-                        setTeam(e.target.value)
-                    }
+                    onChange={e => setTeam(e.target.value)}
                 >
                     <option>개발팀</option>
                     <option>기획팀</option>
@@ -189,99 +439,253 @@ export default function HRManagement({ data, changeData }) {
                     <option>운영팀</option>
                 </select>
 
-                {/* 직원 등록 버튼 */}
-                <button>
+                <button type="submit">
                     직원 등록
                 </button>
 
             </form>
 
-            {/* ========================== */}
-            {/* 2. 직원별 업무량 확인 */}
-            {/* ========================== */}
-
+            {/* 직원별 업무량 */}
             <div className="panel">
 
                 <h3>직원별 업무량</h3>
 
                 <p className="muted">
-                    담당 업무와 미완료 이슈를 구분해 표시합니다. 이는
+                    담당 업무와 미완료 이슈를 구분해 표시합니다.
                     실제 성과 평가 점수는 아닙니다.
                 </p>
 
-                {/* 직원 목록 반복 */}
-                {data.employees.map(e => {
+                {employees.length === 0 && (
+                    <p className="muted">
+                        등록된 직원이 없습니다.
+                    </p>
+                )}
 
-                    // 해당 직원이 담당하는 미완료 이슈 개수 계산
-                    const count = data.issues.filter(
-                        x =>
-                            x.assigneeId === e.id &&
-                            x.status !== "완료"
-                    ).length;
+                {employees.map(employee => {
+
+                    // 미완료 이슈 계산
+                    const employeeIssues = issues.filter(
+                        issue =>
+                            issue.assigneeId === employee.id &&
+                            issue.status !== "완료"
+                    );
+
+                    // 미완료 담당 업무 계산
+                    const employeeTasks = tasks.filter(
+                        task =>
+                            task.employeeId === employee.id &&
+                            task.status !== "완료"
+                    );
+
+                    // 마감 임박 업무 계산
+                    const dueSoonTasks = employeeTasks.filter(
+                        task => isDueSoon(task.endDate)
+                    );
 
                     return (
+
                         <div
                             className="employee-row"
-                            key={e.id}
+                            key={employee.id}
                         >
 
-                            {/* 직원 이름 / 팀 / 직무 */}
-                            <div>
+                            <div className="hr-employee-info">
+
                                 <strong>
-                                    {e.name}
+                                    {employee.name}
                                 </strong>
 
-                                <span className="muted">
-                                    {" · "}
-                                    {e.team} / {e.position} / {e.rank || "직급 미지정"}
+                                <p className="muted">
+                                    {employee.team}
+                                    {" / "}
+                                    {employee.position}
+                                    {" / "}
+                                    {employee.rank || "직급 미지정"}
+                                </p>
+
+                                <span className="hr-status">
+                                    {employee.status || "재직"}
                                 </span>
+
                             </div>
 
-                            {/* 담당 이슈 개수 */}
-                            <span>
-                                이슈 {count}건 / 담당 업무 {(data.tasks || []).filter(t => t.employeeId === e.id && t.status !== "완료").length}건
-                            </span>
+                            <div className="hr-workload">
+
+                                <div className="hr-count">
+                                    <strong>
+                                        {employeeIssues.length}
+                                    </strong>
+                                    <span>미완료 이슈</span>
+                                </div>
+
+                                <div className="hr-count">
+                                    <strong>
+                                        {employeeTasks.length}
+                                    </strong>
+                                    <span>담당 업무</span>
+                                </div>
+
+                                <div className="hr-count hr-warning">
+                                    <strong>
+                                        {dueSoonTasks.length}
+                                    </strong>
+                                    <span>7일 이내 마감</span>
+                                </div>
+
+                            </div>
 
                         </div>
+
                     );
                 })}
 
             </div>
 
-            {/* 프로젝트 이슈와 별도로 직원의 담당 업무를 관리합니다. */}
-            <form className="panel form-row" onSubmit={addTask}>
-                <h3 className="full">직원 담당 업무 등록 (프로젝트 이슈와 별도)</h3>
-                <select required value={taskEmployee} onChange={e => setTaskEmployee(e.target.value)}>
+            {/* 담당 업무 등록 */}
+            <form
+                className="panel form-row"
+                onSubmit={addTask}
+            >
+
+                <h3 className="full">
+                    직원 담당 업무 등록 (프로젝트 이슈와 별도)
+                </h3>
+
+                <select
+                    required
+                    value={taskEmployee}
+                    onChange={e => setTaskEmployee(e.target.value)}
+                >
+
                     <option value="">직원 선택</option>
-                    {data.employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+
+                    {employees.map(employee => (
+                        <option
+                            key={employee.id}
+                            value={employee.id}
+                            disabled={employee.status === "퇴사"}
+                        >
+                            {employee.name}
+                        </option>
+                    ))}
+
                 </select>
-                <input required placeholder="담당 업무명" value={taskTitle} onChange={e => setTaskTitle(e.target.value)} />
-                <label>시작일 <input required type="date" value={taskStart} onChange={e => setTaskStart(e.target.value)} /></label>
-                <label>종료일 <input required type="date" value={taskEnd} onChange={e => setTaskEnd(e.target.value)} /></label>
-                <input placeholder="상세 업무 내용" value={taskDescription} onChange={e => setTaskDescription(e.target.value)} />
-                <button>업무 등록</button>
+
+                <input
+                    required
+                    placeholder="담당 업무명"
+                    value={taskTitle}
+                    onChange={e => setTaskTitle(e.target.value)}
+                />
+
+                <label>
+                    시작일
+                    <input
+                        required
+                        type="date"
+                        value={taskStart}
+                        onChange={e => setTaskStart(e.target.value)}
+                    />
+                </label>
+
+                <label>
+                    종료일
+                    <input
+                        required
+                        type="date"
+                        min={taskStart}
+                        value={taskEnd}
+                        onChange={e => setTaskEnd(e.target.value)}
+                    />
+                </label>
+
+                <input
+                    placeholder="상세 업무 내용"
+                    value={taskDescription}
+                    onChange={e => setTaskDescription(e.target.value)}
+                />
+
+                <button type="submit">
+                    업무 등록
+                </button>
+
             </form>
+
+            {/* 담당 업무 상세 */}
             <div className="panel">
+
                 <h3>직원별 담당 업무 상세</h3>
-                {(data.tasks || []).length === 0 && <p className="muted">등록된 담당 업무가 없습니다.</p>}
-                {(data.tasks || []).map(task => (
-                    <div className="employee-row" key={task.id}>
-                        <div>
-                            <strong>{task.title}</strong>
-                            <p className="muted">{data.employees.find(e => e.id === task.employeeId)?.name || "알 수 없음"} · {task.startDate} ~ {task.endDate}</p>
-                            <p>{task.description}</p>
+
+                {tasks.length === 0 && (
+                    <p className="muted">
+                        등록된 담당 업무가 없습니다.
+                    </p>
+                )}
+
+                {tasks.map(task => {
+
+                    const employee = employees.find(
+                        e => e.id === task.employeeId
+                    );
+
+                    const dueSoon = (
+                        task.status !== "완료" &&
+                        isDueSoon(task.endDate)
+                    );
+
+                    return (
+
+                        <div
+                            className="employee-row"
+                            key={task.id}
+                        >
+
+                            <div className="hr-task-info">
+
+                                <strong>{task.title}</strong>
+
+                                <p className="muted">
+                                    {employee
+                                        ? employee.name
+                                        : "알 수 없음"}
+                                    {" · "}
+                                    {task.startDate}
+                                    {" ~ "}
+                                    {task.endDate}
+                                </p>
+
+                                <p>{task.description}</p>
+
+                                {dueSoon && (
+                                    <span className="hr-due">
+                                        마감 임박
+                                    </span>
+                                )}
+
+                            </div>
+
+                            <select
+                                value={task.status}
+                                onChange={e =>
+                                    changeTaskStatus(
+                                        task.id,
+                                        e.target.value
+                                    )
+                                }
+                            >
+                                <option>예정</option>
+                                <option>진행 중</option>
+                                <option>완료</option>
+                            </select>
+
                         </div>
-                        <select value={task.status} onChange={e => changeData("담당 업무 상태 변경", old => ({ ...old, tasks: (old.tasks || []).map(x => x.id === task.id ? { ...x, status: e.target.value } : x) }))}>
-                            <option>예정</option><option>진행 중</option><option>완료</option>
-                        </select>
-                    </div>
-                ))}
+
+                    );
+                })}
+
             </div>
 
-            {/* ========================== */}
-            {/* 3. 휴가 신청 등록 */}
-            {/* ========================== */}
-
+            {/* 휴가 신청 */}
             <form
                 className="panel form-row"
                 onSubmit={requestLeave}
@@ -291,120 +695,146 @@ export default function HRManagement({ data, changeData }) {
                     휴가 신청 등록
                 </h3>
 
-                {/* 휴가 신청 직원 선택 */}
                 <select
                     required
                     value={leaveEmployee}
-                    onChange={e =>
-                        setLeaveEmployee(e.target.value)
-                    }
+                    onChange={e => setLeaveEmployee(e.target.value)}
                 >
-                    <option value="">
-                        직원 선택
-                    </option>
 
-                    {data.employees.map(e => (
+                    <option value="">직원 선택</option>
+
+                    {employees.map(employee => (
                         <option
-                            key={e.id}
-                            value={e.id}
+                            key={employee.id}
+                            value={employee.id}
+                            disabled={employee.status === "퇴사"}
                         >
-                            {e.name}
+                            {employee.name}
                         </option>
                     ))}
+
                 </select>
 
-                {/* 휴가 시작일과 종료일을 각각 입력합니다. */}
-                <label>휴가 시작일
-                    <input required type="date" value={leaveStart} onChange={e => setLeaveStart(e.target.value)} />
-                </label>
-                <label>휴가 종료일
-                    <input required type="date" min={leaveStart} value={leaveEnd} onChange={e => setLeaveEnd(e.target.value)} />
+                <label>
+                    휴가 시작일
+                    <input
+                        required
+                        type="date"
+                        value={leaveStart}
+                        onChange={e => setLeaveStart(e.target.value)}
+                    />
                 </label>
 
-                {/* 휴가 신청 버튼 */}
-                <button>
+                <label>
+                    휴가 종료일
+                    <input
+                        required
+                        type="date"
+                        min={leaveStart}
+                        value={leaveEnd}
+                        onChange={e => setLeaveEnd(e.target.value)}
+                    />
+                </label>
+
+                <button type="submit">
                     신청 등록
                 </button>
 
             </form>
 
-            {/* ========================== */}
-            {/* 4. 휴가 승인 목록 */}
-            {/* ========================== */}
-
+            {/* 휴가 승인 목록 */}
             <div className="panel">
 
                 <h3>휴가 승인 목록</h3>
 
-                {/* 휴가 신청 내역이 없을 때 */}
-                {data.leaves.length === 0 && (
+                {leaves.length === 0 && (
                     <p className="muted">
                         신청된 휴가가 없습니다.
                     </p>
                 )}
 
-                {/* 휴가 신청 목록 반복 */}
-                {data.leaves.map(leave => (
+                {leaves.map(leave => {
 
-                    <div
-                        className="employee-row"
-                        key={leave.id}
-                    >
+                    const employee = employees.find(
+                        e => e.id === leave.employeeId
+                    );
 
-                        {/* 직원 이름 / 휴가 날짜 / 승인 상태 */}
-                        <span>
-                            {data.employees.find(
-                                e => e.id === leave.employeeId
-                            )?.name || "알 수 없음"}
+                    return (
 
-                            {" · "}
-                            {leave.startDate || leave.date} ~ {leave.endDate || leave.date}
+                        <div
+                            className="employee-row"
+                            key={leave.id}
+                        >
 
-                            {" · "}
-                            {leave.status}
-                        </span>
+                            <div className="hr-leave-info">
 
-                        {/* 승인 대기 중인 휴가만 버튼 표시 */}
-                        {leave.status === "대기" && (
+                                <strong>
+                                    {employee
+                                        ? employee.name
+                                        : "알 수 없음"}
+                                </strong>
 
-                            <div className="form-row">
+                                <p className="muted">
+                                    {leave.startDate || leave.date}
+                                    {" ~ "}
+                                    {leave.endDate || leave.date}
+                                </p>
 
-                                {/* 휴가 승인 */}
-                                <button
-                                    onClick={() =>
-                                        approveLeave(
-                                            leave.id,
-                                            "승인"
-                                        )
+                                <span
+                                    className={
+                                        "hr-leave-status " +
+                                        (leave.status === "승인"
+                                            ? "approved"
+                                            : leave.status === "반려"
+                                                ? "rejected"
+                                                : "pending")
                                     }
                                 >
-                                    승인
-                                </button>
-
-                                {/* 휴가 반려 */}
-                                <button
-                                    className="secondary"
-                                    onClick={() =>
-                                        approveLeave(
-                                            leave.id,
-                                            "반려"
-                                        )
-                                    }
-                                >
-                                    반려
-                                </button>
+                                    {leave.status}
+                                </span>
 
                             </div>
 
-                        )}
+                            {leave.status === "대기" && (
 
-                    </div>
+                                <div className="form-row hr-actions">
 
-                ))}
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            approveLeave(
+                                                leave.id,
+                                                "승인"
+                                            )
+                                        }
+                                    >
+                                        승인
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="secondary"
+                                        onClick={() =>
+                                            approveLeave(
+                                                leave.id,
+                                                "반려"
+                                            )
+                                        }
+                                    >
+                                        반려
+                                    </button>
+
+                                </div>
+
+                            )}
+
+                        </div>
+
+                    );
+                })}
 
             </div>
 
         </section>
     );
-
 }

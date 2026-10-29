@@ -1,0 +1,797 @@
+
+/* =========================================
+   NEXUS ERP - ISSUE MANAGEMENT
+   PC 전용 이슈 관리 디자인
+   실제 JS 클래스명: issue-Management
+   ========================================= */
+
+
+/* 1. 전체 화면 */
+
+.issue-Management {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 28px 32px 50px;
+    box-sizing: border-box;
+    color: #253347;
+    background: #f7f9fc;
+    font-family: "Pretendard", "Malgun Gothic", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.issue-Management *,
+.issue-Management *::before,
+.issue-Management *::after {
+    box-sizing: border-box;
+}
+
+
+/* 2. 페이지 제목 */
+
+.issue-Management .section-head {
+    margin-bottom: 26px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e5eaf1;
+}
+
+.issue-Management .section-head h2 {
+    margin: 0 0 7px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    color: #172b4d;
+}
+
+.issue-Management .section-head p {
+    margin: 0;
+    font-size: 14px;
+    color: #8390a3;
+}
+
+
+/* 3. 공통 카드 */
+
+.issue-Management .panel {
+    padding: 22px;
+    margin-bottom: 20px;
+    background: #ffffff;
+    border: 1px solid #e5eaf1;
+    border-radius: 14px;
+    box-shadow: 0 3px 14px rgba(26, 46, 77, 0.035);
+}
+
+.issue-Management h3,
+.issue-Management h4 {
+    color: #172b4d;
+}
+
+.issue-Management h4 {
+    margin: 0 0 14px;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+
+/* 4. 통계 카드 */
+
+.issue-Management .issue-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.issue-Management .issue-stat-card {
+    position: relative;
+    min-height: 125px;
+    padding: 22px 24px;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid #e5eaf1;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.issue-Management .issue-stat-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #386df4;
+}
+
+.issue-Management .issue-stat-card:nth-child(2)::before {
+    background: #11a78c;
+}
+
+.issue-Management .issue-stat-card:nth-child(3)::before {
+    background: #e85b69;
+}
+
+.issue-Management .issue-stat-card:nth-child(4)::before {
+    background: #e6a13b;
+}
+
+.issue-Management .issue-stat-card span {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #8290a4;
+}
+
+.issue-Management .issue-stat-card h3 {
+    margin: 12px 0 0;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #172b4d;
+}
+
+.issue-Management .issue-stat-card:nth-child(2) h3 {
+    color: #0d9c82;
+}
+
+.issue-Management .issue-stat-card:nth-child(3) h3 {
+    color: #e05262;
+}
+
+.issue-Management .issue-stat-card:nth-child(4) h3 {
+    color: #d48b24;
+}
+
+
+/* 5. 긴급 이슈 / 마감 임박 */
+
+.issue-Management .issue-alert-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.issue-Management .issue-alert-panel {
+    padding: 22px 24px;
+    background: #ffffff;
+    border: 1px solid #e5eaf1;
+    border-radius: 14px;
+}
+
+.issue-Management .issue-alert-panel:first-child {
+    border-top: 3px solid #e85b69;
+}
+
+.issue-Management .issue-alert-panel:last-child {
+    border-top: 3px solid #e6a13b;
+}
+
+.issue-Management .issue-alert-panel h3 {
+    margin: 0 0 5px;
+    font-size: 17px;
+    font-weight: 750;
+}
+
+.issue-Management .issue-alert-panel > p {
+    margin: 0 0 14px;
+    font-size: 12px;
+    color: #8290a4;
+}
+
+.issue-Management .issue-alert-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.issue-Management .issue-alert-item:last-child {
+    border-bottom: 0;
+}
+
+.issue-Management .issue-alert-item span {
+    flex-shrink: 0;
+    font-size: 12px;
+    color: #8290a4;
+}
+
+.issue-Management .issue-alert-link {
+    min-height: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    color: #386df4;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.issue-Management .issue-alert-link:hover {
+    background: transparent;
+    color: #2451c7;
+    text-decoration: underline;
+}
+
+
+/* 6. 담당자별 업무량 */
+
+.issue-Management .issue-workload-panel {
+    margin-bottom: 22px;
+    padding: 22px 24px;
+    background: #ffffff;
+    border: 1px solid #e5eaf1;
+    border-radius: 14px;
+}
+
+.issue-Management .issue-workload-panel h3 {
+    margin: 0 0 17px;
+    font-size: 17px;
+    font-weight: 750;
+}
+
+.issue-Management .issue-workload-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.issue-Management .issue-workload-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px solid #edf0f5;
+    border-radius: 9px;
+}
+
+.issue-Management .issue-workload-item span {
+    font-size: 13px;
+    color: #52627a;
+}
+
+.issue-Management .issue-workload-item strong {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0d9c82;
+}
+
+
+/* 7. 공통 입력창 */
+
+.issue-Management input,
+.issue-Management select,
+.issue-Management textarea {
+    min-height: 42px;
+    padding: 10px 13px;
+    background: #ffffff;
+    color: #253347;
+    border: 1px solid #dce3ec;
+    border-radius: 8px;
+    outline: none;
+    font-size: 13px;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.issue-Management input:focus,
+.issue-Management select:focus,
+.issue-Management textarea:focus {
+    border-color: #386df4;
+    box-shadow: 0 0 0 3px rgba(56, 109, 244, 0.1);
+}
+
+.issue-Management input::placeholder,
+.issue-Management textarea::placeholder {
+    color: #a3adbc;
+}
+
+.issue-Management textarea {
+    width: 100%;
+    resize: vertical;
+    line-height: 1.7;
+}
+
+.issue-Management .form-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.issue-Management .form-row > input,
+.issue-Management .form-row > select {
+    flex: 1 1 160px;
+    min-width: 0;
+}
+
+.issue-Management .form-row label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #52627a;
+}
+
+.issue-Management .form-row label input,
+.issue-Management .form-row label select {
+    min-width: 190px;
+}
+
+
+/* 8. 공통 버튼 */
+
+.issue-Management button {
+    min-height: 40px;
+    padding: 9px 16px;
+    background: #386df4;
+    color: #ffffff;
+    border: 1px solid #386df4;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.issue-Management button:hover {
+    background: #285bdb;
+    border-color: #285bdb;
+}
+
+.issue-Management button.secondary {
+    background: #ffffff;
+    color: #52627a;
+    border-color: #dce3ec;
+}
+
+.issue-Management button.secondary:hover {
+    background: #f3f6fa;
+    border-color: #cbd5e1;
+}
+
+.issue-Management button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+
+/* 9. 검색 및 등록 버튼 */
+
+.issue-Management .issue-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.issue-Management .issue-toolbar .search {
+    flex: 1;
+    max-width: 500px;
+    min-height: 44px;
+}
+
+.issue-Management .issue-toolbar > button {
+    min-height: 44px;
+    padding: 10px 20px;
+}
+
+
+/* 10. 이슈 등록 폼 */
+
+.issue-Management .issue-register-form {
+    padding: 24px;
+}
+
+.issue-Management .issue-register-form h3 {
+    margin: 0 0 18px;
+    font-size: 18px;
+}
+
+.issue-Management .issue-register-form .form-row {
+    margin-bottom: 14px;
+}
+
+.issue-Management .issue-register-form .issue-textarea {
+    display: block;
+    margin-bottom: 12px;
+}
+
+.issue-Management .issue-register-form > button {
+    margin-top: 5px;
+}
+
+
+/* 11. 상태별 탭 */
+
+.issue-Management .issue-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 17px;
+}
+
+.issue-Management .issue-tabs button {
+    min-height: 38px;
+    padding: 8px 17px;
+    background: #ffffff;
+    color: #748399;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.issue-Management .issue-tabs button.active {
+    background: #eaf0ff;
+    color: #285bdb;
+    border-color: #bcd0ff;
+    font-weight: 750;
+}
+
+.issue-Management .issue-tabs button.secondary:hover {
+    background: #f3f6fa;
+}
+
+
+/* 12. 필터 영역 */
+
+.issue-Management .issue-filter-panel {
+    padding: 18px 22px;
+}
+
+.issue-Management .issue-filter-panel .form-row {
+    margin-bottom: 12px;
+}
+
+.issue-Management .issue-filter-panel .form-row select {
+    flex: 1;
+}
+
+.issue-Management .issue-filter-panel p {
+    margin: 0;
+    font-size: 12px;
+    color: #8290a4;
+}
+
+
+/* 13. 이슈 목록 */
+
+.issue-Management .issue-list-item {
+    padding: 0;
+    overflow: hidden;
+}
+
+.issue-Management .issue-list-header {
+    padding: 20px 23px;
+    border-left: 4px solid #dce3ec;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.issue-Management .issue-list-header:hover {
+    background: #f8fafc;
+}
+
+.issue-Management .issue-list-title h3 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 750;
+    color: #172b4d;
+}
+
+.issue-Management .issue-meta {
+    margin: 11px 0 0;
+    font-size: 12px;
+    color: #8290a4;
+}
+
+
+/* 14. 중요도별 테두리 */
+
+.issue-Management .issue-border-낮음 {
+    border-left-color: #a4b0c0;
+}
+
+.issue-Management .issue-border-보통 {
+    border-left-color: #386df4;
+}
+
+.issue-Management .issue-border-높음 {
+    border-left-color: #e6a13b;
+}
+
+.issue-Management .issue-border-긴급 {
+    border-left-color: #e85b69;
+    background: #fffafb;
+}
+
+
+/* 15. 상태 및 중요도 배지 */
+
+.issue-Management .issue-badge-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.issue-Management .issue-status-badge,
+.issue-Management .issue-priority,
+.issue-Management .issue-overdue-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 750;
+    line-height: 1.5;
+}
+
+.issue-Management .issue-status-received {
+    background: #edf0f5;
+    color: #64748b;
+}
+
+.issue-Management .issue-status-progress {
+    background: #e8efff;
+    color: #386df4;
+}
+
+.issue-Management .issue-status-review {
+    background: #fff3da;
+    color: #bd8227;
+}
+
+.issue-Management .issue-status-complete {
+    background: #dcf8ed;
+    color: #0e9675;
+}
+
+.issue-Management .issue-status-reopen {
+    background: #f1e8ff;
+    color: #8754c7;
+}
+
+.issue-Management .issue-priority-낮음 {
+    background: #edf0f5;
+    color: #64748b;
+}
+
+.issue-Management .issue-priority-보통 {
+    background: #e8efff;
+    color: #386df4;
+}
+
+.issue-Management .issue-priority-높음 {
+    background: #fff3da;
+    color: #bd8227;
+}
+
+.issue-Management .issue-priority-긴급 {
+    background: #ffe9ec;
+    color: #dc4355;
+}
+
+.issue-Management .issue-overdue-badge {
+    background: #fff0e0;
+    color: #d47a25;
+}
+
+
+/* 16. 이슈 상세 영역 */
+
+.issue-Management .issue-expanded-content {
+    padding: 24px;
+    background: #fbfcfe;
+    border-top: 1px solid #e5eaf1;
+}
+
+.issue-Management .issue-detail,
+.issue-Management .issue-status-section,
+.issue-Management .issue-work-section,
+.issue-Management .issue-comment-section {
+    margin-bottom: 18px;
+    padding: 21px;
+    background: #ffffff;
+    border: 1px solid #e5eaf1;
+    border-radius: 11px;
+}
+
+.issue-Management .issue-detail p,
+.issue-Management .issue-status-section p,
+.issue-Management .issue-work-section p {
+    margin: 8px 0;
+    font-size: 13px;
+    color: #52627a;
+}
+
+.issue-Management .issue-detail strong {
+    color: #253347;
+}
+
+.issue-Management .issue-expanded-content > .form-row {
+    margin-bottom: 18px;
+    padding: 18px 20px;
+    background: #ffffff;
+    border: 1px solid #e5eaf1;
+    border-radius: 11px;
+}
+
+.issue-Management .issue-status-section > input,
+.issue-Management .issue-work-section > input {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.issue-Management .issue-status-section > button {
+    margin-top: 10px;
+}
+
+
+/* 17. 작업 시간 선택 */
+
+.issue-Management .issue-time-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.issue-Management .issue-time-buttons button {
+    min-height: 36px;
+    padding: 7px 15px;
+}
+
+.issue-Management .issue-time-buttons button.active {
+    background: #386df4;
+    color: #ffffff;
+    border-color: #386df4;
+}
+
+.issue-Management .issue-work-section > .form-row {
+    margin: 12px 0;
+}
+
+
+/* 18. 댓글 및 작업 이력 */
+
+.issue-Management .issue-comment-section .form-row {
+    margin-bottom: 16px;
+}
+
+.issue-Management .history {
+    padding: 11px 14px;
+    margin: 8px 0;
+    background: #f6f8fc;
+    border-left: 3px solid #c7d4e7;
+    border-radius: 6px;
+    color: #52627a;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+
+/* 19. 변경 이력 */
+
+.issue-Management details {
+    margin-top: 16px;
+    padding: 17px 20px;
+    background: #ffffff;
+    border: 1px solid #e5eaf1;
+    border-radius: 10px;
+}
+
+.issue-Management details summary {
+    font-size: 13px;
+    font-weight: 700;
+    color: #253347;
+    cursor: pointer;
+}
+
+.issue-Management details[open] summary {
+    margin-bottom: 14px;
+}
+
+
+/* 20. 오류 경고 */
+
+.issue-Management .error {
+    padding: 11px 14px;
+    background: #fff0f0;
+    color: #d64757;
+    border: 1px solid #ffd4d8;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+
+/* 21. 이슈 삭제 */
+
+.issue-Management .issue-delete-area {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid #e5eaf1;
+}
+
+.issue-Management .issue-delete-area button.secondary {
+    color: #d64757;
+    border-color: #ffcbd1;
+}
+
+.issue-Management .issue-delete-area button.secondary:hover {
+    background: #fff0f0;
+}
+
+
+/* 22. 페이지네이션 */
+
+.issue-Management .issue-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 25px 0;
+}
+
+.issue-Management .issue-pagination span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #52627a;
+}
+
+.issue-Management .issue-pagination button {
+    min-width: 72px;
+}
+
+
+/* 23. 임시 저장 / 휴지통 */
+
+.issue-Management .issue-trash {
+    margin-top: 24px;
+    padding: 20px 24px;
+    background: #ffffff;
+    border: 1px solid #e5eaf1;
+    border-radius: 13px;
+}
+
+.issue-Management .issue-trash > summary {
+    font-size: 14px;
+    font-weight: 750;
+    color: #172b4d;
+}
+
+.issue-Management .issue-trash-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 17px 0;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.issue-Management .issue-trash-item:last-child {
+    border-bottom: 0;
+}
+
+.issue-Management .issue-trash-item strong {
+    font-size: 14px;
+    color: #253347;
+}
+
+.issue-Management .issue-trash-item p {
+    margin: 4px 0;
+    font-size: 12px;
+    color: #8290a4;
+}
+
+

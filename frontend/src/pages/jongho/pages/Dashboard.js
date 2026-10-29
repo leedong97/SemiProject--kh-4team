@@ -46,6 +46,13 @@ export default function Dashboard({ projects = [], data }) {
             </div>
 
 
+            <div className="nexus-alerts">
+                <div><strong>운영 알림 센터</strong><p>현재 데이터에서 확인된 관리 필요 항목</p></div>
+                <button onClick={() => navigate('/admin/issues')}>기한 초과 이슈 <b>{overdue.length}건</b></button>
+                <button onClick={() => navigate('/admin/assignments')}>미배정 프로젝트 <b>{unassigned.length}건</b></button>
+                <button onClick={() => navigate('/admin/evaluations')}>평가 승인 요청 <b>{pending.length}건</b></button>
+            </div>
+
             {/* ================================ */}
             {/* 2. 주요 현황 KPI 카드 영역 */}
             {/* ================================ */}
@@ -301,57 +308,19 @@ export default function Dashboard({ projects = [], data }) {
 
                 </section>
 
-
-                {/* 최근 관리자 작업 기록 */}
+                {/* 공지사항 (DB 연결 전 자리) */}
                 <section className="card merge-panel">
 
                     <div className="merge-panel-head">
-                        <h2>최근 관리자 작업</h2>
-
-                        <span>브라우저 데모 기록</span>
+                        <h2>공지사항</h2>
                     </div>
 
-                    {/* 작업 기록이 있으면 최근 5개 출력 */}
-                    {data.logs.length ? (
-
-                        data.logs.slice(0, 5).map(log => (
-
-                            <div
-                                className="merge-log"
-                                key={log.id}
-                            >
-                                {/* 관리자가 실행한 작업 */}
-                                <strong>
-                                    {log.action}
-                                </strong>
-
-                                {/* 작업이 실행된 시간 */}
-                                <small>
-                                    {log.at}
-                                </small>
-                            </div>
-
-                        ))
-
-                    ) : (
-
-                        // 작업 기록이 없는 경우
-                        <p>아직 작업 기록이 없습니다.</p>
-
-                    )}
+                    <p>공지 목록은 DB 연결 후 표시됩니다.</p>
 
                 </section>
 
             </div>
 
-
-            {/* ================================ */}
-            {/* 5. 데모 데이터 안내 문구 */}
-            {/* ================================ */}
-
-            <p className="merge-demo-note">
-                데모 데이터입니다. 로그인 및 작업 기록은 실제 보안 인증·감사 로그가 아닙니다.
-            </p>
 
         </div>
     );

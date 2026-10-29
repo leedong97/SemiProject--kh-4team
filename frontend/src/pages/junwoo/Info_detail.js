@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
-function Info_detail({ info, onViewInfo }) {
+function Info_detail({ info, onViewInfo, noticeLoading = false }) {
 
     const { id } = useParams();
 
@@ -22,7 +22,7 @@ function Info_detail({ info, onViewInfo }) {
     const item = info.find(item => item.id === Number(id));
 
     // 현재 공지사항을 제외한 다른 공지사항
-    const otherInfo = [...info].reverse().filter(item =>
+    const otherInfo = [...info].filter(item =>
         item.id !== Number(id)
     );
 
@@ -33,6 +33,10 @@ function Info_detail({ info, onViewInfo }) {
 
     const start = (currentPage - 1) * 5;
     const end = start + 5;
+
+    if (noticeLoading) {
+        return <h2>공지사항을 불러오는 중...</h2>;
+    }
 
     if (!item) {
         return <h2>존재하지 않는 공지사항입니다.</h2>;

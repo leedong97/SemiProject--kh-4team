@@ -1,73 +1,92 @@
-import { createContext, useCallback, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { getNotices, createNotice, editNotice, deleteNotice, increaseNoticeViews } from "./noticeApi";
 
-// 준우 페이지(대시보드·공지사항·프로젝트)가 같이 쓰는 데이터 상자
 const JunwooContext = createContext(null);
 
 export function useJunwoo() {
-  return useContext(JunwooContext);
+    return useContext(JunwooContext);
 }
 
 export function JunwooProvider({ children }) {
+    const [info, setInfo] = useState([]);
+    const [todo, setTodo] = useState([]);
+    const [noticeLoading, setNoticeLoading] = useState(true);
+    const [noticeError, setNoticeError] = useState("");
 
+    // 서버에서 공지사항을 다시 가져오는 함수
+    const loadInfo = useCallback(async () => {
+        try {
+            const data = await getNotices();
+            setInfo(data);
+            setNoticeError("");
+        } catch (error) {
+            setNoticeError(error.message);
+            throw error;
+        } finally {
+            setNoticeLoading(false);
+        }
+    }, []);
 
-  const [info, setInfo] = useState([]);
-  const [todo, setTodo] = useState([]);
+    useEffect(() => {
+        loadInfo().catch(error => console.error("공지사항 초기 조회 실패:", error));
+    }, [loadInfo]);
 
-  const addInfo = (title, content) => {
-
-    const newInfo = {
-      id: Date.now(),
-      title: title,
-      content: content,
-      date: new Date().toLocaleDateString('ko-KR'),
-      author: '관리자',
-      views: 0
+    const addInfo = async (title, content, important = false, employeeId) => {
+        await createNotice(title, content, important, employeeId);
+        await loadInfo();
     };
 
-    setInfo(prev => [...prev, newInfo]);
-  };
-
-  const delInfo = (id) => {
-    setInfo(prev => prev.filter(item => item.id !== id))
-  }
-
-  const addTodo = (title, content) => {
-
-    const newTodo = {
-      id: Date.now(),
-      title: title,
-      content: content,
-      date: new Date().toLocaleDateString('ko-KR'),
-      author: '관리자',
-      views: 0
+    const updateInfo = async (id, title, content, important) => {
+        await editNotice(id, title, content, important);
+        await loadInfo();
     };
 
-    setTodo(prev => [...prev, newTodo]);
-  };
+    const pinInfo = async (id) => {
+        const item = info.find(item => item.id === id);
+        if (!item) throw new Error("공지사항을 찾을 수 없습니다.");
+        await editNotice(id, item.title, item.content, !Boolean(item.important));
+        await loadInfo();
+    };
 
-  const delTodo = (id) => {
-    setTodo(prev => prev.filter(item => item.id !== id));
-  };
+    const delInfo = async (id) => {
+        await deleteNotice(id);
+        await loadInfo();
+    };
 
-  // 공지사항 조회수 증가
-  const viewInfo = useCallback((id) => {
-    setInfo(prev => prev.map(item =>
-      item.id === id
-        ? { ...item, views: (item.views ?? 0) + 1 }
-        : item
-    ));
-  }, []);
+    // 기존 프로젝트 기능은 변경하지 않음
+    const addTodo = (title, content) => {
+        const newTodo = {
+            id: Date.now(), title, content,
+            date: new Date().toLocaleDateString("ko-KR"),
+            author: "관리자", views: 0
+        };
+        setTodo(prev => [...prev, newTodo]);
+    };
 
-  // 프로젝트 조회수 증가
-  const viewTodo = useCallback((id) => {
-    setTodo(prev => prev.map(item =>
-      item.id === id
-        ? { ...item, views: (item.views ?? 0) + 1 }
-        : item
-    ));
-  }, []);
+    const delTodo = (id) => {
+        setTodo(prev => prev.filter(item => item.id !== id));
+    };
 
-  const value = { info, todo, addInfo, delInfo, addTodo, delTodo, viewInfo, viewTodo };
+    const viewInfo = useCallback(async (id) => {
+        try {
+            await increaseNoticeViews(id);
+            await loadInfo();
+        } catch (error) {
+            console.error("공지사항 조회수 증가 실패:", error);
+        }
+    }, [loadInfo]);
 
-  return <JunwooContext.Provider value={value}>{children}</JunwooContext.Provider>;
+    const viewTodo = useCallback((id) => {
+        setTodo(prev => prev.map(item =>
+            item.id === id ? { ...item, views: (item.views ?? 0) + 1 } : item
+        ));
+    }, []);
+
+    const value = {
+        info, todo, noticeLoading, noticeError, loadInfo,
+        addInfo, updateInfo, pinInfo, delInfo,
+        addTodo, delTodo, viewInfo, viewTodo
+    };
+
+    return <JunwooContext.Provider value={value}>{children}</JunwooContext.Provider>;
 }

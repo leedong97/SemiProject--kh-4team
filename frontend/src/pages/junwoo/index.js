@@ -37,8 +37,8 @@ function InfoSetRoute() {
   return <Info_set onAddInfo={addInfo} />;
 }
 function InfoDetailRoute() {
-  const { info, viewInfo } = useJunwoo();
-  return <Info_detail info={info} onViewInfo={viewInfo} />;
+  const { info, viewInfo, noticeLoading } = useJunwoo();
+  return <Info_detail info={info} onViewInfo={viewInfo} noticeLoading={noticeLoading} />;
 }
 
 export const Provider = JunwooProvider;
