@@ -56,7 +56,6 @@ function IssueRequest({ projects, setIssues }) {
         setIssues((previousIssues) => [...previousIssues, issue]);
         navigate(`/issue/${issue.id}`);
     };
-    
 
     return (
         <main className="issue-page">

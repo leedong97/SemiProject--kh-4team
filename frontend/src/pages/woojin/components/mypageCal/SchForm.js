@@ -1,5 +1,5 @@
-// 일정 추가·수정 폼
 function SchForm({ showForm, formRef, editingId, form, handleChange, TYPES, error, closeForm, handleSave }) {
+    // 폼이 닫혀 있으면 아무것도 그리지 않아요 (가드 절)
     if (!showForm) return null;
 
     return (

@@ -1,4 +1,5 @@
 
+import { API_BASE } from '../../shared/config';
 import React, { useEffect, useState } from 'react';
 import Calendar from './Calendar';
 
@@ -18,7 +19,7 @@ function DashboardCalendar() {
             try {
 
                 const response = await fetch(
-                    'http://localhost:3333/api/dashboard/schedules',
+                    `${API_BASE}/api/dashboard/schedules`,
                     {
                         signal: controller.signal,
                         cache: 'no-store'

@@ -24,21 +24,21 @@
   justify-content: space-between;
   align-items: center;
   gap: 15px;
-  border-bottom: 1px solid #e6f5ee;
+  border-bottom: 1px solid #e4eaf7;
   padding-bottom: 20px;
 }
 
 .team-shell .issue-header h1 {
   font-size: 24px;
   margin: 0 0 10px;
-  color: #279b76;
+  color: #245fe6;
   word-break: keep-all;
 }
 
 .team-shell .issue-header p {
   margin: 0;
   font-size: 13px;
-  color: #82948a;
+  color: #808696;
 }
 
 /* 전체 표시 버튼 */
@@ -46,15 +46,15 @@
 .team-shell .issue-reset {
   padding: 10px 18px;
   background: white;
-  color: #52675d;
-  border: 1px solid #dcebe2;
+  color: #4d566c;
+  border: 1px solid #dae0ed;
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .team-shell .issue-reset:hover {
-  background: #e6f7ef;
+  background: #e4eaf9;
 }
 
 /* 프로젝트 및 이슈 통계 */
@@ -63,7 +63,7 @@
   display: flex;
   gap: 18px;
   margin: 20px 0;
-  color: #52675d;
+  color: #4d566c;
   font-size: 13px;
 }
 
@@ -79,24 +79,24 @@
 .team-shell .issue-filter label {
   font-size: 13px;
   font-weight: bold;
-  color: #52675d;
+  color: #4d566c;
 }
 
 .team-shell .issue-filter select,
 .team-shell .issue-filter input {
   width: 100%;
   padding: 13px 15px;
-  background: #f7faf9;
-  border: 1px solid #dcebe2;
+  background: #f7f8fa;
+  border: 1px solid #dae0ed;
   border-radius: 10px;
   font-size: 14px;
-  color: #34443d;
+  color: #303748;
   outline: none;
 }
 
 .team-shell .issue-filter select:focus,
 .team-shell .issue-filter input:focus {
-  border-color: #38b98c;
+  border-color: #3b78f0;
   background: white;
 }
 
@@ -105,14 +105,14 @@
 .team-shell .issue-register {
   margin-bottom: 30px;
   padding: 20px;
-  background: #f5faf7;
+  background: #f4f6fb;
   border-radius: 12px;
 }
 
 .team-shell .issue-register h3 {
   margin: 0 0 15px;
   font-size: 16px;
-  color: #34443d;
+  color: #303748;
 }
 
 .team-shell .issue-register-form {
@@ -124,27 +124,27 @@
   flex: 1;
   min-width: 0;
   padding: 12px;
-  border: 1px solid #dcebe2;
+  border: 1px solid #dae0ed;
   border-radius: 8px;
   outline: none;
 }
 
 .team-shell .issue-register-form input:focus {
-  border-color: #38b98c;
+  border-color: #3b78f0;
 }
 
 .team-shell .issue-register-form button {
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
-  background: #38b98c;
+  background: #3b78f0;
   color: white;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .team-shell .issue-register-form button:hover {
-  background: #279b76;
+  background: #245fe6;
 }
 
 /* 이슈 목록 */
@@ -168,7 +168,7 @@
 
 .team-shell .issue-list-header span {
   font-size: 13px;
-  color: #279b76;
+  color: #245fe6;
   font-weight: bold;
 }
 
@@ -182,20 +182,20 @@
 
 .team-shell .issue-table th {
   padding: 15px;
-  background: #e6f7ef;
-  color: #34856a;
+  background: #e4eaf9;
+  color: #1b4bc2;
   font-size: 13px;
-  border-bottom: 1px solid #dcebe2;
+  border-bottom: 1px solid #dae0ed;
 }
 
 .team-shell .issue-table td {
   padding: 15px;
-  border-bottom: 1px solid #edf5ef;
+  border-bottom: 1px solid #eceff6;
   font-size: 13px;
 }
 
 .team-shell .issue-table tbody tr:hover {
-  background: #f5faf7;
+  background: #f4f6fb;
 }
 
 .team-shell .issue-table th:first-child {
@@ -211,44 +211,48 @@
 .team-shell .issue-table .issue-empty {
   text-align: center;
   padding: 40px;
-  color: #82948a;
+  color: #808696;
 }
 
 /* 하단 설명 */
 
 .team-shell .issue-footer {
   margin-top: 25px;
-  color: #82948a;
+  color: #808696;
   font-size: 12px;
 }
 
 /* 태블릿 */
 
 @media (max-width: 1100px) {
-.team-shell .issue-page {
-      grid-column: 1 / -1;
+  .team-shell .issue-page {
+    grid-column: 1 / -1;
   }
 }
 
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .issue-page {
-      grid-column: 1 / -1;
-      grid-row: 5;
-      padding: 18px;
+  .team-shell .issue-page {
+    grid-column: 1 / -1;
+    grid-row: 5;
+    padding: 18px;
   }
-.team-shell .issue-header {
-      align-items: flex-start;
+
+  .team-shell .issue-header {
+    align-items: flex-start;
   }
-.team-shell .issue-header h1 {
-      font-size: 20px;
+
+  .team-shell .issue-header h1 {
+    font-size: 20px;
   }
-.team-shell .issue-register-form {
-      flex-direction: column;
+
+  .team-shell .issue-register-form {
+    flex-direction: column;
   }
-.team-shell .issue-table {
-      min-width: 550px;
+
+  .team-shell .issue-table {
+    min-width: 550px;
   }
 }
 
@@ -263,7 +267,7 @@
 .team-shell .issue-register-form textarea {
   width: 100%;
   padding: 12px;
-  border: 1px solid #dcebe2;
+  border: 1px solid #dae0ed;
   border-radius: 8px;
   background: white;
   font: inherit;
@@ -273,7 +277,7 @@
 }
 
 .team-shell .issue-register-form textarea:focus {
-  border-color: #38b98c;
+  border-color: #3b78f0;
 }
 
 .team-shell .issue-register-form button {
@@ -286,7 +290,7 @@
   background: none;
   border: none;
   padding: 0;
-  color: #279b76;
+  color: #245fe6;
   font: inherit;
   cursor: pointer;
   text-align: left;
@@ -308,7 +312,7 @@
   background: white;
   padding: 30px;
   border-radius: 18px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* 상세 페이지 제목 */
@@ -318,7 +322,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 15px;
-  border-bottom: 2px solid #e6f5ee;
+  border-bottom: 2px solid #e4eaf7;
   padding-bottom: 20px;
   margin-bottom: 25px;
 }
@@ -326,19 +330,19 @@
 .team-shell .issue-detail-header h1 {
   margin: 0 0 10px;
   font-size: 24px;
-  color: #279b76;
+  color: #245fe6;
 }
 
 .team-shell .issue-detail-header p {
   margin: 0;
-  color: #82948a;
+  color: #808696;
   font-size: 13px;
 }
 
 /* 상세 내용 */
 
 .team-shell .issue-detail-content {
-  border: 1px solid #e6f5ee;
+  border: 1px solid #e4eaf7;
   border-radius: 12px;
   overflow: hidden;
 }
@@ -346,19 +350,19 @@
 .team-shell .issue-detail-row {
   display: grid;
   grid-template-columns: 160px minmax(0, 1fr);
-  border-bottom: 1px solid #edf5ef;
+  border-bottom: 1px solid #eceff6;
 }
 
 .team-shell .issue-detail-row strong {
   padding: 17px;
-  background: #f5faf7;
-  color: #52675d;
+  background: #f4f6fb;
+  color: #4d566c;
   font-size: 14px;
 }
 
 .team-shell .issue-detail-row span {
   padding: 17px;
-  color: #34443d;
+  color: #303748;
   font-size: 14px;
   overflow-wrap: anywhere;
 }
@@ -366,7 +370,7 @@
 /* 처리 상태 */
 
 .team-shell .issue-detail-row .issue-status {
-  color: #279b76;
+  color: #245fe6;
   font-weight: bold;
 }
 
@@ -378,14 +382,14 @@
 
 .team-shell .issue-detail-description h3 {
   font-size: 16px;
-  color: #279b76;
+  color: #245fe6;
   margin: 0 0 15px;
 }
 
 .team-shell .issue-detail-description p {
   white-space: pre-wrap;
   line-height: 1.8;
-  color: #34443d;
+  color: #303748;
   font-size: 14px;
   min-height: 120px;
 }
@@ -396,7 +400,7 @@
 .team-shell .issue-detail-bottom button {
   padding: 12px 20px;
   border: none;
-  background: #38b98c;
+  background: #3b78f0;
   border-radius: 8px;
   color: white;
   cursor: pointer;
@@ -411,15 +415,63 @@
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .issue-detail-page {
-      grid-column: 1 / -1;
-      grid-row: 5;
-      padding: 18px;
+  .team-shell .issue-detail-page {
+    grid-column: 1 / -1;
+    grid-row: 5;
+    padding: 18px;
   }
-.team-shell .issue-detail-row {
-      grid-template-columns: 110px minmax(0, 1fr);
+
+  .team-shell .issue-detail-row {
+    grid-template-columns: 110px minmax(0, 1fr);
   }
+
+  .team-shell .issue-detail-header h1 {
+    font-size: 20px;
+  }
+}
+
+.team-shell .issue-page button,
+.team-shell .issue-detail-page button {
+  color: #087BDF;
+}
+
+/* 파란 글자가 잘 보이도록 버튼 배경을 밝게 */
+.team-shell .issue-register-form button,
+.team-shell .issue-detail-header button,
+.team-shell .issue-detail-bottom button {
+  background: #eaf4ff;
+}
+
+.team-shell .issue-register-form button:hover,
+.team-shell .issue-detail-header button:hover,
+.team-shell .issue-detail-bottom button:hover {
+  background: #dcecff;
+}
+
+.team-shell .issue-header h1,
 .team-shell .issue-detail-header h1 {
-      font-size: 20px;
-  }
+  color: #087BDF;
+}
+
+/* 표 헤더 */
+.team-shell .issue-table th {
+  background: #eaf4ff;
+  color: #087BDF;
+  border-bottom-color: #dceaff;
+}
+
+/* 조회 건수와 이슈 제목 */
+.team-shell .issue-list-header span,
+.team-shell .issue-title-link {
+  color: #087BDF;
+}
+
+/* 표 구분선 */
+.team-shell .issue-table td {
+  border-bottom-color: #eaf1ff;
+}
+
+/* 행에 마우스를 올렸을 때 */
+.team-shell .issue-table tbody tr:hover {
+  background: #f5f9ff;
 }

@@ -1,6 +1,5 @@
 import ContactForm from "./ContactForm";
 
-// 내 정보 탭 (기본 정보·비밀번호 변경)
 function MyInfoTab({ user, pw, pwMsg, minPwLength, handlePwChange, handlePwSubmit }) {
     return (
         <section className="mp-panel">

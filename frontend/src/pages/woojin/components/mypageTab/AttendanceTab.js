@@ -1,8 +1,13 @@
-// 근태·휴가 탭 (주간 근무시간·연차)
 function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey, isDemo }) {
+    // 근태 · 연차 계산 (이 탭에서만 사용)
     const totalHours = weekHours.reduce((sum, w) => sum + w.hours, 0);
+    // 하루 평균은 "근무 기록이 있는 날"만으로 나눠요. 아직 안 온 날(목·금)이나 휴가 날(0시간)까지 나누면 평균이 실제보다 낮아져요.
     const workedDays = weekHours.filter((w) => w.hours > 0).length;
-    const avgHours = workedDays === 0 ? 0 : totalHours / workedDays;
+    const avgHours = workedDays === 0 ? 0 : totalHours / workedDays; // 0으로 나누면 NaN 이라서 막아 둬요 (가드 절)
+    // 사용한 연차 = 승인된 연차·반차 중 이미 끝난 것만 센다.
+    // (대기·반려, 앞으로 올 휴가는 아직 "쓴 연차"가 아니라서 뺀다. 병가·경조사는 연차에서 차감하지 않는 별도 휴가라서 뺀다.
+    //  날짜는 "2026-10-21" 글자라 글자 비교로도 순서가 맞다)
+    // 종류를 하나씩 빼는 방식(!== "병가")은 새 종류(경조사 등)가 생기면 구멍이 나서, 센다고 정한 종류만 허용한다.
     const COUNTED_TYPES = ["연차", "반차"];
     const usedLeave = leaveHistory
         .filter((l) => l.status === "승인" && COUNTED_TYPES.includes(l.type) && l.end <= todayKey)
@@ -54,6 +59,7 @@ function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey
             </div>
 
             <h3>휴가 신청 내역</h3>
+            {/* 휴가 내역이 0건이면(새로 가입한 직원 등) 빈 안내를 보여 줘요 */}
             {sortedLeave.length === 0 && <p className="mp-note">휴가 신청 내역이 없어요.</p>}
             {sortedLeave.map((l) => (
                 <div key={l.id} className="mp-card mp-task">

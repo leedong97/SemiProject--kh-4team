@@ -1,3 +1,4 @@
+import { API_BASE } from '../../shared/config';
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 
@@ -40,7 +41,7 @@ function Todo_detail({ todo, onViewTodo }) {
                 if (controller.signal.aborted) return;
 
                 const response = await fetch(
-                    `http://localhost:5000/api/projects/${id}`,
+                    `${API_BASE}/api/projects/${id}`,
                     { signal: controller.signal }
                 );
                 const data = await response.json();

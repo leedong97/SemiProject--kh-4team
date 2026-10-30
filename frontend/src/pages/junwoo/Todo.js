@@ -97,7 +97,7 @@ function Todo({ todo, onAddTodo }) {
             setStatus("예정");
             setPriority("보통");
 
-            alert("프로젝트가 등록되었습니다.");
+            alert("프로젝트 등록 요청 완료.");
 
             navigate(`/todo/${newId}`);
 

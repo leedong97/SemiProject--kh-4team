@@ -6,6 +6,7 @@ import Todo_detail from './Todo_detail';
 import Info from './Info';
 import Info_set from './Info_set';
 import Info_detail from './Info_detail';
+import Community from './Community';
 import { JunwooProvider, useJunwoo } from './JunwooContext';
 
 // 준우 담당: 대시보드(메인) / 업무·프로젝트(todo) / 공지사항(info)
@@ -51,4 +52,9 @@ export const shellRoutes = [
   { path: '/info', element: <InfoRoute /> },
   { path: '/info/set', element: <InfoSetRoute /> },
   { path: '/info/:id', element: <InfoDetailRoute /> },
+];
+
+// 직원 메인과 분리해서 보여줄 화면
+export const standaloneRoutes = [
+  { path: '/community', element: <Community /> }
 ];

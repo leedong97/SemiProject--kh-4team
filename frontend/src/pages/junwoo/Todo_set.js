@@ -70,7 +70,7 @@ function Todo_set({ todo, onAddTodo }) {
                 priority
             );
 
-            alert("프로젝트가 등록되었습니다.");
+            alert("프로젝트 등록 요청 완료.");
 
             setTitle("");
             setContent("");
@@ -190,7 +190,7 @@ function Todo_set({ todo, onAddTodo }) {
 
                     {/* 중복 등록이 안되게 삼항연산자로 막아놓기 */}
                     <button onClick={handleAddTodo} disabled={isSaving}>
-                        {isSaving ? "등록 중..." : "+ 프로젝트 등록"}
+                        {isSaving ? "등록 중..." : "+ 프로젝트 등록 요청"}
                     </button>
 
                 </div>

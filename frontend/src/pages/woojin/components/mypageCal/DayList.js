@@ -1,4 +1,3 @@
-// 선택한 날의 일정 목록
 function DayList({ selectedLabel, selectedSchedules, filter, countDays, TYPE_CLASS, openEditForm, handleDelete }) {
     return (
         <>

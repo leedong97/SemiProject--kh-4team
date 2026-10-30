@@ -1,4 +1,3 @@
-// 탭 버튼 줄
 function TabBar({ tab, setTab, TABS }) {
     return (
         <div className="mp-tabs">
