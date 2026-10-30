@@ -81,7 +81,7 @@ function Todo({ todo, onAddTodo }) {
         setIsSaving(true);
 
         try {
-            const newId = await onAddTodo(
+            await onAddTodo(
                 title.trim(),
                 content.trim(),
                 startDate,
@@ -97,9 +97,12 @@ function Todo({ todo, onAddTodo }) {
             setStatus("예정");
             setPriority("보통");
 
-            alert("프로젝트 등록 요청 완료.");
+            alert(
+                "프로젝트 등록 요청이 접수되었습니다.\n" +
+                "관리자 승인 후 프로젝트가 등록됩니다."
+            );
 
-            navigate(`/todo/${newId}`);
+            navigate("/todo");
 
         } catch (error) {
             console.error("프로젝트 등록 오류:", error);

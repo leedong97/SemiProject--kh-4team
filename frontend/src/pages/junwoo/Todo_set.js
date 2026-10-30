@@ -70,7 +70,10 @@ function Todo_set({ todo, onAddTodo }) {
                 priority
             );
 
-            alert("프로젝트 등록 요청 완료.");
+            alert(
+                "프로젝트 등록 요청이 접수되었습니다.\n" +
+                "관리자 승인 후 프로젝트가 등록됩니다."
+            );
 
             setTitle("");
             setContent("");

@@ -13,6 +13,10 @@ module.exports = {
       router: require("./projects")
     },
     {
+      prefix: "/api/project-requests",
+      router: require("./projectRequests")
+    },
+    {
       prefix: "/api/community",
       router: require("./community")
     },
