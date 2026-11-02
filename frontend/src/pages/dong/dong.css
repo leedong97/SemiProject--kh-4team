@@ -731,3 +731,56 @@
   outline: 2px solid #1689ec;
   outline-offset: 2px;
 }
+
+/* 이슈 상단 색상을 프로젝트와 통일 */
+.team-shell .issue-page .issue-header {
+  border-bottom-color: #e5effb;
+}
+
+.team-shell .issue-page .issue-header h1 {
+  color: #087bdf;
+}
+
+.team-shell .issue-page .issue-header p {
+  color: #7085a2;
+}
+
+/* 통계와 검색 항목 이름 */
+.team-shell .issue-page .issue-summary {
+  color: #2f74b9;
+}
+
+.team-shell .issue-page .issue-filter label {
+  color: #536881;
+}
+
+/* 검색창과 프로젝트 선택창 */
+.team-shell .issue-page .issue-filter input,
+.team-shell .issue-page .issue-filter select {
+  background: #f6faff;
+  border-color: #dce9f8;
+  color: #263a56;
+}
+
+.team-shell .issue-page .issue-filter input::placeholder {
+  color: #9baec5;
+}
+
+.team-shell .issue-page .issue-filter input:focus,
+.team-shell .issue-page .issue-filter select:focus {
+  background: #fff;
+  border-color: #1689ec;
+  box-shadow: 0 0 0 3px rgba(8, 123, 223, 0.1);
+}
+
+/* 이슈 건의 버튼 */
+.team-shell .issue-page .issue-reset {
+  border-color: #cfe2f9;
+  background: #fff;
+  color: #226db7;
+}
+
+.team-shell .issue-page .issue-reset:hover {
+  border-color: #a7cff7;
+  background: #edf6ff;
+}
