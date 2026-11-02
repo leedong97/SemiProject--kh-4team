@@ -1,3 +1,4 @@
+import { API_BASE } from '../../shared/config';
 import { createContext, useContext, useState, useEffect } from 'react';
 
 // 동협 페이지(이슈관리)가 같이 쓰는 데이터 상자
@@ -18,8 +19,8 @@ export function DongProvider({ children }) {
     async function loadData() {
       try {
         const [issueResponse, projectResponse] = await Promise.all([
-          fetch("http://localhost:3333/api/issues"),
-          fetch("http://localhost:3333/api/projects")
+          fetch(`${API_BASE}/api/dong/issues`),
+          fetch(`${API_BASE}/api/dong/projects`)
         ]);
 
         if (!issueResponse.ok || !projectResponse.ok) {

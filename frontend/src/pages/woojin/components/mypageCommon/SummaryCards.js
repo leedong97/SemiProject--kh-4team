@@ -1,4 +1,3 @@
-// 요약 카드 3개
 function SummaryCards({ activeProjectCount, inProgressCount, personalCountThisMonth }) {
     return (
         <section className="mp-stats">

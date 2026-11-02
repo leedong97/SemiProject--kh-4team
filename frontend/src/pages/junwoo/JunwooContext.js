@@ -1,3 +1,4 @@
+import { API_BASE } from '../../shared/config';
 import { createContext, useCallback, useContext, useState, useEffect } from 'react';
 
 // 준우 페이지(대시보드·공지사항·프로젝트)가 같이 쓰는 데이터 상자
@@ -21,7 +22,7 @@ export function JunwooProvider({ children }) {
       try {
 
         const response = await fetch(
-          'http://localhost:3333/api/projects'
+          `${API_BASE}/api/projects`
         );
 
         if (!response.ok) {
@@ -52,7 +53,7 @@ export function JunwooProvider({ children }) {
       try {
 
         const response = await fetch(
-          'http://localhost:3333/api/notices'
+          `${API_BASE}/api/notices`
         );
 
         if (!response.ok) {
@@ -83,7 +84,7 @@ export function JunwooProvider({ children }) {
     const employee_id = 1;
 
     const response = await fetch(
-      'http://localhost:3333/api/notices',
+      `${API_BASE}/api/notices`,
       {
         method: 'POST',
         headers: {
@@ -126,7 +127,7 @@ export function JunwooProvider({ children }) {
   const delInfo = async (id) => {
 
     const response = await fetch(
-      `http://localhost:3333/api/notices/${id}`,
+      `${API_BASE}/api/notices/${id}`,
       {
         method: 'DELETE'
       }
@@ -148,7 +149,7 @@ export function JunwooProvider({ children }) {
   const updateInfo = async (id, title, content, eventDate) => {
 
     const response = await fetch(
-      `http://localhost:3333/api/notices/${id}`,
+      `${API_BASE}/api/notices/${id}`,
       {
         method: 'PUT',
         headers: {
@@ -200,7 +201,7 @@ export function JunwooProvider({ children }) {
   const pinInfo = async (id, isPinned) => {
 
     const response = await fetch(
-      `http://localhost:3333/api/notices/${id}/pin`,
+      `${API_BASE}/api/notices/${id}/pin`,
       {
         method: 'PATCH',
         headers: {
@@ -244,7 +245,7 @@ export function JunwooProvider({ children }) {
     const created_by = 1;
 
     const response = await fetch(
-      'http://localhost:3333/api/projects',
+      `${API_BASE}/api/projects`,
       {
         method: 'POST',
         headers: {
@@ -296,7 +297,7 @@ export function JunwooProvider({ children }) {
   const delTodo = async (id) => {
 
     const response = await fetch(
-      `http://localhost:3333/api/projects/${id}`,
+      `${API_BASE}/api/projects/${id}`,
       {
         method: 'DELETE'
       }
@@ -332,7 +333,7 @@ export function JunwooProvider({ children }) {
   ) => {
 
     const response = await fetch(
-      `http://localhost:3333/api/projects/${id}`,
+      `${API_BASE}/api/projects/${id}`,
       {
         method: 'PUT',
         headers: {
@@ -395,7 +396,7 @@ export function JunwooProvider({ children }) {
   const viewInfo = useCallback(async (id) => {
 
     const response = await fetch(
-      `http://localhost:3333/api/notices/${id}/views`,
+      `${API_BASE}/api/notices/${id}/views`,
       {
         method: 'PATCH'
       }
@@ -423,7 +424,7 @@ export function JunwooProvider({ children }) {
   const viewTodo = useCallback(async (id) => {
 
     const response = await fetch(
-      `http://localhost:3333/api/projects/${id}/views`,
+      `${API_BASE}/api/projects/${id}/views`,
       {
         method: 'PATCH'
       }

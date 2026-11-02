@@ -1,4 +1,5 @@
 
+import { API_BASE } from '../../shared/config';
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 
@@ -32,7 +33,7 @@ function Info_detail({ info = [], onViewInfo }) {
             try {
 
                 const response = await fetch(
-                    `http://localhost:3333/api/notices/${id}`
+                    `${API_BASE}/api/notices/${id}`
                 );
 
                 if (response.status === 404) {

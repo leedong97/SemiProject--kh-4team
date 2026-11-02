@@ -1,4 +1,3 @@
-// 달력 머리글 (월 이동·일정 추가 버튼)
 function CalHead({ year, month, prevMonth, nextMonth, showForm, editingId, closeForm, openAddForm }) {
     return (
         <div className="mp-cal-top">

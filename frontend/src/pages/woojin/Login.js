@@ -1,7 +1,9 @@
+import { API_BASE } from '../../shared/config';
 import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
+import { saveLoginUser } from "./getLoginUser";
 
 function Login() {
 
@@ -31,9 +33,15 @@ function Login() {
         }
 
         setErrors({})
-        axios.post('http://localhost:3333/api/login', values)
-            .then(() => {
-                navi("/") // 로그인 성공 → 대시보드(메인)로 이동
+        axios.post(`${API_BASE}/api/login`, values)
+            .then((res) => {
+                saveLoginUser(res.data.user); // 서버가 준 직원 정보를 저장 (마이페이지에서 꺼내 써요)
+                // 로그인 성공 → 권한에 따라 이동할 화면을 나눈다
+                if (res.data.user.employee_role === "관리자") {
+                    navi("/admin"); // 관리자 → 관리자 화면
+                } else {
+                    navi("/"); // 일반 사용자 → 대시보드(메인)
+                }
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {

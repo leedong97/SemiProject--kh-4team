@@ -1,8 +1,8 @@
-// 내 업무 탭 (프로젝트·담당 업무)
 function MyWorkTab({ projects, tasks }) {
     return (
         <section className="mp-panel">
             <h3>참여 중인 프로젝트</h3>
+            {/* 새로 가입한 직원처럼 참여 프로젝트가 0건이면 빈 안내를 보여 줘요 */}
             {projects.length === 0 && <p className="mp-empty">참여 중인 프로젝트가 없어요.</p>}
             {projects.map((p) => (
                 <div key={p.id} className="mp-card">
