@@ -11,6 +11,18 @@ function CommunityComments(props) {
     const [isSaving, setIsSaving] = useState(false);
     const [reloadCount, setReloadCount] = useState(0);
 
+    // 수정 중인 댓글 번호
+    const [editingId, setEditingId] = useState(null);
+
+    // 수정 입력창의 내용
+    const [editContent, setEditContent] = useState("");
+
+    // 현재 답글 입력창을 연 댓글 번호
+    const [replyParentId, setReplyParentId] = useState(null);
+
+    // 답글 내용
+    const [replyContent, setReplyContent] = useState("");
+
     const savingRef = useRef(false);
     const loginUser = getLoginUser();
     const postId = props.postId;
@@ -138,6 +150,99 @@ function CommunityComments(props) {
     }
 
     // ===================================
+    // 답글 입력창 열기 · 닫기
+    // ===================================
+
+    function openReply(commentId) {
+        if (savingRef.current) {
+            return;
+        }
+
+        if (!isLoggedIn) {
+            alert("로그인한 뒤 답글을 작성해주세요.")
+            return;
+        }
+
+        setReplyParentId(commentId);
+        setReplyContent("");
+        setEditingId(null);
+        setEditContent("");
+
+    }
+
+    function closeReply() {
+        if (savingRef.current) {
+            return;
+        }
+
+        setReplyParentId(null);
+        setReplyContent("");
+    }
+
+    // ===================================
+    // 답글 등록
+    // ===================================
+
+    async function saveReComment(event) {
+        event.preventDefault();
+
+        if (savingRef.current) {
+            return;
+        }
+
+        if (!isLoggedIn) {
+            alert("로그인한 뒤 답글을 작성해주세요.")
+            return;
+        }
+
+        if (replyParentId === null) {
+            alert("답글을 작성할 댓글을 선택해주세요.")
+            return;
+        }
+
+        const trimmedContent = replyContent.trim();
+
+        if (trimmedContent === "") {
+            alert("답글을 입력해주세요.")
+            return;
+        }
+
+        if (trimmedContent.length > 1000) {
+            alert("답글은 1000자까지 입력할 수 있습니다.")
+            return;
+        }
+
+        savingRef.current = true;
+        setIsSaving(true);
+
+        try {
+
+            await axios.post(
+                API_BASE + "/api/community-comments",
+                {
+                    postId: postId,
+                    authorId: loginUser.id,
+                    content: trimmedContent,
+                    parentId: replyParentId
+                }
+            );
+
+            setReplyContent("");
+            setReplyParentId(null);
+            reloadComments();
+
+        } catch (error) {
+
+            showError(error, "답글 등록에 실패했습니다.")
+
+        } finally {
+            savingRef.current = false;
+            setIsSaving(false);
+        }
+
+    }
+
+    // ===================================
     // 댓글 삭제
     // ===================================
 
@@ -173,13 +278,112 @@ function CommunityComments(props) {
                 }
             );
 
-            setComments(function (previousComments) {
-                return previousComments.filter(function (item) {
-                    return String(item.id) !== String(comment.id);
-                });
-            });
+            reloadComments();
+
         } catch (error) {
             showError(error, "댓글 삭제에 실패했습니다.");
+        } finally {
+            savingRef.current = false;
+            setIsSaving(false);
+        }
+    }
+
+    // ===================================
+    // 댓글 · 답글 수정창 열기
+    // ===================================
+
+    function openEdit(comment) {
+        if (savingRef.current) {
+            return;
+        }
+
+        if (
+            !isLoggedIn ||
+            String(comment.authorId) !== String(loginUser.id)
+        ) {
+            alert("본인이 작성한 댓글만 수정할 수 있습니다.");
+            return;
+        }
+
+        if (Number(comment.isDeleted) === 1) {
+            alert("삭제된 댓글은 수정할 수 없습니다.");
+            return;
+        }
+
+        // 수정할 댓글 번호와 기존 내용을 저장
+        setEditingId(comment.id);
+        setEditContent(comment.content);
+
+        // 열려 있던 답글 입력창 닫기
+        setReplyParentId(null);
+        setReplyContent("");
+    }
+
+    // ===================================
+    // 수정 취소
+    // ===================================
+
+    function cancelEdit() {
+        if (savingRef.current) {
+            return;
+        }
+
+        setEditingId(null);
+        setEditContent("");
+    }
+
+    // ===================================
+    // 수정 내용 저장
+    // ===================================
+
+    async function saveEdit(event) {
+        event.preventDefault();
+
+        if (savingRef.current) {
+            return;
+        }
+
+        if (!isLoggedIn) {
+            alert("로그인 후 수정해주세요.");
+            return;
+        }
+
+        if (editingId === null) {
+            return;
+        }
+
+        const trimmedContent = editContent.trim();
+
+        if (trimmedContent === "") {
+            alert("수정할 내용을 입력해주세요.");
+            return;
+        }
+
+        if (trimmedContent.length > 1000) {
+            alert("댓글은 1000자까지 입력할 수 있습니다.");
+            return;
+        }
+
+        savingRef.current = true;
+        setIsSaving(true);
+
+        try {
+            await axios.put(
+                API_BASE + "/api/community-comments/" + editingId,
+                {
+                    authorId: loginUser.id,
+                    content: trimmedContent
+                }
+            );
+
+            // 저장 성공 후 수정창 닫기
+            setEditingId(null);
+            setEditContent("");
+
+            // 수정된 목록 다시 조회
+            reloadComments();
+        } catch (error) {
+            showError(error, "댓글 수정에 실패했습니다.");
         } finally {
             savingRef.current = false;
             setIsSaving(false);
@@ -193,6 +397,242 @@ function CommunityComments(props) {
 
         return new Date(value).toLocaleString("ko-KR");
     }
+
+    // ===================================
+    // 댓글 한 개의 내용 표시
+    // ===================================
+
+    function renderCommentBody(comment, isReply) {
+        const isDeleted = Number(comment.isDeleted) === 1;
+
+        const isEditing =
+            !isDeleted &&
+            editingId !== null &&
+            String(editingId) === String(comment.id);
+
+        const canDelete =
+            !isDeleted &&
+            isLoggedIn &&
+            String(comment.authorId) === String(loginUser.id);
+
+        const isReplyOpen =
+            !isReply &&
+            replyParentId !== null &&
+            String(replyParentId) === String(comment.id);
+
+        return (
+            <>
+
+                <div className="community-comment-header">
+                    <strong>
+                        {isDeleted ? "삭제된 댓글" : comment.authorName}
+                    </strong>
+
+                    {canDelete && (
+                        <div className="community-comment-owner-actions">
+                            <button
+                                type="button"
+                                className="community-reply-button"
+                                disabled={isSaving || isEditing}
+                                onClick={function () {
+                                    openEdit(comment);
+                                }}
+                            >
+                                수정
+                            </button>
+
+                            <button
+                                type="button"
+                                className="community-comment-delete"
+                                disabled={isSaving || isEditing}
+                                onClick={function () {
+                                    deleteComment(comment);
+                                }}
+                            >
+                                삭제
+                            </button>
+                        </div>
+                    )}
+
+                </div>
+
+                {isEditing ? (
+                    <form
+                        className="community-comment-form"
+                        onSubmit={saveEdit}
+                    >
+                        <label htmlFor={"edit-comment-" + comment.id}>
+                            내용 수정
+                        </label>
+
+                        <textarea
+                            id={"edit-comment-" + comment.id}
+                            value={editContent}
+                            onChange={function (event) {
+                                setEditContent(event.target.value);
+                            }}
+                            maxLength={1000}
+                            rows={3}
+                            disabled={isSaving}
+                        />
+
+                        <div className="community-comment-form-bottom">
+                            <span>{editContent.length} / 1000</span>
+
+                            <div className="community-reply-form-buttons">
+                                <button
+                                    type="button"
+                                    className="community-button"
+                                    onClick={cancelEdit}
+                                    disabled={isSaving}
+                                >
+                                    취소
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    className="community-primary-button"
+                                    disabled={
+                                        isSaving ||
+                                        editContent.trim() === ""
+                                    }
+                                >
+                                    저장
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                ) : (
+                    <p className="community-comment-content">
+                        {isDeleted
+                            ? "삭제된 댓글입니다."
+                            : comment.content}
+                    </p>
+                )}
+
+                <div className="community-comment-actions">
+                    <span className="community-comment-date">
+                        {formatDate(comment.createdAt)}
+                    </span>
+
+                    {!isReply && isLoggedIn && (
+                        <button type="button"
+                            className="community-reply-button"
+                            disabled={isSaving}
+                            onClick={function () {
+                                if (isReplyOpen) {
+                                    closeReply();
+                                } else {
+                                    openReply(comment.id);
+                                }
+                            }}
+                        >
+                            {isReplyOpen ? "답글 닫기" : "답글"}
+                        </button>
+                    )}
+
+                </div>
+
+                {isReplyOpen && (
+                    <form className="community-comment-form community-reply-form"
+                        onSubmit={saveReComment}
+                    >
+                        <label htmlFor={"reply-content-" + comment.id}>
+                            답글 작성
+                        </label>
+
+                        <textarea id={"reply-content-" + comment.id}
+                            value={replyContent}
+                            onChange={function (event) {
+                                setReplyContent(event.target.value);
+                            }}
+                            placeholder="답글을 입력해주세요."
+                            maxLength={1000}
+                            disabled={isSaving}
+                            rows={3}
+                        />
+
+                        <div className="community-comment-form-bottom">
+                            <span>{replyContent.length} / 1000</span>
+
+                            <div className="community-reply-form-buttons">
+                                <button type="button"
+                                    className="community-button"
+                                    disabled={isSaving}
+                                    onClick={closeReply}
+                                >
+                                    취소
+                                </button>
+
+                                <button type="submit"
+                                    className="community-primary-button"
+                                    disabled={
+                                        isSaving ||
+                                        replyContent.trim() === ""
+                                    }
+                                >
+                                    답글 등록
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+                )}
+
+            </>
+        );
+
+    }
+
+    // ===================================
+    // 삭제되지 않은 답글만 묶기
+    // ===================================
+
+    const repliesByParent = new Map();
+
+    comments.forEach(function (comment) {
+        // 일반 댓글은 제외
+        if (comment.parentId == null) {
+            return;
+        }
+
+        // 삭제된 답글은 화면에 표시하지 않음
+        if (Number(comment.isDeleted) === 1) {
+            return;
+        }
+
+        const parentKey = String(comment.parentId);
+
+        if (!repliesByParent.has(parentKey)) {
+            repliesByParent.set(parentKey, []);
+        }
+
+        repliesByParent.get(parentKey).push(comment);
+
+    });
+
+    // ===================================
+    // 화면에 표시할 원래 댓글 고르기
+    // ===================================
+
+    const rootComments = comments.filter(function (comment) {
+        // 답글은 제외
+        if (comment.parentId != null) {
+            return false;
+        }
+
+        // 삭제되지 않은 원래 댓글은 표시
+        if (Number(comment.isDeleted) !== 1) {
+            return true;
+        }
+
+        const replies =
+            repliesByParent.get(String(comment.id)) || [];
+
+        return replies.length > 0;
+    })
 
     // ===================================
     // 댓글 목록 화면
@@ -220,7 +660,7 @@ function CommunityComments(props) {
                 </button>
             </div>
         );
-    } else if (comments.length === 0) {
+    } else if (rootComments.length === 0) {
         commentList = (
             <p className="community-comment-message">
                 첫 번째 댓글을 남겨보세요.
@@ -229,44 +669,31 @@ function CommunityComments(props) {
     } else {
         commentList = (
             <ul className="community-comment-list">
-                {comments.map(function (comment) {
-                    let deleteButton = null;
-
-                    if (
-                        isLoggedIn &&
-                        String(comment.authorId) === String(loginUser.id)
-                    ) {
-                        deleteButton = (
-                            <button
-                                type="button"
-                                className="community-comment-delete"
-                                disabled={isSaving}
-                                onClick={function () {
-                                    deleteComment(comment);
-                                }}
-                            >
-                                삭제
-                            </button>
-                        );
-                    }
+                {rootComments.map(function (comment) {
+                    const replies =
+                        repliesByParent.get(String(comment.id)) || [];
 
                     return (
                         <li
                             key={comment.id}
                             className="community-comment-item"
                         >
-                            <div className="community-comment-header">
-                                <strong>{comment.authorName}</strong>
-                                {deleteButton}
-                            </div>
+                            {renderCommentBody(comment, false)}
 
-                            <p className="community-comment-content">
-                                {comment.content}
-                            </p>
-
-                            <span className="community-comment-date">
-                                {formatDate(comment.createdAt)}
-                            </span>
+                            {replies.length > 0 && (
+                                <ul className="community-reply-list">
+                                    {replies.map(function (reply) {
+                                        return (
+                                            <li
+                                                key={reply.id}
+                                                className="community-comment-item community-reply-item"
+                                            >
+                                                {renderCommentBody(reply, true)}
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            )}
                         </li>
                     );
                 })}
@@ -277,7 +704,11 @@ function CommunityComments(props) {
     let countLabel = "";
 
     if (!isLoading && loadError === "") {
-        countLabel = " " + comments.length;
+        const activeCommentCount = comments.filter(function (comment) {
+            return Number(comment.isDeleted) !== 1;
+        }).length;
+
+        countLabel = " " + activeCommentCount;
     }
 
     let placeholder = "동료에게 댓글을 남겨보세요.";

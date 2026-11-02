@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE } from "../../shared/config";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CommunityMenu from "./CommunityMenu";
 import CommunityHome from "./CommunityHome";
 import Board from "./Board";
@@ -9,13 +9,18 @@ import MyActivity from "./MyActivity";
 import getLoginUser from "../woojin/getLoginUser";
 import "./junwoo.css";
 
-function Community() {
-    const [menu, setMenu] = useState("커뮤니티 홈");
+function Community(props) {
     const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState("");
     const [retryCount, setRetryCount] = useState(0);
-    const [initialBoardName, setInitialBoardName] = useState("자유게시판");
+    const navigate = useNavigate();
+
+    let menu = "커뮤니티 홈";
+
+    if (props.menu) {
+        menu = props.menu;
+    }
 
     const loginUser = getLoginUser();
 
@@ -108,20 +113,18 @@ function Community() {
         });
     }
 
-    function showHome() {
-        setMenu("커뮤니티 홈");
-    }
-
-    // 배너의 '게시판 둘러보기' 버튼
     function showBoard() {
-        setInitialBoardName("자유게시판");
-        setMenu("게시판");
+        navigate("/community/board/free");
     }
 
-    // 홈에서 선택한 게시판으로 이동
     function openSelectedBoard(boardName) {
-        setInitialBoardName(boardName);
-        setMenu("게시판");
+        if (boardName === "자유게시판") {
+            navigate("/community/board/free");
+        } else if (boardName === "질문 답변") {
+            navigate("/community/board/question");
+        } else if (boardName === "정보공유") {
+            navigate("/community/board/info");
+        }
     }
 
     let content;
@@ -163,7 +166,7 @@ function Community() {
             <Board
                 posts={posts}
                 setPosts={setPosts}
-                initialBoardName={initialBoardName}
+                screen={props.screen}
             />
         );
     } else if (menu === "내 활동") {
@@ -171,16 +174,16 @@ function Community() {
             <MyActivity
                 posts={posts}
                 loginUser={loginUser}
+                activity={props.activity}
             />
         );
     }
     return (
         <div className="community-layout community-standalone">
             <aside className="community-sidebar">
-                <button
-                    type="button"
+                <Link
+                    to="/community"
                     className="lounge-brand"
-                    onClick={showHome}
                     aria-label="COMMAND LOUNGE 홈"
                 >
                     <span className="lounge-brand-mark">
@@ -191,7 +194,7 @@ function Community() {
                         COMMAND
                         <small>LOUNGE · 사내 커뮤니티</small>
                     </span>
-                </button>
+                </Link>
 
                 <div className="lounge-workspace">
                     <strong>우리 회사 워크스페이스</strong>
@@ -202,10 +205,7 @@ function Community() {
                     WORK TOGETHER
                 </p>
 
-                <CommunityMenu
-                    menu={menu}
-                    changeMenu={setMenu}
-                />
+                <CommunityMenu menu={menu} />
 
                 <div className="lounge-sidebar-bottom">
                     <Link to="/" className="lounge-erp-link">

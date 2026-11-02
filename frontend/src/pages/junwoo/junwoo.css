@@ -6277,7 +6277,7 @@
   }
 }
 
-.community-sidebar .community-side-menu button {
+.community-sidebar .community-side-menu .community-menu-button {
   width: 100%;
   padding: 15px 18px;
   border: 1px solid #e0e8f5;
@@ -6292,19 +6292,19 @@
   transition: 0.2s;
 }
 
-.community-sidebar .community-side-menu button:hover {
+.community-sidebar .community-side-menu .community-menu-button:hover {
   border-color: #bed3ff;
   background-color: #eaf1ff;
   color: #2563eb;
 }
 
-.community-sidebar .community-side-menu button:focus-visible {
+.community-sidebar .community-side-menu .community-menu-button:focus-visible {
   outline: 3px solid #93c5fd;
   outline-offset: 3px;
 }
 
 /* 왼쪽 메뉴 버튼 */
-.community-sidebar .community-side-menu button {
+.community-sidebar .community-side-menu .community-menu-button {
   position: relative;
   width: 100%;
   padding: 16px 18px;
@@ -6325,7 +6325,7 @@
 }
 
 /* 처음에는 숨겨진 파란 밑줄 */
-.community-sidebar .community-side-menu button::after {
+.community-sidebar .community-side-menu .community-menu-button::after {
   content: "";
   position: absolute;
   right: 16px;
@@ -6339,7 +6339,7 @@
 }
 
 /* 마우스를 올렸을 때 */
-.community-sidebar .community-side-menu button:hover {
+.community-sidebar .community-side-menu .community-menu-button:hover {
   background-color: #f0f5ff;
   color: #2563eb;
 }
@@ -6358,7 +6358,7 @@
 }
 
 /* 버튼을 누르는 순간 */
-.community-sidebar .community-side-menu button:active {
+.community-sidebar .community-side-menu .community-menu-button:active {
   transform: translateY(2px);
   box-shadow: none;
 }
@@ -6407,7 +6407,7 @@
 }
 
 /* 기존 짧은 밑줄 제거 */
-.community-sidebar .community-side-menu button::after,
+.community-sidebar .community-side-menu .community-menu-button::after,
 .community-tab-button::after {
   display: none;
 }
@@ -7841,4 +7841,507 @@
   margin-top: 0;
   padding-top: 12px;
   border-top: none;
+}
+
+/* 댓글 답글 기능 */
+.community-comments .community-comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.community-comments .community-reply-button {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #2563eb;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.community-comments .community-reply-button:hover {
+  background: #eff6ff;
+}
+
+.community-comments .community-reply-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.community-comments .community-reply-list {
+  list-style: none;
+  margin: 16px 0 0 16px;
+  padding: 0 0 0 16px;
+  border-left: 2px solid #e2e8f0;
+}
+
+.community-comments .community-reply-item {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.community-comments .community-reply-form {
+  margin-top: 14px;
+}
+
+.community-comments .community-reply-form-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 글쓰기와 수정 화면으로 이동하는 링크 */
+.community-layout a.community-primary-button,
+.community-layout a.community-button {
+  display: inline-block;
+  text-decoration: none;
+}
+
+/* 내 활동 탭과 게시글 제목 링크 */
+.community-layout a.community-tab-button {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.community-layout a.community-home-title-button,
+.community-layout a.lounge-feed-title-button {
+  text-decoration: none;
+}
+
+/* 본인 댓글의 수정·삭제 버튼 */
+.community-comments .community-comment-owner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 왼쪽 메뉴 링크 */
+.community-sidebar .community-side-menu a.community-menu-button {
+  display: block;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+/* 로고 링크의 기본 밑줄과 방문 색상 제거 */
+.community-standalone a.lounge-brand {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 게시글 제목 링크 */
+.community-layout a.community-board-title-button,
+.community-layout a.community-home-title-button,
+.community-layout a.lounge-feed-title-button {
+  color: #087bdf;
+  text-decoration: none;
+}
+
+/* 제목에 마우스를 올리면 밑줄 표시 */
+.community-layout a.community-board-title-button:hover,
+.community-layout a.community-home-title-button:hover,
+.community-layout a.lounge-feed-title-button:hover {
+  text-decoration: underline;
+}
+
+/* 링크로 만든 글쓰기·목록·수정 버튼 */
+.community-layout a.community-primary-button,
+.community-layout a.community-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  color: #087bdf;
+  text-decoration: none;
+}
+
+/* 내 활동 탭 링크 */
+.community-layout a.community-tab-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  color: #087bdf;
+  text-decoration: none;
+}
+
+/* 프로젝트 목록: ID 열 제거 후 배치 */
+.team-shell .todo-manage-page .todo-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+/* 공통 간격과 정렬 */
+.team-shell .todo-manage-page .todo-table th,
+.team-shell .todo-manage-page .todo-table td {
+  padding: 16px 12px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* 번호 */
+.team-shell .todo-manage-page .todo-table th:nth-child(1) {
+  width: 7%;
+}
+
+/* 프로젝트 제목 */
+.team-shell .todo-manage-page .todo-table th:nth-child(2) {
+  width: 55%;
+}
+
+/* 작성자 */
+.team-shell .todo-manage-page .todo-table th:nth-child(3) {
+  width: 13%;
+}
+
+/* 작성일자 */
+.team-shell .todo-manage-page .todo-table th:nth-child(4) {
+  width: 17%;
+}
+
+/* 조회수 */
+.team-shell .todo-manage-page .todo-table th:nth-child(5) {
+  width: 8%;
+}
+
+/* 제목은 왼쪽 정렬 */
+.team-shell .todo-manage-page .todo-table th:nth-child(2),
+.team-shell .todo-manage-page .todo-table td:nth-child(2) {
+  padding-left: 24px;
+  padding-right: 24px;
+  text-align: center;
+}
+
+/* 제목 버튼 */
+.team-shell .todo-manage-page .todo-table .todo-title-link {
+  display: block;
+  width: 100%;
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+  color: #087bdf;
+  font: inherit;
+  font-weight: 500;
+  line-height: 1.6;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.team-shell .todo-manage-page .todo-table .todo-title-link:hover {
+  color: #075eac;
+  text-decoration: underline;
+}
+
+/* 행에 마우스를 올렸을 때 */
+.team-shell .todo-manage-page .todo-table tbody tr:hover {
+  background-color: #f5f9ff;
+}
+
+/* 목록이 없을 때 */
+.team-shell .todo-manage-page .todo-table .todo-empty {
+  text-align: center;
+}
+
+/* 프로젝트 목록 상태 탭 */
+.team-shell .todo-manage-page .todo-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.team-shell .todo-manage-page .todo-status-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.team-shell .todo-manage-page .todo-status-tab {
+  padding: 10px 18px;
+  border: 1px solid #dce9f8;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #617792;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.team-shell .todo-manage-page .todo-status-tab:hover {
+  background: #f0f7ff;
+  border-color: #a9d0ff;
+  color: #087bdf;
+}
+
+.team-shell .todo-manage-page .todo-status-tab.active {
+  background: #1689ec;
+  border-color: #1689ec;
+  color: #ffffff;
+}
+
+.team-shell .todo-manage-page .todo-status-tab:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+/* 아직 프로젝트 상세가 없는 요청 제목 */
+.team-shell .todo-manage-page .todo-request-title {
+  display: block;
+  padding: 4px 0;
+  color: #365575;
+  line-height: 1.6;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* 승인 상태 */
+.team-shell .todo-manage-page .todo-request-status {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.team-shell .todo-manage-page .todo-request-status.waiting {
+  background: #fff5dc;
+  color: #926200;
+}
+
+.team-shell .todo-manage-page .todo-request-status.approved {
+  background: #e8f7ef;
+  color: #21764b;
+}
+
+/* 프로젝트 요청 상세 */
+.team-shell .request-detail-page {
+  grid-column: 1 / -1;
+  grid-row: 2 / 4;
+  min-width: 0;
+  width: calc(100% - 32px);
+  max-width: 1100px;
+  box-sizing: border-box;
+  margin: 36px auto;
+  padding: 32px;
+  border: 1px solid #dce9f8;
+  border-radius: 18px;
+  background: #ffffff;
+  color: #263a56;
+  box-shadow: 0 8px 28px rgba(30, 80, 140, 0.05);
+}
+
+.team-shell .request-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e7eff9;
+}
+
+.team-shell .request-detail-header>div {
+  min-width: 0;
+}
+
+.team-shell .request-detail-caption {
+  margin: 0 0 10px;
+  color: #7186a1;
+  font-size: 13px;
+}
+
+.team-shell .request-detail-header h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.team-shell .request-detail-status {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.team-shell .request-detail-status.waiting {
+  background: #fff5dc;
+  color: #926200;
+}
+
+.team-shell .request-detail-status.approved {
+  background: #e8f7ef;
+  color: #21764b;
+}
+
+.team-shell .request-detail-status.rejected {
+  background: #fff0f0;
+  color: #bd4141;
+}
+
+/* 기본 정보: 한 줄에 두 칸 */
+.team-shell .request-detail-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 28px;
+  margin-top: 16px;
+}
+
+.team-shell .request-detail-info>div {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  min-width: 0;
+  padding: 18px 0;
+  border-bottom: 1px solid #edf3fa;
+}
+
+.team-shell .request-detail-info span {
+  flex-shrink: 0;
+  width: 90px;
+  color: #7186a1;
+  font-size: 14px;
+}
+
+.team-shell .request-detail-info strong {
+  font-size: 14px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+/* 요청 내용 */
+.team-shell .request-detail-content {
+  margin-top: 30px;
+}
+
+.team-shell .request-detail-content h2,
+.team-shell .request-detail-process h2 {
+  margin: 0 0 16px;
+  font-size: 17px;
+}
+
+.team-shell .request-detail-content p {
+  min-height: 140px;
+  margin: 0;
+  padding: 24px;
+  border: 1px solid #e3edf9;
+  border-radius: 12px;
+  background: #f8fbff;
+  font-size: 15px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.team-shell .request-detail-notice {
+  margin-top: 22px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: #fff9e9;
+  color: #886313;
+  font-size: 14px;
+}
+
+.team-shell .request-detail-process {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f2f8ff;
+}
+
+.team-shell .request-detail-process p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+/* 하단 버튼 */
+.team-shell .request-detail-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.team-shell .request-detail-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 18px;
+  border: 1px solid #cfe1f6;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #087bdf;
+  font: inherit;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.team-shell .request-detail-button:hover {
+  background: #eef6ff;
+}
+
+.team-shell .request-detail-button.primary {
+  border-color: #1689ec;
+  background: #1689ec;
+  color: #ffffff;
+}
+
+.team-shell .request-detail-button.primary:hover {
+  background: #087bdf;
+}
+
+.team-shell .request-detail-button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+/* 프로젝트 표의 제목 링크 */
+.team-shell .todo-manage-page .todo-table a.todo-title-link {
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.team-shell .todo-manage-page .todo-table a.todo-title-link:hover {
+  text-decoration: underline;
+}
+
+/* 작은 화면 */
+@media (max-width: 700px) {
+  .team-shell .request-detail-page {
+    margin: 20px auto;
+    padding: 20px;
+  }
+
+  .team-shell .request-detail-header h1 {
+    font-size: 21px;
+  }
+
+  .team-shell .request-detail-info {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 요청 상세 화면 버튼 색상 통일 */
+.team-shell .request-detail-button {
+  background-color: #1689ec;
+  border-color: #1689ec;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.team-shell .request-detail-button:hover {
+  background-color: #087bdf;
+  border-color: #087bdf;
+  color: #ffffff;
 }

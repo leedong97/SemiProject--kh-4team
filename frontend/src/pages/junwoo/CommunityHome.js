@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import CommunityPostDetail from "./CommunityPostDetail";
+import { Link } from "react-router-dom";
 
 function CommunityHome(props) {
     const [page, setPage] = useState(1);
@@ -36,19 +36,6 @@ function CommunityHome(props) {
 
     // 한 페이지에 보여줄 게시글 수
     const postsPerPage = 10;
-
-    // 클릭한 게시글 저장
-    const [selectedPost, setSelectedPost] = useState(null);
-
-    // 상세 화면 열기
-    function showDetail(post) {
-        setSelectedPost(post);
-    }
-
-    // 목록으로 돌아가기
-    function showList() {
-        setSelectedPost(null);
-    }
 
     // 앞뒤 공백을 제거하고 소문자로 변환
     const keyword = searchText.trim().toLowerCase();
@@ -222,10 +209,6 @@ function CommunityHome(props) {
                         previewText = post.content;
                     }
 
-                    function openPost() {
-                        showDetail(post);
-                    }
-
                     return (
                         <li
                             key={post.id}
@@ -241,13 +224,12 @@ function CommunityHome(props) {
                                 </span>
 
                                 <h3 className="lounge-feed-title">
-                                    <button
-                                        type="button"
+                                    <Link
+                                        to={"/community/post/" + post.id}
                                         className="lounge-feed-title-button"
-                                        onClick={openPost}
                                     >
                                         {post.title}
-                                    </button>
+                                    </Link>
                                 </h3>
 
                                 <p className="lounge-feed-preview">
@@ -330,15 +312,6 @@ function CommunityHome(props) {
                     다음
                 </button>
             </nav>
-        );
-    }
-
-    if (selectedPost !== null) {
-        return (
-            <CommunityPostDetail
-                post={selectedPost}
-                onBack={showList}
-            />
         );
     }
 

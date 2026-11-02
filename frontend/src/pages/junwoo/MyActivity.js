@@ -1,38 +1,19 @@
 import React, { useState } from "react";
-import CommunityPostDetail from "./CommunityPostDetail";
 import MyComments from "./MyComments";
+import { Link } from "react-router-dom";
 
 function MyActivity(props) {
-    const [activity, setActivity] = useState("내가 작성한 글");
+
+    let activity = "내가 작성한 글";
+
+    if (props.activity) {
+        activity = props.activity;
+    }
+
     const [page, setPage] = useState(1);
-    const [selectedPost, setSelectedPost] = useState(null);
 
     const postsPerPage = 10;
     const loginUser = props.loginUser;
-
-    // ===================================
-    // 내 활동 메뉴 변경
-    // ===================================
-
-    function showMyPosts() {
-        setActivity("내가 작성한 글");
-        setPage(1);
-        setSelectedPost(null);
-    }
-
-    function showMyComments() {
-        setActivity("내가 작성한 댓글");
-        setPage(1);
-        setSelectedPost(null);
-    }
-
-    function showDetail(post) {
-        setSelectedPost(post);
-    }
-
-    function showList() {
-        setSelectedPost(null);
-    }
 
     // ===================================
     // 내가 작성한 글만 가져오기
@@ -203,11 +184,7 @@ function MyActivity(props) {
         );
     } else if (activity === "내가 작성한 댓글") {
         activityContent = (
-            <MyComments
-                loginUser={loginUser}
-                posts={props.posts}
-                onOpenPost={showDetail}
-            />
+            <MyComments loginUser={loginUser} />
         );
     } else if (myPosts.length === 0) {
         activityContent = (
@@ -233,10 +210,6 @@ function MyActivity(props) {
                             {currentPosts.map(function (post, index) {
                                 const number = startIndex + index + 1;
 
-                                function openPost() {
-                                    showDetail(post);
-                                }
-
                                 return (
                                     <tr key={post.id}>
                                         <td>{number}</td>
@@ -244,13 +217,12 @@ function MyActivity(props) {
                                         <td>{post.boardName}</td>
 
                                         <td className="community-home-post-title">
-                                            <button
-                                                type="button"
+                                            <Link
+                                                to={"/community/post/" + post.id}
                                                 className="community-home-title-button"
-                                                onClick={openPost}
                                             >
                                                 {post.title}
-                                            </button>
+                                            </Link>
                                         </td>
 
                                         <td>
@@ -278,16 +250,6 @@ function MyActivity(props) {
         countLabel = "전체 " + myPosts.length + "개";
     }
 
-    // 선택한 글이 있으면 상세보기
-    if (selectedPost !== null) {
-        return (
-            <CommunityPostDetail
-                post={selectedPost}
-                onBack={showList}
-            />
-        );
-    }
-
     return (
         <div className="community-activity">
             <h1 className="community-title">
@@ -299,21 +261,21 @@ function MyActivity(props) {
             </p>
 
             <div className="community-tabs">
-                <button
-                    type="button"
-                    className={postsClass}
-                    onClick={showMyPosts}
-                >
-                    내가 작성한 글
-                </button>
+                <div className="community-tabs">
+                    <Link
+                        to="/community/activity"
+                        className={postsClass}
+                    >
+                        내가 작성한 글
+                    </Link>
 
-                <button
-                    type="button"
-                    className={commentsClass}
-                    onClick={showMyComments}
-                >
-                    내가 작성한 댓글
-                </button>
+                    <Link
+                        to="/community/activity/comments"
+                        className={commentsClass}
+                    >
+                        내가 작성한 댓글
+                    </Link>
+                </div>
             </div>
 
             <div className="community-panel">

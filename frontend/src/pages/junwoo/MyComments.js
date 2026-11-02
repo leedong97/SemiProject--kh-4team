@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_BASE } from "../../shared/config";
+import { Link } from "react-router-dom";
 
 function MyComments(props) {
     const [comments, setComments] = useState([]);
@@ -58,25 +59,6 @@ function MyComments(props) {
         setRetryCount(function (previousCount) {
             return previousCount + 1;
         });
-    }
-
-    // ===================================
-    // 댓글이 달린 게시글 열기
-    // ===================================
-
-    function openPost(postId) {
-        const post = props.posts.find(function (item) {
-            return String(item.id) === String(postId);
-        });
-
-        if (!post) {
-            alert(
-                "현재 목록에서 게시글을 찾지 못했습니다. 화면을 새로고침해주세요."
-            );
-            return;
-        }
-
-        props.onOpenPost(post);
     }
 
     // ===================================
@@ -231,10 +213,6 @@ function MyComments(props) {
                 {currentComments.map(function (comment, index) {
                     const number = startIndex + index + 1;
 
-                    function showPost() {
-                        openPost(comment.postId);
-                    }
-
                     return (
                         <li
                             key={comment.id}
@@ -254,13 +232,12 @@ function MyComments(props) {
                                 {comment.content}
                             </p>
 
-                            <button
-                                type="button"
+                            <Link
+                                to={"/community/post/" + comment.postId}
                                 className="lounge-feed-title-button"
-                                onClick={showPost}
                             >
                                 원문: {comment.postTitle}
-                            </button>
+                            </Link>
                         </li>
                     );
                 })}

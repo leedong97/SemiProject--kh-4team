@@ -26,7 +26,12 @@ router.get("/", async function (req, res) {
                     e.employee_name,
                     '작성자 미등록'
                 ) AS authorName,
-                c.content,
+                c.parent_id AS parentId,
+                c.is_deleted AS isDeleted,
+                CASE
+            WHEN c.is_deleted = 1 THEN '삭제된 댓글입니다.'
+            ELSE c.content
+            END AS content,
                 c.created_at AS createdAt,
                 c.updated_at AS updatedAt
              FROM community_comment c
@@ -48,13 +53,21 @@ router.get("/", async function (req, res) {
 });
 
 // ===================================
-// 댓글 등록
+// 댓글 · 답글 등록
 // ===================================
 
 router.post("/", async function (req, res) {
-    const postId = Number(req.body.postId);
-    const authorId = Number(req.body.authorId);
-    const content = req.body.content;
+    const body = req.body || {};
+
+    const postId = Number(body.postId);
+    const authorId = Number(body.authorId);
+    const content = body.content;
+
+    // 일반 댓글은 null, 답글은 원래 댓글 번호
+    const parentId =
+        body.parentId == null
+            ? null
+            : Number(body.parentId);
 
     if (
         !Number.isSafeInteger(postId) ||
@@ -68,17 +81,29 @@ router.post("/", async function (req, res) {
     }
 
     if (
+        parentId !== null &&
+        (
+            !Number.isSafeInteger(parentId) ||
+            parentId < 1
+        )
+    ) {
+        return res.status(400).json({
+            message: "답글을 작성할 댓글 번호를 확인해주세요."
+        });
+    }
+
+    if (
         typeof content !== "string" ||
         content.trim() === "" ||
         content.trim().length > 1000
     ) {
         return res.status(400).json({
-            message: "댓글은 1~1000자로 입력해주세요."
+            message: "댓글과 답글은 1~1000자로 입력해주세요."
         });
     }
 
     try {
-        // 게시글이 존재하는지 확인
+        // 게시글 확인
         const [posts] = await db.query(
             `SELECT id
              FROM community_post
@@ -92,7 +117,7 @@ router.post("/", async function (req, res) {
             });
         }
 
-        // 작성자가 등록된 재직 직원인지 확인
+        // 작성자 확인
         const [employees] = await db.query(
             `SELECT employee_id
              FROM employees
@@ -107,48 +132,148 @@ router.post("/", async function (req, res) {
             });
         }
 
-        // 댓글 저장
+        // 답글이면 원래 댓글 확인
+        if (parentId !== null) {
+            const [parents] = await db.query(
+                `SELECT id, parent_id
+                 FROM community_comment
+                 WHERE id = ?
+                   AND post_id = ?`,
+                [parentId, postId]
+            );
+
+            if (parents.length === 0) {
+                return res.status(404).json({
+                    message: "답글을 작성할 댓글이 없습니다."
+                });
+            }
+
+            // 답글에 다시 답글을 다는 것은 제한
+            if (parents[0].parent_id !== null) {
+                return res.status(400).json({
+                    message: "답글에는 다시 답글을 작성할 수 없습니다."
+                });
+            }
+        }
+
+        // 일반 댓글과 답글 모두 같은 테이블에 저장
         const [result] = await db.query(
             `INSERT INTO community_comment (
                 post_id,
                 author_id,
-                content
+                content,
+                parent_id
              )
-             VALUES (?, ?, ?)`,
+             VALUES (?, ?, ?, ?)`,
             [
                 postId,
                 authorId,
-                content.trim()
+                content.trim(),
+                parentId
             ]
         );
 
         res.status(201).json({
-            message: "댓글이 등록되었습니다.",
+            message:
+                parentId === null
+                    ? "댓글이 등록되었습니다."
+                    : "답글이 등록되었습니다.",
             id: result.insertId
         });
     } catch (error) {
-        // 확인 후 등록하기 직전에 게시글이 삭제된 경우
         if (error.code === "ER_NO_REFERENCED_ROW_2") {
             return res.status(404).json({
-                message: "게시글이 더 이상 존재하지 않습니다."
+                message: "게시글 또는 원래 댓글이 존재하지 않습니다."
             });
         }
 
-        console.error("댓글 등록 오류:", error);
+        console.error("댓글·답글 등록 오류:", error);
 
         res.status(500).json({
-            message: "댓글 등록에 실패했습니다."
+            message: "댓글·답글 등록에 실패했습니다."
         });
     }
 });
 
 // ===================================
-// 댓글 삭제
+// 댓글 · 답글 수정
+// ===================================
+
+router.put("/:id", async function (req, res) {
+    const body = req.body || {};
+
+    // 수정할 댓글 번호
+    const id = Number(req.params.id);
+
+    // 요청에서 전달받은 작성자 번호
+    const authorId = Number(body.authorId);
+
+    // 변경할 내용
+    const content = body.content;
+
+    // 댓글 번호와 작성자 번호 검사
+    if (
+        !Number.isSafeInteger(id) ||
+        id < 1 ||
+        !Number.isSafeInteger(authorId) ||
+        authorId < 1
+    ) {
+        return res.status(400).json({
+            message: "댓글 또는 작성자 정보를 확인해주세요."
+        });
+    }
+
+    // 내용 검사
+    if (
+        typeof content !== "string" ||
+        content.trim() === "" ||
+        content.trim().length > 1000
+    ) {
+        return res.status(400).json({
+            message: "댓글과 답글은 1~1000자로 입력해주세요."
+        });
+    }
+
+    try {
+        const [result] = await db.query(
+            `UPDATE community_comment
+             SET content = ?
+             WHERE id = ?
+               AND author_id = ?
+               AND is_deleted = 0`,
+            [
+                content.trim(),
+                id,
+                authorId
+            ]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message:
+                    "댓글이 없거나 삭제되었거나 작성자가 일치하지 않습니다."
+            });
+        }
+
+        res.json({
+            message: "수정되었습니다."
+        });
+    } catch (error) {
+        console.error("댓글·답글 수정 오류:", error);
+
+        res.status(500).json({
+            message: "댓글·답글 수정에 실패했습니다."
+        });
+    }
+});
+
+// ===================================
+// 댓글 · 답글 삭제
 // ===================================
 
 router.delete("/:id", async function (req, res) {
     const id = Number(req.params.id);
-    const authorId = Number(req.body.authorId);
+    const authorId = Number((req.body || {}).authorId);
 
     if (
         !Number.isSafeInteger(id) ||
@@ -163,15 +288,19 @@ router.delete("/:id", async function (req, res) {
 
     try {
         const [result] = await db.query(
-            `DELETE FROM community_comment
+            `UPDATE community_comment
+             SET content = '',
+                 is_deleted = 1
              WHERE id = ?
-               AND author_id = ?`,
+               AND author_id = ?
+               AND is_deleted = 0`,
             [id, authorId]
         );
 
         if (result.affectedRows === 0) {
             return res.status(404).json({
-                message: "삭제할 댓글이 없거나 작성자가 일치하지 않습니다."
+                message:
+                    "삭제할 댓글이 없거나 이미 삭제되었거나 작성자가 일치하지 않습니다."
             });
         }
 
@@ -210,7 +339,8 @@ router.get("/mine", async function (req, res) {
              JOIN community_post p
                 ON c.post_id = p.id
              WHERE c.author_id = ?
-             ORDER BY c.created_at DESC, c.id DESC`,
+            AND c.is_deleted = 0
+            ORDER BY c.created_at DESC, c.id DESC`,
             [authorId]
         );
 

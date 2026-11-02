@@ -5,6 +5,7 @@ import { API_BASE } from "../../shared/config";
 import getLoginUser from "../woojin/getLoginUser";
 import CommunityComments from "./CommunityComments";
 import CommunityLike from "./CommunityLike";
+import { Link, useParams, useNavigate } from "react-router-dom";
 
 function Board(props) {
 
@@ -20,41 +21,99 @@ function Board(props) {
     const [searchText, setSearchText] = useState("");
     const [questionFilter, setQuestionFilter] = useState("전체");
 
-    // 현재 선택한 게시판
-    const [boardName, setBoardName] = useState(props.initialBoardName);
+    const params = useParams();
+    const navigate = useNavigate();
 
-    // 현재 화면: list(목록), form(작성), detail(상세)
-    const [screen, setScreen] = useState("list");
+    // 기본 화면은 목록
+    let screen = "list";
 
-    // 현재 선택한 게시글
-    const [selectedPost, setSelectedPost] = useState(null);
+    if (props.screen) {
+        screen = props.screen;
+    }
+
+    // 기본 게시판은 자유게시판
+    let boardName = "자유게시판";
+
+    if (params.boardCode === "question") {
+        boardName = "질문 답변";
+    } else if (params.boardCode === "info") {
+        boardName = "정보공유";
+    }
+
+    // 주소에 글 번호가 있는지 확인
+    let postId = null;
+
+    if (params.postId) {
+        postId = params.postId;
+    }
+
+    let selectedPost = null;
+
+    // 글 번호가 없는 작성 화면이면 새 글
+    if (screen === "form" && postId === null) {
+        selectedPost = {
+            id: null,
+            title: "",
+            content: "",
+            boardName: boardName
+        };
+    } else if (postId !== null) {
+        // 글 번호가 있으면 기존 글 찾기
+        for (let i = 0; i < props.posts.length; i++) {
+            const post = props.posts[i];
+
+            if (String(post.id) === String(postId)) {
+                selectedPost = post;
+                break;
+            }
+        }
+    }
+
+    // 상세보기나 수정 화면은 해당 글의 게시판 사용
+    if (selectedPost !== null) {
+        boardName = selectedPost.boardName;
+    }
+
+    // 목록과 글쓰기 주소에 사용할 게시판 코드
+    let boardCode = "free";
+
+    if (boardName === "질문 답변") {
+        boardCode = "question";
+    } else if (boardName === "정보공유") {
+        boardCode = "info";
+    }
+
+    const listAddress = "/community/board/" + boardCode;
+    const writeAddress = "/community/write/" + boardCode;
 
     // ===================================
     // 게시판 변경
     // ===================================
 
-    function showFreeBoard() {
-        setBoardName("자유게시판");
+    function changeBoard(nextBoardName) {
         setSearchText("");
         setPage(1);
-        showList();
         setQuestionFilter("전체");
+
+        if (nextBoardName === "자유게시판") {
+            navigate("/community/board/free");
+        } else if (nextBoardName === "질문 답변") {
+            navigate("/community/board/question");
+        } else if (nextBoardName === "정보공유") {
+            navigate("/community/board/info");
+        }
+    }
+
+    function showFreeBoard() {
+        changeBoard("자유게시판");
     }
 
     function showQuestionBoard() {
-        setBoardName("질문 답변");
-        setSearchText("");
-        setPage(1);
-        showList();
-        setQuestionFilter("전체");
+        changeBoard("질문 답변");
     }
 
     function showInfoBoard() {
-        setBoardName("정보공유");
-        setSearchText("");
-        setPage(1);
-        showList();
-        setQuestionFilter("전체");
+        changeBoard("정보공유");
     }
 
     function changeSearch(event) {
@@ -147,8 +206,6 @@ function Board(props) {
                 });
             });
 
-            // 현재 상세 화면에도 반영
-            setSelectedPost(updatedPost);
         } catch (error) {
             let message = "질문 상태를 변경하지 못했습니다.";
 
@@ -170,30 +227,9 @@ function Board(props) {
     // 화면 이동
     // ===================================
 
+    // 목록으로 이동
     function showList() {
-        setScreen("list");
-        setSelectedPost(null);
-    }
-
-    function showWriteForm() {
-        const emptyPost = {
-            id: null,
-            title: "",
-            content: "",
-            boardName: boardName
-        };
-
-        setSelectedPost(emptyPost);
-        setScreen("form");
-    }
-
-    function showDetail(post) {
-        setSelectedPost(post);
-        setScreen("detail");
-    }
-
-    function showEditForm() {
-        setScreen("form");
+        navigate(listAddress);
     }
 
     // ===================================
@@ -538,23 +574,18 @@ function Board(props) {
                                 createdDate = date.toLocaleDateString("ko-KR");
                             }
 
-                            function openPost() {
-                                showDetail(post);
-                            }
-
                             return (
                                 <tr key={post.id}>
                                     <td>{number}</td>
 
                                     <td className="community-board-title-cell">
                                         {renderQuestionStatus(post)}
-                                        <button
-                                            type="button"
+                                        <Link
                                             className="community-board-title-button"
-                                            onClick={openPost}
+                                            to={"/community/post/" + post.id}
                                         >
                                             {post.title}
-                                        </button>
+                                        </Link>
                                     </td>
 
                                     <td>{authorName}</td>
@@ -657,13 +688,12 @@ function Board(props) {
         if (authorId === loginId) {
             postActions = (
                 <>
-                    <button
-                        type="button"
+                    <Link
+                        to={"/community/edit/" + selectedPost.id}
                         className="community-button"
-                        onClick={showEditForm}
                     >
                         수정
-                    </button>
+                    </Link>
 
                     <button
                         type="button"
@@ -726,21 +756,38 @@ function Board(props) {
 
     let boardContent;
 
-    if (screen === "form") {
-        // 작성 또는 수정 화면
+    if (
+        (screen === "detail" || screen === "form") &&
+        selectedPost === null
+    ) {
+        boardContent = (
+            <div className="community-panel">
+                <p>게시글을 찾을 수 없습니다.</p>
+
+                <Link
+                    className="community-button"
+                    to="/community/board"
+                >
+                    목록으로
+                </Link>
+            </div>
+        );
+    } else if (screen === "form") {
+        let formKey = "new-" + boardCode;
+
+        if (selectedPost.id !== null) {
+            formKey = "edit-" + selectedPost.id;
+        }
+
         boardContent = (
             <PostForm
+                key={formKey}
                 post={selectedPost}
                 onSave={savePost}
                 onCancel={showList}
             />
         );
     } else if (screen === "detail") {
-        <h2 className="community-panel-title">
-            {selectedPost.title}
-        </h2>
-
-        { renderQuestionStatus(selectedPost) }
 
         // 상세보기 화면
         boardContent = (
@@ -749,28 +796,29 @@ function Board(props) {
                     {selectedPost.title}
                 </h2>
 
+                {renderQuestionStatus(selectedPost)}
+
                 <p className="community-post-content">
                     {selectedPost.content}
                 </p>
 
                 <CommunityLike
-                    key={selectedPost.id}
+                    key={"like-" + selectedPost.id}
                     postId={selectedPost.id}
                 />
 
                 <CommunityComments
-                    key={selectedPost.id}
+                    key={"comments-" + selectedPost.id}
                     postId={selectedPost.id}
                 />
 
                 <div className="community-actions">
-                    <button
-                        type="button"
+                    <Link
+                        to={listAddress}
                         className="community-button"
-                        onClick={showList}
                     >
                         목록
-                    </button>
+                    </Link>
 
                     {resolutionButton}
                     {postActions}
@@ -786,13 +834,12 @@ function Board(props) {
                         {boardName}
                     </h2>
 
-                    <button
-                        type="button"
+                    <Link
+                        to={writeAddress}
                         className="community-primary-button"
-                        onClick={showWriteForm}
                     >
                         글쓰기
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="lounge-search-toolbar">
