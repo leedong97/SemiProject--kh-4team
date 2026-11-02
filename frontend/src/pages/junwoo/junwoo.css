@@ -8345,3 +8345,162 @@
   border-color: #087bdf;
   color: #ffffff;
 }
+
+/* 프로젝트 목록 제목 */
+.team-shell .todo-manage-page .todo-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 15px;
+}
+
+.team-shell .todo-manage-page .todo-list-header h3 {
+  margin: 0;
+  color: #183b63;
+  font-size: 17px;
+}
+
+.team-shell .todo-manage-page .todo-list-header span {
+  color: #087bdf;
+  font-size: 13px;
+}
+
+/* 제목 아래 탭 */
+.team-shell .todo-manage-page .todo-status-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* 이슈 목록처럼 행 간격 조정 */
+.team-shell .todo-manage-page .todo-table th,
+.team-shell .todo-manage-page .todo-table td {
+  padding: 14px 12px;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+
+/* 프로젝트 제목 가운데 정렬 유지 */
+.team-shell .todo-manage-page .todo-table th:nth-child(2),
+.team-shell .todo-manage-page .todo-table td:nth-child(2) {
+  text-align: center;
+}
+
+.team-shell .todo-manage-page .todo-title-link,
+.team-shell .todo-manage-page .todo-request-title {
+  padding: 0;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* 표시 건수와 페이지 이동 */
+.team-shell .todo-manage-page .todo-list-pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-summary {
+  color: #617792;
+  font-size: 13px;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-buttons button {
+  min-width: 40px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #dce9f8;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #617792;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-buttons button:hover:not(:disabled) {
+  border-color: #a9d0ff;
+  background-color: #f0f7ff;
+  color: #087bdf;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-buttons button.active {
+  border-color: #1689ec;
+  background-color: #1689ec;
+  color: #fff;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-buttons button.active:hover {
+  border-color: #087bdf;
+  background-color: #087bdf;
+  color: #fff;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-buttons button:disabled {
+  border-color: #e4ebf4;
+  background-color: #f7f9fc;
+  color: #9aa9bc;
+  cursor: default;
+}
+
+/* 프로젝트 목록: 클라이언트 추가 및 상태 표시 */
+.team-shell .todo-manage-page .todo-table th,
+.team-shell .todo-manage-page .todo-table td {
+  padding: 14px 12px;
+  text-align: center;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+/* 번호 */
+.team-shell .todo-manage-page .todo-table th:nth-child(1) {
+  width: 7%;
+}
+
+/* 클라이언트 */
+.team-shell .todo-manage-page .todo-table th:nth-child(2) {
+  width: 17%;
+}
+
+/* 프로젝트 제목 */
+.team-shell .todo-manage-page .todo-table th:nth-child(3) {
+  width: 37%;
+}
+
+/* 작성자 */
+.team-shell .todo-manage-page .todo-table th:nth-child(4) {
+  width: 12%;
+}
+
+/* 작성일자 또는 요청일자 */
+.team-shell .todo-manage-page .todo-table th:nth-child(5) {
+  width: 17%;
+}
+
+/* 상태 */
+.team-shell .todo-manage-page .todo-table th:nth-child(6) {
+  width: 10%;
+}
+
+/* 기존 두 번째 열의 제목용 여백 초기화 */
+.team-shell .todo-manage-page .todo-table th:nth-child(2),
+.team-shell .todo-manage-page .todo-table td:nth-child(2) {
+  padding: 14px 12px;
+}
+
+/* 제목 가운데 정렬 */
+.team-shell .todo-manage-page .todo-table th:nth-child(3),
+.team-shell .todo-manage-page .todo-table td:nth-child(3),
+.team-shell .todo-manage-page .todo-title-link {
+  text-align: center;
+}

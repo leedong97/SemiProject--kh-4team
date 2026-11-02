@@ -151,11 +151,24 @@ function Todo({ todo, onAddTodo }) {
         });
     }
 
-    // 페이지네이션 (10개씩)
     const totalPages = Math.ceil(filteredTodo.length / 10);
     const currentPage = Math.min(pages, Math.max(totalPages, 1));
     const start = (currentPage - 1) * 10;
     const end = start + 10;
+
+    // 현재 페이지가 속한 페이지 번호 묶음
+    // 1~5, 6~10처럼 최대 5개씩 표시
+    const firstPageInGroup = Math.floor((currentPage - 1) / 5) * 5 + 1;
+    const lastPageInGroup = Math.min(firstPageInGroup + 4, totalPages);
+
+    const pageNumbers = [];
+
+    for (let page = firstPageInGroup; page <= lastPageInGroup; page++) {
+        pageNumbers.push(page);
+    }
+
+    // 마지막 페이지에서는 실제 전체 개수까지만 표시
+    const lastItemNumber = Math.min(end, filteredTodo.length);
 
 
     /* 프로젝트 등록 */
@@ -389,71 +402,74 @@ function Todo({ todo, onAddTodo }) {
             <section className="todo-list-section">
 
                 <div className="todo-list-header">
-                    <div className="todo-status-tabs">
-                        <button
-                            type="button"
-                            className={
-                                listTab === "프로젝트 목록"
-                                    ? "todo-status-tab active"
-                                    : "todo-status-tab"
-                            }
-                            onClick={function () {
-                                changeListTab("프로젝트 목록");
-                            }}
-                        >
-                            프로젝트 목록
-                        </button>
-
-                        <button
-                            type="button"
-                            className={
-                                listTab === "대기"
-                                    ? "todo-status-tab active"
-                                    : "todo-status-tab"
-                            }
-                            onClick={function () {
-                                changeListTab("대기");
-                            }}
-                        >
-                            대기 중
-                        </button>
-
-                        <button
-                            type="button"
-                            className={
-                                listTab === "승인"
-                                    ? "todo-status-tab active"
-                                    : "todo-status-tab"
-                            }
-                            onClick={function () {
-                                changeListTab("승인");
-                            }}
-                        >
-                            승인됨
-                        </button>
-                    </div>
+                    <h3>
+                        {listTab === "프로젝트 목록"
+                            ? "전체 프로젝트 목록"
+                            : listTab === "대기"
+                                ? "대기 중인 프로젝트"
+                                : "승인된 프로젝트"}
+                    </h3>
 
                     {!requestLoading && requestError === "" && (
                         <span>{filteredTodo.length}건</span>
                     )}
                 </div>
 
+                <div className="todo-status-tabs">
+                    <button
+                        type="button"
+                        className={
+                            listTab === "프로젝트 목록"
+                                ? "todo-status-tab active"
+                                : "todo-status-tab"
+                        }
+                        onClick={function () {
+                            changeListTab("프로젝트 목록");
+                        }}
+                    >
+                        프로젝트 목록
+                    </button>
+
+                    <button
+                        type="button"
+                        className={
+                            listTab === "대기"
+                                ? "todo-status-tab active"
+                                : "todo-status-tab"
+                        }
+                        onClick={function () {
+                            changeListTab("대기");
+                        }}
+                    >
+                        대기 중
+                    </button>
+
+                    <button
+                        type="button"
+                        className={
+                            listTab === "승인"
+                                ? "todo-status-tab active"
+                                : "todo-status-tab"
+                        }
+                        onClick={function () {
+                            changeListTab("승인");
+                        }}
+                    >
+                        승인됨
+                    </button>
+                </div>
+
                 <table className="todo-table">
                     <thead>
                         <tr>
                             <th scope="col">번호</th>
+                            <th scope="col">클라이언트</th>
                             <th scope="col">프로젝트 제목</th>
                             <th scope="col">작성자</th>
                             <th scope="col">
-                                {listTab === "프로젝트 목록"
-                                    ? "작성일자"
-                                    : "요청일자"}
+                                {listTab === "프로젝트 목록" ? "작성일자" : "요청일자"}
                             </th>
-                            <th scope="col">
-                                {listTab === "프로젝트 목록"
-                                    ? "조회수"
-                                    : "상태"}
-                            </th>
+                            <th scope="col">상태</th>
                         </tr>
                     </thead>
 
@@ -523,6 +539,8 @@ function Todo({ todo, onAddTodo }) {
                                     <tr key={rowKey}>
                                         <td>{start + index + 1}</td>
 
+                                        <td>{item.customerName || "-"}</td>
+
                                         <td>{titleContent}</td>
 
                                         <td>{item.author}</td>
@@ -531,7 +549,7 @@ function Todo({ todo, onAddTodo }) {
 
                                         <td>
                                             {listTab === "프로젝트 목록" ? (
-                                                item.views ?? 0
+                                                item.status || "-"
                                             ) : (
                                                 <span className={statusClass}>
                                                     {item.requestStatus}
@@ -545,25 +563,53 @@ function Todo({ todo, onAddTodo }) {
                     </tbody>
                 </table>
 
-                {/* 페이지 번호 */}
-                {!requestLoading && requestError === "" && totalPages > 1 && (
-                    <div className="todo-pages">
+                {/* 표시 건수와 페이지 이동 */}
+                {!requestLoading &&
+                    requestError === "" &&
+                    filteredTodo.length > 0 && (
+                        <nav className="todo-list-pagination">
+                            <span className="todo-list-pagination-summary">
+                                전체 {filteredTodo.length}건 중 {start + 1}–{lastItemNumber}건
+                            </span>
 
-                        {Array.from(
-                            { length: totalPages },
-                            (_, i) => i + 1
-                        ).map((num) => (
-                            <button
-                                key={num}
-                                className={currentPage === num ? "active" : ""}
-                                onClick={() => setPages(num)}
-                            >
-                                {num}
-                            </button>
-                        ))}
+                            <div className="todo-list-pagination-buttons">
+                                <button
+                                    type="button"
+                                    disabled={currentPage === 1}
+                                    onClick={function () {
+                                        setPages(currentPage - 1);
+                                    }}
+                                >
+                                    이전
+                                </button>
 
-                    </div>
-                )}
+                                {pageNumbers.map(function (page) {
+                                    return (
+                                        <button
+                                            type="button"
+                                            key={page}
+                                            className={currentPage === page ? "active" : ""}
+                                            onClick={function () {
+                                                setPages(page);
+                                            }}
+                                        >
+                                            {page}
+                                        </button>
+                                    );
+                                })}
+
+                                <button
+                                    type="button"
+                                    disabled={currentPage === totalPages}
+                                    onClick={function () {
+                                        setPages(currentPage + 1);
+                                    }}
+                                >
+                                    다음
+                                </button>
+                            </div>
+                        </nav>
+                    )}
 
             </section>
 

@@ -55,7 +55,8 @@ router.get("/", async function (req, res) {
                     '%Y.%m.%d'
                 ) AS endDate,
 
-                p.project_id AS approvedProjectId
+                p.project_id AS approvedProjectId,
+                c.customer_name AS customerName
 
              FROM project_requests r
 
@@ -64,6 +65,9 @@ router.get("/", async function (req, res) {
 
              LEFT JOIN projects p
                 ON r.approved_project_id = p.project_id
+
+             LEFT JOIN customers c
+                ON p.customer_id = c.customer_id
 
              WHERE r.request_status = ?
 
