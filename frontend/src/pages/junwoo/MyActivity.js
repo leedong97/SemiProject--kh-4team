@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import MyComments from "./MyComments";
+import MyBookmarks from "./MyBookmarks";
 import { Link } from "react-router-dom";
 import ActivitySummary from "./ActivitySummary";
 import "./MyActivity.css";
@@ -108,11 +109,14 @@ function MyActivity(props) {
 
     let postsClass = "community-tab-button";
     let commentsClass = "community-tab-button";
+    let bookmarksClass = "community-tab-button";
 
     if (activity === "내가 작성한 글") {
         postsClass += " community-tab-selected";
-    } else {
+    } else if (activity === "내가 작성한 댓글") {
         commentsClass += " community-tab-selected";
+    } else if (activity === "저장한 글") {
+        bookmarksClass += " community-tab-selected";
     }
 
     // ===================================
@@ -187,6 +191,13 @@ function MyActivity(props) {
     } else if (activity === "내가 작성한 댓글") {
         activityContent = (
             <MyComments loginUser={loginUser} />
+        );
+    } else if (activity === "저장한 글") {
+        activityContent = (
+            <MyBookmarks
+                key={String(loginUser.id)}
+                loginUser={loginUser}
+            />
         );
     } else if (myPosts.length === 0) {
         activityContent = (
@@ -290,6 +301,14 @@ function MyActivity(props) {
                 >
                     <span aria-hidden="true">💬 </span>
                     내가 작성한 댓글
+                </Link>
+
+                <Link
+                    to="/community/activity/bookmarks"
+                    className={bookmarksClass}
+                >
+                    <span aria-hidden="true">★ </span>
+                    저장한 글
                 </Link>
             </div>
 

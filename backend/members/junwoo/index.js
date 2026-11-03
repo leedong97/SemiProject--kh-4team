@@ -27,6 +27,10 @@ module.exports = {
     {
       prefix: "/api/community-likes",
       router: require("./communityLikes")
+    },
+    {
+      prefix: "/api/community-bookmarks",
+      router: require("./communityBookmarks")
     }
   ]
 };

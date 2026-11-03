@@ -5,6 +5,7 @@ import { API_BASE } from "../../shared/config";
 import getLoginUser from "../woojin/getLoginUser";
 import CommunityComments from "./CommunityComments";
 import CommunityLike from "./CommunityLike";
+import CommunityBookmark from "./CommunityBookmark";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import BoardBanner from "./BoardBanner";
 
@@ -854,6 +855,11 @@ function Board(props) {
 
                 <CommunityLike
                     key={"like-" + selectedPost.id}
+                    postId={selectedPost.id}
+                />
+
+                <CommunityBookmark
+                    key={"bookmark-" + selectedPost.id}
                     postId={selectedPost.id}
                 />
 
