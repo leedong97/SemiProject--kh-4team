@@ -8,7 +8,7 @@ const router = express.Router();
 //비밀번호를 되돌릴 수 없는 암호문(해시)로 바꾼다
 const bcrypt = require("bcryptjs");
 // 공용 DB 풀 (한 단계 위 폴더 woojin/db.js)
-const pool = require("../db");
+const pool = require("../../db");
 
 // POST 방식으로 /api/login 요청이 오면 ()안의 함수를 실행한다.
 // async: 함수 안에서 await(DB 결과 기다리기)를 쓰겠다는 선언.

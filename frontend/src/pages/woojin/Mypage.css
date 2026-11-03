@@ -1009,3 +1009,140 @@
     gap: 6px;
   }
 }
+
+/* ---------- 알림 탭 ---------- */
+.mp-noti-count {
+  margin-left: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #e4eaf9;
+  color: #245fe6;
+  font-size: 13px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.mp-noti {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  background: #f4f6fb;
+  border: 1px solid #eceff6;
+  border-radius: 10px;
+  color: #6b7387;                 /* 읽은 알림은 살짝 흐리게 */
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.mp-noti:hover {
+  background: #e4eaf9;
+  border-color: #cfd9f3;
+}
+
+/* 안 읽은 알림: 연한 파란 배경 + 왼쪽 파란 줄 + 진한 글자 */
+.mp-noti.unread {
+  background: #eef3ff;
+  border-color: #cfdcfb;
+  border-left: 4px solid #3b78f0;
+  color: #303748;
+}
+
+.mp-noti-icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #dae0ed;
+  font-size: 18px;
+}
+
+.mp-noti-body {
+  flex: 1;
+  min-width: 0;                   /* 긴 글이 칸 밖으로 안 튀어나가게 */
+}
+
+.mp-noti-msg {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.mp-noti.unread .mp-noti-msg {
+  font-weight: 600;
+}
+
+.mp-noti-time {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #808696;
+}
+
+.mp-noti-dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3b78f0;
+}
+/* 화면이 좁을 때 탭 6개를 3개씩 2줄로 */
+@media (max-width: 640px) {
+  .mp-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* 알림: 안 읽은 알림은 눌러서 읽음 처리, 모두 읽음 버튼 */
+.mp-noti.unread {
+  cursor: pointer;
+}
+
+.mp-noti-readall {
+  margin-left: 10px;
+  padding: 3px 10px;
+  background: white;
+  border: 1px solid #dae0ed;
+  border-radius: 6px;
+  color: #4d566c;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.mp-noti-readall:hover {
+  background: #e4eaf9;
+  color: #245fe6;
+}
+
+
+/* 내가 담당하는 프로젝트 카드 + 직원 평가 바로가기 */
+.mp-managed {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mp-eval-link {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid #bed3ff;
+  border-radius: 8px;
+  background: #eaf4ff;
+  color: #087bdf;
+  font-size: 13px;
+  font-weight: bold;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.mp-eval-link:hover {
+  border-color: #087bdf;
+  background: #dcecff;
+}

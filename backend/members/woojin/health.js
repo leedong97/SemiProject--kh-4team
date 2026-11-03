@@ -3,7 +3,7 @@ const express = require("express");
 // express.Router(): "작은 app". server.js 의 app 처럼 get/post/put/delete 를 붙일 수 있고,
 // 마지막에 module.exports 로 내보내면 woojin/index.js 가 받아서 주소 앞부분(/api/...)을 붙여 준다.
 const router = express.Router();
-const pool = require("../db");
+const pool = require("../../db");
 
 // GET 방식으로 /api/health 요청이 오면 실행되는 서버 상태 확인용 주소.
 // async: 함수 안에서 await(DB 결과 기다리기)를 쓰겠다는 선언.

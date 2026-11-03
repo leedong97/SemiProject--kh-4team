@@ -551,3 +551,18 @@ body:has(.team-shell) {
 .team-shell>.community-menu.active h3 {
   color: #2154c3;
 }
+
+/* 이름 옆 안 읽은 알림 수 배지 (우진: 마이페이지 알림 탭과 같은 데이터) */
+.team-shell .noti-badge {
+  display: inline-block;
+  min-width: 18px;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: #e5484d;
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 18px;
+  text-align: center;
+}

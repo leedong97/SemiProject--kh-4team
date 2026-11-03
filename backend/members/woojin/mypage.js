@@ -5,7 +5,7 @@ const express = require("express");
 // express.Router(): "작은 app". server.js 의 app 처럼 get/post/put/delete 를 붙일 수 있고,
 // 마지막에 module.exports 로 내보내면 woojin/index.js 가 받아서 주소 앞부분(/api/...)을 붙여 준다.
 const router = express.Router();
-const pool = require("../db");
+const pool = require("../../db");
 
 // ===== 휴가 이력 조회 =====
 // GET 방식으로 /api/leaves 요청이 오면 한 직원의 휴가 신청 목록을 돌려준다. (주소의 ?employeeId=1을 req.query로 읽는다)
@@ -65,6 +65,30 @@ router.get("/my-projects", async (req, res) => {
         res.json({ ok: true, projects: rows.map((r) => ({ ...r, role: r.role ?? "참여" })) });
     } catch (err) {
         console.error("내 프로젝트 조회 오류:", err.code, err.message);
+        res.status(500).json({ ok: false, message: "서버 오류가 났어요." });
+    }
+});
+
+// 내가 "담당자(책임자)"인 프로젝트 목록 (마이페이지 "내 업무" 탭의 직원 평가 바로가기에 쓴다)
+// 주소 예: /api/my-managed-projects?employeeId=21
+// 담당자 기준: projects.manager_id = 내 직원번호.
+// (참여자 명단 project_members 와는 별개라서 따로 조회한다. 담당자가 명단에 없을 수도 있어서다.)
+router.get("/my-managed-projects", async (req, res) => {
+    const employeeId = Number(req.query.employeeId);
+    if (!Number.isInteger(employeeId) || employeeId <= 0) {
+        return res.status(400).json({ ok: false, message: "employeeId 가 필요해요." });
+    }
+    try {
+        const [rows] = await pool.query(
+            "SELECT project_id AS id, project_title AS name, status, project_progress AS progress, " +
+            "DATE_FORMAT(start_date, '%Y-%m-%d') AS `start`, DATE_FORMAT(end_date, '%Y-%m-%d') AS `end` " +
+            "FROM projects WHERE manager_id = ? " +
+            "ORDER BY start_date, project_id",
+            [employeeId]
+        );
+        res.json({ ok: true, projects: rows });
+    } catch (err) {
+        console.error("담당 프로젝트 조회 오류:", err.code, err.message);
         res.status(500).json({ ok: false, message: "서버 오류가 났어요." });
     }
 });

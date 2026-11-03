@@ -3,7 +3,8 @@ const express = require("express");
 // express.Router(): "작은 app". server.js 의 app 처럼 get/post/put/delete 를 붙일 수 있고,
 // 마지막에 module.exports 로 내보내면 woojin/index.js 가 받아서 주소 앞부분(/api/...)을 붙여 준다.
 const router = express.Router();
-const pool = require("../db");
+const bcrypt = require("bcryptjs");
+const pool = require("../../db");
 
 //노멀라이즈 폰 정규식을 이용해 휴대폰 번호의 규칙을 정한다
 function normalizePhone(input) {
@@ -109,6 +110,66 @@ router.put("/", async (req, res) => {
         // 서버 터미널에 "연락처 저장 오류:"와 에러 코드·메시지를 찍는다 (개발자용 상세 원인)
         console.error("연락처 저장 오류:", err.code, err.message);
         // 500(서버 문제) + ok: false + 일반 안내 문구를 JSON으로 응답한다 (상세 원인은 사용자에게 숨김)
+        res.status(500).json({ ok: false, message: "서버 오류가 났어요." });
+    }
+});
+
+// ===== 비밀번호 변경 (PUT /api/profile/password) =====
+// 새 비밀번호 최소 글자 수 (화면 Mypage.js 의 MIN_PW_LENGTH 와 같게 맞춘다)
+const MIN_PW_LENGTH = 8;
+// bcrypt 는 앞 72바이트만 쓰므로 그보다 긴 비밀번호는 막는다 (회원가입과 같은 기준)
+const MAX_PW_BYTES = 72;
+
+router.put("/password", async (req, res) => {
+    // 비밀번호는 주소(URL)에 남지 않게 몸통(body)으로 받는다
+
+    //숫자로 변환한 아이디를 임플로이아디에 담고 
+    const employeeId = Number(req.body.employeeId);
+    //currentPassword 에 문자열 cur...Password 담는데 널이거나 언디파인드이면 ""을 담는다
+    const currentPassword = String(req.body.currentPassword ?? "");
+    //위와 같다
+    const newPassword = String(req.body.newPassword ?? "");
+
+    //숫자로 변환 받은 아이디가 정수가 아니거나 0이하라면
+    if (!Number.isInteger(employeeId) || employeeId <= 0) {
+        return res.status(400).json({ ok: false, message: "employeeId 가 필요해요." });
+    }
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({ ok: false, message: "현재 비밀번호와 새 비밀번호를 입력해 주세요." });
+    }
+    if (newPassword.length < MIN_PW_LENGTH) {
+        return res.status(400).json({ ok: false, message: `새 비밀번호는 ${MIN_PW_LENGTH}자 이상이어야 해요.` });
+    }
+    if (Buffer.byteLength(newPassword, "utf8") > MAX_PW_BYTES) {
+        return res.status(400).json({ ok: false, message: "새 비밀번호가 너무 길어요." });
+    }
+    if (newPassword === currentPassword) {
+        return res.status(400).json({ ok: false, message: "현재 비밀번호와 다른 비밀번호를 써 주세요." });
+    }
+
+    try {
+        // 1) 현재 저장된 비밀번호(해시)를 가져온다
+        const [rows] = await pool.query(
+            "SELECT employee_pw FROM employees WHERE employee_id = ?",
+            [employeeId]
+        );
+        if (rows.length === 0) {
+            return res.status(404).json({ ok: false, message: "직원을 찾을 수 없어요." });
+        }
+        // 2) 입력한 현재 비밀번호가 맞는지 bcrypt 로 비교한다 (해시는 되돌릴 수 없어서 compare 를 쓴다)
+        const same = await bcrypt.compare(currentPassword, rows[0].employee_pw);
+        if (!same) {
+            return res.status(401).json({ ok: false, message: "현재 비밀번호가 맞지 않아요." });
+        }
+        // 3) 새 비밀번호를 암호화(해시)해서 DB 에 저장한다. 10 = 연산 강도(cost)
+        const hash = await bcrypt.hash(newPassword, 10);
+        await pool.query(
+            "UPDATE employees SET employee_pw = ? WHERE employee_id = ?",
+            [hash, employeeId]
+        );
+        res.json({ ok: true });
+    } catch (err) {
+        console.error("비밀번호 변경 오류:", err.code, err.message);
         res.status(500).json({ ok: false, message: "서버 오류가 났어요." });
     }
 });
