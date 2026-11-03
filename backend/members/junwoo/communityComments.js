@@ -1,5 +1,6 @@
 const express = require("express");
 const db = require("../../db");
+const { createNotification } = require("../../notify");
 
 const router = express.Router();
 
@@ -105,7 +106,7 @@ router.post("/", async function (req, res) {
     try {
         // 게시글 확인
         const [posts] = await db.query(
-            `SELECT id
+            `SELECT id, title, author_id
              FROM community_post
              WHERE id = ?`,
             [postId]
@@ -119,7 +120,7 @@ router.post("/", async function (req, res) {
 
         // 작성자 확인
         const [employees] = await db.query(
-            `SELECT employee_id
+            `SELECT employee_id, employee_name
              FROM employees
              WHERE employee_id = ?
                AND employee_status = '재직'`,
@@ -133,9 +134,11 @@ router.post("/", async function (req, res) {
         }
 
         // 답글이면 원래 댓글 확인
+        let parentAuthorId = null;
+
         if (parentId !== null) {
             const [parents] = await db.query(
-                `SELECT id, parent_id
+                `SELECT id, parent_id, author_id
                  FROM community_comment
                  WHERE id = ?
                    AND post_id = ?`,
@@ -154,6 +157,8 @@ router.post("/", async function (req, res) {
                     message: "답글에는 다시 답글을 작성할 수 없습니다."
                 });
             }
+
+            parentAuthorId = parents[0].author_id;
         }
 
         // 일반 댓글과 답글 모두 같은 테이블에 저장
@@ -172,6 +177,36 @@ router.post("/", async function (req, res) {
                 parentId
             ]
         );
+
+        // 알림: 답글이면 원래 댓글 쓴 사람에게, 글쓴이에게도 보낸다 (본인 제외, 같은 사람에게 중복 없음)
+        const post = posts[0];
+        const writerName = employees[0].employee_name;
+        const link = "/community/post/" + postId;
+        const alreadyNotified = String(authorId);
+
+        if (
+            parentAuthorId !== null &&
+            String(parentAuthorId) !== String(authorId)
+        ) {
+            await createNotification(
+                parentAuthorId,
+                "커뮤니티",
+                writerName + "님이 내 댓글에 답글을 남겼어요.",
+                link
+            );
+        }
+
+        if (
+            String(post.author_id) !== alreadyNotified &&
+            String(post.author_id) !== String(parentAuthorId)
+        ) {
+            await createNotification(
+                post.author_id,
+                "커뮤니티",
+                writerName + "님이 내 글 \"" + post.title + "\"에 댓글을 남겼어요.",
+                link
+            );
+        }
 
         res.status(201).json({
             message:

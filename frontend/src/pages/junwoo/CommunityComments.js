@@ -26,6 +26,7 @@ function CommunityComments(props) {
     const savingRef = useRef(false);
     const loginUser = getLoginUser();
     const postId = props.postId;
+    const onCountChange = props.onCountChange;
 
     const isLoggedIn =
         !loginUser.isDummy && loginUser.id != null;
@@ -52,7 +53,19 @@ function CommunityComments(props) {
                 );
 
                 if (!cancelled) {
-                    setComments(response.data);
+                    const loadedComments = response.data;
+
+                    setComments(loadedComments);
+
+                    // 삭제되지 않은 댓글·답글 개수
+                    const count = loadedComments.filter(function (comment) {
+                        return Number(comment.isDeleted) === 0;
+                    }).length;
+
+                    // 게시판 목록에도 개수 전달
+                    if (onCountChange) {
+                        onCountChange(postId, count);
+                    }
                 }
             } catch (error) {
                 if (!cancelled) {
@@ -70,7 +83,7 @@ function CommunityComments(props) {
         return function () {
             cancelled = true;
         };
-    }, [postId, reloadCount]);
+    }, [postId, reloadCount, onCountChange]);
 
     function reloadComments() {
         setReloadCount(function (previousCount) {

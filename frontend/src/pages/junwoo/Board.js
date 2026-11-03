@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import PostForm from "./PostForm";
 import axios from "axios";
 import { API_BASE } from "../../shared/config";
@@ -12,8 +12,34 @@ function Board(props) {
 
     const currentUser = getLoginUser();
 
+    const setPosts = props.setPosts;
+
+    // 해당 게시글의 댓글 수를 목록에도 반영
+    const updateCommentCount = useCallback(function (postId, count) {
+        setPosts(function (previousPosts) {
+            return previousPosts.map(function (post) {
+                if (String(post.id) !== String(postId)) {
+                    return post;
+                }
+
+                // 개수가 같으면 기존 데이터 유지
+                if (Number(post.commentCount) === count) {
+                    return post;
+                }
+
+                return {
+                    ...post,
+                    commentCount: count
+                }
+            })
+        })
+    }, [setPosts]);
+
     // 중복 등록 방지
     const savingRef = useRef(false);
+
+    // 화면에 표시할 저장 상태
+    const [isSaving, setIsSaving] = useState(false);
 
     // 페이지네이션 기능
     const [page, setPage] = useState(1);
@@ -200,7 +226,10 @@ function Board(props) {
             props.setPosts(function (previousPosts) {
                 return previousPosts.map(function (post) {
                     if (String(post.id) === String(updatedPost.id)) {
-                        return updatedPost;
+                        return {
+                            ...post,
+                            ...updatedPost
+                        };
                     }
 
                     return post;
@@ -261,6 +290,7 @@ function Board(props) {
         }
 
         savingRef.current = true;
+        setIsSaving(true);
 
         try {
             let response;
@@ -302,7 +332,10 @@ function Board(props) {
 
                 return previousPosts.map(function (post) {
                     if (String(post.id) === String(savedPost.id)) {
-                        return savedPost;
+                        return {
+                            ...post,
+                            ...savedPost
+                        };
                     }
 
                     return post;
@@ -330,6 +363,7 @@ function Board(props) {
             alert(message);
         } finally {
             savingRef.current = false;
+            setIsSaving(false);
         }
     }
 
@@ -586,6 +620,12 @@ function Board(props) {
                                             to={"/community/post/" + post.id}
                                         >
                                             {post.title}
+
+                                            {Number(post.commentCount) > 0 && (
+                                                <span aria-label={`댓글 ${post.commentCount}개`}>
+                                                    {" "} [{post.commentCount}]
+                                                </span>
+                                            )}
                                         </Link>
                                     </td>
 
@@ -794,6 +834,7 @@ function Board(props) {
                 post={selectedPost}
                 onSave={savePost}
                 onCancel={showList}
+                isSaving={isSaving}
             />
         );
     } else if (screen === "detail") {
@@ -819,6 +860,7 @@ function Board(props) {
                 <CommunityComments
                     key={"comments-" + selectedPost.id}
                     postId={selectedPost.id}
+                    onCountChange={updateCommentCount}
                 />
 
                 <div className="community-actions">
