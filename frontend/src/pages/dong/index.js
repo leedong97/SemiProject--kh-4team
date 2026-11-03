@@ -14,8 +14,8 @@ function IssueDetailRoute() {
   return <Issue_detail projects={projects} issues={issues} />;
 }
 function IssueRequestRoute() {
-  const { projects, setIssues } = useDong();
-  return <IssueRequest projects={projects} setIssues={setIssues} />;
+  const { setIssues } = useDong();
+  return <IssueRequest setIssues={setIssues} />;
 }
 
 export const Provider = DongProvider;

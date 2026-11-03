@@ -1,5 +1,5 @@
-
 import React, { useState } from "react";
+import getLoginUser from "../../woojin/getLoginUser";
 import "./EmployeeEvaluation.css";
 
 function EmployeeEvaluation({ data, changeData, currentUser }) {
@@ -11,6 +11,7 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
     const employees = data?.employees || [];
     const projects = data?.projects || [];
     const issues = data?.issues || [];
+    const projectMembers = data?.projectMembers || data?.project_members || [];
 
     // changeData가 없을 때 브라우저에 평가 저장
     const [savedEvaluations, setSavedEvaluations] = useState(function () {
@@ -33,12 +34,12 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
     // 2. 로그인 직원 및 평가 권한
     // ==========================================
 
-    const [testUserId, setTestUserId] = useState("");
-
-    const loginId = testUserId || currentUser?.id;
+    // 로그인한 직원만 평가자로 사용합니다. 화면에서 임의 계정 변경은 허용하지 않습니다.
+    const signedInUser = currentUser || getLoginUser();
+    const loginId = signedInUser?.id || signedInUser?.employee_id;
 
     const loginEmployee = employees.find(function (employee) {
-        return String(employee.id) === String(loginId);
+        return String(employee.id ?? employee.employee_id) === String(loginId);
     });
 
     function canEvaluateEmployee(employee) {
@@ -54,12 +55,48 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
         ];
 
         return (
-            managerRanks.includes(employee.rank || employee.position) ||
-            employee.department === "인사팀"
+            managerRanks.includes(employee.rank || employee.position || employee.employee_grade) ||
+            employee.department === "인사팀" || employee.employee_department === "인사팀"
         );
     }
 
     const canEvaluate = canEvaluateEmployee(loginEmployee);
+
+    // 프로젝트 담당 PM만 해당 프로젝트의 팀원을 평가할 수 있습니다.
+    // 프로젝트 데이터가 없는 경우에도 임의 평가를 허용하지 않습니다.
+    function isProjectManager(project) {
+        return String(project.managerId ?? project.manager_id) === String(loginEmployee?.id);
+    }
+
+    function isProjectMember(project, employeeId) {
+        const members = project.memberIds || project.member_ids || [];
+        const inProject = members.some(function (member) {
+            return String(typeof member === "object" ? (member.employeeId ?? member.employee_id ?? member.id) : member) === String(employeeId);
+        });
+        const inTable = projectMembers.some(function (member) {
+            return String(member.projectId ?? member.project_id) === String(project.id ?? project.project_id) &&
+                String(member.employeeId ?? member.employee_id) === String(employeeId);
+        });
+        return inProject || inTable;
+    }
+
+    function canEvaluateTarget(employeeId) {
+        if (!canEvaluate || !loginEmployee || String(employeeId) === String(loginEmployee.id)) return false;
+        return projects.some(function (project) {
+            return isProjectManager(project) && isProjectMember(project, employeeId);
+        });
+    }
+
+    // 기존 5점 척도 기록도 화면에서는 백분율로 표시합니다.
+    function scorePercent(score) {
+        const value = Number(score) || 0;
+        return value <= 5 ? Math.round(value * 20 * 10) / 10 : value;
+    }
+
+    // 평가 이력은 평가 객체에 배열로 보관합니다.
+    function makeHistory(action) {
+        return { action: action, employeeId: loginEmployee?.id, at: new Date().toISOString() };
+    }
 
     // ==========================================
     // 3. 화면 상태
@@ -77,10 +114,10 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
     // ==========================================
 
     const [period, setPeriod] = useState("2026년 4분기");
-    const [projectScore, setProjectScore] = useState("3");
-    const [issueScore, setIssueScore] = useState("3");
-    const [teamworkScore, setTeamworkScore] = useState("3");
-    const [scheduleScore, setScheduleScore] = useState("3");
+    const [projectScore, setProjectScore] = useState("60");
+    const [issueScore, setIssueScore] = useState("60");
+    const [teamworkScore, setTeamworkScore] = useState("60");
+    const [scheduleScore, setScheduleScore] = useState("60");
     const [feedback, setFeedback] = useState("");
 
     // ==========================================
@@ -100,16 +137,11 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
         return employee.name || employee.employee_name || "이름 없음";
     }
 
-    // 네 가지 평가 점수의 평균 계산
+    // 평가 항목별 가중치: 프로젝트 35%, 이슈 30%, 협업 20%, 일정 15%
     function calculateScore() {
-
-        const total =
-            Number(projectScore) +
-            Number(issueScore) +
-            Number(teamworkScore) +
-            Number(scheduleScore);
-
-        return Number((total / 4).toFixed(2));
+        const total = Number(projectScore) * 0.35 + Number(issueScore) * 0.30 +
+            Number(teamworkScore) * 0.20 + Number(scheduleScore) * 0.15;
+        return Number(total.toFixed(1));
     }
 
     // ==========================================
@@ -292,10 +324,10 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
         setEditingId(null);
         setSelectedEmployeeId("");
         setPeriod("2026년 4분기");
-        setProjectScore("3");
-        setIssueScore("3");
-        setTeamworkScore("3");
-        setScheduleScore("3");
+        setProjectScore("60");
+        setIssueScore("60");
+        setTeamworkScore("60");
+        setScheduleScore("60");
         setFeedback("");
         setShowForm(false);
     }
@@ -338,13 +370,14 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
             return;
         }
 
+        if (!canEvaluateTarget(evaluation.employeeId)) { alert("해당 프로젝트 팀원만 평가할 수 있습니다."); return; }
         setEditingId(evaluation.id);
         setSelectedEmployeeId(String(evaluation.employeeId));
         setPeriod(evaluation.period);
-        setProjectScore(String(evaluation.projectScore));
-        setIssueScore(String(evaluation.issueScore));
-        setTeamworkScore(String(evaluation.teamworkScore));
-        setScheduleScore(String(evaluation.scheduleScore));
+        setProjectScore(String(scorePercent(evaluation.projectScore)));
+        setIssueScore(String(scorePercent(evaluation.issueScore)));
+        setTeamworkScore(String(scorePercent(evaluation.teamworkScore)));
+        setScheduleScore(String(scorePercent(evaluation.scheduleScore)));
         setFeedback(evaluation.feedback || "");
         setShowForm(true);
     }
@@ -366,6 +399,10 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
             alert("평가 대상 직원을 선택하세요.");
             return;
         }
+
+        if (!canEvaluateTarget(selectedEmployeeId)) { alert("본인이 PM인 프로젝트의 팀원만 평가할 수 있습니다."); return; }
+
+        if ([projectScore, issueScore, teamworkScore, scheduleScore].some(function (score) { return !Number.isFinite(Number(score)) || Number(score) < 0 || Number(score) > 100; })) { alert("점수는 0~100 사이로 입력하세요."); return; }
 
         if (!period.trim() || !feedback.trim()) {
             alert("평가 기간과 의견을 입력하세요.");
@@ -426,7 +463,8 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
                         score: calculateScore(),
                         feedback: feedback.trim(),
                         status: "초안",
-                        rejectReason: ""
+                        rejectReason: "",
+                        history: [...(item.history || []), makeHistory("평가 수정")]
                     };
                 }
 
@@ -452,7 +490,8 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
                 score: calculateScore(),
                 feedback: feedback.trim(),
                 status: "초안",
-                rejectReason: ""
+                rejectReason: "",
+                history: [makeHistory("평가 등록")]
             };
 
             saveEvaluations([
@@ -489,6 +528,7 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
             String(loginEmployee.id);
 
         if (newStatus === "승인 요청") {
+            if (!canEvaluateTarget(evaluation.employeeId)) { alert("현재 담당 프로젝트 팀원만 승인 요청할 수 있습니다."); return; }
 
             if (!isWriter || evaluation.status !== "초안") {
                 alert("평가 작성자만 승인 요청할 수 있습니다.");
@@ -533,7 +573,8 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
                 return {
                     ...item,
                     status: newStatus,
-                    rejectReason: reason
+                    rejectReason: reason,
+                    history: [...(item.history || []), makeHistory(newStatus)]
                 };
             }
 
@@ -579,47 +620,25 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
                 )}
             </div>
 
-            {/* 테스트용 직원 선택 */}
+            {/* 실제 로그인 계정 표시 (임의 계정 선택 제거) */}
             <div className="ev-test-bar">
-
                 <div>
-                    <strong>현재 직원</strong>
-                    <p>프론트엔드 권한 테스트</p>
+                    <strong>현재 로그인 직원</strong>
+                    <p>{loginEmployee ? employeeName(loginId) : "로그인 직원 정보가 없습니다."}</p>
                 </div>
-
-                <select
-                    value={testUserId}
-                    onChange={function (event) {
-                        setTestUserId(event.target.value);
-                        setChartEmployeeId("");
-                        resetForm();
-                    }}
-                >
-                    <option value="">기존 로그인 직원</option>
-
-                    {employees.map(function (employee) {
-
-                        return (
-                            <option
-                                key={employee.id}
-                                value={employee.id}
-                            >
-                                {employeeName(employee.id)}
-                                {" / "}
-                                {employee.rank || employee.position || "직급 없음"}
-                            </option>
-                        );
-                    })}
-                </select>
-
-                <span className={
-                    canEvaluate
-                        ? "ev-permission allowed"
-                        : "ev-permission denied"
-                }>
+                <span className={canEvaluate ? "ev-permission allowed" : "ev-permission denied"}>
                     {canEvaluate ? "평가 권한 있음" : "평가 권한 없음"}
                 </span>
             </div>
+
+            {/* 평가 근거: 실제 데이터 건수이며 자동 점수는 아닙니다. */}
+            {selectedEmployeeId && (
+                <div className="ev-evidence-panel">
+                    <h3>평가 근거 · 업무 기록</h3>
+                    <p>참여 프로젝트 {getProjectCount(selectedEmployeeId)}개 · 완료 이슈 {getIssueCount(selectedEmployeeId)}건</p>
+                    <small>업무 건수는 참고 지표이며 평가 점수는 평가자가 직접 입력합니다.</small>
+                </div>
+            )}
 
             {/* 평가 현황 */}
             <div className="ev-stats">
@@ -827,8 +846,8 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
                                 <span>종합 평가 점수</span>
                                 <strong>
                                     {chartEvaluation
-                                        ? chartEvaluation.score
-                                        : "-"} / 5
+                                        ? scorePercent(chartEvaluation.score)
+                                        : "-"} / 100
                                 </strong>
                             </div>
                         </div>
@@ -852,9 +871,7 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
 
                                 {scoreItems.map(function (item) {
 
-                                    const score = Number(
-                                        chartEvaluation[item.key] || 0
-                                    );
+                                    const score = scorePercent(chartEvaluation[item.key]);
 
                                     return (
                                         <div
@@ -870,14 +887,14 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
                                                 <div
                                                     className="ev-chart-fill"
                                                     style={{
-                                                        width: (score / 5 * 100) + "%"
+                                                        width: score + "%"
                                                     }}
                                                 />
 
                                             </div>
 
                                             <strong>
-                                                {score} / 5
+                                                {score} / 100
                                             </strong>
                                         </div>
                                     );
@@ -943,10 +960,7 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
 
                                 {employees
                                     .filter(function (employee) {
-                                        return (
-                                            String(employee.id) !==
-                                            String(loginEmployee?.id)
-                                        );
+                                        return canEvaluateTarget(employee.id);
                                     })
                                     .map(function (employee) {
 
@@ -1011,16 +1025,8 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
                                             item.setter(event.target.value);
                                         }}
                                     >
-                                        {[1, 2, 3, 4, 5].map(function (score) {
-
-                                            return (
-                                                <option
-                                                    key={score}
-                                                    value={score}
-                                                >
-                                                    {score}점
-                                                </option>
-                                            );
+                                        {Array.from({ length: 21 }, function (_, index) { return index * 5; }).map(function (score) {
+                                            return <option key={score} value={score}>{score}점</option>;
                                         })}
                                     </select>
                                 </label>
@@ -1032,7 +1038,7 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
                         <span>종합 평가 점수</span>
 
                         <strong>
-                            {calculateScore().toFixed(2)} / 5
+                            {calculateScore().toFixed(1)} / 100
                         </strong>
                     </div>
 
@@ -1109,7 +1115,7 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
                                 String(loginEmployee?.id);
 
                             const canEdit =
-                                isWriter &&
+                                canEvaluateTarget(evaluation.employeeId) && isWriter &&
                                 (
                                     evaluation.status === "초안" ||
                                     evaluation.status === "반려"
@@ -1149,7 +1155,7 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
                                     <div className="ev-review-score">
 
                                         <strong>
-                                            {evaluation.score} / 5
+                                            {scorePercent(evaluation.score)} / 100
                                         </strong>
 
                                         <span>
@@ -1164,6 +1170,34 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
                                         </p>
                                     )}
 
+                                    {/* 평가 변경 이력 및 이의신청 */}
+                                    <details className="ev-history">
+                                        <summary>변경 이력 ({(evaluation.history || []).length}건)</summary>
+                                        {(evaluation.history || []).map(function (record, index) {
+                                            return <p key={index}>{record.action} · {employeeName(record.employeeId)} · {record.at}</p>;
+                                        })}
+                                    </details>
+                                    {isTarget && evaluation.status === "승인" && !evaluation.appeal && (
+                                        <button type="button" className="secondary" onClick={function () {
+                                            const reason = window.prompt("평가 이의신청 사유를 입력하세요.");
+                                            if (!reason || !reason.trim()) return;
+                                            saveEvaluations(evaluations.map(function (item) {
+                                                return String(item.id) === String(evaluation.id)
+                                                    ? { ...item, appeal: { reason: reason.trim(), status: "접수", employeeId: loginEmployee.id }, history: [...(item.history || []), makeHistory("이의신청 접수")] }
+                                                    : item;
+                                            }));
+                                        }}>평가 이의신청</button>
+                                    )}
+                                    {evaluation.appeal && <p className="ev-appeal">이의신청: {evaluation.appeal.status} · {evaluation.appeal.reason}</p>}
+                                    {evaluation.appeal && evaluation.appeal.status === "접수" && loginEmployee?.department === "인사팀" && (
+                                        <button type="button" className="secondary" onClick={function () {
+                                            saveEvaluations(evaluations.map(function (item) {
+                                                return String(item.id) === String(evaluation.id)
+                                                    ? { ...item, appeal: { ...item.appeal, status: "검토 완료" }, history: [...(item.history || []), makeHistory("이의신청 검토 완료")] }
+                                                    : item;
+                                            }));
+                                        }}>이의신청 검토 완료</button>
+                                    )}
                                     <div className="ev-review-actions">
 
                                         {canEdit && (

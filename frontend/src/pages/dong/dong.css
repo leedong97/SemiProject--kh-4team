@@ -147,6 +147,87 @@
   background: #245fe6;
 }
 
+/* 등록 화면 선택창 */
+.team-shell .issue-register-form label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #4d566c;
+}
+
+.team-shell .issue-register-form select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 12px;
+  border: 1px solid #dae0ed;
+  border-radius: 8px;
+  background-color: white;
+  color: #303748;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.team-shell .issue-register-form select:hover:not(:disabled) {
+  border-color: #3b78f0;
+}
+
+.team-shell .issue-register-form select:focus-visible {
+  border-color: #3b78f0;
+  outline: 2px solid #3b78f0;
+  outline-offset: 2px;
+}
+
+.team-shell .issue-register-form select:disabled {
+  background-color: #f7f8fa;
+  color: #808696;
+  cursor: not-allowed;
+}
+
+/* 일반 이슈 / 검토 중 전환 버튼 */
+.team-shell .issue-view-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.team-shell .issue-view-switch button {
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid #dae0ed;
+  border-radius: 8px;
+  background: white;
+  color: #4d566c;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.team-shell .issue-view-switch button:hover {
+  background: #e4eaf9;
+  border-color: #3b78f0;
+  color: #245fe6;
+}
+
+.team-shell .issue-view-switch button[aria-pressed="true"] {
+  background: #3b78f0;
+  border-color: #3b78f0;
+  color: white;
+}
+
+.team-shell .issue-view-switch button[aria-pressed="true"]:hover {
+  background: #245fe6;
+  border-color: #245fe6;
+}
+
+.team-shell .issue-view-switch button:focus-visible {
+  outline: 2px solid #3b78f0;
+  outline-offset: 2px;
+}
+
 /* 이슈 목록 */
 
 .team-shell .issue-list-section {
@@ -198,12 +279,81 @@
   background: #f4f6fb;
 }
 
-.team-shell .issue-table th:first-child {
-  width: 160px;
+.team-shell .issue-table .issue-row-number {
+  width: 64px;
+  text-align: center;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .team-shell .issue-table th:nth-child(2) {
+  width: 160px;
+}
+
+.team-shell .issue-table th:nth-child(3) {
   width: 180px;
+}
+
+/* 이슈 목록 페이지 이동 */
+.team-shell .issue-pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.team-shell .issue-pagination-summary {
+  color: #4d566c;
+  font-size: 13px;
+}
+
+.team-shell .issue-pagination-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.team-shell .issue-pagination button {
+  min-width: 40px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #dae0ed;
+  border-radius: 8px;
+  background: white;
+  color: #4d566c;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.team-shell .issue-pagination button:hover:not(:disabled) {
+  background: #e4eaf9;
+  border-color: #3b78f0;
+}
+
+.team-shell .issue-pagination button[aria-current="page"] {
+  background: #3b78f0;
+  border-color: #3b78f0;
+  color: white;
+}
+
+.team-shell .issue-pagination button[aria-current="page"]:hover {
+  background: #245fe6;
+}
+
+.team-shell .issue-pagination button:disabled {
+  background: #f7f8fa;
+  color: #808696;
+  cursor: not-allowed;
+}
+
+.team-shell .issue-pagination button:focus-visible {
+  outline: 2px solid #3b78f0;
+  outline-offset: 2px;
 }
 
 /* 검색 결과 없음 */
@@ -225,30 +375,34 @@
 /* 태블릿 */
 
 @media (max-width: 1100px) {
-.team-shell .issue-page {
-      grid-column: 1 / -1;
+  .team-shell .issue-page {
+    grid-column: 1 / -1;
   }
 }
 
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .issue-page {
-      grid-column: 1 / -1;
-      grid-row: 5;
-      padding: 18px;
+  .team-shell .issue-page {
+    grid-column: 1 / -1;
+    grid-row: 5;
+    padding: 18px;
   }
-.team-shell .issue-header {
-      align-items: flex-start;
+
+  .team-shell .issue-header {
+    align-items: flex-start;
   }
-.team-shell .issue-header h1 {
-      font-size: 20px;
+
+  .team-shell .issue-header h1 {
+    font-size: 20px;
   }
-.team-shell .issue-register-form {
-      flex-direction: column;
+
+  .team-shell .issue-register-form {
+    flex-direction: column;
   }
-.team-shell .issue-table {
-      min-width: 550px;
+
+  .team-shell .issue-table {
+    min-width: 550px;
   }
 }
 
@@ -308,7 +462,7 @@
   background: white;
   padding: 30px;
   border-radius: 18px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* 상세 페이지 제목 */
@@ -411,15 +565,222 @@
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .issue-detail-page {
-      grid-column: 1 / -1;
-      grid-row: 5;
-      padding: 18px;
+  .team-shell .issue-detail-page {
+    grid-column: 1 / -1;
+    grid-row: 5;
+    padding: 18px;
   }
-.team-shell .issue-detail-row {
-      grid-template-columns: 110px minmax(0, 1fr);
+
+  .team-shell .issue-detail-row {
+    grid-template-columns: 110px minmax(0, 1fr);
   }
-.team-shell .issue-detail-header h1 {
-      font-size: 20px;
+
+  .team-shell .issue-detail-header h1 {
+    font-size: 20px;
   }
+}
+
+/* 이슈 목록을 프로젝트 목록 스타일로 통일 */
+
+/* 목록 제목과 건수 */
+.team-shell .issue-page .issue-list-header h3 {
+  margin: 0;
+  color: #183b63;
+  font-size: 17px;
+}
+
+.team-shell .issue-page .issue-list-header span {
+  color: #087bdf;
+  font-size: 13px;
+}
+
+/* 목록 구분 버튼 */
+.team-shell .issue-page .issue-view-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.team-shell .issue-page .issue-view-switch button {
+  min-height: 0;
+  padding: 10px 18px;
+  border: 1px solid #dce9f8;
+  border-radius: 10px;
+  background: #fff;
+  color: #617792;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.team-shell .issue-page .issue-view-switch button:hover {
+  border-color: #a9d0ff;
+  background: #f0f7ff;
+  color: #087bdf;
+}
+
+.team-shell .issue-page .issue-view-switch button[aria-pressed="true"] {
+  border-color: #1689ec;
+  background: #1689ec;
+  color: #fff;
+}
+
+.team-shell .issue-page .issue-view-switch button[aria-pressed="true"]:hover {
+  border-color: #087bdf;
+  background: #087bdf;
+  color: #fff;
+}
+
+/* 목록 표 */
+.team-shell .issue-page .issue-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.team-shell .issue-page .issue-table th,
+.team-shell .issue-page .issue-table td {
+  padding: 14px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.team-shell .issue-page .issue-table th {
+  border-bottom: 1px solid #dce9f8;
+  background: #e9f3ff;
+  color: #087bdf;
+}
+
+.team-shell .issue-page .issue-table td {
+  border-bottom: 1px solid #eaf1fa;
+}
+
+.team-shell .issue-page .issue-table tbody tr:hover {
+  background: #f5f9ff;
+}
+
+/* 이슈 제목 */
+.team-shell .issue-page .issue-title-link {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #087bdf;
+  font: inherit;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.team-shell .issue-page .issue-title-link:hover {
+  color: #075eac;
+  text-decoration: underline;
+}
+
+/* 페이지 이동 */
+.team-shell .issue-page .issue-pagination-summary {
+  color: #617792;
+  font-size: 13px;
+}
+
+.team-shell .issue-page .issue-pagination-buttons button {
+  min-width: 40px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #dce9f8;
+  border-radius: 8px;
+  background: #fff;
+  color: #617792;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.team-shell .issue-page .issue-pagination-buttons button:hover:not(:disabled) {
+  border-color: #a9d0ff;
+  background: #f0f7ff;
+  color: #087bdf;
+}
+
+.team-shell .issue-page .issue-pagination-buttons button[aria-current="page"] {
+  border-color: #1689ec;
+  background: #1689ec;
+  color: #fff;
+}
+
+.team-shell .issue-page .issue-pagination-buttons button[aria-current="page"]:hover {
+  border-color: #087bdf;
+  background: #087bdf;
+  color: #fff;
+}
+
+.team-shell .issue-page .issue-pagination-buttons button:disabled {
+  border-color: #e4ebf4;
+  background: #f7f9fc;
+  color: #9aa9bc;
+  cursor: default;
+}
+
+.team-shell .issue-page .issue-view-switch button:focus-visible,
+.team-shell .issue-page .issue-pagination-buttons button:focus-visible {
+  outline: 2px solid #1689ec;
+  outline-offset: 2px;
+}
+
+/* 이슈 상단 색상을 프로젝트와 통일 */
+.team-shell .issue-page .issue-header {
+  border-bottom-color: #e5effb;
+}
+
+.team-shell .issue-page .issue-header h1 {
+  color: #087bdf;
+}
+
+.team-shell .issue-page .issue-header p {
+  color: #7085a2;
+}
+
+/* 통계와 검색 항목 이름 */
+.team-shell .issue-page .issue-summary {
+  color: #2f74b9;
+}
+
+.team-shell .issue-page .issue-filter label {
+  color: #536881;
+}
+
+/* 검색창과 프로젝트 선택창 */
+.team-shell .issue-page .issue-filter input,
+.team-shell .issue-page .issue-filter select {
+  background: #f6faff;
+  border-color: #dce9f8;
+  color: #263a56;
+}
+
+.team-shell .issue-page .issue-filter input::placeholder {
+  color: #9baec5;
+}
+
+.team-shell .issue-page .issue-filter input:focus,
+.team-shell .issue-page .issue-filter select:focus {
+  background: #fff;
+  border-color: #1689ec;
+  box-shadow: 0 0 0 3px rgba(8, 123, 223, 0.1);
+}
+
+/* 이슈 건의 버튼 */
+.team-shell .issue-page .issue-reset {
+  border-color: #cfe2f9;
+  background: #fff;
+  color: #226db7;
+}
+
+.team-shell .issue-page .issue-reset:hover {
+  border-color: #a7cff7;
+  background: #edf6ff;
 }

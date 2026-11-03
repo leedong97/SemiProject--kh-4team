@@ -1,0 +1,142 @@
+/* frontend/src/pages/junwoo/LunchPicker.css */
+
+.lunch-picker {
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid #f0e4d5;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.lunch-picker-label {
+    color: #a45b13;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.lunch-picker-title {
+    margin: 10px 0 8px;
+    color: #213b5b;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.lunch-picker-description {
+    margin: 0 0 18px;
+    color: #708197;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.lunch-picker-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    color: #63758b;
+    font-size: 12px;
+}
+
+.lunch-picker-filter select {
+    min-width: 100px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid #e8dccd;
+    border-radius: 8px;
+    background: #fff;
+    color: #614b35;
+    font: inherit;
+    cursor: pointer;
+}
+
+.lunch-picker-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 200px;
+    box-sizing: border-box;
+    padding: 22px 14px;
+    border: 1px solid #f8ead7;
+    border-radius: 12px;
+    background: #fff8ed;
+    text-align: center;
+}
+
+.lunch-picker-emoji {
+    font-size: 44px;
+    line-height: 1.2;
+}
+
+.lunch-picker-menu {
+    color: #6f421d;
+    font-size: 22px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.lunch-picker-message {
+    margin: 0;
+    color: #866447;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.lunch-picker-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: #ffebcc;
+    color: #88500f;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.lunch-picker .lunch-picker-button {
+    width: 100%;
+    min-height: 44px;
+    margin-top: 14px;
+    padding: 12px;
+    border: none;
+    border-radius: 9px;
+    background: #a95312;
+    color: #fff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.lunch-picker .lunch-picker-button:hover {
+    background: #87400b;
+}
+
+.lunch-picker .lunch-picker-button:active {
+    background: #713509;
+}
+
+.lunch-picker-button:focus-visible,
+.lunch-picker-filter select:focus-visible {
+    outline: 3px solid #a95312;
+    outline-offset: 3px;
+}
+
+.lunch-picker-note {
+    margin: 12px 0 0;
+    color: #708197;
+    font-size: 11px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* 메뉴 뽑기 버튼 글자 색상 */
+.lunch-picker button.lunch-picker-button,
+.lunch-picker button.lunch-picker-button:hover,
+.lunch-picker button.lunch-picker-button:active,
+.lunch-picker button.lunch-picker-button:focus {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff;
+    font-weight: 700;
+}

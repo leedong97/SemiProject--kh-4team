@@ -5,10 +5,22 @@ import { adminRequest, getPendingProjectRequests } from "../adminApi";
 import { matchesProjectSearch } from "../utils/projectFilters";
 import useSortableList from "../utils/useSortableList";
 import { PROJECT_STATUS_OPTIONS, DEFAULT_PROJECT_STATUS } from "../shared/projectConstants";
+import ProjectRequestList from "../components/ProjectRequestList";
+import ProjectRegisterForm from "../components/ProjectRegisterForm";
 
 // 담당자 ID로 직원 찾기 (문자열/숫자 ID 차이를 한 곳에서 처리)
 const findEmployee = (employees, id) =>
   employees.find((e) => String(e.id) === String(id));
+
+// 목록 표의 정렬 가능한 열 (키, 표시 이름)
+const SORTABLE_COLUMNS = [
+  ["name", "프로젝트명"],
+  ["customer", "고객사"],
+  ["status", "상태"],
+  ["manager", "담당자"],
+  ["endDate", "종료일"],
+  ["progress", "진행률"],
+];
 
 // 시작일이 종료일보다 늦은지 확인
 const isInvalidDateRange = (startDate, endDate) =>
@@ -17,6 +29,7 @@ const isInvalidDateRange = (startDate, endDate) =>
 function ProjectManagement({
   projects = [],
   setProjects,
+  reloadProjects,
   createProject,
   updateProject,
   removeProject,
@@ -193,7 +206,7 @@ function ProjectManagement({
   // 대기 중인 완료 요청 다시 불러오기
   const loadPendingRequests = async () => {
     try {
-      const rows = await getPendingProjectRequests("완료");
+      const rows = await getPendingProjectRequests();
       setPendingRequests(Array.isArray(rows) ? rows : []);
     } catch (err) {
       setPendingRequests([]);
@@ -206,17 +219,27 @@ function ProjectManagement({
 
   // 완료 요청 승인: 서버에서 프로젝트를 완료로 바꾸고, 화면 상태도 맞춤
   const approveRequest = async (req) => {
-    if (!window.confirm(`"${req.projectName}" 프로젝트를 완료 처리할까요?`)) return;
+    const name = req.projectName || req.title;
+    const isRegister = req.type === "등록";
+    const question = isRegister
+      ? `"${name}" 프로젝트를 등록할까요?`
+      : `"${name}" 프로젝트를 완료 처리할까요?`;
+    if (!window.confirm(question)) return;
     setRequestBusy(true);
     try {
       await adminRequest(`/project-requests/${req.id}/approve`, { method: "POST" });
-      setProjects((prev) =>
-        prev.map((p) =>
-          String(p.id) === String(req.projectId) ? { ...p, status: "완료", progress: 100 } : p
-        )
-      );
+      if (isRegister) {
+        // 새 프로젝트가 생겼으므로 프로젝트 목록을 서버에서 다시 불러옴
+        if (reloadProjects) await reloadProjects();
+      } else {
+        setProjects((prev) =>
+          prev.map((p) =>
+            String(p.id) === String(req.projectId) ? { ...p, status: "완료", progress: 100 } : p
+          )
+        );
+      }
       await loadPendingRequests();
-      alert("프로젝트를 완료 처리했습니다.");
+      alert(isRegister ? "프로젝트를 등록했습니다." : "프로젝트를 완료 처리했습니다.");
     } catch (err) {
       alert(err.message);
     } finally {
@@ -342,6 +365,43 @@ function ProjectManagement({
     return Math.max(0, Math.min(100, number));
   };
 
+  // 상세 기본 정보 항목 (라벨, 표시 값)
+  const detailInfoItems = selectedProject
+    ? [
+        ["프로젝트 ID", selectedProject.id],
+        ["고객사", selectedProject.customer || "미입력"],
+        ["시작 예정일", selectedProject.startDate || "미정"],
+        ["종료 예정일", selectedProject.endDate || "미정"],
+        [
+          "예상 계약 금액",
+          selectedProject.budget != null && selectedProject.budget !== ""
+            ? `${Number(selectedProject.budget).toLocaleString()}원`
+            : "미입력"
+        ],
+        [
+          "담당자",
+          selectedProject.managerId == null
+            ? "미배정"
+            : selectedManager
+              ? `${selectedManager.name} (${selectedManager.role})`
+              : `담당자 ID: ${selectedProject.managerId}`
+        ]
+      ]
+    : [];
+
+  // 진행률 막대 하나 (실제/계획 공통)
+  const renderProgress = (label, value, kind) => (
+    <>
+      <div className="nexus-detail-progress-label">
+        <span>{label}</span>
+        <strong>{getProgress(value)}%</strong>
+      </div>
+      <div className="nexus-detail-track">
+        <div className={`nexus-detail-fill ${kind}`} style={{ width: `${getProgress(value)}%` }} />
+      </div>
+    </>
+  );
+
   return (
     <div className="nexus-project-management">
 
@@ -376,23 +436,13 @@ function ProjectManagement({
             />
 
             {pendingRequests.length > 0 && (
-              <div className="nexus-request-list">
-                <div className="nexus-request-head">
-                  <strong>완료 요청</strong>
-                  <span>대기 {pendingRequests.length}건</span>
-                </div>
-                {pendingRequests.map((req) => (
-                  <button
-                    key={req.id}
-                    type="button"
-                    className="nexus-request-row"
-                    onClick={() => openDetail(req.projectId)}
-                  >
-                    <strong>{req.projectName}</strong>
-                    <small>{req.requesterName || "요청자 미상"} · {req.requestedAt}</small>
-                  </button>
-                ))}
-              </div>
+              <ProjectRequestList
+                requests={pendingRequests}
+                busy={requestBusy}
+                onOpenProject={openDetail}
+                onApprove={approveRequest}
+                onReject={rejectRequest}
+              />
             )}
 
             <div className="nexus-project-table-wrap">
@@ -400,12 +450,11 @@ function ProjectManagement({
 
                 <thead>
                   <tr>
-                    <th onClick={() => changeSort("name")} style={{ cursor: "pointer" }}>프로젝트명{sortMark("name")}</th>
-                    <th onClick={() => changeSort("customer")} style={{ cursor: "pointer" }}>고객사{sortMark("customer")}</th>
-                    <th onClick={() => changeSort("status")} style={{ cursor: "pointer" }}>상태{sortMark("status")}</th>
-                    <th onClick={() => changeSort("manager")} style={{ cursor: "pointer" }}>담당자{sortMark("manager")}</th>
-                    <th onClick={() => changeSort("endDate")} style={{ cursor: "pointer" }}>종료일{sortMark("endDate")}</th>
-                    <th onClick={() => changeSort("progress")} style={{ cursor: "pointer" }}>진행률{sortMark("progress")}</th>
+                    {SORTABLE_COLUMNS.map(([key, label]) => (
+                      <th key={key} onClick={() => changeSort(key)} style={{ cursor: "pointer" }}>
+                        {label}{sortMark(key)}
+                      </th>
+                    ))}
                     <th>관리</th>
                   </tr>
                 </thead>
@@ -632,99 +681,20 @@ function ProjectManagement({
               )}
 
               <div className="nexus-detail-info">
-
-                <div>
-                  <label>프로젝트 ID</label>
-                  <strong>{selectedProject.id}</strong>
-                </div>
-
-                <div>
-                  <label>고객사</label>
-                  <strong>
-                    {selectedProject.customer || "미입력"}
-                  </strong>
-                </div>
-
-                <div>
-                  <label>시작 예정일</label>
-                  <strong>
-                    {selectedProject.startDate || "미정"}
-                  </strong>
-                </div>
-
-                <div>
-                  <label>종료 예정일</label>
-                  <strong>
-                    {selectedProject.endDate || "미정"}
-                  </strong>
-                </div>
-
-                <div>
-                  <label>예상 계약 금액</label>
-                  <strong>
-                    {selectedProject.budget != null &&
-                      selectedProject.budget !== ""
-                      ? `${Number(
-                        selectedProject.budget
-                      ).toLocaleString()}원`
-                      : "미입력"}
-                  </strong>
-                </div>
-
-                <div>
-                  <label>담당자</label>
-                  <strong>
-                    {selectedProject.managerId == null
-                      ? "미배정"
-                      : selectedManager
-                        ? `${selectedManager.name} (${selectedManager.role})`
-                        : `담당자 ID: ${selectedProject.managerId}`}
-                  </strong>
-                </div>
-
+                {detailInfoItems.map(([label, value]) => (
+                  <div key={label}>
+                    <label>{label}</label>
+                    <strong>{value}</strong>
+                  </div>
+                ))}
               </div>
 
               <div className="nexus-detail-section">
 
                 <h3>프로젝트 진행 현황</h3>
 
-                <div className="nexus-detail-progress-label">
-                  <span>실제 진행률</span>
-                  <strong>
-                    {getProgress(selectedProject.progress)}%
-                  </strong>
-                </div>
-
-                <div className="nexus-detail-track">
-                  <div
-                    className="nexus-detail-fill actual"
-                    style={{
-                      width: `${getProgress(
-                        selectedProject.progress
-                      )}%`
-                    }}
-                  />
-                </div>
-
-<div className="nexus-detail-progress-label">
-                  <span>계획 진행률</span>
-                  <strong>
-                    {getProgress(
-                      selectedProject.plannedProgress
-                    )}%
-                  </strong>
-                </div>
-
-                <div className="nexus-detail-track">
-                  <div
-                    className="nexus-detail-fill planned"
-                    style={{
-                      width: `${getProgress(
-                        selectedProject.plannedProgress
-                      )}%`
-                    }}
-                  />
-                </div>
+                {renderProgress("실제 진행률", selectedProject.progress, "actual")}
+                {renderProgress("계획 진행률", selectedProject.plannedProgress, "planned")}
 
               </div>
 
@@ -751,112 +721,12 @@ function ProjectManagement({
         /* 3. 신규 프로젝트 등록 화면 */
         /* ============================= */
 
-        <>
-          <div className="nexus-project-heading">
-            <div>
-              <p>관리자 / 프로젝트 관리 / 신규 등록</p>
-              <h2>신규 프로젝트 등록</h2>
-            </div>
-
-            <button className="btn btn-outline"
-              type="button"
-              onClick={() => setPage("list")}
-            >
-              ← 목록
-            </button>
-          </div>
-
-          <form onSubmit={registerProject}>
-
-            <div className="card nexus-project-panel">
-
-              <h3>기본 정보</h3>
-
-              <label>고객사 *</label>
-              <input
-                name="customer"
-                className="nexus-project-input"
-                placeholder="예: KB국민은행"
-                value={form.customer}
-                onChange={handleChange}
-                required
-              />
-
-              <label>프로젝트명 *</label>
-              <input
-                name="name"
-                className="nexus-project-input"
-                placeholder="예: 고객정보 통합관리 시스템"
-                value={form.name}
-                onChange={handleChange}
-                required
-              />
-
-              <div className="nexus-project-date-row">
-
-                <div>
-                  <label>시작 예정일</label>
-                  <input
-                    type="date"
-                    name="startDate"
-                    value={form.startDate}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div>
-                  <label>종료 예정일</label>
-                  <input
-                    type="date"
-                    name="endDate"
-                    value={form.endDate}
-                    onChange={handleChange}
-                  />
-                </div>
-
-              </div>
-
-              <label>예상 계약 금액 (원)</label>
-              <input
-                type="number"
-                name="budget"
-                min="0"
-                className="nexus-project-input"
-                placeholder="10000"
-                value={form.budget}
-                onChange={handleChange}
-              />
-
-              <label>프로젝트 설명</label>
-              <textarea
-                name="description"
-                placeholder="구축 목표, 주요 기능 및 범위"
-                value={form.description}
-                onChange={handleChange}
-              />
-
-            </div>
-
-            <div className="nexus-project-footer">
-
-              <button className="btn btn-outline"
-                type="button"
-                onClick={() => setPage("list")}
-              >
-                취소
-              </button>
-
-              <button
-                type="submit"
-                className="btn btn-primary"
-              >
-                담당자 배정 대기로 등록
-              </button>
-
-            </div>
-
-          </form>
-        </>
+        <ProjectRegisterForm
+          form={form}
+          onChange={handleChange}
+          onSubmit={registerProject}
+          onBack={() => setPage("list")}
+        />
       )}
 
     </div>

@@ -1,6 +1,8 @@
 
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+import { API_BASE } from "../../shared/config";
 
 function Todo({ todo, onAddTodo }) {
 
@@ -14,6 +16,100 @@ function Todo({ todo, onAddTodo }) {
     // 검색 및 페이지
     const [search, setSearch] = useState("");
     const [pages, setPages] = useState(1);
+
+    // 선택한 탭
+    let initialTab = "프로젝트 목록";
+
+    if (location.state) {
+        if (location.state.requestTab === "대기") {
+            initialTab = "대기";
+        } else if (location.state.requestTab === "승인") {
+            initialTab = "승인";
+        }
+    }
+
+    const [listTab, setListTab] = useState(initialTab);
+
+    // 서버에서 가져온 등록 요청 목록
+    const [requests, setRequests] = useState([]);
+
+    // 요청 목록 조회 상태
+    const [requestLoading, setRequestLoading] = useState(
+        initialTab !== "프로젝트 목록"
+    );
+    const [requestError, setRequestError] = useState("");
+
+    // 등록 후 목록을 다시 불러올 때 사용
+    const [requestReload, setRequestReload] = useState(0);
+
+    // ===================================
+    // 목록 탭 변경
+    // ===================================
+
+    function changeListTab(nextTab) {
+        if (listTab === nextTab) {
+            return;
+        }
+
+        setListTab(nextTab);
+        setPages(1);
+        setRequests([]);
+        setRequestError("");
+
+        if (nextTab === "프로젝트 목록") {
+            setRequestLoading(false);
+        } else {
+            setRequestLoading(true);
+        }
+    }
+
+    // ===================================
+    // 대기 · 승인 요청 목록 불러오기
+    // ===================================
+
+    useEffect(function () {
+        if (listTab === "프로젝트 목록") {
+            return;
+        }
+
+        let cancelled = false;
+
+        async function loadRequests() {
+            setRequestLoading(true);
+            setRequestError("");
+
+            try {
+                const response = await axios.get(
+                    API_BASE + "/api/project-requests",
+                    {
+                        params: {
+                            requestStatus: listTab
+                        }
+                    }
+                );
+
+                if (!cancelled) {
+                    setRequests(response.data);
+                }
+            } catch (error) {
+                if (!cancelled) {
+                    setRequestError(
+                        "요청 목록을 불러오지 못했습니다."
+                    );
+                }
+            } finally {
+                if (!cancelled) {
+                    setRequestLoading(false);
+                }
+            }
+        }
+
+        loadRequests();
+
+        return function () {
+            cancelled = true;
+        };
+    }, [listTab, requestReload]);
 
     // 새로운 프로젝트
     const [title, setTitle] = useState("");
@@ -29,21 +125,50 @@ function Todo({ todo, onAddTodo }) {
     const [startDate, setStartDate] = useState(selectedDate);
     const [endDate, setEndDate] = useState(selectedDate);
 
-    // 프로젝트 제목 검색
-    const filteredTodo = [...todo]
-        .filter(item =>
-            item.title.toLowerCase().includes(search.trim().toLowerCase())
-        )
-        .sort((a, b) =>
-            (Number(b.sortAt ?? 0) - Number(a.sortAt ?? 0)) ||
-            (b.id - a.id)
-        );
+    // 현재 탭에서 사용할 목록
+    let sourceList = todo;
 
-    // 페이지네이션 (10개씩)
+    if (listTab !== "프로젝트 목록") {
+        sourceList = requests;
+    }
+
+    // 제목 검색
+    const filteredTodo = sourceList.filter(function (item) {
+        return item.title
+            .toLowerCase()
+            .includes(search.trim().toLowerCase());
+    });
+
+    // 일반 프로젝트만 기존 방식으로 정렬
+    // 요청 목록은 서버에서 최신순으로 받아옴
+    if (listTab === "프로젝트 목록") {
+        filteredTodo.sort(function (a, b) {
+            return (
+                Number(b.sortAt ?? 0) - Number(a.sortAt ?? 0)
+            ) || (
+                    b.id - a.id
+                );
+        });
+    }
+
     const totalPages = Math.ceil(filteredTodo.length / 10);
     const currentPage = Math.min(pages, Math.max(totalPages, 1));
     const start = (currentPage - 1) * 10;
     const end = start + 10;
+
+    // 현재 페이지가 속한 페이지 번호 묶음
+    // 1~5, 6~10처럼 최대 5개씩 표시
+    const firstPageInGroup = Math.floor((currentPage - 1) / 5) * 5 + 1;
+    const lastPageInGroup = Math.min(firstPageInGroup + 4, totalPages);
+
+    const pageNumbers = [];
+
+    for (let page = firstPageInGroup; page <= lastPageInGroup; page++) {
+        pageNumbers.push(page);
+    }
+
+    // 마지막 페이지에서는 실제 전체 개수까지만 표시
+    const lastItemNumber = Math.min(end, filteredTodo.length);
 
 
     /* 프로젝트 등록 */
@@ -81,7 +206,7 @@ function Todo({ todo, onAddTodo }) {
         setIsSaving(true);
 
         try {
-            const newId = await onAddTodo(
+            await onAddTodo(
                 title.trim(),
                 content.trim(),
                 startDate,
@@ -97,9 +222,22 @@ function Todo({ todo, onAddTodo }) {
             setStatus("예정");
             setPriority("보통");
 
-            alert("프로젝트가 등록되었습니다.");
+            alert(
+                "프로젝트 등록 요청이 접수되었습니다.\n" +
+                "관리자 승인 후 프로젝트가 등록됩니다."
+            );
 
-            navigate(`/todo/${newId}`);
+            setRequests([]);
+            setRequestError("");
+            setRequestLoading(true);
+
+            setListTab("대기");
+            setPages(1);
+            setSearch("");
+
+            setRequestReload(function (count) {
+                return count + 1;
+            });
 
         } catch (error) {
             console.error("프로젝트 등록 오류:", error);
@@ -141,7 +279,7 @@ function Todo({ todo, onAddTodo }) {
             {/* 프로젝트 통계 */}
             <div className="todo-summary">
                 <span>전체 프로젝트 {todo.length}개</span>
-                <span>조회된 프로젝트 {filteredTodo.length}개</span>
+                <span>현재 목록 검색 결과 {filteredTodo.length}개</span>
             </div>
 
             {/* 프로젝트 검색 */}
@@ -264,90 +402,214 @@ function Todo({ todo, onAddTodo }) {
             <section className="todo-list-section">
 
                 <div className="todo-list-header">
-                    <h3>프로젝트 목록</h3>
-                    <span>{filteredTodo.length}건</span>
+                    <h3>
+                        {listTab === "프로젝트 목록"
+                            ? "전체 프로젝트 목록"
+                            : listTab === "대기"
+                                ? "대기 중인 프로젝트"
+                                : "승인된 프로젝트"}
+                    </h3>
+
+                    {!requestLoading && requestError === "" && (
+                        <span>{filteredTodo.length}건</span>
+                    )}
+                </div>
+
+                <div className="todo-status-tabs">
+                    <button
+                        type="button"
+                        className={
+                            listTab === "프로젝트 목록"
+                                ? "todo-status-tab active"
+                                : "todo-status-tab"
+                        }
+                        onClick={function () {
+                            changeListTab("프로젝트 목록");
+                        }}
+                    >
+                        프로젝트 목록
+                    </button>
+
+                    <button
+                        type="button"
+                        className={
+                            listTab === "대기"
+                                ? "todo-status-tab active"
+                                : "todo-status-tab"
+                        }
+                        onClick={function () {
+                            changeListTab("대기");
+                        }}
+                    >
+                        대기 중
+                    </button>
+
+                    <button
+                        type="button"
+                        className={
+                            listTab === "승인"
+                                ? "todo-status-tab active"
+                                : "todo-status-tab"
+                        }
+                        onClick={function () {
+                            changeListTab("승인");
+                        }}
+                    >
+                        승인됨
+                    </button>
                 </div>
 
                 <table className="todo-table">
-
-
                     <thead>
                         <tr>
-                            <th>번호</th>
-                            <th>프로젝트 ID</th>
-                            <th>프로젝트 제목</th>
-                            <th>작성자</th>
-                            <th>작성일자</th>
-                            <th>조회수</th>
+                            <th scope="col">번호</th>
+                            <th scope="col">클라이언트</th>
+                            <th scope="col">프로젝트 제목</th>
+                            <th scope="col">작성자</th>
+                            <th scope="col">
+                                {listTab === "프로젝트 목록" ? "작성일자" : "요청일자"}
+                            </th>
+                            <th scope="col">상태</th>
                         </tr>
                     </thead>
 
-
                     <tbody>
-                        {filteredTodo.length > 0 ? (
-
-
-                            filteredTodo.slice(start, end).map((item, index) => (
-                                <tr key={item.id}>
-
-                                    {/* 프로젝트 목록 순서 */}
-                                    <td>{start + index + 1}</td>
-
-                                    {/* 실제 MySQL 프로젝트 ID */}
-                                    <td>{item.id}</td>
-
-                                    {/* 프로젝트 제목 */}
-                                    <td>
-                                        <button
-                                            className="todo-title-link"
-                                            onClick={() => navigate(`/todo/${item.id}`)}
-                                        >
-                                            {item.title}
-                                        </button>
-                                    </td>
-
-                                    <td>{item.author}</td>
-                                    <td>{item.date}</td>
-                                    <td>{item.views ?? 0}</td>
-
-                                </tr>
-                            ))
-
-
-                        ) : (
-
+                        {requestLoading ? (
                             <tr>
-                                <td colSpan="6" className="todo-empty">
-                                    {todo.length === 0
-                                        ? "등록된 프로젝트가 없습니다."
-                                        : "검색 결과가 없습니다."}
+                                <td colSpan="5" className="todo-empty">
+                                    목록을 불러오는 중입니다.
                                 </td>
                             </tr>
+                        ) : requestError !== "" ? (
+                            <tr>
+                                <td colSpan="5" className="todo-empty">
+                                    <p role="alert">{requestError}</p>
 
+                                    <button
+                                        type="button"
+                                        onClick={function () {
+                                            setRequestReload(function (count) {
+                                                return count + 1;
+                                            });
+                                        }}
+                                    >
+                                        다시 시도
+                                    </button>
+                                </td>
+                            </tr>
+                        ) : filteredTodo.length === 0 ? (
+                            <tr>
+                                <td colSpan="5" className="todo-empty">
+                                    {search.trim() !== ""
+                                        ? "검색 결과가 없습니다."
+                                        : "해당 목록에 등록된 항목이 없습니다."}
+                                </td>
+                            </tr>
+                        ) : (
+                            filteredTodo.slice(start, end).map(function (item, index) {
+                                let rowKey;
+                                let detailAddress;
+
+                                if (listTab === "프로젝트 목록") {
+                                    rowKey = "project-" + item.id;
+                                    detailAddress = "/todo/" + item.id;
+                                } else {
+                                    rowKey = "request-" + item.requestId;
+                                    detailAddress = "/project-requests/" + item.requestId;
+                                }
+
+                                const titleContent = (
+                                    <Link
+                                        to={detailAddress}
+                                        className="todo-title-link"
+                                    >
+                                        {item.title}
+                                    </Link>
+                                );
+
+                                let statusClass = "todo-request-status";
+
+                                if (item.requestStatus === "대기") {
+                                    statusClass += " waiting";
+                                } else if (item.requestStatus === "승인") {
+                                    statusClass += " approved";
+                                }
+
+                                return (
+                                    <tr key={rowKey}>
+                                        <td>{start + index + 1}</td>
+
+                                        <td>{item.customerName || "-"}</td>
+
+                                        <td>{titleContent}</td>
+
+                                        <td>{item.author}</td>
+
+                                        <td>{item.date}</td>
+
+                                        <td>
+                                            {listTab === "프로젝트 목록" ? (
+                                                item.status || "-"
+                                            ) : (
+                                                <span className={statusClass}>
+                                                    {item.requestStatus}
+                                                </span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                );
+                            })
                         )}
                     </tbody>
-
                 </table>
 
-                {/* 페이지 번호 */}
-                {totalPages > 1 && (
-                    <div className="todo-pages">
+                {/* 표시 건수와 페이지 이동 */}
+                {!requestLoading &&
+                    requestError === "" &&
+                    filteredTodo.length > 0 && (
+                        <nav className="todo-list-pagination">
+                            <span className="todo-list-pagination-summary">
+                                전체 {filteredTodo.length}건 중 {start + 1}–{lastItemNumber}건
+                            </span>
 
-                        {Array.from(
-                            { length: totalPages },
-                            (_, i) => i + 1
-                        ).map((num) => (
-                            <button
-                                key={num}
-                                className={currentPage === num ? "active" : ""}
-                                onClick={() => setPages(num)}
-                            >
-                                {num}
-                            </button>
-                        ))}
+                            <div className="todo-list-pagination-buttons">
+                                <button
+                                    type="button"
+                                    disabled={currentPage === 1}
+                                    onClick={function () {
+                                        setPages(currentPage - 1);
+                                    }}
+                                >
+                                    이전
+                                </button>
 
-                    </div>
-                )}
+                                {pageNumbers.map(function (page) {
+                                    return (
+                                        <button
+                                            type="button"
+                                            key={page}
+                                            className={currentPage === page ? "active" : ""}
+                                            onClick={function () {
+                                                setPages(page);
+                                            }}
+                                        >
+                                            {page}
+                                        </button>
+                                    );
+                                })}
+
+                                <button
+                                    type="button"
+                                    disabled={currentPage === totalPages}
+                                    onClick={function () {
+                                        setPages(currentPage + 1);
+                                    }}
+                                >
+                                    다음
+                                </button>
+                            </div>
+                        </nav>
+                    )}
 
             </section>
 

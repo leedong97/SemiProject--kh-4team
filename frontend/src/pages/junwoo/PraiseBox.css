@@ -1,0 +1,228 @@
+/* 칭찬함 전체 */
+.praise-box {
+    min-width: 0;
+    margin-top: 24px;
+    padding: 24px;
+    border: 1px solid #f0dedb;
+    border-radius: 14px;
+    background: #fffaf8;
+}
+
+/* 제목과 작성 버튼 */
+.praise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.praise-title {
+    margin: 0;
+    color: #563b37;
+    font-size: 20px;
+}
+
+.praise-description {
+    margin: 8px 0 0;
+    color: #876e69;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* 칭찬함 버튼 공통 */
+.praise-box button {
+    min-height: 40px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* 작성 / 등록 버튼 */
+.praise-box button.praise-open-button,
+.praise-box button.praise-submit-button {
+    background: #a34e43;
+    color: #fff !important;
+}
+
+.praise-box button.praise-open-button:hover,
+.praise-box button.praise-submit-button:hover {
+    background: #873e35;
+}
+
+.praise-box button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* 작성 폼 */
+.praise-form {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #efded8;
+    border-radius: 10px;
+    background: #fff;
+}
+
+/* 이름 입력칸 두 개 */
+.praise-form-names {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.praise-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    color: #674f49;
+    font-size: 13px;
+}
+
+.praise-box .praise-field input,
+.praise-box .praise-field textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #dfd4d0;
+    border-radius: 8px;
+    background: #fff;
+    color: #3e3532;
+    font: inherit;
+    line-height: 1.6;
+}
+
+.praise-field textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.praise-box input:focus-visible,
+.praise-box textarea:focus-visible,
+.praise-box button:focus-visible {
+    outline: 2px solid #a34e43;
+    outline-offset: 3px;
+}
+
+/* 글자 수 */
+.praise-length {
+    margin: 8px 0 0;
+    color: #88746e;
+    font-size: 12px;
+    text-align: right;
+}
+
+/* 입력 오류 */
+.praise-error {
+    margin: 8px 0;
+    color: #b42318;
+    font-size: 13px;
+}
+
+/* 취소 / 등록 버튼 배치 */
+.praise-form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.praise-box button.praise-cancel-button {
+    background: #f2eeec;
+    color: #66534c !important;
+}
+
+/* 칭찬 카드 3개 배치 */
+.praise-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* 칭찬 카드 한 개 */
+.praise-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid #efded8;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.praise-receiver {
+    margin: 0 0 12px;
+    color: #8e493e;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.praise-message {
+    flex: 1;
+    margin: 0 0 20px;
+    color: #5e514c;
+    font-size: 13px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.praise-card-footer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid #f2e9e5;
+    color: #88746e;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+/* 칭찬이 없을 때 */
+.praise-empty {
+    padding: 36px 12px 20px;
+    text-align: center;
+}
+
+.praise-empty span {
+    font-size: 32px;
+}
+
+.praise-empty p {
+    margin: 10px 0 0;
+    color: #876e69;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* 작은 화면에서는 세로 배치 */
+@media (max-width: 900px) {
+    .praise-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .praise-box {
+        padding: 18px;
+    }
+
+    .praise-form {
+        padding: 16px;
+    }
+
+    .praise-form-names {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,4 +1,3 @@
-
 /* ==========================================
    NEXUS ERP - 직원 인사평가
    EmployeeEvaluation.css
@@ -724,3 +723,70 @@
     font-size: 11px;
     line-height: 1.8;
 }
+
+/* 신규 기능: 평가 변경 이력과 이의신청 */
+.ev-history { margin: 12px 0; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 9px; background: #fafbff; }
+.ev-history summary { cursor: pointer; font-weight: 600; }
+.ev-history p { font-size: 13px; margin: 7px 0; color: #475569; }
+.ev-appeal { margin: 10px 0; padding: 10px; border-radius: 8px; background: #fff7ed; color: #9a3412; }
+
+
+/* ===== 2026 UI 개선: 기존 기능/클래스 유지, 시각적 스타일만 보강 ===== */
+:where(.employee-evaluation, .hr-management, .issue-Management) {
+    --ui-accent: #355de8;
+    --ui-ink: #19243b;
+    --ui-muted: #68778f;
+    --ui-line: #e5ebf3;
+    --ui-soft: #f5f8ff;
+    background: #f6f8fc;
+    color: var(--ui-ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+:where(.employee-evaluation, .hr-management, .issue-Management) :is(button, input, select, textarea) {
+    font: inherit;
+    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease, transform .18s ease;
+}
+:where(.employee-evaluation, .hr-management, .issue-Management) :is(input, select, textarea):focus-visible {
+    outline: 2px solid #93adff;
+    outline-offset: 2px;
+    border-color: #688af4;
+}
+:where(.employee-evaluation, .hr-management, .issue-Management) button:focus-visible {
+    outline: 3px solid #93adff;
+    outline-offset: 3px;
+}
+:where(.employee-evaluation, .hr-management, .issue-Management) button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+@media (prefers-reduced-motion: reduce) {
+    :where(.employee-evaluation, .hr-management, .issue-Management) * {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+    }
+}
+
+.employee-evaluation { max-width: 1520px; margin-inline: auto; padding: 32px clamp(18px, 2.5vw, 40px) 64px; }
+.employee-evaluation .ev-header { margin-bottom: 26px; padding-bottom: 22px; border-bottom: 1px solid var(--ui-line); }
+.employee-evaluation .ev-header h2 { font-size: clamp(25px, 2vw, 32px); letter-spacing: -.035em; color: var(--ui-ink); }
+.employee-evaluation .ev-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .15em; color: #4b68bd; }
+.employee-evaluation :is(.ev-panel, .ev-stat, .ev-review-item, .ev-test-bar) { border: 1px solid var(--ui-line); box-shadow: 0 5px 22px rgba(27, 47, 90, .045); }
+.employee-evaluation .ev-panel { border-radius: 18px; background: #fff; }
+.employee-evaluation .ev-stat { border-radius: 16px; background: linear-gradient(155deg, #fff, #f8faff); }
+.employee-evaluation .ev-stat strong { font-variant-numeric: tabular-nums; }
+.employee-evaluation .ev-review-item { border-radius: 14px; }
+.employee-evaluation .ev-review-item:hover { border-color: #bdcdfd; box-shadow: 0 9px 28px rgba(34, 72, 154, .08); }
+.employee-evaluation .ev-total { border-radius: 14px; background: #eef3ff; border: 1px solid #dce6ff; }
+.employee-evaluation .ev-chart-track { overflow: hidden; border-radius: 999px; }
+.employee-evaluation .ev-chart-fill { border-radius: 999px; background: linear-gradient(90deg, #4166ea, #7799ff); }
+.employee-evaluation .ev-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.employee-evaluation .ev-table th { background: #f5f8fd; color: #50627d; font-size: 12px; }
+.employee-evaluation .ev-table td { border-bottom: 1px solid #edf1f6; }
+.employee-evaluation .ev-table tr:hover td { background: #f9fbff; }
+@media (max-width: 760px) { .employee-evaluation { padding: 18px 14px 40px; } .employee-evaluation .ev-header { gap: 16px; flex-wrap: wrap; } .employee-evaluation .ev-test-bar { flex-wrap: wrap; } }
+
+/* 평가 근거 카드 */
+.employee-evaluation .ev-evidence-panel { margin: 16px 0; padding: 18px 22px; border: 1px solid #dce6f4; border-radius: 14px; background: #fff; }
+.employee-evaluation .ev-evidence-panel h3 { margin: 0 0 8px; }
+.employee-evaluation .ev-evidence-panel small { color: #718096; }

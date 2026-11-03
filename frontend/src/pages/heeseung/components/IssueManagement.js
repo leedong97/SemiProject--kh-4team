@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./IssueManagement.css";
+import { erpRequest } from "../erpApi";
 
 export default function IssueManagement({ data, changeData, currentUser }) {
 
@@ -29,6 +30,17 @@ export default function IssueManagement({ data, changeData, currentUser }) {
     // 2. 화면 표시 상태
     const [showRegister, setShowRegister] = useState(false);
     const [expandedIssueId, setExpandedIssueId] = useState(null);
+    const [dbWorkLogs, setDbWorkLogs] = useState({});
+    useEffect(function () {
+        if (!expandedIssueId) return;
+        erpRequest('/issues/' + expandedIssueId + '/work-logs').then(function (result) {
+            setDbWorkLogs(function (old) {
+                return { ...old, [expandedIssueId]: result.workLogs || [] };
+            });
+        }).catch(function (error) {
+            console.warn('작업 기록 조회 실패:', error.message);
+        });
+    }, [expandedIssueId]);
 
     // 3. 검색 필터
     const [statusFilter, setStatusFilter] = useState("전체");
@@ -395,7 +407,7 @@ export default function IssueManagement({ data, changeData, currentUser }) {
 
     // 21. 작업 시간 등록
 
-    function addWorkLog(issue) {
+    async function addWorkLog(issue) {
         const workDescription = (
             workDescriptions[issue.id] || ""
         ).trim();
@@ -416,6 +428,19 @@ export default function IssueManagement({ data, changeData, currentUser }) {
             employeeId: loginUser.id,
             createdAt: new Date().toLocaleString("ko-KR")
         };
+        try {
+            const saved = await erpRequest('/issues/' + issue.id + '/work-logs', 'POST', {
+                description: workDescription,
+                minutes: minutes
+            });
+            workLog.id = saved.id;
+        } catch (error) {
+            window.alert('MySQL 작업시간 저장 실패: ' + error.message);
+            return;
+        }
+        setDbWorkLogs(function (old) {
+            return { ...old, [issue.id]: [workLog, ...(old[issue.id] || [])] };
+        });
         updateIssue(
             issue.id,
             {
@@ -524,8 +549,16 @@ export default function IssueManagement({ data, changeData, currentUser }) {
         count: activeIssues.filter(issue =>
             String(issue.assigneeId) === String(employee.id) &&
             issue.status !== "완료"
+        ).length,
+        urgent: activeIssues.filter(issue =>
+            String(issue.assigneeId) === String(employee.id) &&
+            issue.status !== "완료" && issue.priority === "긴급"
+        ).length,
+        overdue: activeIssues.filter(issue =>
+            String(issue.assigneeId) === String(employee.id) &&
+            issue.status !== "완료" && issue.due && issue.due < getToday()
         ).length
-    }));
+    })).sort((a, b) => b.count - a.count);
 
     // 25. 검색 및 필터
 
@@ -610,72 +643,80 @@ export default function IssueManagement({ data, changeData, currentUser }) {
                     <h3>{overdueIssues}</h3>
                 </div>
             </div>
+            {/* 담당자 업무량 비교: 카드 클릭 시 해당 담당자로 필터링합니다. */}
+            <details className="issue-workload-panel panel issue-optional-section">
+                <summary>담당자별 업무량 <span>펼쳐서 확인</span></summary>
+                <p>미완료 이슈 기준이며 업무 난이도까지 반영한 수치는 아닙니다.</p>
+                <div className="issue-workload-list">
+                    {employeeWorkload.map(item => (
+                        <button type="button" key={item.id}
+                            className={assigneeFilter === String(item.id) ? "active" : ""}
+                            onClick={() => { setAssigneeFilter(String(item.id)); setCurrentPage(1); }}>
+                            <strong>{item.name}</strong>
+                            <span>미완료 {item.count}건</span>
+                            <span>긴급 {item.urgent}건</span>
+                            <span>기한 초과 {item.overdue}건</span>
+                        </button>
+                    ))}
+                    <button type="button" onClick={() => { setAssigneeFilter("전체"); setCurrentPage(1); }}>전체 담당자 보기</button>
+                </div>
+            </details>
             {/* 관리자 우선 확인: 긴급 이슈와 마감 임박 이슈 */}
-            <div className="issue-alert-grid">
-                <div className="issue-alert-panel">
-                    <h3>긴급 이슈</h3>
-                    <p>우선 처리할 이슈 {urgentIssueList.length}건</p>
-                    {urgentIssueList.length === 0 && <p>긴급 이슈가 없습니다.</p>}
-                    {urgentIssueList.slice(0, 5).map(issue => (
-                        <div className="issue-alert-item" key={issue.id}>
-                            <button
-                                type="button"
-                                className="issue-alert-link"
-                                onClick={() => {
-                                    setSearch(issue.title);
-                                    setStatusFilter("전체");
-                                    setPriorityFilter("전체");
-                                    setAssigneeFilter("전체");
-                                    setProjectFilter("전체");
-                                    setCurrentPage(1);
-                                    setExpandedIssueId(issue.id);
-                                }}
-                            >
-                                {issue.title}
-                            </button>
-                            <span>{employeeName(issue.assigneeId)}</span>
-                        </div>
-                    ))}
+            <details className="issue-alert-wrapper issue-optional-section">
+                <summary>긴급 · 마감 임박 이슈 <span>펼쳐서 확인</span></summary>
+                <div className="issue-alert-grid">
+                    <div className="issue-alert-panel">
+                        <h3>긴급 이슈</h3>
+                        <p>우선 처리할 이슈 {urgentIssueList.length}건</p>
+                        {urgentIssueList.length === 0 && <p>긴급 이슈가 없습니다.</p>}
+                        {urgentIssueList.slice(0, 5).map(issue => (
+                            <div className="issue-alert-item" key={issue.id}>
+                                <button
+                                    type="button"
+                                    className="issue-alert-link"
+                                    onClick={() => {
+                                        setSearch(issue.title);
+                                        setStatusFilter("전체");
+                                        setPriorityFilter("전체");
+                                        setAssigneeFilter("전체");
+                                        setProjectFilter("전체");
+                                        setCurrentPage(1);
+                                        setExpandedIssueId(issue.id);
+                                    }}
+                                >
+                                    {issue.title}
+                                </button>
+                                <span>{employeeName(issue.assigneeId)}</span>
+                            </div>
+                        ))}
                 </div>
-                <div className="issue-alert-panel">
-                    <h3>마감 임박</h3>
-                    <p>오늘부터 3일 이내 {upcomingIssues.length}건</p>
-                    {upcomingIssues.length === 0 && <p>마감 임박 이슈가 없습니다.</p>}
-                    {upcomingIssues.slice(0, 5).map(issue => (
-                        <div className="issue-alert-item" key={issue.id}>
-                            <button
-                                type="button"
-                                className="issue-alert-link"
-                                onClick={() => {
-                                    setSearch(issue.title);
-                                    setStatusFilter("전체");
-                                    setPriorityFilter("전체");
-                                    setAssigneeFilter("전체");
-                                    setProjectFilter("전체");
-                                    setCurrentPage(1);
-                                    setExpandedIssueId(issue.id);
-                                }}
-                            >
-                                {issue.title}
-                            </button>
-                            <span>{issue.due}</span>
-                        </div>
-                    ))}
+                    <div className="issue-alert-panel">
+                        <h3>마감 임박</h3>
+                        <p>오늘부터 3일 이내 {upcomingIssues.length}건</p>
+                        {upcomingIssues.length === 0 && <p>마감 임박 이슈가 없습니다.</p>}
+                        {upcomingIssues.slice(0, 5).map(issue => (
+                            <div className="issue-alert-item" key={issue.id}>
+                                <button
+                                    type="button"
+                                    className="issue-alert-link"
+                                    onClick={() => {
+                                        setSearch(issue.title);
+                                        setStatusFilter("전체");
+                                        setPriorityFilter("전체");
+                                        setAssigneeFilter("전체");
+                                        setProjectFilter("전체");
+                                        setCurrentPage(1);
+                                        setExpandedIssueId(issue.id);
+                                    }}
+                                >
+                                    {issue.title}
+                                </button>
+                                <span>{issue.due}</span>
+                            </div>
+                        ))}
                 </div>
-            </div>
-
-            {/* 직원별 업무량 */}
-            <div className="issue-workload-panel">
-                <h3>담당자별 업무량</h3>
-                <div className="issue-workload-grid">
-                    {employeeWorkload.map(employee => (
-                        <div className="issue-workload-item" key={employee.id}>
-                            <span>{employee.name}</span>
-                            <strong>{employee.count}건</strong>
-                        </div>
-                    ))}
                 </div>
-            </div>
+            </details>
 
             <div className="issue-toolbar">
                 <input
@@ -865,7 +906,7 @@ export default function IssueManagement({ data, changeData, currentUser }) {
                 const isExpanded = expandedIssueId === issue.id;
                 const issueComments = issue.comments || [];
                 const issueHistory = issue.history || [];
-                const workLogs = issue.workLogs || [];
+                const workLogs = dbWorkLogs[issue.id] || issue.workLogs || [];
                 // 이슈별 누적 작업 시간
                 const totalWorkMinutes = workLogs.reduce(
                     (sum, log) =>

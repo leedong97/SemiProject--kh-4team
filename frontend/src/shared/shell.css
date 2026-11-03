@@ -430,3 +430,139 @@ body:has(.team-shell) {
   border-radius: 9px;
   box-shadow: inset 0 -2px 0 #3868df;
 }
+
+/* 상단 메뉴 7개 자리 배치 */
+.team-shell {
+  grid-template-areas:
+    "logo logo dash-menu dash-menu todo-menu todo-menu issue-menu info-menu community-menu community-menu my-name my-name"
+    "calendar calendar calendar calendar calendar calendar calendar info info info info info"
+    "calendar calendar calendar calendar calendar calendar calendar todo todo todo todo todo";
+}
+
+/* 상단 커뮤니티 메뉴 */
+.team-shell>.community-menu {
+  grid-area: community-menu;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.team-shell>.community-menu h3 {
+  margin: 0;
+  padding: 12px 15px;
+  border-radius: 8px;
+  color: #385577;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.team-shell>.community-menu a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.team-shell>.community-menu h3:hover {
+  background-color: #eaf4ff;
+  color: #087bdf;
+}
+
+/* 커뮤니티 화면일 때 메뉴 색상 */
+.team-shell>.community-menu.active h3 {
+  background-color: #eaf1ff;
+  color: #2154c3;
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 #3868df;
+}
+
+/* 태블릿 */
+@media (max-width: 1100px) {
+  .team-shell {
+    grid-template-areas:
+      "logo dash-menu todo-menu issue-menu info-menu my-name"
+      "community-menu community-menu community-menu community-menu community-menu community-menu"
+      "calendar calendar calendar calendar calendar calendar"
+      "info info info todo todo todo";
+    grid-template-rows: 76px auto auto auto;
+  }
+
+  .team-shell>.community-menu {
+    justify-content: flex-start;
+  }
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .team-shell {
+    grid-template-areas:
+      "logo logo"
+      "dash-menu todo-menu"
+      "issue-menu info-menu"
+      "community-menu community-menu"
+      "my-name my-name"
+      "calendar calendar"
+      "info info"
+      "todo todo";
+    grid-template-rows: 60px auto auto auto auto auto auto auto;
+  }
+
+  .team-shell::before {
+    grid-row: 1 / 6;
+  }
+
+  .team-shell>.community-menu {
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1101px) {
+  .team-shell {
+    grid-template-columns: repeat(14, minmax(0, 1fr));
+
+    grid-template-areas:
+      "logo logo dash-menu dash-menu todo-menu todo-menu issue-menu issue-menu info-menu info-menu community-menu community-menu my-name my-name"
+      "calendar calendar calendar calendar calendar calendar calendar info info info info info info info"
+      "calendar calendar calendar calendar calendar calendar calendar todo todo todo todo todo todo todo";
+  }
+}
+
+.team-shell .issue-menu h3,
+.team-shell .issue-menu.active h3,
+.team-shell>.community-menu h3,
+.team-shell>.community-menu.active h3 {
+  color: #087BDF;
+}
+
+/* 기본 글자색 */
+.team-shell .issue-menu h3,
+.team-shell>.community-menu h3 {
+  color: #385577;
+}
+
+/* 마우스를 올렸을 때 */
+.team-shell .issue-menu h3:hover,
+.team-shell>.community-menu h3:hover {
+  color: #087BDF;
+}
+
+/* 현재 선택된 메뉴 */
+.team-shell .issue-menu.active h3,
+.team-shell>.community-menu.active h3 {
+  color: #2154c3;
+}
+
+/* 이름 옆 안 읽은 알림 수 배지 (우진: 마이페이지 알림 탭과 같은 데이터) */
+.team-shell .noti-badge {
+  display: inline-block;
+  min-width: 18px;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: #e5484d;
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 18px;
+  text-align: center;
+}

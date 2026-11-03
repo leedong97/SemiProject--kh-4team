@@ -31,6 +31,7 @@ export function JonghoProvider({ children }) {
     changeData,
     projects,
     setProjects,
+    resetProjects,
     resetDemo,
     createProject,
     updateProject,

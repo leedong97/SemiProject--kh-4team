@@ -1,6 +1,12 @@
+import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import getLoginUser from '../pages/woojin/getLoginUser';
+import { API_BASE } from './config';
 import './shell.css';
+
+// 안 읽은 알림 수를 몇 ms마다 서버에 물어볼지 (3000 = 3초)
+const NOTI_POLL_MS = 3000;
 
 // 팀 공통 틀: 위쪽 메뉴바 + 아래 페이지가 들어갈 12칸 그리드
 // (여기를 바꾸면 모두의 화면이 바뀌니, 바꾸기 전에 팀에 먼저 알려주세요)
@@ -12,6 +18,23 @@ function TeamShell() {
   const path = useLocation().pathname.toLowerCase();
   const on = (prefix) => path === prefix || path.startsWith(prefix + '/');
   const isAdmin = !user.isDummy && user.role === '관리자';
+
+  // 이름 옆에 보여줄 '안 읽은 알림 수' (더미 사용자는 서버에 직원이 없으니 묻지 않아요)
+  const [unreadCount, setUnreadCount] = useState(0);
+  useEffect(() => {
+    if (user.isDummy) return undefined;
+
+    const load = () => {
+      axios
+        .get(`${API_BASE}/api/notifications`, { params: { employeeId: user.id } })
+        .then((res) => setUnreadCount(res.data.unreadCount || 0))
+        .catch(() => {}); // 실패해도 화면은 그대로 (다음 3초 뒤에 다시 시도)
+    };
+
+    load();
+    const timerId = setInterval(load, NOTI_POLL_MS);
+    return () => clearInterval(timerId); // 화면이 사라지면 타이머 정리
+  }, [user.id, user.isDummy]);
 
   return (
     <div className="team-shell">
@@ -47,9 +70,26 @@ function TeamShell() {
         </h3>
       </div>
 
+      <div className={'community-menu' + (on('/community') ? ' active' : '')}>
+        <h3>
+          <Link
+            to="/community"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            커뮤니티
+          </Link>
+        </h3>
+      </div>
+
       <div className='my-name' tabIndex={0}>
         <h4>
-          <Link to="/mypage">{user.name} {user.rank}</Link>
+          <Link to="/mypage">
+            {user.name} {user.rank}
+            {unreadCount > 0 && (
+              <span className="noti-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+            )}
+          </Link>
         </h4>
 
         <div className='log'>

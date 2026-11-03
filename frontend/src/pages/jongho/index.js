@@ -27,11 +27,12 @@ function DashboardRoute() {
   return <Dashboard projects={projects} data={data} />;
 }
 function ProjectsRoute() {
-  const { projects, setProjects, data, createProject, updateProject, removeProject } = useJongho();
+  const { projects, setProjects, resetProjects, data, createProject, updateProject, removeProject } = useJongho();
   return (
     <ProjectManagement
       projects={projects}
       setProjects={setProjects}
+      reloadProjects={resetProjects}
       createProject={createProject}
       updateProject={updateProject}
       removeProject={removeProject}
