@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useJunwoo } from "../../junwoo/JunwooContext";
-import "./Notices.css";
+import "../styles/Notices.css";
 
 function Notices() {
     const { info, addInfo, updateInfo, pinInfo, delInfo, noticeLoading, noticeError } = useJunwoo();
@@ -11,6 +12,11 @@ function Notices() {
     const [editId, setEditId] = useState(null);
     const [search, setSearch] = useState("");
     const [saving, setSaving] = useState(false);
+
+    // 대시보드에서 ?notice=번호 로 넘어오면 해당 공지를 수정 폼에 채움
+    const [searchParams] = useSearchParams();
+    const focusNoticeId = searchParams.get("notice");
+    const openedNoticeRef = useRef(null);
 
     function resetForm() {
         setTitle(""); setContent(""); setImportant(false);
@@ -64,6 +70,19 @@ function Notices() {
         item.title.toLowerCase().includes(search.toLowerCase()) ||
         item.content.toLowerCase().includes(search.toLowerCase())
     );
+
+    // 대시보드에서 넘어온 공지를 찾아 수정 폼에 바로 채움 (같은 공지는 한 번만)
+    useEffect(() => {
+        if (!focusNoticeId || openedNoticeRef.current === focusNoticeId) return;
+        const target = info.find(item => String(item.id) === focusNoticeId);
+        if (!target) return;
+        openedNoticeRef.current = focusNoticeId;
+        handleEdit({
+            ...target,
+            important: Boolean(target.isPinned ?? target.important),
+            employee_id: target.employee_id ?? target.employeeId ?? "",
+        });
+    }, [focusNoticeId, info]);
 
     return (
         <div className="admin-boards">

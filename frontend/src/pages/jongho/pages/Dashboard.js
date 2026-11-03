@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // 프로젝트 + 이슈 + 인사 + 평가를 하나의 화면에서 보여줍니다.
@@ -18,6 +18,46 @@ export default function Dashboard({ projects = [], data }) {
     ];
     const employeeName = id => data.employees.find(e => String(e.id) === String(id))?.name || "미배정";
 
+    // 최근 공지사항: 고정 공지를 먼저, 남은 자리에 최신 공지를 채워 5개까지 보여줌
+    const NOTICE_LIMIT = 5;
+    const [notices, setNotices] = useState([]);
+    const [noticeLoading, setNoticeLoading] = useState(true);
+    const [noticeError, setNoticeError] = useState("");
+
+    useEffect(() => {
+        let alive = true;
+        fetch("http://localhost:3333/api/notices")
+            .then(async (res) => {
+                const body = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(body.message || "공지사항을 불러오지 못했습니다.");
+                return body;
+            })
+            .then((rows) => { if (alive) setNotices(Array.isArray(rows) ? rows : []); })
+            .catch((err) => { if (alive) setNoticeError(err.message || "공지사항을 불러오지 못했습니다."); })
+            .finally(() => { if (alive) setNoticeLoading(false); });
+        return () => { alive = false; };
+    }, []);
+
+    const isPinned = (notice) => Number(notice.isPinned) === 1 || notice.isPinned === true;
+    const pinnedNotices = notices.filter(isPinned).slice(0, NOTICE_LIMIT);
+    const latestNotices = notices
+        .filter((notice) => !isPinned(notice))
+        .sort((a, b) => Number(b.id) - Number(a.id));
+    const visibleNotices = [
+        ...pinnedNotices,
+        ...latestNotices.slice(0, NOTICE_LIMIT - pinnedNotices.length),
+    ];
+
+
+    // 재무관리 패널: 프로젝트의 예상 계약 금액(budget) 기준 요약
+    const budgetOf = (project) => Number(project.budget) || 0;
+    const totalBudget = projects.reduce((sum, project) => sum + budgetOf(project), 0);
+    const activeBudget = projects
+        .filter((project) => ["진행중", "진행 중"].includes(project.status))
+        .reduce((sum, project) => sum + budgetOf(project), 0);
+    const topProjects = [...projects]
+        .sort((a, b) => budgetOf(b) - budgetOf(a))
+        .slice(0, 3);
 
     return (
         <div className="merge-dashboard">
@@ -37,12 +77,6 @@ export default function Dashboard({ projects = [], data }) {
                     </p>
                 </div>
 
-                {/* 클릭하면 프로젝트 관리 페이지로 이동 */}
-                <button className="btn btn-primary"
-                    onClick={() => navigate("/admin/projects")}
-                >
-                    + 프로젝트 관리
-                </button>
             </div>
 
 
@@ -126,6 +160,8 @@ export default function Dashboard({ projects = [], data }) {
                             <div
                                 className="merge-project"
                                 key={project.id}
+                                onClick={() => navigate(`/admin/projects?project=${project.id}`)}
+                                style={{ cursor: "pointer" }}
                             >
                                 {/* 프로젝트 이름, 상태, 담당자 */}
                                 <div>
@@ -176,53 +212,49 @@ export default function Dashboard({ projects = [], data }) {
                 </section>
 
 
-                {/* 관리자 확인 사항 */}
+                {/* 최근 공지사항 */}
                 <section className="card merge-panel">
 
                     <div className="merge-panel-head">
-                        <h2>관리자 확인 사항</h2>
+                        <h2>공지사항</h2>
 
-                        {/* 세 가지 확인 사항의 전체 개수 */}
-                        <span className="merge-count">
-                            {unassigned.length + overdue.length + pending.length}건
-                        </span>
+                        <button
+                            type="button"
+                            className="btn btn-ghost"
+                            onClick={() => navigate("/admin/boards")}
+                        >
+                            공지사항 관리 →
+                        </button>
                     </div>
 
-                    {/* 담당자가 배정되지 않은 프로젝트 */}
-                    <button
-                        className="merge-alert"
-                        onClick={() => navigate("/admin/assignments")}
-                    >
-                        <b>담당자 미배정 프로젝트</b>
+                    {noticeLoading && <p>공지사항을 불러오는 중입니다.</p>}
 
-                        <strong>
-                            {unassigned.length}건 →
-                        </strong>
-                    </button>
+                    {!noticeLoading && noticeError && <p>{noticeError}</p>}
 
-                    {/* 처리 기한이 지난 이슈 */}
-                    <button
-                        className="merge-alert"
-                        onClick={() => navigate("/admin/issues")}
-                    >
-                        <b>기한 초과 이슈</b>
+                    {!noticeLoading && !noticeError && visibleNotices.length === 0 && (
+                        <p>등록된 공지사항이 없습니다.</p>
+                    )}
 
-                        <strong>
-                            {overdue.length}건 →
-                        </strong>
-                    </button>
+                    {!noticeLoading && !noticeError && visibleNotices.map((notice) => (
+                        <button
+                            type="button"
+                            className="merge-log"
+                            key={notice.id}
+                            onClick={() => navigate(`/admin/boards?notice=${notice.id}`)}
+                            style={{ width: "100%", textAlign: "left", background: "none", border: 0, cursor: "pointer" }}
+                        >
+                            <strong>
+                                {isPinned(notice) && (
+                                    <span className="pill" style={{ marginRight: 6 }}>고정</span>
+                                )}
+                                {notice.title}
+                            </strong>
 
-                    {/* 관리자 승인이 필요한 평가 */}
-                    <button
-                        className="merge-alert"
-                        onClick={() => navigate("/admin/evaluations")}
-                    >
-                        <b>평가 승인 요청</b>
-
-                        <strong>
-                            {pending.length}건 →
-                        </strong>
-                    </button>
+                            <small>
+                                {notice.author} · {notice.date} · 조회 {notice.views ?? 0}
+                            </small>
+                        </button>
+                    ))}
 
                 </section>
 
@@ -230,7 +262,7 @@ export default function Dashboard({ projects = [], data }) {
 
 
             {/* ================================ */}
-            {/* 4. 최근 이슈 및 관리자 작업 기록 */}
+            {/* 4. 최근 이슈 및 공지사항 */}
             {/* ================================ */}
 
             <div className="merge-columns">
@@ -266,7 +298,11 @@ export default function Dashboard({ projects = [], data }) {
                                 {/* 최근 이슈를 최대 5개까지 출력 */}
                                 {data.issues.slice(0, 5).map(issue => (
 
-                                    <tr key={issue.id}>
+                                    <tr
+                                        key={issue.id}
+                                        onClick={() => navigate(`/admin/issues?issue=${issue.id}`)}
+                                        style={{ cursor: "pointer" }}
+                                    >
                                         <td>
                                             {issue.title}
                                         </td>
@@ -308,14 +344,50 @@ export default function Dashboard({ projects = [], data }) {
 
                 </section>
 
-                {/* 공지사항 (DB 연결 전 자리) */}
+                {/* 재무관리: 프로젝트 예상 계약 금액 요약 */}
                 <section className="card merge-panel">
 
                     <div className="merge-panel-head">
-                        <h2>공지사항</h2>
+                        <h2>재무관리</h2>
+
+                        <button
+                            type="button"
+                            className="btn btn-ghost"
+                            onClick={() => navigate("/admin/projects")}
+                        >
+                            프로젝트 관리 →
+                        </button>
                     </div>
 
-                    <p>공지 목록은 DB 연결 후 표시됩니다.</p>
+                    <div className="merge-alert">
+                        <b>전체 예상 계약 금액</b>
+                        <strong>{totalBudget.toLocaleString()}원</strong>
+                    </div>
+
+                    <div className="merge-alert">
+                        <b>진행 중 프로젝트 금액</b>
+                        <strong>{activeBudget.toLocaleString()}원</strong>
+                    </div>
+
+                    <p>금액이 큰 프로젝트</p>
+
+                    {topProjects.map((project) => (
+                        <button
+                            type="button"
+                            className="merge-log"
+                            key={project.id}
+                            onClick={() => navigate(`/admin/projects?project=${project.id}`)}
+                            style={{ width: "100%", textAlign: "left", background: "none", border: 0, cursor: "pointer" }}
+                        >
+                            <strong>{project.name}</strong>
+
+                            <small>
+                                {project.customer || "-"} · {budgetOf(project).toLocaleString()}원
+                            </small>
+                        </button>
+                    ))}
+
+                    {topProjects.length === 0 && <p>등록된 프로젝트가 없습니다.</p>}
 
                 </section>
 

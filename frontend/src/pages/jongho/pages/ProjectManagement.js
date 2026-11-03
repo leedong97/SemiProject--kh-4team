@@ -1,7 +1,18 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { canLeadProject } from "../shared/permissions";
-import { adminRequest } from "../adminApi";
+import { adminRequest, getPendingProjectRequests } from "../adminApi";
+import { matchesProjectSearch } from "../utils/projectFilters";
+import useSortableList from "../utils/useSortableList";
+import { PROJECT_STATUS_OPTIONS, DEFAULT_PROJECT_STATUS } from "../shared/projectConstants";
+
+// 담당자 ID로 직원 찾기 (문자열/숫자 ID 차이를 한 곳에서 처리)
+const findEmployee = (employees, id) =>
+  employees.find((e) => String(e.id) === String(id));
+
+// 시작일이 종료일보다 늦은지 확인
+const isInvalidDateRange = (startDate, endDate) =>
+  Boolean(startDate && endDate && startDate > endDate);
 
 function ProjectManagement({
   projects = [],
@@ -14,15 +25,16 @@ function ProjectManagement({
 
   const navigate = useNavigate();
 
+  // 대시보드에서 ?project=번호 로 넘어오면 해당 프로젝트 상세를 엽니다
+  const [searchParams] = useSearchParams();
+  const focusProjectId = searchParams.get("project");
+  const openedProjectRef = useRef(null);
+
   // 현재 화면: list(목록), register(등록), detail(상세정보)
   const [page, setPage] = useState("list");
 
   // 프로젝트 검색어
   const [search, setSearch] = useState("");
-
-  // 정렬 기준과 방향 (같은 항목을 다시 누르면 오름차순/내림차순 전환)
-  const [sortKey, setSortKey] = useState(null);
-  const [sortDir, setSortDir] = useState("asc");
 
   // 상세정보를 볼 프로젝트 ID
   const [selectedProjectId, setSelectedProjectId] = useState(null);
@@ -31,6 +43,10 @@ function ProjectManagement({
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState(null);
   const [savingEdit, setSavingEdit] = useState(false);
+
+  // 대기 중인 완료 요청 목록 (requests 테이블)
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [requestBusy, setRequestBusy] = useState(false);
 
   // 신규 프로젝트 입력 데이터
   const [form, setForm] = useState({
@@ -61,11 +77,7 @@ function ProjectManagement({
       return;
     }
 
-    if (
-      form.startDate &&
-      form.endDate &&
-      form.startDate > form.endDate
-    ) {
+    if (isInvalidDateRange(form.startDate, form.endDate)) {
       alert("종료 예정일은 시작 예정일 이후여야 합니다.");
       return;
     }
@@ -87,7 +99,7 @@ function ProjectManagement({
       endDate: form.endDate,
       budget: Number(form.budget || 0),
       description: form.description,
-      status: "예정",
+      status: DEFAULT_PROJECT_STATUS,
       progress: 0,
       plannedProgress: 0,
       managerId: null
@@ -126,50 +138,21 @@ function ProjectManagement({
   };
 
   // 프로젝트 검색
-  const filteredProjects = projects.filter((project) => {
-    const keyword = search.toLowerCase();
-
-    return (
-      (project.name || "").toLowerCase().includes(keyword) ||
-      (project.customer || "").toLowerCase().includes(keyword)
-    );
-  });
+  const filteredProjects = projects.filter((project) => matchesProjectSearch(project, search));
 
   // 정렬용 값: 담당자는 화면에 보이는 이름 기준으로 정렬
-  const getSortValue = (project) => {
-    if (sortKey === "manager") {
+  const getSortValue = (project, key) => {
+    if (key === "manager") {
       if (project.managerId == null) return "미배정";
-      const manager = employees.find((e) => String(e.id) === String(project.managerId));
+      const manager = findEmployee(employees, project.managerId);
       if (!manager) return `ID: ${project.managerId}`;
       return manager.name;
     }
-    return project[sortKey] ?? "";
+    return project[key] ?? "";
   };
+  const { changeSort, sortItems, sortMark } = useSortableList(getSortValue);
 
-  // 정렬 적용
-  const sortedProjects = [...filteredProjects].sort((a, b) => {
-    if (!sortKey) return 0;
-    const x = getSortValue(a);
-    const y = getSortValue(b);
-    const result = typeof x === "number" && typeof y === "number"
-      ? x - y
-      : String(x).localeCompare(String(y), "ko");
-    return sortDir === "asc" ? result : -result;
-  });
-
-
-
-  // 헤더 클릭: 같은 항목이면 방향 전환, 다른 항목이면 오름차순으로 시작
-  const changeSort = (key) => {
-    if (sortKey === key) {
-      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
-    } else {
-      setSortKey(key);
-      setSortDir("asc");
-    }
-  };
-
-  const sortMark = (key) => (sortKey === key ? (sortDir === "asc" ? " ▲" : " ▼") : "");
+  const sortedProjects = sortItems(filteredProjects);
 
   // 상세정보 열기
   const openDetail = (id) => {
@@ -178,6 +161,14 @@ function ProjectManagement({
     setEditForm(null);
     setPage("detail");
   };
+
+  // 대시보드에서 넘어온 프로젝트 상세를 한 번만 엽니다
+  useEffect(() => {
+    if (!focusProjectId || openedProjectRef.current === focusProjectId) return;
+    if (!projects.some((p) => String(p.id) === focusProjectId)) return;
+    openedProjectRef.current = focusProjectId;
+    openDetail(Number(focusProjectId));
+  }, [focusProjectId, projects]);
 
   // 목록으로 돌아가기
   const closeDetail = () => {
@@ -191,17 +182,71 @@ function ProjectManagement({
   );
 
   // 선택한 프로젝트 담당자 찾기
-  const selectedManager = employees.find(
-    (employee) =>
-      String(employee.id) ===
-      String(selectedProject?.managerId)
-  );
+  const selectedManager = findEmployee(employees, selectedProject?.managerId);
 
   // 담당자가 있지만 팀장 미만(직급 미달)인지 확인
   const isUnderRankManager = (project) => {
-    const manager = employees.find((e) => String(e.id) === String(project.managerId));
+    const manager = findEmployee(employees, project.managerId);
     return Boolean(manager) && !canLeadProject(manager);
   };
+
+  // 대기 중인 완료 요청 다시 불러오기
+  const loadPendingRequests = async () => {
+    try {
+      const rows = await getPendingProjectRequests("완료");
+      setPendingRequests(Array.isArray(rows) ? rows : []);
+    } catch (err) {
+      setPendingRequests([]);
+    }
+  };
+
+  // 선택한 프로젝트에 대기 중인 요청 찾기
+  const pendingFor = (projectId) =>
+    pendingRequests.find((req) => String(req.projectId) === String(projectId));
+
+  // 완료 요청 승인: 서버에서 프로젝트를 완료로 바꾸고, 화면 상태도 맞춤
+  const approveRequest = async (req) => {
+    if (!window.confirm(`"${req.projectName}" 프로젝트를 완료 처리할까요?`)) return;
+    setRequestBusy(true);
+    try {
+      await adminRequest(`/project-requests/${req.id}/approve`, { method: "POST" });
+      setProjects((prev) =>
+        prev.map((p) =>
+          String(p.id) === String(req.projectId) ? { ...p, status: "완료", progress: 100 } : p
+        )
+      );
+      await loadPendingRequests();
+      alert("프로젝트를 완료 처리했습니다.");
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setRequestBusy(false);
+    }
+  };
+
+  // 완료 요청 반려: 사유를 입력받아 서버에 저장
+  const rejectRequest = async (req) => {
+    const reason = window.prompt("반려 사유를 입력하세요.");
+    if (!reason || !reason.trim()) return;
+    setRequestBusy(true);
+    try {
+      await adminRequest(`/project-requests/${req.id}/reject`, {
+        method: "POST",
+        body: JSON.stringify({ reason: reason.trim() })
+      });
+      await loadPendingRequests();
+      alert("완료 요청을 반려했습니다.");
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setRequestBusy(false);
+    }
+  };
+
+  // 화면이 열릴 때 대기 요청 목록 불러오기
+  useEffect(() => {
+    loadPendingRequests();
+  }, []);
 
   // 정보 수정 시작: 현재 값으로 폼을 채움
   const startEdit = () => {
@@ -213,7 +258,7 @@ function ProjectManagement({
       budget: selectedProject.budget == null ? "" : String(selectedProject.budget),
       startDate: selectedProject.startDate || "",
       endDate: selectedProject.endDate || "",
-      status: selectedProject.status || "예정",
+      status: selectedProject.status || DEFAULT_PROJECT_STATUS,
       progress: String(getProgress(selectedProject.progress)),
       plannedProgress: String(getProgress(selectedProject.plannedProgress))
     });
@@ -248,7 +293,7 @@ function ProjectManagement({
       alert("계획 진행률은 0~100 사이의 숫자로 입력하세요.");
       return;
     }
-    if (f.startDate && f.endDate && f.startDate > f.endDate) {
+    if (isInvalidDateRange(f.startDate, f.endDate)) {
       alert("종료 예정일은 시작 예정일 이후여야 합니다.");
       return;
     }
@@ -330,6 +375,26 @@ function ProjectManagement({
               onChange={(e) => setSearch(e.target.value)}
             />
 
+            {pendingRequests.length > 0 && (
+              <div className="nexus-request-list">
+                <div className="nexus-request-head">
+                  <strong>완료 요청</strong>
+                  <span>대기 {pendingRequests.length}건</span>
+                </div>
+                {pendingRequests.map((req) => (
+                  <button
+                    key={req.id}
+                    type="button"
+                    className="nexus-request-row"
+                    onClick={() => openDetail(req.projectId)}
+                  >
+                    <strong>{req.projectName}</strong>
+                    <small>{req.requesterName || "요청자 미상"} · {req.requestedAt}</small>
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="nexus-project-table-wrap">
               <table className="nexus-project-table">
 
@@ -362,7 +427,7 @@ function ProjectManagement({
                       <td>
                         {(() => {
                           if (project.managerId == null) return "미배정";
-                          const manager = employees.find((e) => String(e.id) === String(project.managerId));
+                          const manager = findEmployee(employees, project.managerId);
                           if (!manager) return `ID: ${project.managerId}`;
                           if (!canLeadProject(manager)) return `직급 미달 담당자 (${manager.name})`;
                           return manager.name;
@@ -458,6 +523,30 @@ function ProjectManagement({
           {selectedProject ? (
             <div className="card nexus-project-panel nexus-detail-panel">
 
+              {(() => {
+                const req = pendingFor(selectedProject.id);
+                if (!req) return null;
+                return (
+                  <div className="nexus-detail-request">
+                    <div>
+                      <strong>완료 요청 대기 중</strong>
+                      <p>
+                        {req.requesterName || "요청자 미상"} · {req.requestedAt}
+                        {req.reason ? ` · ${req.reason}` : ""}
+                      </p>
+                    </div>
+                    <div className="nexus-detail-request-actions">
+                      <button type="button" className="btn btn-primary" disabled={requestBusy} onClick={() => approveRequest(req)}>
+                        완료 승인
+                      </button>
+                      <button type="button" className="btn btn-outline" disabled={requestBusy} onClick={() => rejectRequest(req)}>
+                        반려
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+
               <div className="nexus-detail-title">
                 <h3>{selectedProject.name}</h3>
 
@@ -493,7 +582,7 @@ function ProjectManagement({
                     <label>
                       상태
                       <select value={editForm.status} onChange={updateEdit("status")}>
-                        {["예정", "진행중", "완료", "보류"].map((st) => (
+                        {PROJECT_STATUS_OPTIONS.map((st) => (
                           <option key={st} value={st}>{st}</option>
                         ))}
                       </select>

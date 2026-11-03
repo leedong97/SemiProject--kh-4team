@@ -89,8 +89,8 @@
 }
 
 .merge-erp-module .pill {
-  background: #edf2ff;
-  color: #3159a6;
+  background: #eaf1ff;
+  color: #1b4bc2;
   padding: 6px 10px;
   border-radius: 999px;
   font-size: 12px;
@@ -149,9 +149,9 @@
 }
 
 .merge-erp-module .issue-priority-보통 {
-  background: #dbeafe;
-  color: #1d4ed8;
-  border-color: #60a5fa;
+  background: #dbe8ff;
+  color: #1b4bc2;
+  border-color: #5b9bff;
 }
 
 .merge-erp-module .issue-priority-낮음 {

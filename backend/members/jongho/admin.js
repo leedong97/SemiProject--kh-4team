@@ -94,6 +94,157 @@ router.get('/projects', async (req, res) => {
   }
 });
 
+// ===== 요청 처리 (project_requests 테이블: 등록 + 완료 공용) =====
+// 메인 페이지가 project_requests 에 요청을 넣고, 관리자가 여기서 승인 또는 반려합니다.
+// request_type: '등록' (새 프로젝트) / '완료' (기존 프로젝트 완료)
+
+const PROJECT_STATUS_LIST = ['예정', '진행중', '완료', '보류'];
+const PROJECT_PRIORITY_LIST = ['낮음', '보통', '높음'];
+
+// 요청 목록 (기본: 대기 중). type 으로 종류를 골라 볼 수 있음
+router.get('/project-requests', async (req, res) => {
+  const status = req.query.status || '대기';
+  const type = req.query.type;
+  if (!['대기', '승인', '반려'].includes(status)) {
+    return res.status(400).json({ message: '잘못된 상태입니다.' });
+  }
+  if (type && !['등록', '완료'].includes(type)) {
+    return res.status(400).json({ message: '잘못된 요청 종류입니다.' });
+  }
+  try {
+    const params = [status];
+    let typeFilter = '';
+    if (type) {
+      typeFilter = ' AND pr.request_type = ?';
+      params.push(type);
+    }
+    const [rows] = await pool.query(
+      `SELECT pr.request_id AS id,
+              pr.request_type AS type,
+              pr.title,
+              pr.content,
+              pr.project_id AS projectId,
+              p.project_title AS projectName,
+              pr.requested_by AS requesterId,
+              e.employee_name AS requesterName,
+              DATE_FORMAT(pr.start_date, '%Y-%m-%d') AS startDate,
+              DATE_FORMAT(pr.end_date, '%Y-%m-%d') AS endDate,
+              pr.project_status AS projectStatus,
+              pr.priority,
+              pr.reason,
+              pr.reject_reason AS rejectReason,
+              pr.request_status AS status,
+              DATE_FORMAT(pr.created_at, '%Y-%m-%d %H:%i') AS requestedAt,
+              pr.approved_project_id AS approvedProjectId
+       FROM project_requests pr
+       LEFT JOIN projects p ON pr.project_id = p.project_id
+       LEFT JOIN employees e ON pr.requested_by = e.employee_id
+       WHERE pr.request_status = ?${typeFilter}
+       ORDER BY pr.request_id DESC`,
+      params
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// 요청 승인 (트랜잭션)
+// - 등록: projects 에 새 프로젝트 생성 (담당자는 비움)
+// - 완료: 대상 프로젝트를 완료, 실제 진행률 100
+router.post('/project-requests/:id/approve', async (req, res) => {
+  if (!validId(req.params.id)) return res.status(400).json({ message: '잘못된 요청 번호입니다.' });
+
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    const [rows] = await connection.query(
+      `SELECT request_id, request_type, title, content, requested_by, project_id, request_status,
+              project_status, priority,
+              DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date,
+              DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date
+       FROM project_requests WHERE request_id = ? FOR UPDATE`,
+      [req.params.id]
+    );
+    if (!rows.length) {
+      await connection.rollback();
+      return res.status(404).json({ message: '요청을 찾을 수 없습니다.' });
+    }
+    const request = rows[0];
+    if (request.request_status !== '대기') {
+      await connection.rollback();
+      return res.status(400).json({ message: '이미 처리된 요청입니다.' });
+    }
+
+    let approvedProjectId;
+
+    if (request.request_type === '등록') {
+      if (request.start_date > request.end_date) {
+        await connection.rollback();
+        return res.status(400).json({ message: '종료일이 시작일보다 빠릅니다.' });
+      }
+      const status = PROJECT_STATUS_LIST.includes(request.project_status) ? request.project_status : '예정';
+      const priority = PROJECT_PRIORITY_LIST.includes(request.priority) ? request.priority : '보통';
+      const [inserted] = await connection.query(
+        `INSERT INTO projects (project_title, project_content, created_by, manager_id, status, priority, start_date, end_date)
+         VALUES (?, ?, ?, NULL, ?, ?, ?, ?)`,
+        [request.title, request.content, request.requested_by, status, priority, request.start_date, request.end_date]
+      );
+      approvedProjectId = inserted.insertId;
+    } else if (request.request_type === '완료') {
+      const [result] = await connection.query(
+        "UPDATE projects SET status = '완료', project_progress = 100 WHERE project_id = ?",
+        [request.project_id]
+      );
+      if (!result.affectedRows) {
+        await connection.rollback();
+        return res.status(404).json({ message: '프로젝트를 찾을 수 없습니다.' });
+      }
+      approvedProjectId = request.project_id;
+    } else {
+      await connection.rollback();
+      return res.status(400).json({ message: '알 수 없는 요청 종류입니다.' });
+    }
+
+    await connection.query(
+      `UPDATE project_requests
+       SET request_status = '승인', processed_by = ?, processed_at = NOW(), approved_project_id = ?
+       WHERE request_id = ?`,
+      [req.adminId, approvedProjectId, request.request_id]
+    );
+
+    await connection.commit();
+    res.json({ ok: true, projectId: approvedProjectId });
+  } catch (err) {
+    await connection.rollback();
+    res.status(500).json({ message: '요청 승인 실패: ' + err.message });
+  } finally {
+    connection.release();
+  }
+});
+
+// 요청 반려: 반려 사유 필수, 대기 중인 요청만
+router.post('/project-requests/:id/reject', async (req, res) => {
+  if (!validId(req.params.id)) return res.status(400).json({ message: '잘못된 요청 번호입니다.' });
+  const rejectReason = typeof req.body?.reason === 'string' ? req.body.reason.trim() : '';
+  if (!rejectReason) return res.status(400).json({ message: '반려 사유를 입력하세요.' });
+
+  try {
+    const [result] = await pool.query(
+      `UPDATE project_requests
+       SET request_status = '반려', reject_reason = ?, processed_by = ?, processed_at = NOW()
+       WHERE request_id = ? AND request_status = '대기'`,
+      [rejectReason, req.adminId, req.params.id]
+    );
+    if (!result.affectedRows) {
+      return res.status(400).json({ message: '대기 중인 요청이 아니거나 없는 요청입니다.' });
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ message: '요청 반려 실패: ' + err.message });
+  }
+});
+
 module.exports = router;
 
 // ── 프로젝트 변경 API: MySQL에 실제 저장 ──
@@ -169,7 +320,7 @@ router.patch('/projects/:id', async (req, res) => {
     (!Number.isSafeInteger(Number(budget)) || Number(budget) < 0)
   )
     return res.status(400).json({ message: '예산이 올바르지 않습니다.' });
-  if (status !== undefined && !['예정', '진행중', '완료', '보류'].includes(status))
+  if (status !== undefined && !['예정', '진행중', '완료 요청', '완료', '보류'].includes(status))
     return res.status(400).json({ message: '지원하지 않는 상태입니다.' });
   if (managerId !== undefined && managerId !== null && !validId(managerId))
     return res.status(400).json({ message: '담당자 번호가 올바르지 않습니다.' });

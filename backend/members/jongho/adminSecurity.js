@@ -1,3 +1,5 @@
+// (참고용) 토큰 로그인 방식 관리자 보안 모듈. 지금은 어디에서도 require 하지 않아요.
+// 나중에 관리자 로그인을 붙일 때 jongho/index.js 의 devRouter 대신 사용하세요.
 // Node.js 기본 crypto를 이용한 서명 토큰 (별도 패키지 불필요)
 const crypto = require('crypto');
 const SECRET = process.env.SESSION_SECRET;
@@ -22,7 +24,7 @@ function requireAdmin(req, res, next) {
         return res.status(401).json({ message: '인증 정보가 손상되었습니다.' });
     }
     if (!Number.isInteger(payload.id) || payload.exp < Date.now()) return res.status(401).json({ message: '로그인이 만료되었습니다.' });
-    const pool = require('./db');
+    const pool = require('../../db');
     pool.query('SELECT employee_id, employee_role, employee_status FROM employees WHERE employee_id = ?', [payload.id])
         .then(([rows]) => {
             const user = rows[0];

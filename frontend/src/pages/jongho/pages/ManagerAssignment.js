@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { canLeadProject } from "../shared/permissions";
+import { matchesProjectSearch } from "../utils/projectFilters";
+import useSortableList from "../utils/useSortableList";
 
 function ManagerAssignment({
     projects = [],
@@ -7,10 +9,6 @@ function ManagerAssignment({
     updateProject,
     employees = []
 }) {
-
-    // ===== 정렬 =====
-    const [sortKey, setSortKey] = useState(null);
-    const [sortDir, setSortDir] = useState("asc");
 
     // 검색어
     const [search, setSearch] = useState("");
@@ -25,45 +23,26 @@ function ManagerAssignment({
     };
 
     // 정렬용 값
-    const getSortValue = (project) => {
-        if (sortKey === "manager") return getManagerLabel(project);
-        if (sortKey === "assigned") {
+    const getSortValue = (project, key) => {
+        if (key === "manager") return getManagerLabel(project);
+        if (key === "assigned") {
             const manager = employees.find((e) => String(e.id) === String(project.managerId));
             return manager && canLeadProject(manager) ? "배정 완료" : "배정 없음";
         }
-        return project[sortKey] ?? "";
+        return project[key] ?? "";
     };
+    const { changeSort, sortItems, sortMark } = useSortableList(getSortValue);
 
     // 화면에 보일 프로젝트 목록 (필터 후 정렬)
-    const sortedProjects = projects
+    const filteredProjects = projects
         .filter((project) =>
             project.status !== "승인 대기" &&
             project.status !== "반려"
         )
         .filter((project) => {
-            const keyword = search.toLowerCase();
-            return (
-                (project.name || "").toLowerCase().includes(keyword) ||
-                (project.customer || "").toLowerCase().includes(keyword)
-            );
-        })
-        .sort((a, b) => {
-            if (!sortKey) return 0;
-            const result = String(getSortValue(a)).localeCompare(String(getSortValue(b)), "ko");
-            return sortDir === "asc" ? result : -result;
+            return matchesProjectSearch(project, search);
         });
-
-    // 헤더 클릭: 같은 항목이면 방향 전환, 다른 항목이면 오름차순
-    const changeSort = (key) => {
-        if (sortKey === key) {
-            setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
-        } else {
-            setSortKey(key);
-            setSortDir("asc");
-        }
-    };
-
-    const sortMark = (key) => (sortKey === key ? (sortDir === "asc" ? " ▲" : " ▼") : "");
+    const sortedProjects = sortItems(filteredProjects);
 
     // 프로젝트 담당자 배정
     const assignManager = async (projectId, managerId) => {

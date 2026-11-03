@@ -41,7 +41,7 @@
     font-size: 28px;
     font-weight: 800;
     letter-spacing: -0.8px;
-    color: #172b4d;
+    color: #162b5c;
 }
 
 .issue-Management .section-head p {
@@ -64,7 +64,7 @@
 
 .issue-Management h3,
 .issue-Management h4 {
-    color: #172b4d;
+    color: #162b5c;
 }
 
 .issue-Management h4 {
@@ -101,7 +101,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: #386df4;
+    background: #245fe6;
 }
 
 .issue-Management .issue-stat-card:nth-child(2)::before {
@@ -128,7 +128,7 @@
     font-size: 32px;
     font-weight: 800;
     line-height: 1.2;
-    color: #172b4d;
+    color: #162b5c;
 }
 
 .issue-Management .issue-stat-card:nth-child(2) h3 {
@@ -204,7 +204,7 @@
     padding: 0;
     background: transparent;
     border: 0;
-    color: #386df4;
+    color: #245fe6;
     font-size: 13px;
     font-weight: 600;
     text-align: left;
@@ -283,8 +283,8 @@
 .issue-Management input:focus,
 .issue-Management select:focus,
 .issue-Management textarea:focus {
-    border-color: #386df4;
-    box-shadow: 0 0 0 3px rgba(56, 109, 244, 0.1);
+    border-color: #245fe6;
+    box-shadow: 0 0 0 3px rgba(36, 95, 230, 0.1);
 }
 
 .issue-Management input::placeholder,
@@ -331,9 +331,9 @@
 .issue-Management button {
     min-height: 40px;
     padding: 9px 16px;
-    background: #386df4;
+    background: #245fe6;
     color: #ffffff;
-    border: 1px solid #386df4;
+    border: 1px solid #245fe6;
     border-radius: 8px;
     font-family: inherit;
     font-size: 13px;
@@ -343,8 +343,8 @@
 }
 
 .issue-Management button:hover {
-    background: #285bdb;
-    border-color: #285bdb;
+    background: #1b4bc2;
+    border-color: #1b4bc2;
 }
 
 .issue-Management button.secondary {
@@ -430,8 +430,8 @@
 }
 
 .issue-Management .issue-tabs button.active {
-    background: #eaf0ff;
-    color: #285bdb;
+    background: #e8f0ff;
+    color: #1b4bc2;
     border-color: #bcd0ff;
     font-weight: 750;
 }
@@ -484,7 +484,7 @@
     margin: 0 0 12px;
     font-size: 16px;
     font-weight: 750;
-    color: #172b4d;
+    color: #162b5c;
 }
 
 .issue-Management .issue-meta {
@@ -501,7 +501,7 @@
 }
 
 .issue-Management .issue-border-보통 {
-    border-left-color: #386df4;
+    border-left-color: #245fe6;
 }
 
 .issue-Management .issue-border-높음 {
@@ -541,8 +541,8 @@
 }
 
 .issue-Management .issue-status-progress {
-    background: #e8efff;
-    color: #386df4;
+    background: #e8f0ff;
+    color: #245fe6;
 }
 
 .issue-Management .issue-status-review {
@@ -556,8 +556,8 @@
 }
 
 .issue-Management .issue-status-reopen {
-    background: #f1e8ff;
-    color: #8754c7;
+    background: #eaf1ff;
+    color: #6a7fd6;
 }
 
 .issue-Management .issue-priority-낮음 {
@@ -566,8 +566,8 @@
 }
 
 .issue-Management .issue-priority-보통 {
-    background: #e8efff;
-    color: #386df4;
+    background: #e8f0ff;
+    color: #245fe6;
 }
 
 .issue-Management .issue-priority-높음 {
@@ -651,9 +651,9 @@
 }
 
 .issue-Management .issue-time-buttons button.active {
-    background: #386df4;
+    background: #245fe6;
     color: #ffffff;
-    border-color: #386df4;
+    border-color: #245fe6;
 }
 
 .issue-Management .issue-work-section > .form-row {
@@ -767,7 +767,7 @@
 .issue-Management .issue-trash > summary {
     font-size: 14px;
     font-weight: 750;
-    color: #172b4d;
+    color: #162b5c;
 }
 
 .issue-Management .issue-trash-item {

@@ -30,9 +30,9 @@
     gap: 6px;
     min-height: 38px;
     padding: 9px 16px;
-    border: 1px solid #367eb4;
+    border: 1px solid #245fe6;
     border-radius: 8px;
-    background-color: #367eb4;
+    background-color: #245fe6;
     color: #ffffff;
     font-size: 12px;
     font-weight: 600;
@@ -43,8 +43,8 @@
 }
 
 .employee-evaluation button:hover {
-    background-color: #286995;
-    border-color: #286995;
+    background-color: #1b4bc2;
+    border-color: #1b4bc2;
 }
 
 .employee-evaluation button.secondary {
@@ -54,8 +54,8 @@
 }
 
 .employee-evaluation button.secondary:hover {
-    background-color: #f0f5fa;
-    border-color: #b7c8d8;
+    background-color: #f0f5ff;
+    border-color: #b9c9e6;
 }
 
 .employee-evaluation button:disabled {
@@ -82,8 +82,8 @@
 .employee-evaluation input:focus,
 .employee-evaluation select:focus,
 .employee-evaluation textarea:focus {
-    border-color: #367eb4;
-    box-shadow: 0 0 0 3px rgba(54, 126, 180, 0.10);
+    border-color: #245fe6;
+    box-shadow: 0 0 0 3px rgba(36, 95, 230, 0.10);
 }
 
 .employee-evaluation input::placeholder,
@@ -106,7 +106,7 @@
 .employee-evaluation .ev-eyebrow {
     display: inline-block;
     margin-bottom: 8px;
-    color: #367eb4;
+    color: #245fe6;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 1.5px;
@@ -140,9 +140,9 @@
     gap: 20px;
     padding: 18px 22px;
     margin-bottom: 22px;
-    border: 1px solid #d7e8f4;
+    border: 1px solid #dbe8ff;
     border-radius: 12px;
-    background-color: #edf6fc;
+    background-color: #eef4ff;
 }
 
 .employee-evaluation .ev-test-bar > div {
@@ -301,7 +301,7 @@
 }
 
 .employee-evaluation .ev-table tbody tr:hover {
-    background-color: #f8fbfe;
+    background-color: #f6f9ff;
 }
 
 .employee-evaluation .ev-table tbody tr:last-child td {
@@ -344,8 +344,8 @@
     height: 60px;
     flex-shrink: 0;
     border-radius: 50%;
-    background-color: #e1f0fa;
-    color: #367eb4;
+    background-color: #e3edff;
+    color: #245fe6;
     font-size: 24px;
     font-weight: 700;
 }
@@ -373,7 +373,7 @@
 
 .employee-evaluation .ev-chart-stats > div {
     padding: 22px;
-    border: 1px solid #e6edf4;
+    border: 1px solid #e6edf8;
     border-radius: 10px;
     background-color: #f8fafc;
 }
@@ -443,7 +443,7 @@
     height: 18px;
     overflow: hidden;
     border-radius: 20px;
-    background-color: #eaf0f6;
+    background-color: #e9f0fc;
 }
 
 .employee-evaluation .ev-chart-fill {
@@ -452,8 +452,8 @@
     border-radius: 20px;
     background: linear-gradient(
         90deg,
-        #82c9ed 0%,
-        #367eb4 100%
+        #8db4ff 0%,
+        #245fe6 100%
     );
     transition: width 0.35s ease;
 }
@@ -461,7 +461,7 @@
 .employee-evaluation .ev-chart-row > strong {
     width: 65px;
     flex-shrink: 0;
-    color: #367eb4;
+    color: #245fe6;
     font-size: 13px;
     font-weight: 700;
     text-align: right;
@@ -472,9 +472,9 @@
 .employee-evaluation .ev-chart-feedback {
     padding: 21px;
     margin-top: 10px;
-    border: 1px solid #e2edf5;
+    border: 1px solid #e3edff;
     border-radius: 10px;
-    background-color: #f3f8fc;
+    background-color: #f3f7ff;
 }
 
 .employee-evaluation .ev-chart-feedback strong {
@@ -565,9 +565,9 @@
     gap: 20px;
     padding: 20px 23px;
     margin-bottom: 23px;
-    border: 1px solid #d8ebf7;
+    border: 1px solid #dbe8ff;
     border-radius: 10px;
-    background-color: #edf7fd;
+    background-color: #eef4ff;
 }
 
 .employee-evaluation .ev-total span {
@@ -577,7 +577,7 @@
 }
 
 .employee-evaluation .ev-total strong {
-    color: #367eb4;
+    color: #245fe6;
     font-size: 25px;
     font-weight: 700;
 }
@@ -622,7 +622,7 @@
 }
 
 .employee-evaluation .ev-review-item:hover {
-    border-color: #cbdbe8;
+    border-color: #cddcf7;
 }
 
 .employee-evaluation .ev-review-title {
@@ -653,7 +653,7 @@
     min-height: 28px;
     padding: 6px 12px;
     border-radius: 20px;
-    background-color: #eaf1f7;
+    background-color: #e9f0fc;
     color: #60758b;
     font-size: 11px;
     font-weight: 700;
@@ -673,7 +673,7 @@
 }
 
 .employee-evaluation .ev-review-score strong {
-    color: #367eb4;
+    color: #245fe6;
     font-size: 22px;
 }
 

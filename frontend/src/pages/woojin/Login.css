@@ -3,8 +3,8 @@
    클래스가 .login / .signup 안쪽에만 적용돼서 다른 페이지와 겹치지 않아요. */
 
 .login, .signup {
-    --main-color: #2f6fed;
-    --main-color-dark: #1f56c4;
+    --main-color: #245fe6;
+    --main-color-dark: #1b4bc2;
     --error-color: #e53935;
     --border-color: #d0d5dd;
 }
@@ -44,7 +44,7 @@
 .login input:focus, .signup input:focus {
     outline: none;
     border-color: var(--main-color);
-    box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.15);
+    box-shadow: 0 0 0 3px rgba(36, 95, 230, 0.15);
 }
 
 /* 빨간 오류 문구 (입력창 바로 아래) */

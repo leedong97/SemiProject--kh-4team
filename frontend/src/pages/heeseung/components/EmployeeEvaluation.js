@@ -557,7 +557,7 @@ function EmployeeEvaluation({ data, changeData, currentUser }) {
 
                 <div>
                     <span className="ev-eyebrow">
-                        NEXUS ERP / PEOPLE MANAGEMENT
+                        COMMAND ERP / PEOPLE MANAGEMENT
                     </span>
 
                     <h2>직원 인사평가</h2>

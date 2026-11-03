@@ -20,8 +20,8 @@
 ============================================ */
 
 .hr-management {
-    --hr-primary: #4f46e5;
-    --hr-primary-hover: #4338ca;
+    --hr-primary: #245fe6;
+    --hr-primary-hover: #1b4bc2;
     --hr-text: #172338;
     --hr-muted: #64748b;
     --hr-border: #e2e8f0;
@@ -231,7 +231,7 @@
     border-color: var(--hr-primary);
 
     box-shadow:
-        0 0 0 3px rgba(79, 70, 229, 0.09);
+        0 0 0 3px rgba(36, 95, 230, 0.09);
 }
 
 /* 날짜 입력 영역 */
@@ -295,7 +295,7 @@
     background: var(--hr-primary-hover);
 
     box-shadow:
-        0 4px 12px rgba(79, 70, 229, 0.16);
+        0 4px 12px rgba(36, 95, 230, 0.16);
 }
 
 .hr-management button:active {
@@ -417,16 +417,16 @@
     min-height: 83px;
     padding: 13px 10px;
 
-    background: #f8faff;
+    background: #f6f9ff;
 
-    border: 1px solid #edf0f8;
+    border: 1px solid #edf1fa;
     border-radius: 10px;
 }
 
 .hr-management .hr-count strong {
     margin-bottom: 6px;
 
-    color: #4338ca;
+    color: #1b4bc2;
     font-size: 23px;
     font-weight: 800;
 }

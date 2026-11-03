@@ -1,4 +1,3 @@
-import { Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import './styles/jongho.css';
 import AdminLayout from './components/AdminLayout';
@@ -19,7 +18,9 @@ import { JonghoProvider, useJongho } from './JonghoContext';
 
 function AdminRoute() {
   const navigate = useNavigate();
-  return <AdminLayout onLogout={() => { sessionStorage.removeItem('nexus_token'); sessionStorage.removeItem('nexus_role'); navigate('/login'); }} />;
+  return <AdminLayout onLogout={() => {
+    sessionStorage.removeItem('nexus_token'); sessionStorage.removeItem('nexus_role'); navigate('/login');
+  }} />;
 }
 function DashboardRoute() {
   const { projects, data } = useJongho();
@@ -96,7 +97,7 @@ export const standaloneRoutes = [
       { path: 'issues', element: <IssuesRoute /> },
       { path: 'employees', element: <EmployeesRoute /> },
       { path: 'evaluations', element: <EvaluationsRoute /> },
-      { path: 'boards',element: <Notices />,},
+      { path: 'boards', element: <Notices />, },
       { path: 'settings', element: <SettingsRoute /> },
       { path: 'audit', element: <AdminAudit /> },
       { path: 'workload', element: <Workload /> },
