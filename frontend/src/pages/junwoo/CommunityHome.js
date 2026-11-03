@@ -1,368 +1,115 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import ReactionGame from "./ReactionGame";
+import LunchPicker from "./LunchPicker";
+import PraiseBox from "./PraiseBox";
+
+const boards = [
+    { name: "자유게시판", key: "free" },
+    { name: "질문 답변", key: "question" },
+    { name: "정보공유", key: "info" }
+];
 
 function CommunityHome(props) {
-    const [page, setPage] = useState(1);
-    const [selectedBoard, setSelectedBoard] = useState("전체");
     const [searchText, setSearchText] = useState("");
-
-    function changeBoard(event) {
-        setSelectedBoard(event.target.value);
-        setPage(1);
-    }
-
-    function changeSearch(event) {
-        setSearchText(event.target.value);
-        setPage(1);
-    }
-
-    function resetSearch() {
-        setSelectedBoard("전체");
-        setSearchText("");
-        setPage(1);
-    }
-
-    function openFreeBoard() {
-        props.onSelectBoard("자유게시판");
-    }
-
-    function openQuestionBoard() {
-        props.onSelectBoard("질문 답변");
-    }
-
-    function openInfoBoard() {
-        props.onSelectBoard("정보공유");
-    }
-
-    // 한 페이지에 보여줄 게시글 수
-    const postsPerPage = 10;
-
-    // 앞뒤 공백을 제거하고 소문자로 변환
     const keyword = searchText.trim().toLowerCase();
-
-    // 게시판과 검색어에 맞는 글만 가져오기
-    const sortedPosts = props.posts.filter(function (post) {
-        let matchesBoard = false;
-        let matchesSearch = false;
-
-        // 게시판 확인
-        if (selectedBoard === "전체") {
-            matchesBoard = true;
-        } else if (post.boardName === selectedBoard) {
-            matchesBoard = true;
-        }
-
-        // 검색할 제목과 내용
-        let title = "";
-        let content = "";
-
-        if (post.title) {
-            title = post.title.toLowerCase();
-        }
-
-        if (post.content) {
-            content = post.content.toLowerCase();
-        }
-
-        // 검색어 확인
-        if (keyword === "") {
-            matchesSearch = true;
-        } else if (title.includes(keyword)) {
-            matchesSearch = true;
-        } else if (content.includes(keyword)) {
-            matchesSearch = true;
-        }
-
-        return matchesBoard && matchesSearch;
+    const recentPosts = props.posts.slice().sort(function (a, b) {
+        return (Date.parse(b.createdAt) || 0) - (Date.parse(a.createdAt) || 0);
+    });
+    const matchingPosts = recentPosts.filter(function (post) {
+        return (post.title || "").toLowerCase().includes(keyword)
+            || (post.content || "").toLowerCase().includes(keyword);
     });
 
-    // 전체 페이지 수 계산
-    let totalPages = Math.ceil(
-        sortedPosts.length / postsPerPage
-    );
+    function openFreeBoard() { props.onSelectBoard("자유게시판"); }
+    function openQuestionBoard() { props.onSelectBoard("질문 답변"); }
+    function openInfoBoard() { props.onSelectBoard("정보공유"); }
 
-    if (totalPages === 0) {
-        totalPages = 1;
-    }
+    const freeCount = props.posts.filter(post => post.boardName === "자유게시판").length;
+    const questionCount = props.posts.filter(post => post.boardName === "질문 답변").length;
+    const infoCount = props.posts.filter(post => post.boardName === "정보공유").length;
 
-    // 글 삭제로 전체 페이지 수가 줄어든 경우 처리
-    let currentPage = page;
-
-    if (currentPage > totalPages) {
-        currentPage = totalPages;
-    }
-
-    // 현재 페이지에 해당하는 글만 가져오기
-    const startIndex = (currentPage - 1) * postsPerPage;
-    const endIndex = startIndex + postsPerPage;
-
-    const currentPosts = sortedPosts.slice(startIndex, endIndex);
-
-    // 페이지 번호 배열 만들기
-    const pageNumbers = [];
-
-    for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-    }
-
-    // 이전 페이지로 이동
-    function showPreviousPage() {
-        if (currentPage > 1) {
-            setPage(currentPage - 1);
-        }
-    }
-
-    // 다음 페이지로 이동
-    function showNextPage() {
-        if (currentPage < totalPages) {
-            setPage(currentPage + 1);
-        }
-    }
-
-    // 작성일 표시
     function formatDate(value) {
-        if (!value) {
-            return "-";
-        }
-
         const date = new Date(value);
-
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-
-        return year + "." + month + "." + day;
-    }
-
-    // 게시판별 글 개수
-    const freeCount = props.posts.filter(function (post) {
-        return post.boardName === "자유게시판";
-    }).length;
-
-    const questionCount = props.posts.filter(function (post) {
-        return post.boardName === "질문 답변";
-    }).length;
-
-    const infoCount = props.posts.filter(function (post) {
-        return post.boardName === "정보공유";
-    }).length;
-
-    let emptyTitle = "아직 등록된 이야기가 없어요";
-    let emptyDescription =
-        "게시판에서 동료들과 나눌 첫 이야기를 작성해보세요.";
-
-    if (props.posts.length > 0) {
-        emptyTitle = "조건에 맞는 게시글이 없어요";
-        emptyDescription =
-            "다른 게시판을 선택하거나 검색어를 바꿔보세요.";
-    }
-
-    // ===================================
-    // 게시글 목록 화면
-    // ===================================
-
-    let postContent;
-
-    if (sortedPosts.length === 0) {
-        postContent = (
-            <div className="lounge-empty">
-                <span className="lounge-empty-icon" aria-hidden="true">
-                    ✎
-                </span>
-
-                <h3>{emptyTitle}</h3>
-
-                <p>{emptyDescription}</p>
-
-                <button
-                    type="button"
-                    className="lounge-hero-button"
-                    onClick={props.onShowBoard}
-                >
-                    게시판으로 이동 →
-                </button>
-            </div>
-        );
-    } else {
-        postContent = (
-            <ul className="lounge-feed">
-                {currentPosts.map(function (post, index) {
-                    const number = startIndex + index + 1;
-
-                    let badgeClass = "lounge-post-badge";
-
-                    if (post.boardName === "질문 답변") {
-                        badgeClass += " lounge-post-badge-question";
-                    } else if (post.boardName === "정보공유") {
-                        badgeClass += " lounge-post-badge-info";
-                    }
-
-                    let authorName = "작성자 미등록";
-
-                    if (post.authorName) {
-                        authorName = post.authorName;
-                    }
-
-                    let previewText = "";
-
-                    if (post.content) {
-                        previewText = post.content;
-                    }
-
-                    return (
-                        <li
-                            key={post.id}
-                            className="lounge-feed-item"
-                        >
-                            <span className="lounge-feed-number">
-                                {number}
-                            </span>
-
-                            <div className="lounge-feed-body">
-                                <span className={badgeClass}>
-                                    {post.boardName}
-                                </span>
-
-                                <h3 className="lounge-feed-title">
-                                    <Link
-                                        to={"/community/post/" + post.id}
-                                        className="lounge-feed-title-button"
-                                    >
-                                        {post.title}
-                                    </Link>
-                                </h3>
-
-                                <p className="lounge-feed-preview">
-                                    {previewText}
-                                </p>
-
-                                <div className="lounge-feed-meta">
-                                    <span>{authorName}</span>
-                                    <span aria-hidden="true">·</span>
-                                    <span>
-                                        {formatDate(post.createdAt)}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <span
-                                className="lounge-feed-arrow"
-                                aria-hidden="true"
-                            >
-                                ›
-                            </span>
-                        </li>
-                    );
-                })}
-            </ul>
-        );
-    }
-
-    // ===================================
-    // 페이지 이동 버튼
-    // ===================================
-
-    let pagination = null;
-
-    if (totalPages > 1) {
-        pagination = (
-            <nav
-                className="community-home-pagination"
-                aria-label="게시글 페이지"
-            >
-                <button
-                    type="button"
-                    disabled={currentPage === 1}
-                    onClick={showPreviousPage}
-                >
-                    이전
-                </button>
-
-                {pageNumbers.map(function (pageNumber) {
-                    let buttonClass = "";
-                    let currentPageLabel;
-
-                    if (pageNumber === currentPage) {
-                        buttonClass = "community-home-page-active";
-                        currentPageLabel = "page";
-                    }
-
-                    function movePage() {
-                        setPage(pageNumber);
-                    }
-
-                    return (
-                        <button
-                            key={pageNumber}
-                            type="button"
-                            className={buttonClass}
-                            aria-current={currentPageLabel}
-                            onClick={movePage}
-                        >
-                            {pageNumber}
-                        </button>
-                    );
-                })}
-
-                <button
-                    type="button"
-                    disabled={currentPage === totalPages}
-                    onClick={showNextPage}
-                >
-                    다음
-                </button>
-            </nav>
-        );
+        if (!value || Number.isNaN(date.getTime())) return "-";
+        return date.getFullYear() + "." + (date.getMonth() + 1) + "." + date.getDate();
     }
 
     return (
         <div className="lounge-home-grid">
-            {/* 왼쪽: 최신 게시글 */}
-            <div className="community-panel lounge-feed-panel">
-                <div className="community-board-header">
-                    <h2 className="community-panel-title">
-                        최신 게시글
-                    </h2>
-
-                    <span className="community-home-count">
-                        조회 {sortedPosts.length}개
-                    </span>
-                </div>
-
-                <div className="lounge-search-toolbar">
-                    <select
-                        className="lounge-board-select"
-                        aria-label="게시판 선택"
-                        value={selectedBoard}
-                        onChange={changeBoard}
-                    >
-                        <option value="전체">전체 게시판</option>
-                        <option value="자유게시판">자유게시판</option>
-                        <option value="질문 답변">질문 답변</option>
-                        <option value="정보공유">정보공유</option>
-                    </select>
-
+            <div className="lounge-home-boards">
+                <div className="lounge-search-toolbar lounge-home-search">
                     <input
                         type="search"
                         className="lounge-search-input"
-                        aria-label="제목 또는 내용 검색"
-                        placeholder="제목이나 내용을 검색하세요"
+                        aria-label="전체 게시판 제목 또는 내용 검색"
+                        placeholder="전체 게시판의 제목이나 내용을 검색하세요"
                         value={searchText}
-                        onChange={changeSearch}
+                        onChange={event => setSearchText(event.target.value)}
                     />
-
-                    <button
-                        type="button"
-                        className="lounge-search-reset"
-                        onClick={resetSearch}
-                    >
+                    <button type="button" className="lounge-search-reset" onClick={() => setSearchText("")}>
                         초기화
                     </button>
                 </div>
+                <div className="lounge-board-grid">
+                    {boards.map(function (board) {
+                        const posts = matchingPosts.filter(post => post.boardName === board.name);
+                        return (
+                            <section
+                                key={board.key}
+                                className={"community-panel lounge-feed-panel lounge-board-card lounge-board-card-" + board.key}
+                                aria-labelledby={"home-board-" + board.key}
+                            >
+                                <div className="community-board-header">
+                                    <h2 className="community-panel-title" id={"home-board-" + board.key}>
+                                        <span className={"lounge-category-dot lounge-dot-" + board.key} aria-hidden="true" />
+                                        {board.name}
+                                    </h2>
+                                    <button
+                                        type="button"
+                                        className="lounge-board-more"
+                                        aria-label={board.name + " 더보기"}
+                                        onClick={() => props.onSelectBoard(board.name)}
+                                    >
+                                        더보기 →
+                                    </button>
+                                </div>
+                                <p className="lounge-board-summary" role="status">
+                                    {keyword ? "검색 결과 " : "전체 "}{posts.length}개 · 최신 글 최대 5개
+                                </p>
+                                {posts.length === 0 ? (
+                                    <div className="lounge-empty">
+                                        <p>{keyword ? "검색어에 맞는 게시글이 없어요." : "아직 등록된 게시글이 없어요."}</p>
+                                    </div>
+                                ) : (
+                                    <ul className="lounge-feed">
+                                        {posts.slice(0, 5).map(function (post) {
+                                            return (
+                                                <li key={post.id} className="lounge-feed-item">
+                                                    <div className="lounge-feed-body">
+                                                        <h3 className="lounge-feed-title">
+                                                            <Link to={"/community/post/" + post.id} className="lounge-feed-title-button">
+                                                                {post.title}
+                                                            </Link>
+                                                        </h3>
+                                                        <div className="lounge-feed-meta">
+                                                            <span>{post.authorName || "작성자 미등록"}</span>
+                                                            <span aria-hidden="true">·</span>
+                                                            <span>{formatDate(post.createdAt)}</span>
+                                                        </div>
+                                                    </div>
+                                                    <span className="lounge-feed-arrow" aria-hidden="true">›</span>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                )}
+                            </section>
+                        );
+                    })}
+                </div>
 
-                {postContent}
-
-                {pagination}
+                <PraiseBox />
             </div>
 
             {/* 오른쪽: 현황과 안내 */}
@@ -486,6 +233,9 @@ function CommunityHome(props) {
                         </li>
                     </ul>
                 </section>
+
+                <LunchPicker />
+                <ReactionGame />
 
                 <section className="lounge-welcome-card">
                     <span className="lounge-welcome-label">

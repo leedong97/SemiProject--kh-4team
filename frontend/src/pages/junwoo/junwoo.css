@@ -8504,3 +8504,123 @@
 .team-shell .todo-manage-page .todo-title-link {
   text-align: center;
 }
+
+/* 커뮤니티 홈: 위 자유게시판, 아래 질문 답변 / 정보공유 */
+.lounge-home-boards {
+  min-width: 0;
+}
+
+.lounge-home-search {
+  padding: 0 0 18px;
+}
+
+.lounge-board-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.lounge-board-card {
+  min-width: 0;
+  margin: 0;
+}
+
+.lounge-board-card-free {
+  grid-column: 1 / -1;
+}
+
+.lounge-board-card>.community-board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 20px 24px 8px;
+}
+
+.lounge-board-card .community-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+}
+
+.lounge-board-more {
+  border: 0;
+  background: transparent;
+  color: #087bdf;
+  padding: 6px 0;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lounge-board-more:hover {
+  text-decoration: underline;
+}
+
+.lounge-board-more:focus-visible {
+  outline: 2px solid #087bdf;
+  outline-offset: 4px;
+}
+
+.lounge-board-summary {
+  margin: 0;
+  padding: 0 24px 16px;
+  color: #7c8da2;
+  font-size: 12px;
+}
+
+.lounge-board-card .lounge-feed-item {
+  padding: 13px 24px;
+  gap: 12px;
+}
+
+.lounge-board-card .lounge-feed-title {
+  margin: 0 0 5px;
+}
+
+.lounge-board-card .lounge-feed-title-button {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 15px;
+}
+
+@media (max-width: 700px) {
+  .lounge-board-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .lounge-board-card>.community-board-header {
+    padding: 18px 16px 8px;
+  }
+
+  .lounge-board-summary {
+    padding: 0 16px 14px;
+  }
+
+  .lounge-board-card .lounge-feed-item {
+    padding: 13px 16px;
+  }
+}
+
+/* 제목과 글 개수 사이의 구분선 제거 */
+.lounge-board-card>.community-board-header {
+  border-bottom: none;
+}
+
+/* 글 개수 안내 아래 여백 정리 */
+.lounge-board-card .lounge-board-summary {
+  margin: 0;
+  padding: 0 24px 16px;
+}
+
+@media (max-width: 700px) {
+  .lounge-board-card .lounge-board-summary {
+    padding: 0 16px 14px;
+  }
+}
