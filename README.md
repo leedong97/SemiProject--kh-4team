@@ -16,8 +16,8 @@ backend/
   server.js        메인 서버 (dotenv → cors → json → 팀원 Router 연결 → JSON 404 → listen 1번)
   db.js            모두가 같이 쓰는 DB 풀
   members/
-    woojin/  로그인·회원가입·마이페이지·일정·프로필   (원본: kh-4team-woojin 최신)
-    junwoo/  dashboard.js · notices.js · projects.js   (원본: backend-junwoo/server.js 를 3조각으로)
+    woojin/   로그인·회원가입·마이페이지·일정·프로필·알림
+    junwoo/   dashboard.js · notices.js · projects.js · projectRequests.js · community*.js
     dong/    이슈 조회  → /api/dong/projects, /api/dong/issues
     heeseung/ (API 없음)
     jongho/  관리자 /api/admin/*   (admin.js, 개발용: 로그인 검사 없음)
@@ -29,8 +29,8 @@ frontend/src/
 ## API 주소 (겹침 없음)
 | 담당 | 주소 |
 |---|---|
-| 우진 | `/api/login` `/api/signup` `/api/schedules` `/api/leaves` `/api/my-*` `/api/profile` `/api/health` |
-| 준우 | `/api/dashboard/schedules` `/api/notices(/:id…)` `/api/projects(/:id…)` |
+| 우진 | `/api/login, /api/signup, /api/schedules, /api/leaves, /api/my-*, /api/profile, /api/notifications, /api/health |
+| 준우 | `/api/dashboard/schedules, /api/notices, /api/projects, /api/project-requests, /api/community, /api/community-comments, /api/community-likes |
 | 동협 | `/api/dong/projects` `/api/dong/issues` ← 원래 `/api/projects` 였으나 준우와 겹쳐서 이동 |
 | 종호 | `/api/admin/*` |
 | 공통 | `/api/db-check` |
