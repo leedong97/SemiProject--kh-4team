@@ -1,19 +1,26 @@
+
 import { Link } from 'react-router-dom';
-import Calendar from './Calendar';
+import DashboardCalendar from './DashboardCalendar';
 
 function Home({ info, todo }) {
 
-  return (
+  // 최신 프로젝트 3개
+  const latestTodo = [...todo]
+    .sort((a, b) => Number(b.id) - Number(a.id))
+    .slice(0, 3);
 
+  return (
     <>
 
-      <Calendar />
+      {/* 캘린더 */}
+      <DashboardCalendar />
 
+      {/* 프로젝트 */}
       <div className='todo'>
-        <h3>프로젝트</h3>
+        <h3 style={{ color: '#0084ff' }}>프로젝트</h3>
         <ol>
           {
-            [...todo].reverse().slice(0, 3).map((item) => (
+            latestTodo.map((item) => (
               <li key={item.id}>
                 <Link to={`/todo/${item.id}`}>
                   {item.title}
@@ -24,8 +31,9 @@ function Home({ info, todo }) {
         </ol>
       </div>
 
+      {/* 공지사항 */}
       <div className='info'>
-        <h3>공지사항</h3>
+        <h3 style={{ color: '#0084ff' }}>공지사항</h3>
         <ol>
           {
             [...info].reverse().slice(0, 3).map((item) => (

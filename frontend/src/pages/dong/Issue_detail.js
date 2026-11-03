@@ -39,7 +39,7 @@ function Issue_detail({ projects, issues }) {
             <div className="issue-detail-header">
                 <div>
                     <h1>이슈 상세정보</h1>
-                    <p>등록된 이슈의 내용을 확인할 수 있습니다.</p>
+
                 </div>
 
                 <button onClick={() => navigate("/issue")}>
@@ -60,7 +60,7 @@ function Issue_detail({ projects, issues }) {
                 {/* 해당 프로젝트 타이틀 */}
                 <div className="issue-detail-row">
                     <strong>프로젝트명</strong>
-                    <span>{project?.name || "프로젝트 정보 없음"}</span>
+                    <span>{issue.projectName || "프로젝트 정보 없음"}</span>
                 </div>
 
                 {/* 이슈 제목 */}
@@ -71,8 +71,19 @@ function Issue_detail({ projects, issues }) {
 
                 {/* 이슈 건의자 */}
                 <div className="issue-detail-row">
-                    <strong>이슈 건의자</strong>
-                    <span>{issue.reporter}</span>
+                    <strong>이슈 건의자(직급)</strong>
+                    <span>
+                        {issue.reporterName || "-"}
+                        {issue.reporterGrade
+                            ? ` (${issue.reporterGrade})`
+                            : ""}
+                    </span>
+                </div>
+
+                {/* 건의자 연락처 */}
+                <div className="issue-detail-row">
+                    <strong>담당자 연락처</strong>
+                    <span>{issue.reporterPhone || "-"}</span>
                 </div>
 
                 {/* 등록일 */}

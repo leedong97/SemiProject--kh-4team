@@ -112,12 +112,14 @@
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .calendar,
-.team-shell .todo,
-.team-shell .info {
+
+  .team-shell .calendar,
+  .team-shell .todo,
+  .team-shell .info {
     padding: 15px;
   }
-.team-shell .calendar td {
+
+  .team-shell .calendar td {
     height: 45px;
   }
 }
@@ -343,7 +345,7 @@
 /* 태블릿 */
 
 @media (max-width: 1100px) {
-.team-shell .info-page {
+  .team-shell .info-page {
     grid-column: 1 / -1;
     max-width: 950px;
   }
@@ -352,21 +354,25 @@
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .info-page {
+  .team-shell .info-page {
     grid-column: 1 / -1;
     padding: 20px 15px;
   }
-.team-shell .info-item {
+
+  .team-shell .info-item {
     padding: 12px;
   }
-.team-shell .info-title {
+
+  .team-shell .info-title {
     font-size: 13px;
     gap: 8px;
   }
-.team-shell .info-delete {
+
+  .team-shell .info-delete {
     padding: 7px 10px;
   }
-.team-shell .info-header h2 {
+
+  .team-shell .info-header h2 {
     font-size: 22px;
   }
 }
@@ -442,13 +448,13 @@
 }
 
 @media (max-width: 1100px) {
-.team-shell .info-set-page {
+  .team-shell .info-set-page {
     grid-column: 1 / -1;
   }
 }
 
 @media (max-width: 768px) {
-.team-shell .info-set-page {
+  .team-shell .info-set-page {
     padding: 20px 15px;
   }
 }
@@ -511,7 +517,7 @@
 }
 
 @media (max-width: 768px) {
-.team-shell .info-search input {
+  .team-shell .info-search input {
     width: 100%;
     min-width: 0;
   }
@@ -520,8 +526,9 @@
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .info-page,
-.team-shell .info-set-page {
+
+  .team-shell .info-page,
+  .team-shell .info-set-page {
     grid-row: 5;
   }
 }
@@ -600,10 +607,11 @@
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .info-detail .info-header h2 {
+  .team-shell .info-detail .info-header h2 {
     font-size: 22px;
   }
-.team-shell .info-detail-content {
+
+  .team-shell .info-detail-content {
     min-height: 180px;
     padding: 20px 0;
   }
@@ -684,16 +692,19 @@
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .info-list-head,
-.team-shell .info-item {
+
+  .team-shell .info-list-head,
+  .team-shell .info-item {
     grid-template-columns: minmax(0, 1fr) 65px 52px;
     gap: 8px;
   }
-.team-shell .info-list-head {
+
+  .team-shell .info-list-head {
     padding: 12px;
     font-size: 12px;
   }
-.team-shell .info-author {
+
+  .team-shell .info-author {
     font-size: 12px;
   }
 }
@@ -1110,8 +1121,9 @@
 /* 태블릿 */
 
 @media (max-width: 1100px) {
-.team-shell .todo-page,
-.team-shell .todo-set-page {
+
+  .team-shell .todo-page,
+  .team-shell .todo-set-page {
     grid-column: 1 / -1;
   }
 }
@@ -1119,39 +1131,49 @@
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .todo-page,
-.team-shell .todo-set-page {
+
+  .team-shell .todo-page,
+  .team-shell .todo-set-page {
     padding: 20px 15px;
   }
-.team-shell .todo-list-head,
-.team-shell .todo-item {
+
+  .team-shell .todo-list-head,
+  .team-shell .todo-item {
     grid-template-columns: minmax(0, 1fr) 65px 52px;
     gap: 8px;
   }
-.team-shell .todo-list-head {
+
+  .team-shell .todo-list-head {
     padding: 12px;
     font-size: 12px;
   }
-.team-shell .todo-item {
+
+  .team-shell .todo-item {
     padding: 12px;
   }
-.team-shell .todo-title {
+
+  .team-shell .todo-title {
     font-size: 13px;
     gap: 8px;
   }
-.team-shell .todo-author {
+
+  .team-shell .todo-author {
     font-size: 12px;
   }
-.team-shell .todo-delete {
+
+  .team-shell .todo-delete {
     padding: 7px 10px;
   }
-.team-shell .todo-header h2 {
+
+  .team-shell .todo-header h2 {
     font-size: 22px;
   }
-.team-shell .todo-search input {
+
+  .team-shell .todo-search input {
     width: 100%;
   }
-.team-shell .todo-detail-content {
+
+  .team-shell .todo-detail-content {
     min-height: 180px;
     padding: 20px 0;
   }
@@ -1225,16 +1247,18 @@
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .detail-other {
+  .team-shell .detail-other {
     margin-top: 25px;
   }
-.team-shell .detail-other h3 {
+
+  .team-shell .detail-other h3 {
     font-size: 16px;
   }
-.team-shell .detail-other .info-list-head,
-.team-shell .detail-other .info-item,
-.team-shell .detail-other .todo-list-head,
-.team-shell .detail-other .todo-item {
+
+  .team-shell .detail-other .info-list-head,
+  .team-shell .detail-other .info-item,
+  .team-shell .detail-other .todo-list-head,
+  .team-shell .detail-other .todo-item {
     grid-template-columns: minmax(0, 1fr) 65px;
   }
 }
@@ -1340,6 +1364,7 @@
   font-size: 20px;
   padding-bottom: 15px;
   border-bottom: 2px solid #e6f5ee;
+  color: #279b76;
 }
 
 .team-shell .calendar-schedule h4 {
@@ -1380,17 +1405,20 @@
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .calendar-area .day {
+  .team-shell .calendar-area .day {
     min-height: 38px;
     padding: 4px;
   }
-.team-shell .calendar-area .day-name {
+
+  .team-shell .calendar-area .day-name {
     padding: 6px 0;
   }
-.team-shell .calendar-schedule {
+
+  .team-shell .calendar-schedule {
     padding: 15px;
   }
-.team-shell .calendar-top h2 {
+
+  .team-shell .calendar-top h2 {
     font-size: 18px;
   }
 }
@@ -1485,16 +1513,7114 @@
 /* 모바일 */
 
 @media (max-width: 768px) {
-.team-shell .schedule-form {
+  .team-shell .schedule-form {
     flex-direction: column;
     align-items: stretch;
   }
-.team-shell .schedule-form input[type="time"],
-.team-shell .schedule-form input[type="text"] {
+
+  .team-shell .schedule-form input[type="time"],
+  .team-shell .schedule-form input[type="text"] {
     width: 100%;
     flex: auto;
   }
-.team-shell .schedule-form button {
+
+  .team-shell .schedule-form button {
     width: 100%;
+  }
+}
+
+
+/* ==========================================
+   프로젝트 / 공지사항 상세보기 공통 스타일
+   ========================================== */
+
+/* 상세 페이지 전체 */
+.team-shell .todo-detail-page,
+.team-shell .info-detail-page {
+  grid-column: 1 / -1;
+  grid-row: 2 / span 2;
+  justify-self: stretch;
+
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+
+  background: white;
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* 상세보기 상단 */
+.team-shell .todo-detail-header,
+.team-shell .info-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+
+  border-bottom: 2px solid #e6f5ee;
+  padding-bottom: 20px;
+  margin-bottom: 25px;
+}
+
+/* 상단 제목 */
+.team-shell .todo-detail-header h1,
+.team-shell .info-detail-header h1 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  color: #279b76;
+}
+
+/* 상단 설명 */
+.team-shell .todo-detail-header p,
+.team-shell .info-detail-header p {
+  margin: 0;
+  color: #82948a;
+  font-size: 13px;
+}
+
+/* 상세정보 테두리 박스 */
+.team-shell .todo-detail-page .todo-detail-content,
+.team-shell .info-detail-page .info-detail-content {
+  border: 1px solid #e6f5ee;
+  border-radius: 12px;
+  overflow: hidden;
+
+  min-height: 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: normal;
+}
+
+/* 제목, 작성자, 날짜, 조회수 행 */
+.team-shell .todo-detail-row,
+.team-shell .info-detail-row {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  border-bottom: 1px solid #edf5ef;
+}
+
+/* 항목 이름 */
+.team-shell .todo-detail-row strong,
+.team-shell .info-detail-row strong {
+  padding: 17px;
+  background: #f5faf7;
+  color: #52675d;
+  font-size: 14px;
+}
+
+/* 항목 데이터 */
+.team-shell .todo-detail-row span,
+.team-shell .info-detail-row span {
+  padding: 17px;
+  color: #34443d;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+/* 본문 영역 */
+.team-shell .todo-detail-description,
+.team-shell .info-detail-description {
+  padding: 25px;
+}
+
+/* 본문 제목 */
+.team-shell .todo-detail-description h3,
+.team-shell .info-detail-description h3 {
+  font-size: 16px;
+  color: #279b76;
+  margin: 0 0 15px;
+}
+
+/* 본문 내용 */
+.team-shell .todo-detail-page .todo-detail-description p,
+.team-shell .info-detail-page .info-detail-description p {
+  margin: 0;
+  min-height: 120px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+  color: #34443d;
+  font-size: 14px;
+}
+
+/* ==========================================
+   하단 다른 글 목록
+   ========================================== */
+
+/* 다른 프로젝트 / 다른 공지사항 */
+.team-shell .todo-detail-page .detail-other,
+.team-shell .info-detail-page .detail-other {
+  margin-top: 35px;
+  margin-bottom: 25px;
+}
+
+/* 다른 글 목록 제목 */
+.team-shell .todo-detail-page .detail-other h3,
+.team-shell .info-detail-page .detail-other h3 {
+  margin: 0 0 20px;
+  font-size: 18px;
+  color: #34443d;
+}
+
+/* 번호, 제목, 작성자 정렬 */
+.team-shell .todo-detail-page .detail-other .todo-list-head,
+.team-shell .todo-detail-page .detail-other .todo-item,
+.team-shell .info-detail-page .detail-other .info-list-head,
+.team-shell .info-detail-page .detail-other .info-item {
+  grid-template-columns: minmax(0, 1fr) 100px;
+  gap: 15px;
+}
+
+/* 긴 제목 자동 줄바꿈 */
+.team-shell .todo-detail-page .todo-title a,
+.team-shell .info-detail-page .info-title a {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* 페이지 번호와 목록 사이 여백 */
+.team-shell .todo-detail-page .todo-pages,
+.team-shell .info-detail-page .info-pages {
+  margin: 25px 0 10px;
+}
+
+/* ==========================================
+   상세보기 버튼
+   ========================================== */
+
+/* 상단 / 하단 버튼 */
+.team-shell .todo-detail-header button,
+.team-shell .info-detail-header button,
+.team-shell .todo-detail-bottom button,
+.team-shell .info-detail-bottom button {
+  padding: 12px 20px;
+  border: none;
+  background: #38b98c;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+/* 버튼 호버 */
+.team-shell .todo-detail-header button:hover,
+.team-shell .info-detail-header button:hover,
+.team-shell .todo-detail-bottom button:hover,
+.team-shell .info-detail-bottom button:hover {
+  background: #279b76;
+}
+
+/* 하단 버튼 위치 */
+.team-shell .todo-detail-bottom,
+.team-shell .info-detail-bottom {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 25px;
+}
+
+/* 키보드 포커스 */
+.team-shell .todo-detail-page button:focus-visible,
+.team-shell .info-detail-page button:focus-visible,
+.team-shell .todo-detail-page a:focus-visible,
+.team-shell .info-detail-page a:focus-visible {
+  outline: 2px solid #279b76;
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   반응형 디자인
+   ========================================== */
+
+@media (max-width: 768px) {
+
+  /* 모바일 상세 페이지 */
+  .team-shell .todo-detail-page,
+  .team-shell .info-detail-page {
+    grid-column: 1 / -1;
+    grid-row: 5;
+    padding: 18px;
+  }
+
+  /* 상단 제목 */
+  .team-shell .todo-detail-header h1,
+  .team-shell .info-detail-header h1 {
+    font-size: 20px;
+  }
+
+  /* 상단 정렬 */
+  .team-shell .todo-detail-header,
+  .team-shell .info-detail-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* 상세정보 라벨 크기 */
+  .team-shell .todo-detail-row,
+  .team-shell .info-detail-row {
+    grid-template-columns: 110px minmax(0, 1fr);
+  }
+
+  .team-shell .todo-detail-row strong,
+  .team-shell .info-detail-row strong,
+  .team-shell .todo-detail-row span,
+  .team-shell .info-detail-row span {
+    padding: 13px;
+    font-size: 13px;
+  }
+
+  /* 본문 */
+  .team-shell .todo-detail-description,
+  .team-shell .info-detail-description {
+    padding: 18px;
+  }
+
+  /* 다른 글 목록 */
+  .team-shell .todo-detail-page .detail-other .todo-list-head,
+  .team-shell .todo-detail-page .detail-other .todo-item,
+  .team-shell .info-detail-page .detail-other .info-list-head,
+  .team-shell .info-detail-page .detail-other .info-item {
+    grid-template-columns: minmax(0, 1fr) 65px;
+    gap: 8px;
+  }
+}
+
+
+/* ==========================================
+   공지사항 / 프로젝트 관리 페이지 공통
+   ========================================== */
+
+/* 전체 페이지 */
+.team-shell :is(.info-manage-page,
+  .todo-manage-page,
+  .info-set-page,
+  .todo-set-page) {
+  grid-column: 1 / -1;
+  grid-row: 2 / span 2;
+
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  justify-self: stretch;
+
+  background: white;
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================
+   상단 제목
+   ========================================== */
+
+.team-shell :is(.info-manage-header,
+  .todo-manage-header,
+  .info-set-header,
+  .todo-set-header) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+
+  border-bottom: 1px solid #e6f5ee;
+  padding-bottom: 20px;
+  margin-bottom: 0;
+}
+
+.team-shell :is(.info-manage-header,
+  .todo-manage-header,
+  .info-set-header,
+  .todo-set-header) h1 {
+  margin: 0 0 10px;
+  color: #279b76;
+  font-size: 24px;
+  word-break: keep-all;
+}
+
+.team-shell :is(.info-manage-header,
+  .todo-manage-header,
+  .info-set-header,
+  .todo-set-header) p {
+  margin: 0;
+  color: #82948a;
+  font-size: 13px;
+}
+
+/* ==========================================
+   검색 리셋 버튼
+   ========================================== */
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page,
+  .info-set-page,
+  .todo-set-page) :is(.info-reset,
+  .todo-reset,
+  .info-set-reset,
+  .todo-set-reset) {
+  display: inline-block;
+  margin: 0;
+  padding: 10px 18px;
+
+  background: white;
+  border: 1px solid #dcebe2;
+  border-radius: 8px;
+
+  color: #52675d;
+  font-size: 13px;
+  font-weight: normal;
+
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page,
+  .info-set-page,
+  .todo-set-page) :is(.info-reset,
+  .todo-reset,
+  .info-set-reset,
+  .todo-set-reset):hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+/* ==========================================
+   전체 건수 / 검색 건수
+   ========================================== */
+
+.team-shell :is(.info-summary,
+  .todo-summary,
+  .info-set-summary,
+  .todo-set-summary) {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+
+  margin: 20px 0;
+  color: #52675d;
+  font-size: 13px;
+}
+
+/* ==========================================
+   검색 영역
+   ========================================== */
+
+.team-shell :is(.info-filter,
+  .todo-filter,
+  .info-set-filter,
+  .todo-set-filter) {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.team-shell :is(.info-filter,
+  .todo-filter,
+  .info-set-filter,
+  .todo-set-filter) label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #52675d;
+}
+
+/* ==========================================
+   검색 / 등록 입력창 공통
+   ========================================== */
+
+.team-shell :is(.info-filter,
+  .todo-filter,
+  .info-set-filter,
+  .todo-set-filter,
+  .info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) :is(input, textarea) {
+  display: block;
+  width: 100%;
+  min-width: 0;
+
+  padding: 13px 15px;
+  margin: 0;
+
+  background: #f7faf9;
+  border: 1px solid #dcebe2;
+  border-radius: 10px;
+
+  color: #34443d;
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+}
+
+.team-shell :is(.info-filter,
+  .todo-filter,
+  .info-set-filter,
+  .todo-set-filter,
+  .info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) :is(input, textarea):focus {
+  border-color: #38b98c;
+  background: white;
+}
+
+.team-shell :is(.info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) textarea {
+  min-height: 130px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   새로운 프로젝트 / 공지사항 등록
+   ========================================== */
+
+.team-shell :is(.info-register,
+  .todo-register,
+  .info-set-register,
+  .todo-set-register) {
+  margin-bottom: 30px;
+  padding: 20px;
+
+  background: #f5faf7;
+  border-radius: 12px;
+}
+
+.team-shell :is(.info-register,
+  .todo-register,
+  .info-set-register,
+  .todo-set-register) h3 {
+  margin: 0 0 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #34443d;
+}
+
+/* 등록 폼 세로 배치 */
+.team-shell :is(.info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 등록 버튼 */
+.team-shell :is(.info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) button {
+  align-self: flex-end;
+  margin: 0 0 0 auto;
+  padding: 12px 20px;
+
+  background: #38b98c;
+  border: none;
+  border-radius: 8px;
+
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.team-shell :is(.info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) button:hover {
+  background: #279b76;
+}
+
+/* ==========================================
+   공지사항 / 프로젝트 목록
+   ========================================== */
+
+.team-shell :is(.info-list-section,
+  .todo-list-section,
+  .info-set-list-section,
+  .todo-set-list-section) {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+/* 목록 제목 */
+.team-shell :is(.info-list-header,
+  .todo-list-header,
+  .info-set-list-header,
+  .todo-set-list-header) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.team-shell :is(.info-list-header,
+  .todo-list-header,
+  .info-set-list-header,
+  .todo-set-list-header) h3 {
+  margin: 0;
+  font-size: 17px;
+  color: #34443d;
+}
+
+.team-shell :is(.info-list-header,
+  .todo-list-header,
+  .info-set-list-header,
+  .todo-set-list-header) span {
+  font-size: 13px;
+  font-weight: bold;
+  color: #279b76;
+}
+
+/* ==========================================
+   테이블
+   ========================================== */
+
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+/* 테이블 제목 행 */
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) th {
+  padding: 15px;
+
+  background: #e6f7ef;
+  border-bottom: 1px solid #dcebe2;
+
+  color: #34856a;
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* 테이블 데이터 */
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) td {
+  padding: 15px;
+
+  border-bottom: 1px solid #edf5ef;
+  color: #34443d;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+/* 마우스 호버 */
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) tbody tr:hover {
+  background: #f5faf7;
+}
+
+/* 목록 테이블 컬럼 너비 */
+.team-shell :is(.info-table,
+  .todo-table) th:first-child {
+  width: 65px;
+}
+
+.team-shell :is(.info-table,
+  .todo-table) th:nth-child(2) {
+  width: auto;
+}
+
+.team-shell :is(.info-table,
+  .todo-table) th:nth-child(3) {
+  width: 110px;
+}
+
+.team-shell :is(.info-table,
+  .todo-table) th:nth-child(4) {
+  width: 140px;
+}
+
+.team-shell :is(.info-table,
+  .todo-table) th:nth-child(5) {
+  width: 80px;
+}
+
+.team-shell :is(.info-table,
+  .todo-table) th:nth-child(6) {
+  width: 85px;
+}
+
+/* 제목 버튼 */
+.team-shell :is(.info-title-link,
+  .todo-title-link) {
+  padding: 0;
+  background: none;
+  border: none;
+
+  color: #279b76;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  overflow-wrap: anywhere;
+}
+
+.team-shell :is(.info-title-link,
+  .todo-title-link):hover {
+  text-decoration: underline;
+}
+
+/* 등록 페이지의 제목 링크 */
+.team-shell :is(.info-set-table,
+  .todo-set-table) a {
+  color: #279b76;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.team-shell :is(.info-set-table,
+  .todo-set-table) a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================
+   삭제 버튼
+   ========================================== */
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-delete, .todo-delete) {
+  margin: 0;
+  padding: 8px 15px;
+
+  background: white;
+  border: 1px solid #f1c6c6;
+  border-radius: 8px;
+
+  color: #d66b6b;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-delete, .todo-delete):hover {
+  background: #fff0f0;
+  border-color: #e89b9b;
+}
+
+/* ==========================================
+   검색 결과 없음
+   ========================================== */
+
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) :is(.info-empty,
+  .todo-empty,
+  .info-set-empty,
+  .todo-set-empty) {
+  text-align: center;
+  padding: 40px;
+  color: #82948a;
+  font-size: 13px;
+}
+
+/* ==========================================
+   페이지네이션
+   ========================================== */
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-pages, .todo-pages) {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 30px 0 20px;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-pages, .todo-pages) button {
+  width: 38px;
+  height: 38px;
+
+  background: white;
+  border: 1px solid #dcebe2;
+  border-radius: 8px;
+
+  color: #52675d;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-pages, .todo-pages) button:hover {
+  background: #e6f7ef;
+  color: #279b76;
+}
+
+/* 현재 페이지 */
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-pages, .todo-pages) button.active {
+  background: #38b98c;
+  border-color: #38b98c;
+  color: white;
+}
+
+/* ==========================================
+   하단 설명
+   ========================================== */
+
+.team-shell :is(.info-footer,
+  .todo-footer) {
+  margin: 25px 0 0;
+  color: #82948a;
+  font-size: 12px;
+}
+
+/* ==========================================
+   등록 페이지 하단 목록 버튼
+   ========================================== */
+
+.team-shell :is(.info-set-footer,
+  .todo-set-footer) {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #e6f5ee;
+}
+
+.team-shell :is(.info-set-footer,
+  .todo-set-footer) a {
+  display: inline-block;
+  padding: 12px 20px;
+
+  background: #38b98c;
+  border-radius: 8px;
+
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.team-shell :is(.info-set-footer,
+  .todo-set-footer) a:hover {
+  background: #279b76;
+  color: white;
+}
+
+/* ==========================================
+   반응형 - 태블릿
+   ========================================== */
+
+@media (max-width: 1100px) {
+
+  .team-shell :is(.info-manage-page,
+    .todo-manage-page,
+    .info-set-page,
+    .todo-set-page) {
+    grid-column: 1 / -1;
+    max-width: none;
+  }
+
+}
+
+/* ==========================================
+   반응형 - 모바일
+   ========================================== */
+
+@media (max-width: 768px) {
+
+  /* 페이지 전체 */
+  .team-shell :is(.info-manage-page,
+    .todo-manage-page,
+    .info-set-page,
+    .todo-set-page) {
+    grid-column: 1 / -1;
+    grid-row: 5 / span 3;
+    padding: 18px;
+  }
+
+  /* 상단 제목 */
+  .team-shell :is(.info-manage-header,
+    .todo-manage-header,
+    .info-set-header,
+    .todo-set-header) {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .team-shell :is(.info-manage-header,
+    .todo-manage-header,
+    .info-set-header,
+    .todo-set-header) h1 {
+    font-size: 20px;
+  }
+
+  /* 통계 */
+  .team-shell :is(.info-summary,
+    .todo-summary,
+    .info-set-summary,
+    .todo-set-summary) {
+    gap: 10px;
+    font-size: 12px;
+  }
+
+  /* 등록 영역 */
+  .team-shell :is(.info-register,
+    .todo-register,
+    .info-set-register,
+    .todo-set-register) {
+    padding: 15px;
+  }
+
+  /* 테이블 가로 스크롤 */
+  .team-shell :is(.info-table,
+    .todo-table) {
+    min-width: 720px;
+  }
+
+  .team-shell :is(.info-set-table,
+    .todo-set-table) {
+    min-width: 480px;
+  }
+
+  /* 등록 버튼 */
+  .team-shell :is(.info-register-form,
+    .todo-register-form,
+    .info-set-register-form,
+    .todo-set-register-form) button {
+    width: 100%;
+    margin: 0;
+    align-self: stretch;
+  }
+}
+
+/* COMAND ERP - 공지사항 스타일 추가본
+   기존 junwoo.css의 맨 아래에 붙여 넣으세요.
+   공통 TeamShell, 메뉴, 프로젝트 스타일은 수정하지 않습니다.
+*/
+
+/* 1. 공지사항 공통 */
+.info-page,
+.info-set-page {
+  width: 100%;
+  max-width: 1100px;
+  min-width: 0;
+  margin-inline: auto;
+  padding: 34px;
+  color: #34443d;
+  background: #fff;
+  border: 1px solid #e6f0e9;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(31, 94, 67, .07);
+}
+
+.info-page *,
+.info-set-page * {
+  box-sizing: border-box;
+}
+
+.info-page button,
+.info-set-page button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.info-page button:disabled,
+.info-set-page button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.info-page :is(button, input, textarea, a):focus-visible,
+.info-set-page :is(button, input, textarea, a):focus-visible {
+  outline: 3px solid rgba(56, 185, 140, .28);
+  outline-offset: 2px;
+}
+
+/* 2. 페이지 상단 제목과 우측 버튼 */
+.info-manage-header,
+.info-detail-header,
+.info-set-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 23px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #e6f0e9;
+}
+
+.info-manage-header h1,
+.info-detail-header h1,
+.info-set-header h1 {
+  margin: 0 0 8px;
+  font-size: 25px;
+  line-height: 1.35;
+  color: #247e61;
+}
+
+.info-manage-header p,
+.info-detail-header p,
+.info-set-header p {
+  margin: 0;
+  color: #789086;
+  font-size: 13px;
+}
+
+.info-reset,
+.info-set-page .info-set-reset,
+.info-detail-header>button {
+  margin: 0;
+  padding: 10px 15px;
+  background: #fff;
+  border: 1px solid #cfe4d8;
+  border-radius: 9px;
+  color: #39765a;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background .2s, border-color .2s;
+}
+
+.info-reset:hover,
+.info-set-page .info-set-reset:hover,
+.info-detail-header>button:hover {
+  background: #eaf7f0;
+  border-color: #9fd5b8;
+}
+
+/* 3. 총 건수 / 검색 */
+.info-summary,
+.info-set-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 23px;
+}
+
+.info-summary span,
+.info-set-summary span {
+  padding: 9px 13px;
+  border-radius: 9px;
+  background: #f0faf4;
+  border: 1px solid #e1f0e7;
+  color: #428267;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.info-filter,
+.info-set-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 26px;
+}
+
+.info-filter label,
+.info-set-filter label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #45675a;
+}
+
+.info-page input,
+.info-page textarea,
+.info-set-page input,
+.info-set-page textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #d7e8dc;
+  border-radius: 10px;
+  outline: none;
+  background: #fbfdfb;
+  color: #33483d;
+  font: inherit;
+  font-size: 14px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.info-page input:focus,
+.info-page textarea:focus,
+.info-set-page input:focus,
+.info-set-page textarea:focus {
+  background: #fff;
+  border-color: #38b98c;
+  box-shadow: 0 0 0 3px rgba(56, 185, 140, .1);
+}
+
+.info-page input::placeholder,
+.info-page textarea::placeholder,
+.info-set-page input::placeholder,
+.info-set-page textarea::placeholder {
+  color: #9baa9f;
+}
+
+.info-page textarea,
+.info-set-page textarea {
+  min-height: 125px;
+  resize: vertical;
+  line-height: 1.65;
+}
+
+/* 4. 등록 폼 */
+.info-register,
+.info-set-register {
+  margin: 0 0 30px;
+  padding: 24px;
+  border: 1px solid #e1eee5;
+  border-radius: 14px;
+  background: #fbfdfb;
+}
+
+.info-register h3,
+.info-set-register h3,
+.info-list-header h3,
+.info-set-list-header h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #315e49;
+}
+
+.info-register-form,
+.info-set-register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 17px;
+}
+
+.info-register-form textarea,
+.info-set-register-form textarea {
+  min-height: 140px;
+}
+
+.info-register-form>button,
+.info-set-page .info-set-register-form>button {
+  align-self: flex-end;
+  width: auto;
+  margin: 4px 0 0;
+  padding: 12px 20px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  background: #38b98c;
+  border: 1px solid #38b98c;
+  border-radius: 9px;
+  transition: background .2s, transform .2s;
+}
+
+.info-register-form>button:hover,
+.info-set-page .info-set-register-form>button:hover {
+  background: #279b76;
+  transform: translateY(-1px);
+}
+
+/* 5. 공지사항 목록 테이블 */
+.info-list-section,
+.info-set-list-section {
+  margin-top: 24px;
+  overflow-x: auto;
+}
+
+.info-list-header,
+.info-set-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.info-list-header>span,
+.info-set-list-header>span {
+  font-size: 13px;
+  color: #789086;
+}
+
+.info-table,
+.info-set-table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: center;
+}
+
+.info-table thead,
+.info-set-table thead {
+  background: #eef8f2;
+}
+
+.info-table th,
+.info-set-table th {
+  padding: 14px 10px;
+  color: #3d795c;
+  border-top: 1px solid #e0eee5;
+  border-bottom: 1px solid #d7e9dd;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.info-table td,
+.info-set-table td {
+  padding: 14px 10px;
+  border-bottom: 1px solid #edf2ee;
+  color: #53695d;
+  vertical-align: middle;
+}
+
+.info-table tbody tr:hover,
+.info-set-table tbody tr:hover {
+  background: #f7fcf8;
+}
+
+.info-table td:nth-child(2),
+.info-set-table td:nth-child(2) {
+  text-align: left;
+}
+
+.info-title-link,
+.info-set-table td a {
+  display: inline-block;
+  padding: 3px 0;
+  color: #345a47;
+  border: 0;
+  background: none;
+  text-decoration: none;
+  font-weight: 600;
+  text-align: left;
+  word-break: break-word;
+}
+
+.info-title-link:hover,
+.info-set-table td a:hover {
+  color: #20976a;
+  text-decoration: underline;
+}
+
+/* 현재 JSX의 고정 버튼에는 className이 없으므로 마지막 관리 칸으로 지정 */
+.info-table td:last-child {
+  white-space: nowrap;
+}
+
+.info-table td:last-child>button:not(.info-delete) {
+  margin: 2px 6px 2px 0;
+  padding: 8px 10px;
+  background: #eaf7f0;
+  border: 1px solid #bfe5cc;
+  color: #277e57;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.info-table td:last-child>button:not(.info-delete):hover {
+  background: #d9f2e3;
+}
+
+.info-table .info-delete {
+  margin: 2px 0;
+  padding: 8px 12px;
+  color: #c85e5e;
+  background: #fff8f8;
+  border: 1px solid #f1cece;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.info-table .info-delete:hover {
+  background: #ffeded;
+  border-color: #eab0b0;
+}
+
+.info-empty,
+.info-set-empty {
+  padding: 36px 12px !important;
+  text-align: center;
+  color: #8a9a90;
+}
+
+.info-footer {
+  margin: 22px 0 0;
+  padding-top: 15px;
+  border-top: 1px solid #ecf2ee;
+  font-size: 12px;
+  color: #82968a;
+}
+
+/* 6. 페이지네이션 */
+.info-pages {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 24px 0 10px;
+}
+
+.info-pages button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #d5e7d9;
+  border-radius: 9px;
+  background: #fff;
+  color: #587766;
+  font-size: 13px;
+  transition: .2s;
+}
+
+.info-pages button:hover {
+  background: #edf8f1;
+  color: #238663;
+}
+
+.info-pages button.active,
+.info-pages button.active:hover {
+  background: #38b98c;
+  border-color: #38b98c;
+  color: #fff;
+}
+
+/* 7. 상세 화면 */
+.info-detail-content {
+  padding: 8px 24px;
+  background: #fbfdfb;
+  border: 1px solid #e3eee7;
+  border-radius: 13px;
+}
+
+.info-detail-row {
+  display: grid;
+  grid-template-columns: 125px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  min-height: 61px;
+  padding: 13px 0;
+  border-bottom: 1px solid #e9f0eb;
+}
+
+.info-detail-row strong {
+  font-size: 13px;
+  color: #53806a;
+}
+
+.info-detail-row span {
+  font-size: 14px;
+  color: #384d40;
+  overflow-wrap: anywhere;
+}
+
+.info-detail-row input {
+  margin: 0;
+}
+
+.info-detail-description {
+  padding: 23px 0 25px;
+}
+
+.info-detail-description h3 {
+  margin: 0 0 14px;
+  color: #315e49;
+  font-size: 15px;
+}
+
+.info-detail-description p {
+  margin: 0;
+  min-height: 105px;
+  line-height: 1.8;
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.info-detail-description textarea {
+  margin: 0;
+  min-height: 180px;
+}
+
+/* 수정 / 저장 / 취소 버튼 */
+.info-detail-edit {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 20px 0 32px;
+}
+
+.info-detail-edit button {
+  padding: 11px 19px;
+  border: 1px solid #38b98c;
+  border-radius: 9px;
+  background: #38b98c;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  transition: background .2s;
+}
+
+.info-detail-edit button:hover:not(:disabled) {
+  background: #279b76;
+}
+
+.info-detail-edit button:nth-child(2) {
+  background: #fff;
+  color: #587766;
+  border-color: #d0e4d7;
+}
+
+.info-detail-edit button:nth-child(2):hover:not(:disabled) {
+  background: #eff7f1;
+}
+
+/* 다른 공지사항 */
+.info-detail-other {
+  margin-top: 18px;
+}
+
+.info-detail-other>h3 {
+  margin: 0 0 15px;
+  font-size: 17px;
+  color: #315e49;
+}
+
+.info-detail-other .detail-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  align-items: center;
+  gap: 12px;
+}
+
+.info-detail-other .info-list-head {
+  padding: 12px 16px;
+  border-radius: 9px;
+  background: #edf8f1;
+  color: #4b8061;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.info-detail-other .info-head-title {
+  display: flex;
+  gap: 18px;
+}
+
+.info-detail-other .info-item {
+  padding: 13px 16px;
+  margin: 8px 0;
+  border: 1px solid #ebf2ed;
+  border-radius: 9px;
+}
+
+.info-detail-other .info-title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.info-detail-other .info-number {
+  flex: 0 0 30px;
+}
+
+.info-detail-other .info-title a {
+  min-width: 0;
+  color: #345a47;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.info-detail-other .info-title a:hover {
+  text-decoration: underline;
+  color: #279b76;
+}
+
+.info-detail-other .info-author {
+  text-align: center;
+  font-size: 13px;
+  color: #718a7a;
+}
+
+.info-detail-bottom {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  padding-top: 23px;
+  border-top: 1px solid #e8f0ea;
+}
+
+.info-detail-back {
+  padding: 11px 20px;
+  color: #37795b;
+  border: 1px solid #cce3d3;
+  border-radius: 9px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.info-detail-back:hover {
+  background: #eaf7f0;
+}
+
+/* 8. 등록 및 관리 화면 하단 */
+.info-set-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 20px;
+  margin-top: 25px;
+  border-top: 1px solid #e6f0e9;
+}
+
+.info-set-footer a {
+  color: #288764;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.info-set-footer a:hover {
+  text-decoration: underline;
+}
+
+/* 9. 반응형 */
+@media (max-width: 800px) {
+
+  .info-page,
+  .info-set-page {
+    padding: 22px 18px;
+  }
+
+  .info-register,
+  .info-set-register {
+    padding: 18px;
+  }
+
+  .info-manage-header h1,
+  .info-detail-header h1,
+  .info-set-header h1 {
+    font-size: 22px;
+  }
+
+  .info-detail-content {
+    padding: 6px 16px;
+  }
+
+  .info-detail-row {
+    grid-template-columns: 95px minmax(0, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 520px) {
+
+  .info-page,
+  .info-set-page {
+    padding: 18px 13px;
+  }
+
+  .info-detail-row {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .info-detail-other .detail-columns {
+    grid-template-columns: minmax(0, 1fr) 65px;
+  }
+
+  .info-detail-other .info-head-title {
+    gap: 10px;
+  }
+
+  .info-register-form>button,
+  .info-set-page .info-set-register-form>button {
+    align-self: stretch;
+  }
+
+  .info-detail-edit button {
+    flex: 1;
+  }
+}
+
+
+/* ====================================================================
+   COMAND ERP 프로젝트 전용 공지사항 디자인 통일 (2026-10-24)
+   - 기존 공지사항 CSS를 수정하지 않고, 최종 공지사항 디자인을 프로젝트에 적용
+   - Todo / Todo_set / Todo_detail의 현재 className과 호환
+   - 필요할 경우 이 블록만 제거하여 원상 복구 가능
+   ==================================================================== */
+/* 1. 공지사항 공통 */
+:is(.todo-page, .todo-manage-page),
+.todo-set-page {
+  width: 100%;
+  max-width: 1100px;
+  min-width: 0;
+  margin-inline: auto;
+  padding: 34px;
+  color: #34443d;
+  background: #fff;
+  border: 1px solid #e6f0e9;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(31, 94, 67, .07);
+}
+
+:is(.todo-page, .todo-manage-page) *,
+.todo-set-page * {
+  box-sizing: border-box;
+}
+
+:is(.todo-page, .todo-manage-page) button,
+.todo-set-page button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+:is(.todo-page, .todo-manage-page) button:disabled,
+.todo-set-page button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+:is(.todo-page, .todo-manage-page) :is(button, input, textarea, a):focus-visible,
+.todo-set-page :is(button, input, textarea, a):focus-visible {
+  outline: 3px solid rgba(56, 185, 140, .28);
+  outline-offset: 2px;
+}
+
+/* 2. 페이지 상단 제목과 우측 버튼 */
+.todo-manage-header,
+.todo-detail-header,
+.todo-set-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 23px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #e6f0e9;
+}
+
+.todo-manage-header h1,
+.todo-detail-header h1,
+.todo-set-header h1 {
+  margin: 0 0 8px;
+  font-size: 25px;
+  line-height: 1.35;
+  color: #247e61;
+}
+
+.todo-manage-header p,
+.todo-detail-header p,
+.todo-set-header p {
+  margin: 0;
+  color: #789086;
+  font-size: 13px;
+}
+
+.todo-reset,
+.todo-set-page .todo-set-reset,
+.todo-detail-header>button {
+  margin: 0;
+  padding: 10px 15px;
+  background: #fff;
+  border: 1px solid #cfe4d8;
+  border-radius: 9px;
+  color: #39765a;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background .2s, border-color .2s;
+}
+
+.todo-reset:hover,
+.todo-set-page .todo-set-reset:hover,
+.todo-detail-header>button:hover {
+  background: #eaf7f0;
+  border-color: #9fd5b8;
+}
+
+/* 3. 총 건수 / 검색 */
+.todo-summary,
+.todo-set-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 23px;
+}
+
+.todo-summary span,
+.todo-set-summary span {
+  padding: 9px 13px;
+  border-radius: 9px;
+  background: #f0faf4;
+  border: 1px solid #e1f0e7;
+  color: #428267;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.todo-filter,
+.todo-set-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 26px;
+}
+
+.todo-filter label,
+.todo-set-filter label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #45675a;
+}
+
+:is(.todo-page, .todo-manage-page) input,
+:is(.todo-page, .todo-manage-page) textarea,
+.todo-set-page input,
+.todo-set-page textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #d7e8dc;
+  border-radius: 10px;
+  outline: none;
+  background: #fbfdfb;
+  color: #33483d;
+  font: inherit;
+  font-size: 14px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+:is(.todo-page, .todo-manage-page) input:focus,
+:is(.todo-page, .todo-manage-page) textarea:focus,
+.todo-set-page input:focus,
+.todo-set-page textarea:focus {
+  background: #fff;
+  border-color: #38b98c;
+  box-shadow: 0 0 0 3px rgba(56, 185, 140, .1);
+}
+
+:is(.todo-page, .todo-manage-page) input::placeholder,
+:is(.todo-page, .todo-manage-page) textarea::placeholder,
+.todo-set-page input::placeholder,
+.todo-set-page textarea::placeholder {
+  color: #9baa9f;
+}
+
+:is(.todo-page, .todo-manage-page) textarea,
+.todo-set-page textarea {
+  min-height: 125px;
+  resize: vertical;
+  line-height: 1.65;
+}
+
+/* 4. 등록 폼 */
+.todo-register,
+.todo-set-register {
+  margin: 0 0 30px;
+  padding: 24px;
+  border: 1px solid #e1eee5;
+  border-radius: 14px;
+  background: #fbfdfb;
+}
+
+.todo-register h3,
+.todo-set-register h3,
+.todo-list-header h3,
+.todo-set-list-header h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #315e49;
+}
+
+.todo-register-form,
+.todo-set-register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 17px;
+}
+
+.todo-register-form textarea,
+.todo-set-register-form textarea {
+  min-height: 140px;
+}
+
+.todo-register-form>button,
+.todo-set-page .todo-set-register-form>button {
+  align-self: flex-end;
+  width: auto;
+  margin: 4px 0 0;
+  padding: 12px 20px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  background: #38b98c;
+  border: 1px solid #38b98c;
+  border-radius: 9px;
+  transition: background .2s, transform .2s;
+}
+
+.todo-register-form>button:hover,
+.todo-set-page .todo-set-register-form>button:hover {
+  background: #279b76;
+  transform: translateY(-1px);
+}
+
+/* 5. 공지사항 목록 테이블 */
+.todo-list-section,
+.todo-set-list-section {
+  margin-top: 24px;
+  overflow-x: auto;
+}
+
+.todo-list-header,
+.todo-set-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.todo-list-header>span,
+.todo-set-list-header>span {
+  font-size: 13px;
+  color: #789086;
+}
+
+.todo-table,
+.todo-set-table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: center;
+}
+
+.todo-table thead,
+.todo-set-table thead {
+  background: #eef8f2;
+}
+
+.todo-table th,
+.todo-set-table th {
+  padding: 14px 10px;
+  color: #3d795c;
+  border-top: 1px solid #e0eee5;
+  border-bottom: 1px solid #d7e9dd;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.todo-table td,
+.todo-set-table td {
+  padding: 14px 10px;
+  border-bottom: 1px solid #edf2ee;
+  color: #53695d;
+  vertical-align: middle;
+}
+
+.todo-table tbody tr:hover,
+.todo-set-table tbody tr:hover {
+  background: #f7fcf8;
+}
+
+.todo-table td:nth-child(2),
+.todo-set-table td:nth-child(2) {
+  text-align: left;
+}
+
+.todo-title-link,
+.todo-set-table td a {
+  display: inline-block;
+  padding: 3px 0;
+  color: #345a47;
+  border: 0;
+  background: none;
+  text-decoration: none;
+  font-weight: 600;
+  text-align: left;
+  word-break: break-word;
+}
+
+.todo-title-link:hover,
+.todo-set-table td a:hover {
+  color: #20976a;
+  text-decoration: underline;
+}
+
+/* 현재 JSX의 고정 버튼에는 className이 없으므로 마지막 관리 칸으로 지정 */
+.todo-table td:last-child {
+  white-space: nowrap;
+}
+
+.todo-table td:last-child>button:not(.todo-delete) {
+  margin: 2px 6px 2px 0;
+  padding: 8px 10px;
+  background: #eaf7f0;
+  border: 1px solid #bfe5cc;
+  color: #277e57;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.todo-table td:last-child>button:not(.todo-delete):hover {
+  background: #d9f2e3;
+}
+
+.todo-table .todo-delete {
+  margin: 2px 0;
+  padding: 8px 12px;
+  color: #c85e5e;
+  background: #fff8f8;
+  border: 1px solid #f1cece;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.todo-table .todo-delete:hover {
+  background: #ffeded;
+  border-color: #eab0b0;
+}
+
+.todo-empty,
+.todo-set-empty {
+  padding: 36px 12px !important;
+  text-align: center;
+  color: #8a9a90;
+}
+
+.todo-footer {
+  margin: 22px 0 0;
+  padding-top: 15px;
+  border-top: 1px solid #ecf2ee;
+  font-size: 12px;
+  color: #82968a;
+}
+
+/* 6. 페이지네이션 */
+:is(.todo-page, .todo-manage-page)s {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 24px 0 10px;
+}
+
+:is(.todo-page, .todo-manage-page)s button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #d5e7d9;
+  border-radius: 9px;
+  background: #fff;
+  color: #587766;
+  font-size: 13px;
+  transition: .2s;
+}
+
+:is(.todo-page, .todo-manage-page)s button:hover {
+  background: #edf8f1;
+  color: #238663;
+}
+
+:is(.todo-page, .todo-manage-page)s button.active,
+:is(.todo-page, .todo-manage-page)s button.active:hover {
+  background: #38b98c;
+  border-color: #38b98c;
+  color: #fff;
+}
+
+/* 7. 상세 화면 */
+.todo-detail-content {
+  padding: 8px 24px;
+  background: #fbfdfb;
+  border: 1px solid #e3eee7;
+  border-radius: 13px;
+}
+
+.todo-detail-row {
+  display: grid;
+  grid-template-columns: 125px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  min-height: 61px;
+  padding: 13px 0;
+  border-bottom: 1px solid #e9f0eb;
+}
+
+.todo-detail-row strong {
+  font-size: 13px;
+  color: #53806a;
+}
+
+.todo-detail-row span {
+  font-size: 14px;
+  color: #384d40;
+  overflow-wrap: anywhere;
+}
+
+.todo-detail-row input {
+  margin: 0;
+}
+
+.todo-detail-description {
+  padding: 23px 0 25px;
+}
+
+.todo-detail-description h3 {
+  margin: 0 0 14px;
+  color: #315e49;
+  font-size: 15px;
+}
+
+.todo-detail-description p {
+  margin: 0;
+  min-height: 105px;
+  line-height: 1.8;
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.todo-detail-description textarea {
+  margin: 0;
+  min-height: 180px;
+}
+
+/* 수정 / 저장 / 취소 버튼 */
+.todo-detail-edit {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 20px 0 32px;
+}
+
+.todo-detail-edit button {
+  padding: 11px 19px;
+  border: 1px solid #38b98c;
+  border-radius: 9px;
+  background: #38b98c;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  transition: background .2s;
+}
+
+.todo-detail-edit button:hover:not(:disabled) {
+  background: #279b76;
+}
+
+.todo-detail-edit button:nth-child(2) {
+  background: #fff;
+  color: #587766;
+  border-color: #d0e4d7;
+}
+
+.todo-detail-edit button:nth-child(2):hover:not(:disabled) {
+  background: #eff7f1;
+}
+
+/* 다른 공지사항 */
+.todo-detail-other {
+  margin-top: 18px;
+}
+
+.todo-detail-other>h3 {
+  margin: 0 0 15px;
+  font-size: 17px;
+  color: #315e49;
+}
+
+.todo-detail-other .detail-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  align-items: center;
+  gap: 12px;
+}
+
+.todo-detail-other .todo-list-head {
+  padding: 12px 16px;
+  border-radius: 9px;
+  background: #edf8f1;
+  color: #4b8061;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.todo-detail-other .todo-head-title {
+  display: flex;
+  gap: 18px;
+}
+
+.todo-detail-other .todo-item {
+  padding: 13px 16px;
+  margin: 8px 0;
+  border: 1px solid #ebf2ed;
+  border-radius: 9px;
+}
+
+.todo-detail-other .todo-title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.todo-detail-other .todo-number {
+  flex: 0 0 30px;
+}
+
+.todo-detail-other .todo-title a {
+  min-width: 0;
+  color: #345a47;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.todo-detail-other .todo-title a:hover {
+  text-decoration: underline;
+  color: #279b76;
+}
+
+.todo-detail-other .todo-author {
+  text-align: center;
+  font-size: 13px;
+  color: #718a7a;
+}
+
+.todo-detail-bottom {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  padding-top: 23px;
+  border-top: 1px solid #e8f0ea;
+}
+
+.todo-detail-back {
+  padding: 11px 20px;
+  color: #37795b;
+  border: 1px solid #cce3d3;
+  border-radius: 9px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.todo-detail-back:hover {
+  background: #eaf7f0;
+}
+
+/* 8. 등록 및 관리 화면 하단 */
+.todo-set-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 20px;
+  margin-top: 25px;
+  border-top: 1px solid #e6f0e9;
+}
+
+.todo-set-footer a {
+  color: #288764;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.todo-set-footer a:hover {
+  text-decoration: underline;
+}
+
+/* 9. 반응형 */
+@media (max-width: 800px) {
+
+  :is(.todo-page, .todo-manage-page),
+  .todo-set-page {
+    padding: 22px 18px;
+  }
+
+  .todo-register,
+  .todo-set-register {
+    padding: 18px;
+  }
+
+  .todo-manage-header h1,
+  .todo-detail-header h1,
+  .todo-set-header h1 {
+    font-size: 22px;
+  }
+
+  .todo-detail-content {
+    padding: 6px 16px;
+  }
+
+  .todo-detail-row {
+    grid-template-columns: 95px minmax(0, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 520px) {
+
+  :is(.todo-page, .todo-manage-page),
+  .todo-set-page {
+    padding: 18px 13px;
+  }
+
+  .todo-detail-row {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .todo-detail-other .detail-columns {
+    grid-template-columns: minmax(0, 1fr) 65px;
+  }
+
+  .todo-detail-other .todo-head-title {
+    gap: 10px;
+  }
+
+  .todo-register-form>button,
+  .todo-set-page .todo-set-register-form>button {
+    align-self: stretch;
+  }
+
+  .todo-detail-edit button {
+    flex: 1;
+  }
+}
+
+/* 프로젝트 상세 페이지: JSX의 기존 하단 버튼 배열에 맞춘 간격 및 취소 스타일 */
+.team-shell .todo-detail-page .todo-detail-bottom {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 24px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid #e8f0ea;
+}
+
+/* 수정 / 저장 버튼 */
+.team-shell .todo-detail-page .todo-detail-bottom button {
+  margin: 0;
+  padding: 11px 19px;
+  border: 1px solid #38b98c;
+  border-radius: 9px;
+  background: #38b98c;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button:hover:not(:disabled) {
+  background: #279b76;
+}
+
+/* 취소 버튼(수정 모드)과 목록으로 돌아가기 버튼은 보조 버튼 스타일 */
+.team-shell .todo-detail-page .todo-detail-bottom button:nth-child(2),
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back {
+  background: #fff;
+  color: #587766;
+  border-color: #d0e4d7;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button:nth-child(2):hover:not(:disabled),
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back:hover:not(:disabled) {
+  background: #eff7f1;
+  color: #37795b;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button:disabled,
+.team-shell .todo-set-page button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* 상세 수정 입력창: 기존 디자인 유지하면서 레이아웃 넘침 방지 */
+.team-shell .todo-detail-page .todo-detail-row input,
+.team-shell .todo-detail-page .todo-detail-description textarea {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 520px) {
+  .team-shell .todo-detail-page .todo-detail-bottom button {
+    flex: 1 1 auto;
+  }
+}
+
+
+/* =========================================
+   프로젝트 수정 화면 - 공지사항 디자인 통일
+========================================= */
+
+/* 수정, 저장, 취소 버튼 영역 */
+.team-shell .todo-detail-page .todo-detail-edit {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 20px 0 32px;
+}
+
+/* 수정 완료, 수정 버튼 */
+.team-shell .todo-detail-page .todo-detail-edit button {
+  padding: 11px 19px;
+  background: #38b98c;
+  color: white;
+  border: 1px solid #38b98c;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.team-shell .todo-detail-page .todo-detail-edit button:hover:not(:disabled) {
+  background: #279b76;
+}
+
+/* 취소 버튼 */
+.team-shell .todo-detail-page .todo-detail-edit button:nth-child(2) {
+  background: white;
+  color: #587766;
+  border-color: #d0e4d7;
+}
+
+.team-shell .todo-detail-page .todo-detail-edit button:nth-child(2):hover:not(:disabled) {
+  background: #eff7f1;
+}
+
+/* 프로젝트 수정 입력창 */
+.team-shell .todo-detail-page .todo-detail-row input,
+.team-shell .todo-detail-page .todo-detail-row select,
+.team-shell .todo-detail-page .todo-detail-description textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px 14px;
+  background: #fbfdfb;
+  border: 1px solid #d7e8dc;
+  border-radius: 10px;
+  color: #33483d;
+  font: inherit;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+  transition: 0.2s;
+}
+
+/* 선택창 커서 */
+.team-shell .todo-detail-page .todo-detail-row select {
+  cursor: pointer;
+}
+
+/* 입력창 포커스 */
+.team-shell .todo-detail-page .todo-detail-row input:focus,
+.team-shell .todo-detail-page .todo-detail-row select:focus,
+.team-shell .todo-detail-page .todo-detail-description textarea:focus {
+  background: white;
+  border-color: #38b98c;
+  box-shadow: 0 0 0 3px rgba(56, 185, 140, 0.1);
+}
+
+/* 내용 입력창 */
+.team-shell .todo-detail-page .todo-detail-description textarea {
+  min-height: 180px;
+  resize: vertical;
+  line-height: 1.7;
+}
+
+/* 저장 중 버튼 */
+.team-shell .todo-detail-page .todo-detail-edit button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* 모바일 */
+@media (max-width: 520px) {
+  .team-shell .todo-detail-page .todo-detail-edit button {
+    flex: 1;
+  }
+}
+
+/* 프로젝트 목록으로 돌아가기 버튼 - 공지사항과 동일하게 */
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back {
+  padding: 12px 20px;
+  background: #38b98c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+/* 마우스 올렸을 때 */
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back:hover:not(:disabled) {
+  background: #279b76;
+  color: white;
+}
+
+/* 공지사항 행사일 입력 */
+.info-set-date-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.info-set-date-field label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.info-set-date-field input[type="date"] {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.info-set-date-field small {
+  color: #888;
+  font-size: 12px;
+}
+
+/* 캘린더 프로젝트 상세 페이지 링크 */
+.calendar-schedule .calendar-project-link,
+.calendar-schedule .calendar-notice-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+
+/* ==================================
+   캘린더 프로젝트 / 공지사항 링크
+================================== */
+
+.calendar-schedule .calendar-project-link,
+.calendar-schedule .calendar-notice-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #374151;
+  font: inherit;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+/* 제목에 마우스를 올렸을 때 */
+.calendar-schedule .calendar-project-link:hover,
+.calendar-schedule .calendar-notice-link:hover {
+  color: #15966c;
+  text-decoration: none;
+}
+
+
+/* ==================================
+   캘린더 프로젝트 등록 버튼
+================================== */
+
+.calendar-schedule .calendar-add-project-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin-top: 15px;
+  padding: 11px 18px;
+
+  background: #15966c;
+  color: white;
+  border: 1px solid #15966c;
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: all 0.2s;
+}
+
+/* 버튼에 마우스를 올렸을 때 */
+.calendar-schedule .calendar-add-project-btn:hover {
+  background: #107653;
+  border-color: #107653;
+  box-shadow: 0 4px 10px rgba(21, 150, 108, 0.18);
+  transform: translateY(-1px);
+}
+
+/* 버튼 클릭 시 */
+.calendar-schedule .calendar-add-project-btn:active {
+  transform: translateY(0);
+}
+
+/* 키보드 접근성 */
+.calendar-schedule .calendar-project-link:focus-visible,
+.calendar-schedule .calendar-notice-link:focus-visible,
+.calendar-schedule .calendar-add-project-btn:focus-visible {
+  outline: 2px solid #15966c;
+  outline-offset: 3px;
+}
+
+
+/* ==================================
+   캘린더 일정 종류별 색상
+================================== */
+
+/* 캘린더 상단 색상 안내 */
+.calendar-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.calendar-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.calendar-legend .legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* 날짜 안에 여러 개의 점 배치 */
+.calendar-grid .day {
+  position: relative;
+}
+
+.calendar-grid .day .schedule-dots {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+/* 공통 점 스타일 */
+.calendar-grid .day .schedule-dots .schedule-dot {
+  position: static;
+  display: block;
+  width: 6px;
+  height: 6px;
+  margin: 0;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transform: none;
+  background: #94a3b8;
+}
+
+/* 업무 - 파란색 */
+.calendar-grid .day .schedule-dots .schedule-dot--work,
+.calendar-legend .legend-dot--work {
+  background: #3b82f6;
+}
+
+/* 개인 - 주황색 */
+.calendar-grid .day .schedule-dots .schedule-dot--personal,
+.calendar-legend .legend-dot--personal {
+  background: #f59e0b;
+}
+
+/* 휴가 - 분홍색 */
+.calendar-grid .day .schedule-dots .schedule-dot--leave,
+.calendar-legend .legend-dot--leave {
+  background: #ec4899;
+}
+
+/* 프로젝트 - 초록색 */
+.calendar-grid .day .schedule-dots .schedule-dot--project,
+.calendar-legend .legend-dot--project {
+  background: #10b981;
+}
+
+/* 공지사항 - 보라색 */
+.calendar-grid .day .schedule-dots .schedule-dot--notice,
+.calendar-legend .legend-dot--notice {
+  background: #8b5cf6;
+}
+
+
+/* 캘린더 등록 버튼 묶음 */
+.calendar-schedule .calendar-register-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* 기존 프로젝트 버튼 여백 조정 */
+.calendar-schedule .calendar-register-actions .calendar-add-project-btn {
+  margin-top: 0;
+}
+
+/* 공지사항 등록 버튼 */
+.calendar-schedule .calendar-add-notice-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+  padding: 11px 18px;
+
+  background: #8b5cf6;
+  color: white;
+  border: 1px solid #8b5cf6;
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* 마우스 hover */
+.calendar-schedule .calendar-add-notice-btn:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.2);
+  transform: translateY(-1px);
+}
+
+.calendar-schedule .calendar-add-notice-btn:active {
+  transform: translateY(0);
+}
+
+.info-table th:nth-child(2),
+.info-table td:nth-child(2) {
+  text-align: center;
+}
+
+.info-title-link {
+  width: auto;
+  text-align: center;
+}
+
+/* 프로젝트 제목 열 가운데 정렬 */
+.todo-table th:nth-child(3),
+.todo-table td:nth-child(3) {
+  text-align: center;
+}
+
+/* 프로젝트 제목 버튼 가운데 정렬 */
+.todo-table td:nth-child(1) .todo-title-link {
+  display: inline-block;
+  width: auto;
+  text-align: center;
+}
+
+/* 프로젝트 목록 테이블 너비 조정 */
+.team-shell .todo-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+/* 번호 */
+.team-shell .todo-table th:nth-child(1) {
+  width: 7%;
+}
+
+/* 프로젝트 ID */
+.team-shell .todo-table th:nth-child(2) {
+  width: 11%;
+}
+
+/* 프로젝트 제목 */
+.team-shell .todo-table th:nth-child(3) {
+  width: 44%;
+  text-align: center;
+}
+
+.team-shell .todo-table td:nth-child(3) {
+  text-align: center;
+}
+
+.team-shell .todo-table .todo-title-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* 작성자 */
+.team-shell .todo-table th:nth-child(4) {
+  width: 12%;
+}
+
+/* 작성일자 */
+.team-shell .todo-table th:nth-child(5) {
+  width: 17%;
+}
+
+/* 조회수 */
+.team-shell .todo-table th:nth-child(6) {
+  width: 9%;
+}
+
+/* ======================================================================
+   COMMAND ERP | Brand Blue Theme
+   2026-10-27 | 준우 페이지 전용 색상 테마
+
+   사용 방법: 현재 src/pages/junwoo/junwoo.css 파일 맨 아래에 통째로 추가.
+   기존 CSS를 지우지 마세요! (현재 수정된 프로젝트 목록 레이아웃 보존)
+   기존 CSS의 간격, grid, 크기, display, 기능은 변경하지 않습니다.
+   ====================================================================== */
+
+.team-shell {
+  --command-navy: #0B2551;
+  --command-blue: #087BDF;
+  --command-cyan: #00B8E8;
+  --command-ink: #263A56;
+  --command-muted: #6E83A1;
+  --command-border: #DCE9F8;
+  --command-light: #EEF6FF;
+  --command-shadow: 0 10px 28px rgba(15, 55, 110, .07);
+}
+
+/* ---- 원본 CSS에서 색상이 지정된 기존 요소를 모두 새 팔레트로 변경 ---- */
+
+.team-shell .calendar th {
+  background: #EAF4FF;
+  color: #1C69BA;
+}
+
+.team-shell .calendar td {
+  background: #F6FAFF;
+}
+
+.team-shell .calendar td:hover {
+  background: #D6EAFF;
+}
+
+.team-shell .todo h3,
+.team-shell .info h3 {
+  border-bottom: 2px solid #E5F0FC;
+}
+
+.team-shell .todo li,
+.team-shell .info li {
+  background: #F4F9FF;
+}
+
+.team-shell .todo li::before,
+.team-shell .info li::before {
+  color: #098BD6;
+}
+
+.team-shell .todo li:hover,
+.team-shell .info li:hover {
+  background: #E3F2FF;
+}
+
+.team-shell .day-name {
+  background: #EAF4FF;
+}
+
+.team-shell .day {
+  background: #F6FAFF;
+}
+
+.team-shell .day:hover {
+  background: #D6EAFF;
+}
+
+.team-shell .info-header {
+  border-bottom: 2px solid #E5F0FC;
+}
+
+.team-shell .info-header h2 {
+  color: #087BDF;
+}
+
+.team-shell .info-header p {
+  color: #7C8FA6;
+}
+
+.team-shell .info-item {
+  background: #F4F9FF;
+  border: 1px solid #EFF6FE;
+}
+
+.team-shell .info-item:hover {
+  background: #EDF3FA;
+}
+
+.team-shell .info-title {
+  color: #263A56;
+}
+
+.team-shell .info-number {
+  background: #E3F2FF;
+  color: #087BDF;
+}
+
+.team-shell .info-delete {
+  border: 1px solid #F1C6C6;
+  color: #D66B6B;
+}
+
+.team-shell .info-delete:hover {
+  background: #FFF0F0;
+  border-color: #E89B9B;
+}
+
+.team-shell .info-pages button {
+  border: 1px solid #DCE9F8;
+  color: #536881;
+}
+
+.team-shell .info-pages button:hover {
+  background: #EAF4FF;
+  color: #087BDF;
+}
+
+.team-shell .info-pages button.active {
+  background: #1689EC;
+  border-color: #1689EC;
+}
+
+.team-shell .info-empty {
+  color: #7C8FA6;
+}
+
+.team-shell .info-bottom {
+  border-top: 1px solid #E5F0FC;
+}
+
+.team-shell .info-add {
+  background: #1689EC;
+}
+
+.team-shell .info-add:hover {
+  background: #087BDF;
+}
+
+.team-shell .info-set-page h2 {
+  color: #087BDF;
+  border-bottom: 2px solid #E5F0FC;
+}
+
+.team-shell .info-set-page input,
+.team-shell .info-set-page textarea {
+  background: #F6FAFF;
+  border: 1px solid #DCE9F8;
+}
+
+.team-shell .info-set-page input:focus,
+.team-shell .info-set-page textarea:focus {
+  border-color: #00A9E8;
+}
+
+.team-shell .info-set-page button {
+  background: #1689EC;
+}
+
+.team-shell .info-set-page button:hover {
+  background: #087BDF;
+}
+
+.team-shell .info-search input {
+  border: 1px solid #DCE9F8;
+  background: #F6FAFF;
+}
+
+.team-shell .info-search input:focus {
+  border-color: #00A9E8;
+}
+
+.team-shell .info-search button {
+  background: #1689EC;
+}
+
+.team-shell .info-search button:hover {
+  background: #087BDF;
+}
+
+.team-shell .info-detail .info-header h2 {
+  color: #087BDF;
+}
+
+.team-shell .info-detail .info-header p {
+  color: #7C8FA6;
+}
+
+.team-shell .info-detail-content {
+  color: #263A56;
+}
+
+.team-shell .info-detail hr {
+  border-top: 1px solid #E5F0FC;
+}
+
+.team-shell .info-detail-back {
+  background: #1689EC;
+}
+
+.team-shell .info-detail-back:hover {
+  background: #087BDF;
+}
+
+.team-shell .info-title a {
+  color: #263A56;
+}
+
+.team-shell .info-title a:visited {
+  color: #263A56;
+}
+
+.team-shell .info-title a:hover {
+  color: #087BDF;
+}
+
+.team-shell .info-list-head {
+  border-bottom: 2px solid #E5F0FC;
+  color: #536881;
+}
+
+.team-shell .info-author {
+  color: #536881;
+}
+
+.team-shell .todo-header {
+  border-bottom: 2px solid #E5F0FC;
+}
+
+.team-shell .todo-header h2 {
+  color: #087BDF;
+}
+
+.team-shell .todo-header p {
+  color: #7C8FA6;
+}
+
+.team-shell .todo-search input {
+  border: 1px solid #DCE9F8;
+  background: #F6FAFF;
+}
+
+.team-shell .todo-search input:focus {
+  border-color: #00A9E8;
+}
+
+.team-shell .todo-search button {
+  background: #1689EC;
+}
+
+.team-shell .todo-search button:hover {
+  background: #087BDF;
+}
+
+.team-shell .todo-list-head {
+  border-bottom: 2px solid #E5F0FC;
+  color: #536881;
+}
+
+.team-shell .todo-item {
+  background: #F4F9FF;
+  border: 1px solid #EFF6FE;
+}
+
+.team-shell .todo-item:hover {
+  background: #EDF3FA;
+}
+
+.team-shell .todo-number {
+  background: #E3F2FF;
+  color: #087BDF;
+}
+
+.team-shell .todo-title a,
+.team-shell .todo-title a:visited {
+  color: #263A56;
+}
+
+.team-shell .todo-title a:hover {
+  color: #087BDF;
+}
+
+.team-shell .todo-author {
+  color: #536881;
+}
+
+.team-shell .todo-delete {
+  border: 1px solid #F1C6C6;
+  color: #D66B6B;
+}
+
+.team-shell .todo-delete:hover {
+  background: #FFF0F0;
+  border-color: #E89B9B;
+}
+
+.team-shell .todo-empty {
+  color: #7C8FA6;
+}
+
+.team-shell .todo-pages button {
+  border: 1px solid #DCE9F8;
+  color: #536881;
+}
+
+.team-shell .todo-pages button:hover {
+  background: #EAF4FF;
+  color: #087BDF;
+}
+
+.team-shell .todo-pages button.active {
+  background: #1689EC;
+  border-color: #1689EC;
+}
+
+.team-shell .todo-button {
+  border-top: 1px solid #E5F0FC;
+}
+
+.team-shell .todo-add {
+  background: #1689EC;
+}
+
+.team-shell .todo-add:hover {
+  background: #087BDF;
+}
+
+.team-shell .todo-set-page h2 {
+  color: #087BDF;
+  border-bottom: 2px solid #E5F0FC;
+}
+
+.team-shell .todo-set-page input,
+.team-shell .todo-set-page textarea {
+  background: #F6FAFF;
+  border: 1px solid #DCE9F8;
+}
+
+.team-shell .todo-set-page input:focus,
+.team-shell .todo-set-page textarea:focus {
+  border-color: #00A9E8;
+}
+
+.team-shell .todo-set-page button {
+  background: #1689EC;
+}
+
+.team-shell .todo-set-page button:hover {
+  background: #087BDF;
+}
+
+.team-shell .todo-detail .todo-header h2 {
+  color: #087BDF;
+}
+
+.team-shell .todo-detail .todo-header p {
+  color: #7C8FA6;
+}
+
+.team-shell .todo-detail-content {
+  color: #263A56;
+}
+
+.team-shell .todo-detail hr {
+  border-top: 1px solid #E5F0FC;
+}
+
+.team-shell .todo-detail-back {
+  background: #1689EC;
+}
+
+.team-shell .todo-detail-back:hover {
+  background: #087BDF;
+}
+
+.team-shell .todo li a,
+.team-shell .info li a {
+  color: #263A56;
+}
+
+.team-shell .todo li a:visited,
+.team-shell .info li a:visited {
+  color: #263A56;
+}
+
+.team-shell .todo li a:hover,
+.team-shell .info li a:hover {
+  color: #087BDF;
+}
+
+.team-shell .detail-other h3 {
+  color: #263A56;
+}
+
+.team-shell .calendar-top h2 {
+  color: #087BDF;
+}
+
+.team-shell .calendar-top button {
+  background: #EAF4FF;
+  color: #087BDF;
+}
+
+.team-shell .calendar-top button:hover {
+  background: #D6EAFF;
+}
+
+.team-shell .calendar-area .day.selected {
+  background: #D6EAFF;
+  color: #087BDF;
+}
+
+.team-shell .schedule-dot {
+  background: #1689EC;
+}
+
+.team-shell .calendar-schedule h3 {
+  border-bottom: 2px solid #E5F0FC;
+  color: #087BDF;
+}
+
+.team-shell .calendar-schedule h4 {
+  color: #087BDF;
+}
+
+.team-shell .calendar-schedule p {
+  color: #7C8FA6;
+}
+
+.team-shell .calendar-schedule li {
+  background: #F4F9FF;
+}
+
+.team-shell .calendar-schedule li strong {
+  color: #087BDF;
+}
+
+.team-shell .schedule-form input {
+  border: 1px solid #DCE9F8;
+  background: #F6FAFF;
+}
+
+.team-shell .schedule-form input:focus {
+  border-color: #00A9E8;
+}
+
+.team-shell .schedule-form button {
+  background: #1689EC;
+}
+
+.team-shell .schedule-form button:hover {
+  background: #087BDF;
+}
+
+.team-shell .calendar-schedule .schedule-delete {
+  border: 1px solid #F1C6C6;
+  color: #D66B6B;
+}
+
+.team-shell .calendar-schedule .schedule-delete:hover {
+  background: #FFF0F0;
+}
+
+.team-shell .todo-detail-header,
+.team-shell .info-detail-header {
+  border-bottom: 2px solid #E5F0FC;
+}
+
+.team-shell .todo-detail-header h1,
+.team-shell .info-detail-header h1 {
+  color: #087BDF;
+}
+
+.team-shell .todo-detail-header p,
+.team-shell .info-detail-header p {
+  color: #7C8FA6;
+}
+
+.team-shell .todo-detail-page .todo-detail-content,
+.team-shell .info-detail-page .info-detail-content {
+  border: 1px solid #E5F0FC;
+}
+
+.team-shell .todo-detail-row,
+.team-shell .info-detail-row {
+  border-bottom: 1px solid #EFF6FE;
+}
+
+.team-shell .todo-detail-row strong,
+.team-shell .info-detail-row strong {
+  background: #F4F9FF;
+  color: #536881;
+}
+
+.team-shell .todo-detail-row span,
+.team-shell .info-detail-row span {
+  color: #263A56;
+}
+
+.team-shell .todo-detail-description h3,
+.team-shell .info-detail-description h3 {
+  color: #087BDF;
+}
+
+.team-shell .todo-detail-page .todo-detail-description p,
+.team-shell .info-detail-page .info-detail-description p {
+  color: #263A56;
+}
+
+.team-shell .todo-detail-page .detail-other h3,
+.team-shell .info-detail-page .detail-other h3 {
+  color: #263A56;
+}
+
+.team-shell .todo-detail-header button,
+.team-shell .info-detail-header button,
+.team-shell .todo-detail-bottom button,
+.team-shell .info-detail-bottom button {
+  background: #1689EC;
+}
+
+.team-shell .todo-detail-header button:hover,
+.team-shell .info-detail-header button:hover,
+.team-shell .todo-detail-bottom button:hover,
+.team-shell .info-detail-bottom button:hover {
+  background: #087BDF;
+}
+
+.team-shell .todo-detail-page button:focus-visible,
+.team-shell .info-detail-page button:focus-visible,
+.team-shell .todo-detail-page a:focus-visible,
+.team-shell .info-detail-page a:focus-visible {
+  outline: 2px solid #087BDF;
+}
+
+.team-shell :is(.info-manage-header,
+  .todo-manage-header,
+  .info-set-header,
+  .todo-set-header) {
+  border-bottom: 1px solid #E5F0FC;
+}
+
+.team-shell :is(.info-manage-header,
+  .todo-manage-header,
+  .info-set-header,
+  .todo-set-header) h1 {
+  color: #087BDF;
+}
+
+.team-shell :is(.info-manage-header,
+  .todo-manage-header,
+  .info-set-header,
+  .todo-set-header) p {
+  color: #7C8FA6;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page,
+  .info-set-page,
+  .todo-set-page) :is(.info-reset,
+  .todo-reset,
+  .info-set-reset,
+  .todo-set-reset) {
+  border: 1px solid #DCE9F8;
+  color: #536881;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page,
+  .info-set-page,
+  .todo-set-page) :is(.info-reset,
+  .todo-reset,
+  .info-set-reset,
+  .todo-set-reset):hover {
+  background: #EAF4FF;
+  color: #087BDF;
+}
+
+.team-shell :is(.info-summary,
+  .todo-summary,
+  .info-set-summary,
+  .todo-set-summary) {
+  color: #536881;
+}
+
+.team-shell :is(.info-filter,
+  .todo-filter,
+  .info-set-filter,
+  .todo-set-filter) label {
+  color: #536881;
+}
+
+.team-shell :is(.info-filter,
+  .todo-filter,
+  .info-set-filter,
+  .todo-set-filter,
+  .info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) :is(input, textarea) {
+  background: #F6FAFF;
+  border: 1px solid #DCE9F8;
+  color: #263A56;
+}
+
+.team-shell :is(.info-filter,
+  .todo-filter,
+  .info-set-filter,
+  .todo-set-filter,
+  .info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) :is(input, textarea):focus {
+  border-color: #1689EC;
+}
+
+.team-shell :is(.info-register,
+  .todo-register,
+  .info-set-register,
+  .todo-set-register) {
+  background: #F4F9FF;
+}
+
+.team-shell :is(.info-register,
+  .todo-register,
+  .info-set-register,
+  .todo-set-register) h3 {
+  color: #263A56;
+}
+
+.team-shell :is(.info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) button {
+  background: #1689EC;
+}
+
+.team-shell :is(.info-register-form,
+  .todo-register-form,
+  .info-set-register-form,
+  .todo-set-register-form) button:hover {
+  background: #087BDF;
+}
+
+.team-shell :is(.info-list-header,
+  .todo-list-header,
+  .info-set-list-header,
+  .todo-set-list-header) h3 {
+  color: #263A56;
+}
+
+.team-shell :is(.info-list-header,
+  .todo-list-header,
+  .info-set-list-header,
+  .todo-set-list-header) span {
+  color: #087BDF;
+}
+
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) th {
+  background: #EAF4FF;
+  border-bottom: 1px solid #DCE9F8;
+  color: #1C69BA;
+}
+
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) td {
+  border-bottom: 1px solid #EFF6FE;
+  color: #263A56;
+}
+
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) tbody tr:hover {
+  background: #F4F9FF;
+}
+
+.team-shell :is(.info-title-link,
+  .todo-title-link) {
+  color: #087BDF;
+}
+
+.team-shell :is(.info-set-table,
+  .todo-set-table) a {
+  color: #087BDF;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-delete, .todo-delete) {
+  border: 1px solid #F1C6C6;
+  color: #D66B6B;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-delete, .todo-delete):hover {
+  background: #FFF0F0;
+  border-color: #E89B9B;
+}
+
+.team-shell :is(.info-table,
+  .todo-table,
+  .info-set-table,
+  .todo-set-table) :is(.info-empty,
+  .todo-empty,
+  .info-set-empty,
+  .todo-set-empty) {
+  color: #7C8FA6;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-pages, .todo-pages) button {
+  border: 1px solid #DCE9F8;
+  color: #536881;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-pages, .todo-pages) button:hover {
+  background: #EAF4FF;
+  color: #087BDF;
+}
+
+.team-shell :is(.info-manage-page,
+  .todo-manage-page) :is(.info-pages, .todo-pages) button.active {
+  background: #1689EC;
+  border-color: #1689EC;
+}
+
+.team-shell :is(.info-footer,
+  .todo-footer) {
+  color: #7C8FA6;
+}
+
+.team-shell :is(.info-set-footer,
+  .todo-set-footer) {
+  border-top: 1px solid #E5F0FC;
+}
+
+.team-shell :is(.info-set-footer,
+  .todo-set-footer) a {
+  background: #1689EC;
+}
+
+.team-shell :is(.info-set-footer,
+  .todo-set-footer) a:hover {
+  background: #087BDF;
+}
+
+.info-page,
+.info-set-page {
+  color: #263A56;
+  border: 1px solid #E5EFFB;
+  box-shadow: 0 8px 28px rgba(20, 76, 147, .07);
+}
+
+.info-page :is(button, input, textarea, a):focus-visible,
+.info-set-page :is(button, input, textarea, a):focus-visible {
+  outline: 3px solid rgba(8, 123, 223, .28);
+}
+
+.info-manage-header,
+.info-detail-header,
+.info-set-header {
+  border-bottom: 1px solid #E5EFFB;
+}
+
+.info-manage-header h1,
+.info-detail-header h1,
+.info-set-header h1 {
+  color: #136BB9;
+}
+
+.info-manage-header p,
+.info-detail-header p,
+.info-set-header p {
+  color: #7085A2;
+}
+
+.info-reset,
+.info-set-page .info-set-reset,
+.info-detail-header>button {
+  border: 1px solid #CFE2F9;
+  color: #226DB7;
+}
+
+.info-reset:hover,
+.info-set-page .info-set-reset:hover,
+.info-detail-header>button:hover {
+  background: #EDF6FF;
+  border-color: #A7CFF7;
+}
+
+.info-summary span,
+.info-set-summary span {
+  background: #F0F7FF;
+  border: 1px solid #DDEBFC;
+  color: #2F74B9;
+}
+
+.info-filter label,
+.info-set-filter label {
+  color: #3C618A;
+}
+
+.info-page input,
+.info-page textarea,
+.info-set-page input,
+.info-set-page textarea {
+  border: 1px solid #D9E7F7;
+  background: #FBFDFF;
+  color: #253B58;
+}
+
+.info-page input:focus,
+.info-page textarea:focus,
+.info-set-page input:focus,
+.info-set-page textarea:focus {
+  border-color: #1689EC;
+  box-shadow: 0 0 0 3px rgba(8, 123, 223, .1);
+}
+
+.info-page input::placeholder,
+.info-page textarea::placeholder,
+.info-set-page input::placeholder,
+.info-set-page textarea::placeholder {
+  color: #9BAEC5;
+}
+
+.info-register,
+.info-set-register {
+  border: 1px solid #E1EDFA;
+  background: #FBFDFF;
+}
+
+.info-register h3,
+.info-set-register h3,
+.info-list-header h3,
+.info-set-list-header h3 {
+  color: #274D7A;
+}
+
+.info-register-form>button,
+.info-set-page .info-set-register-form>button {
+  background: #1689EC;
+  border: 1px solid #1689EC;
+}
+
+.info-register-form>button:hover,
+.info-set-page .info-set-register-form>button:hover {
+  background: #087BDF;
+}
+
+.info-list-header>span,
+.info-set-list-header>span {
+  color: #7085A2;
+}
+
+.info-table thead,
+.info-set-table thead {
+  background: #EEF7FF;
+}
+
+.info-table th,
+.info-set-table th {
+  color: #395A7D;
+  border-top: 1px solid #E1EDFA;
+  border-bottom: 1px solid #D9E9F9;
+}
+
+.info-table td,
+.info-set-table td {
+  border-bottom: 1px solid #EDF4FC;
+  color: #536881;
+}
+
+.info-table tbody tr:hover,
+.info-set-table tbody tr:hover {
+  background: #F8FBFF;
+}
+
+.info-title-link,
+.info-set-table td a {
+  color: #2B527D;
+}
+
+.info-title-link:hover,
+.info-set-table td a:hover {
+  color: #0987CE;
+}
+
+.info-table td:last-child>button:not(.info-delete) {
+  background: #EDF6FF;
+  border: 1px solid #C2DEF9;
+  color: #1F6CBA;
+}
+
+.info-table td:last-child>button:not(.info-delete):hover {
+  background: #DCEEFF;
+}
+
+.info-table .info-delete {
+  color: #C85E5E;
+  background: #FFF8F8;
+  border: 1px solid #F1CECE;
+}
+
+.info-table .info-delete:hover {
+  background: #FFEDED;
+  border-color: #EAB0B0;
+}
+
+.info-empty,
+.info-set-empty {
+  color: #5691CE;
+}
+
+.info-footer {
+  border-top: 1px solid #EDF4FC;
+  color: #4D8BCB;
+}
+
+.info-pages button {
+  border: 1px solid #D5E7FA;
+  color: #526C8A;
+}
+
+.info-pages button:hover {
+  background: #F1F8FF;
+  color: #2079C9;
+}
+
+.info-pages button.active,
+.info-pages button.active:hover {
+  background: #1689EC;
+  border-color: #1689EC;
+}
+
+.info-detail-content {
+  background: #FBFDFF;
+  border: 1px solid #E5EFFA;
+}
+
+.info-detail-row {
+  border-bottom: 1px solid #EAF3FE;
+}
+
+.info-detail-row strong {
+  color: #4077AA;
+}
+
+.info-detail-row span {
+  color: #2E435E;
+}
+
+.info-detail-description h3 {
+  color: #274D7A;
+}
+
+.info-detail-edit button {
+  border: 1px solid #1689EC;
+  background: #1689EC;
+}
+
+.info-detail-edit button:hover:not(:disabled) {
+  background: #087BDF;
+}
+
+.info-detail-edit button:nth-child(2) {
+  color: #526C8A;
+  border-color: #D0E3F9;
+}
+
+.info-detail-edit button:nth-child(2):hover:not(:disabled) {
+  background: #EEF6FF;
+}
+
+.info-detail-other>h3 {
+  color: #274D7A;
+}
+
+.info-detail-other .info-list-head {
+  background: #F1F8FF;
+  color: #326EAC;
+}
+
+.info-detail-other .info-item {
+  border: 1px solid #ECF4FD;
+}
+
+.info-detail-other .info-title a {
+  color: #2B527D;
+}
+
+.info-detail-other .info-title a:hover {
+  color: #087BDF;
+}
+
+.info-detail-other .info-author {
+  color: #387CC3;
+}
+
+.info-detail-bottom {
+  border-top: 1px solid #E6EFF9;
+}
+
+.info-detail-back {
+  color: #286DB6;
+  border: 1px solid #CDE2F9;
+}
+
+.info-detail-back:hover {
+  background: #EDF6FF;
+}
+
+.info-set-footer {
+  border-top: 1px solid #E5EFFB;
+}
+
+.info-set-footer a {
+  color: #1977C5;
+}
+
+:is(.todo-page, .todo-manage-page),
+.todo-set-page {
+  color: #263A56;
+  border: 1px solid #E5EFFB;
+  box-shadow: 0 8px 28px rgba(20, 76, 147, .07);
+}
+
+:is(.todo-page, .todo-manage-page) :is(button, input, textarea, a):focus-visible,
+.todo-set-page :is(button, input, textarea, a):focus-visible {
+  outline: 3px solid rgba(8, 123, 223, .28);
+}
+
+.todo-manage-header,
+.todo-detail-header,
+.todo-set-header {
+  border-bottom: 1px solid #E5EFFB;
+}
+
+.todo-manage-header h1,
+.todo-detail-header h1,
+.todo-set-header h1 {
+  color: #136BB9;
+}
+
+.todo-manage-header p,
+.todo-detail-header p,
+.todo-set-header p {
+  color: #7085A2;
+}
+
+.todo-reset,
+.todo-set-page .todo-set-reset,
+.todo-detail-header>button {
+  border: 1px solid #CFE2F9;
+  color: #226DB7;
+}
+
+.todo-reset:hover,
+.todo-set-page .todo-set-reset:hover,
+.todo-detail-header>button:hover {
+  background: #EDF6FF;
+  border-color: #A7CFF7;
+}
+
+.todo-summary span,
+.todo-set-summary span {
+  background: #F0F7FF;
+  border: 1px solid #DDEBFC;
+  color: #2F74B9;
+}
+
+.todo-filter label,
+.todo-set-filter label {
+  color: #3C618A;
+}
+
+:is(.todo-page, .todo-manage-page) input,
+:is(.todo-page, .todo-manage-page) textarea,
+.todo-set-page input,
+.todo-set-page textarea {
+  border: 1px solid #D9E7F7;
+  background: #FBFDFF;
+  color: #253B58;
+}
+
+:is(.todo-page, .todo-manage-page) input:focus,
+:is(.todo-page, .todo-manage-page) textarea:focus,
+.todo-set-page input:focus,
+.todo-set-page textarea:focus {
+  border-color: #1689EC;
+  box-shadow: 0 0 0 3px rgba(8, 123, 223, .1);
+}
+
+:is(.todo-page, .todo-manage-page) input::placeholder,
+:is(.todo-page, .todo-manage-page) textarea::placeholder,
+.todo-set-page input::placeholder,
+.todo-set-page textarea::placeholder {
+  color: #9BAEC5;
+}
+
+.todo-register,
+.todo-set-register {
+  border: 1px solid #E1EDFA;
+  background: #FBFDFF;
+}
+
+.todo-register h3,
+.todo-set-register h3,
+.todo-list-header h3,
+.todo-set-list-header h3 {
+  color: #274D7A;
+}
+
+.todo-register-form>button,
+.todo-set-page .todo-set-register-form>button {
+  background: #1689EC;
+  border: 1px solid #1689EC;
+}
+
+.todo-register-form>button:hover,
+.todo-set-page .todo-set-register-form>button:hover {
+  background: #087BDF;
+}
+
+.todo-list-header>span,
+.todo-set-list-header>span {
+  color: #7085A2;
+}
+
+.todo-table thead,
+.todo-set-table thead {
+  background: #EEF7FF;
+}
+
+.todo-table th,
+.todo-set-table th {
+  color: #395A7D;
+  border-top: 1px solid #E1EDFA;
+  border-bottom: 1px solid #D9E9F9;
+}
+
+.todo-table td,
+.todo-set-table td {
+  border-bottom: 1px solid #EDF4FC;
+  color: #536881;
+}
+
+.todo-table tbody tr:hover,
+.todo-set-table tbody tr:hover {
+  background: #F8FBFF;
+}
+
+.todo-title-link,
+.todo-set-table td a {
+  color: #2B527D;
+}
+
+.todo-title-link:hover,
+.todo-set-table td a:hover {
+  color: #0987CE;
+}
+
+.todo-table td:last-child>button:not(.todo-delete) {
+  background: #EDF6FF;
+  border: 1px solid #C2DEF9;
+  color: #1F6CBA;
+}
+
+.todo-table td:last-child>button:not(.todo-delete):hover {
+  background: #DCEEFF;
+}
+
+.todo-table .todo-delete {
+  color: #C85E5E;
+  background: #FFF8F8;
+  border: 1px solid #F1CECE;
+}
+
+.todo-table .todo-delete:hover {
+  background: #FFEDED;
+  border-color: #EAB0B0;
+}
+
+.todo-empty,
+.todo-set-empty {
+  color: #5691CE;
+}
+
+.todo-footer {
+  border-top: 1px solid #EDF4FC;
+  color: #4D8BCB;
+}
+
+:is(.todo-page, .todo-manage-page)s button {
+  border: 1px solid #D5E7FA;
+  color: #526C8A;
+}
+
+:is(.todo-page, .todo-manage-page)s button:hover {
+  background: #F1F8FF;
+  color: #2079C9;
+}
+
+:is(.todo-page, .todo-manage-page)s button.active,
+:is(.todo-page, .todo-manage-page)s button.active:hover {
+  background: #1689EC;
+  border-color: #1689EC;
+}
+
+.todo-detail-content {
+  background: #FBFDFF;
+  border: 1px solid #E5EFFA;
+}
+
+.todo-detail-row {
+  border-bottom: 1px solid #EAF3FE;
+}
+
+.todo-detail-row strong {
+  color: #4077AA;
+}
+
+.todo-detail-row span {
+  color: #2E435E;
+}
+
+.todo-detail-description h3 {
+  color: #274D7A;
+}
+
+.todo-detail-edit button {
+  border: 1px solid #1689EC;
+  background: #1689EC;
+}
+
+.todo-detail-edit button:hover:not(:disabled) {
+  background: #087BDF;
+}
+
+.todo-detail-edit button:nth-child(2) {
+  color: #526C8A;
+  border-color: #D0E3F9;
+}
+
+.todo-detail-edit button:nth-child(2):hover:not(:disabled) {
+  background: #EEF6FF;
+}
+
+.todo-detail-other>h3 {
+  color: #274D7A;
+}
+
+.todo-detail-other .todo-list-head {
+  background: #F1F8FF;
+  color: #326EAC;
+}
+
+.todo-detail-other .todo-item {
+  border: 1px solid #ECF4FD;
+}
+
+.todo-detail-other .todo-title a {
+  color: #2B527D;
+}
+
+.todo-detail-other .todo-title a:hover {
+  color: #087BDF;
+}
+
+.todo-detail-other .todo-author {
+  color: #387CC3;
+}
+
+.todo-detail-bottom {
+  border-top: 1px solid #E6EFF9;
+}
+
+.todo-detail-back {
+  color: #286DB6;
+  border: 1px solid #CDE2F9;
+}
+
+.todo-detail-back:hover {
+  background: #EDF6FF;
+}
+
+.todo-set-footer {
+  border-top: 1px solid #E5EFFB;
+}
+
+.todo-set-footer a {
+  color: #1977C5;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom {
+  border-top: 1px solid #E6EFF9;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button {
+  border: 1px solid #1689EC;
+  background: #1689EC;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button:hover:not(:disabled) {
+  background: #087BDF;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button:nth-child(2),
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back {
+  color: #526C8A;
+  border-color: #D0E3F9;
+}
+
+.team-shell .todo-detail-page .todo-detail-bottom button:nth-child(2):hover:not(:disabled),
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back:hover:not(:disabled) {
+  background: #EEF6FF;
+  color: #286DB6;
+}
+
+/* ---- 브랜드 통일: 카드 및 입력 인터랙션 정돈 ---- */
+
+.team-shell .calendar,
+.team-shell .info,
+.team-shell .todo,
+.team-shell .calendar-schedule,
+.team-shell .info-page,
+.team-shell .todo-page,
+.team-shell .info-set-page,
+.team-shell .todo-set-page,
+.team-shell .info-detail-page,
+.team-shell .todo-detail-page,
+.team-shell .info-manage-page,
+.team-shell .todo-manage-page {
+  border-color: var(--command-border);
+  box-shadow: var(--command-shadow);
+}
+
+.team-shell .calendar-area .day.selected,
+.team-shell .calendar .day.selected {
+  background: #D6EAFF;
+  color: #086BC4;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px #9BC9FA;
+}
+
+.team-shell .calendar-area .day:not(.selected):hover,
+.team-shell .calendar .day:not(.selected):hover {
+  background: #EBF5FF;
+}
+
+.team-shell .schedule-dot {
+  background: var(--command-blue);
+}
+
+.team-shell .info-item:hover,
+.team-shell .todo-item:hover,
+.team-shell .info li:hover,
+.team-shell .todo li:hover {
+  background-color: #EDF6FF;
+}
+
+.team-shell :is(.info-search input, .todo-search input,
+  .info-filter input, .todo-filter input,
+  .info-register-form input, .todo-register-form input,
+  .info-register-form textarea, .todo-register-form textarea,
+  .info-set-register-form input, .todo-set-register-form input,
+  .info-set-register-form textarea, .todo-set-register-form textarea,
+  .info-detail-row input, .todo-detail-row input,
+  .info-detail-description textarea, .todo-detail-description textarea):focus-visible {
+  outline: 2px solid var(--command-blue);
+  outline-offset: 1px;
+  border-color: var(--command-blue);
+  box-shadow: 0 0 0 3px rgba(8, 123, 223, .13);
+}
+
+.team-shell :is(.info-search button, .todo-search button,
+  .info-register-form > button, .todo-register-form > button,
+  .info-set-register-form > button, .todo-set-register-form > button):not(:disabled) {
+  transition: background-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+.team-shell :is(.info-search button, .todo-search button,
+  .info-register-form > button, .todo-register-form > button,
+  .info-set-register-form > button, .todo-set-register-form > button):not(:disabled):hover {
+  box-shadow: 0 4px 13px rgba(8, 123, 223, .19);
+}
+
+/* 삭제 버튼은 의미 보존을 위해 붉은 계열 유지 */
+.team-shell :is(.info-delete, .todo-delete, .schedule-delete):hover {
+  background: #FFF0F0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .team-shell :is(.info-search button, .todo-search button,
+    .info-register-form > button, .todo-register-form > button,
+    .info-set-register-form > button, .todo-set-register-form > button) {
+    transition: none;
+  }
+}
+
+/* ==========================
+   공지사항 페이지 너비 확장
+========================== */
+
+.team-shell .info-page {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ==========================
+   프로젝트 목록으로 돌아가기 버튼
+========================== */
+
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 22px;
+  background: #1689EC !important;
+  color: #ffffff !important;
+  border: 1px solid #1689EC !important;
+  border-radius: 9px;
+
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* 마우스를 올렸을 때 */
+.team-shell .todo-detail-page .todo-detail-bottom .todo-detail-back:hover {
+  background: #087BDF !important;
+  border-color: #087BDF !important;
+  color: #ffffff !important;
+}
+
+/* ==========================
+   선택한 날짜의 일정 - 블루 테마
+========================== */
+
+/* 일정 박스 제목 */
+.team-shell .calendar-schedule h3 {
+  color: #087bdf;
+  border-bottom: 2px solid #e1edff;
+}
+
+/* 일정이 없을 때 안내 문구 */
+.team-shell .calendar-schedule p {
+  color: #8293aa;
+}
+
+/* 프로젝트 등록 요청 버튼 */
+.team-shell .calendar-schedule .calendar-add-project-btn,
+.team-shell .calendar-register-actions .calendar-add-project-btn {
+  background: #1689ec !important;
+  color: #ffffff !important;
+  border: 1px solid #1689ec !important;
+  border-radius: 9px;
+
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+/* 마우스를 올렸을 때 */
+.team-shell .calendar-schedule .calendar-add-project-btn:hover,
+.team-shell .calendar-register-actions .calendar-add-project-btn:hover {
+  background: #0866c2 !important;
+  border-color: #0866c2 !important;
+  color: #ffffff !important;
+}
+
+/* 프로젝트 상태 및 우선순위 */
+.team-shell .todo-select-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.team-shell .todo-select-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b2551;
+}
+
+.team-shell .todo-select-field select {
+  width: 100%;
+  height: 48px;
+  padding: 0 15px;
+  border: 1px solid #d7e4f5;
+  border-radius: 10px;
+  background: #f4f9ff;
+  color: #0b2551;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.team-shell .todo-select-field select:focus {
+  border-color: #1689ec;
+  box-shadow: 0 0 0 3px rgba(22, 137, 236, 0.1);
+}
+
+.team-shell .calendar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.team-shell .calendar-top .calendar-month-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.team-shell .calendar .calendar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.team-shell .calendar .calendar-month-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.team-shell .calendar .calendar-top h2 {
+  margin: 0;
+  color: #0b2551;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.team-shell .calendar .calendar-top button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  min-width: 36px;
+  padding: 0 10px;
+  border: 1px solid #cfe2f9;
+  border-radius: 8px;
+  background: #fff;
+  color: #087bdf;
+  cursor: pointer;
+}
+
+.team-shell .calendar .calendar-month-nav button {
+  font-size: 23px;
+}
+
+.team-shell .calendar .calendar-top .calendar-today-btn {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.team-shell .calendar .calendar-top button:hover {
+  background: #edf6ff;
+  border-color: #a7cff7;
+}
+
+.team-shell .calendar .calendar-top button:focus-visible {
+  outline: 2px solid #087bdf;
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .team-shell .calendar .calendar-month-nav {
+    gap: 8px;
+  }
+
+  .team-shell .calendar .calendar-top h2 {
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   커뮤니티 전체
+======================================== */
+
+.team-shell>.community-layout {
+  grid-column: 1 / -1;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 650px;
+  background-color: #ffffff;
+  border: 1px solid #e2eaf5;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(38, 58, 86, 0.05);
+}
+
+.community-layout,
+.community-layout * {
+  box-sizing: border-box;
+}
+
+.community-layout {
+  color: #263a56;
+  font-family: "Malgun Gothic", sans-serif;
+}
+
+.community-layout button,
+.community-layout input,
+.community-layout textarea {
+  font-family: inherit;
+}
+
+.community-layout button {
+  transition: background-color 0.2s, color 0.2s,
+    border-color 0.2s, box-shadow 0.2s;
+}
+
+.community-layout button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+/* ========================================
+ 왼쪽 메뉴
+======================================== */
+
+.community-sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  padding: 32px 20px;
+  background-color: #f8faff;
+  border-right: 1px solid #e2eaf5;
+}
+
+.community-logo {
+  margin: 0 0 30px;
+  padding: 0 10px;
+  color: #1e3a5f;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.community-side-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.community-side-menu-button {
+  width: 100%;
+  padding: 15px 18px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background-color: transparent;
+  color: #62748b;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.community-side-menu-button:hover {
+  border-color: #dce8ff;
+  background-color: #eaf1ff;
+  color: #2563eb;
+}
+
+/* ========================================
+ 본문 공통
+======================================== */
+
+.community-content {
+  flex: 1;
+  min-width: 0;
+  padding: 38px;
+  background-color: #ffffff;
+}
+
+.community-home,
+.community-board,
+.community-activity {
+  width: 100%;
+  min-width: 0;
+}
+
+.community-title {
+  margin: 0 0 14px;
+  color: #1e3350;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -1px;
+}
+
+.community-description {
+  margin: 0 0 32px;
+  color: #7b889b;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.community-panel {
+  width: 100%;
+  padding: 28px;
+  border: 1px solid #e3eaf4;
+  border-radius: 14px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 16px rgba(38, 58, 86, 0.03);
+}
+
+.community-panel-title {
+  margin: 0;
+  color: #263a56;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.community-empty {
+  margin: 0;
+  padding: 90px 20px;
+  color: #8a97a9;
+  font-size: 14px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+/* ========================================
+ 게시판 / 내 활동 탭
+======================================== */
+
+.community-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.community-tab-button {
+  padding: 11px 20px;
+  border: 1px solid #dfe7f2;
+  border-radius: 9px;
+  background-color: #f8faff;
+  color: #62748b;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.community-tab-button:hover {
+  border-color: #bcd3ff;
+  background-color: #eaf1ff;
+  color: #2563eb;
+}
+
+/* ========================================
+ 게시글 목록
+======================================== */
+
+.community-board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e8eef6;
+}
+
+.community-post-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.community-post-item {
+  border-bottom: 1px solid #edf1f7;
+}
+
+.community-post-item:last-child {
+  border-bottom: none;
+}
+
+.community-post-title {
+  display: block;
+  width: 100%;
+  padding: 22px 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #344b68;
+  font-size: 15px;
+  line-height: 1.6;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.community-post-title:hover {
+  background-color: #f5f8ff;
+  color: #2563eb;
+}
+
+/* ========================================
+ 글쓰기 / 수정 입력창
+======================================== */
+
+.community-label {
+  display: block;
+  margin: 26px 0 10px;
+  color: #405574;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.community-input,
+.community-textarea {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #dce4ef;
+  border-radius: 10px;
+  outline: none;
+  background-color: #fbfcff;
+  color: #263a56;
+  font-size: 15px;
+  line-height: 1.7;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.community-input::placeholder,
+.community-textarea::placeholder {
+  color: #96a2b3;
+}
+
+.community-input:focus,
+.community-textarea:focus {
+  border-color: #6495f5;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.community-textarea {
+  min-height: 300px;
+  resize: vertical;
+}
+
+/* ========================================
+ 게시글 상세 내용
+======================================== */
+
+.community-post-content {
+  min-height: 250px;
+  margin: 24px 0 0;
+  padding: 24px 0;
+  border-top: 1px solid #e8eef6;
+  border-bottom: 1px solid #e8eef6;
+  color: #4a5e78;
+  font-size: 15px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+ 공통 버튼
+======================================== */
+
+.community-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.community-button,
+.community-primary-button,
+.community-delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+/* 목록 / 취소 / 수정 */
+.community-button {
+  border-color: #dce4ef;
+  background-color: #ffffff;
+  color: #526781;
+}
+
+.community-button:hover {
+  border-color: #bccbe0;
+  background-color: #f3f6fb;
+  color: #263a56;
+}
+
+/* 글쓰기 / 저장 */
+.community-primary-button {
+  border-color: #2563eb;
+  background-color: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.15);
+}
+
+.community-primary-button:hover {
+  border-color: #1d4ed8;
+  background-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
+}
+
+/* 삭제 */
+.community-delete-button {
+  border-color: #fecaca;
+  background-color: #fff5f5;
+  color: #dc2626;
+}
+
+.community-delete-button:hover {
+  border-color: #fca5a5;
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* ========================================
+ 태블릿
+======================================== */
+
+@media (max-width: 1000px) {
+  .community-sidebar {
+    width: 190px;
+    padding: 28px 14px;
+  }
+
+  .community-logo {
+    padding: 0 8px;
+    font-size: 18px;
+  }
+
+  .community-content {
+    padding: 28px;
+  }
+
+  .community-panel {
+    padding: 22px;
+  }
+}
+
+/* ========================================
+ 모바일
+======================================== */
+
+@media (max-width: 700px) {
+  .team-shell>.community-layout {
+    flex-direction: column;
+    min-height: 550px;
+    border-radius: 12px;
+  }
+
+  .community-sidebar {
+    width: 100%;
+    padding: 22px 18px;
+    border-right: none;
+    border-bottom: 1px solid #e2eaf5;
+  }
+
+  .community-logo {
+    margin-bottom: 18px;
+    padding: 0;
+  }
+
+  .community-side-menu {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .community-side-menu-button {
+    width: auto;
+    padding: 11px 14px;
+    font-size: 14px;
+  }
+
+  .community-content {
+    padding: 24px 18px;
+  }
+
+  .community-title {
+    font-size: 24px;
+  }
+
+  .community-description {
+    font-size: 14px;
+  }
+
+  .community-tabs {
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .community-tab-button {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .community-panel {
+    padding: 20px 16px;
+  }
+
+  .community-panel-title {
+    font-size: 18px;
+  }
+
+  .community-empty {
+    padding: 65px 10px;
+  }
+
+  .community-post-title {
+    padding: 18px 6px;
+  }
+
+  .community-textarea {
+    min-height: 230px;
+  }
+
+  .community-button,
+  .community-primary-button,
+  .community-delete-button {
+    padding: 10px 16px;
+  }
+}
+
+.community-sidebar .community-side-menu .community-menu-button {
+  width: 100%;
+  padding: 15px 18px;
+  border: 1px solid #e0e8f5;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #526781;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.community-sidebar .community-side-menu .community-menu-button:hover {
+  border-color: #bed3ff;
+  background-color: #eaf1ff;
+  color: #2563eb;
+}
+
+.community-sidebar .community-side-menu .community-menu-button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+/* 왼쪽 메뉴 버튼 */
+.community-sidebar .community-side-menu .community-menu-button {
+  position: relative;
+  width: 100%;
+  padding: 16px 18px;
+  overflow: hidden;
+  border: 1px solid #e0e8f5;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #526781;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s,
+    transform 0.1s;
+}
+
+/* 처음에는 숨겨진 파란 밑줄 */
+.community-sidebar .community-side-menu .community-menu-button::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  bottom: 0;
+  left: 16px;
+  height: 3px;
+  border-radius: 3px;
+  background-color: #2563eb;
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+
+/* 마우스를 올렸을 때 */
+.community-sidebar .community-side-menu .community-menu-button:hover {
+  background-color: #f0f5ff;
+  color: #2563eb;
+}
+
+/* 선택한 메뉴 */
+.community-sidebar .community-side-menu .community-menu-selected {
+  border-color: #c7d9ff;
+  background-color: #eaf1ff;
+  color: #2154c3;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.1);
+}
+
+/* 선택한 메뉴 밑줄 표시 */
+.community-sidebar .community-side-menu .community-menu-selected::after {
+  transform: scaleX(1);
+}
+
+/* 버튼을 누르는 순간 */
+.community-sidebar .community-side-menu .community-menu-button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+/* 게시판 버튼 */
+.community-tab-button {
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s,
+    transform 0.1s;
+}
+
+/* 파란 밑줄 */
+.community-tab-button::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: 0;
+  left: 12px;
+  height: 3px;
+  border-radius: 3px;
+  background-color: #2563eb;
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+
+/* 선택한 게시판 */
+.community-tab-button.community-tab-selected {
+  border-color: #c7d9ff;
+  background-color: #eaf1ff;
+  color: #2154c3;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.1);
+}
+
+/* 선택한 게시판 밑줄 표시 */
+.community-tab-button.community-tab-selected::after {
+  transform: scaleX(1);
+}
+
+/* 누르는 순간 */
+.community-tab-button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+/* 기존 짧은 밑줄 제거 */
+.community-sidebar .community-side-menu .community-menu-button::after,
+.community-tab-button::after {
+  display: none;
+}
+
+/* 선택한 왼쪽 메뉴 */
+.community-sidebar .community-side-menu .community-menu-selected {
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background-color: #eaf1ff;
+  color: #2154c3;
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 #3868df;
+}
+
+/* 선택한 게시판 */
+.community-tab-button.community-tab-selected {
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background-color: #eaf1ff;
+  color: #2154c3;
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 #3868df;
+}
+
+.team-shell .community-layout :is(.community-side-menu, .community-content) button,
+.team-shell .community-layout :is(.community-side-menu, .community-content) button:hover,
+.team-shell .community-layout :is(.community-side-menu, .community-content) button:active {
+  color: #087BDF;
+}
+
+/* 글쓰기·저장 버튼 배경 */
+.team-shell .community-layout .community-primary-button {
+  background-color: #eaf4ff;
+  border-color: #bed3ff;
+}
+
+.team-shell .community-layout .community-primary-button:hover {
+  background-color: #dcecff;
+  border-color: #087BDF;
+}
+
+.community-home-count {
+  color: #087BDF;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* 게시글 표 */
+.community-home-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.community-home-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.community-home-table th {
+  padding: 15px;
+  background: #eaf4ff;
+  color: #087BDF;
+  border-bottom: 1px solid #dceaff;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.community-home-table td {
+  padding: 16px 15px;
+  border-bottom: 1px solid #eaf1ff;
+  color: #385577;
+  text-align: center;
+}
+
+.community-home-table tbody tr:hover {
+  background: #f5f9ff;
+}
+
+.community-home-table .community-home-post-title {
+  color: #087BDF;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.community-home-table th:first-child {
+  width: 70px;
+}
+
+.community-home-table th:nth-child(2) {
+  width: 120px;
+}
+
+.community-home-table th:last-child {
+  width: 140px;
+}
+
+/* 페이지 이동 버튼 */
+.community-home-pagination {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.community-home-pagination button {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 1px solid #dce4ef;
+  border-radius: 8px;
+  background: white;
+  color: #087BDF;
+  font: inherit;
+  cursor: pointer;
+}
+
+.community-home-pagination button:hover:not(:disabled) {
+  background: #eaf4ff;
+}
+
+.community-home-pagination .community-home-page-active {
+  background: #eaf1ff;
+  border-color: #bed3ff;
+  font-weight: bold;
+  box-shadow: inset 0 -2px 0 #087BDF;
+}
+
+.community-home-pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 홈 게시글 제목 버튼 */
+.community-home-table .community-home-title-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #087BDF;
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.community-home-table .community-home-title-button:hover {
+  text-decoration: underline;
+}
+
+.community-home-table .community-home-title-button:focus-visible {
+  outline: 2px solid #087BDF;
+  outline-offset: 4px;
+}
+
+/* 상세 화면 게시판 이름 */
+.community-detail-board {
+  margin: 0 0 12px;
+  color: #087BDF;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* 상세 화면 작성일 */
+.community-detail-date {
+  margin: 12px 0 0;
+  color: #808696;
+  font-size: 13px;
+}
+
+.community-board-number {
+  display: inline-block;
+  min-width: 40px;
+  margin-right: 12px;
+  color: #385577;
+  text-align: center;
+}
+
+/* 게시판 목록 표 */
+.community-board-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.community-board-table {
+  width: 100%;
+  min-width: 560px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.community-board-table th {
+  padding: 15px;
+  background: #eaf4ff;
+  color: #087BDF;
+  border-bottom: 1px solid #dceaff;
+  text-align: center;
+}
+
+.community-board-table td {
+  padding: 16px 15px;
+  border-bottom: 1px solid #eaf1ff;
+  color: #385577;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* 번호 */
+.community-board-table th:nth-child(1) {
+  width: 70px;
+}
+
+/* 작성자 */
+.community-board-table th:nth-child(3) {
+  width: 110px;
+}
+
+/* 작성일자 */
+.community-board-table th:nth-child(4) {
+  width: 150px;
+}
+
+/* 제목 */
+.community-board-table .community-board-title-cell {
+  text-align: left;
+}
+
+.community-board-table .community-board-title-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #087BDF;
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.community-board-table .community-board-title-button:hover {
+  text-decoration: underline;
+}
+
+.community-board-title-button:focus-visible {
+  outline: 2px solid #087BDF;
+  outline-offset: 4px;
+}
+
+.community-board-table tbody tr:hover {
+  background: #f5f9ff;
+}
+
+.community-board-table .community-board-title-cell,
+.community-board-table .community-board-title-button {
+  text-align: center;
+}
+
+.community-home-table .community-home-post-title,
+.community-home-table .community-home-title-button {
+  text-align: center;
+}
+
+/* 커뮤니티 독립 화면 */
+.community-layout.community-standalone {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  background: #f5f8fc;
+}
+
+/* 왼쪽 메뉴 */
+.community-standalone>.community-sidebar {
+  position: sticky;
+  top: 0;
+  width: 244px;
+  height: 100vh;
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: 34px 22px;
+  background: #ffffff;
+  border-right: 1px solid #e2eaf5;
+}
+
+/* 본문 */
+.community-standalone>.community-content {
+  flex: 1;
+  min-width: 0;
+  padding: 40px;
+  background: #f5f8fc;
+}
+
+/* 본문이 너무 넓어지지 않도록 제한 */
+.community-standalone .community-home,
+.community-standalone .community-board,
+.community-standalone .community-activity {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 독립 화면에서도 기존 버튼 색상 유지 */
+.community-standalone :is(.community-side-menu, .community-content) button,
+.community-standalone :is(.community-side-menu, .community-content) button:hover,
+.community-standalone :is(.community-side-menu, .community-content) button:active {
+  color: #087BDF;
+}
+
+.community-standalone .community-primary-button {
+  background-color: #eaf4ff;
+  border-color: #bed3ff;
+}
+
+.community-standalone .community-primary-button:hover {
+  background-color: #dcecff;
+  border-color: #087BDF;
+}
+
+/* 작은 화면 */
+@media (max-width: 700px) {
+  .community-layout.community-standalone {
+    flex-direction: column;
+  }
+
+  .community-standalone>.community-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 20px;
+    border-right: none;
+    border-bottom: 1px solid #e2eaf5;
+  }
+
+  .community-standalone>.community-content {
+    padding: 24px 16px;
+  }
+}
+
+/* ===================================
+   COMMAND LOUNGE 사이드바
+=================================== */
+
+.community-standalone>.community-sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+.community-standalone .lounge-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lounge-brand-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #087BDF;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.lounge-brand-text {
+  color: #20334e;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: -0.5px;
+}
+
+.lounge-brand-text small {
+  display: block;
+  margin-top: 4px;
+  color: #7d8ea3;
+  font-size: 10px;
+  font-weight: normal;
+  letter-spacing: 0;
+}
+
+.lounge-workspace {
+  margin: 32px 0 26px;
+  padding: 18px 14px;
+  border-radius: 10px;
+  background: #f5f8fc;
+}
+
+.lounge-workspace strong {
+  display: block;
+  color: #385577;
+  font-size: 13px;
+}
+
+.lounge-workspace span {
+  display: block;
+  margin-top: 6px;
+  color: #8695a8;
+  font-size: 11px;
+}
+
+.lounge-menu-label {
+  margin: 0 12px 14px;
+  color: #94a1b1;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+.lounge-sidebar-bottom {
+  margin-top: auto;
+  padding: 36px 12px 0;
+}
+
+.lounge-erp-link {
+  color: #58718e;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.lounge-erp-link:hover {
+  color: #087BDF;
+}
+
+.lounge-sidebar-bottom p {
+  margin: 14px 0 0;
+  color: #94a1b1;
+  font-size: 11px;
+}
+
+/* ===================================
+   헤더와 본문
+=================================== */
+
+.community-standalone>.lounge-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100vh;
+}
+
+.lounge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 88px;
+  padding: 20px 40px;
+  border-bottom: 1px solid #e4ebf3;
+  background: white;
+}
+
+.lounge-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  color: #91a0b2;
+  font-size: 12px;
+}
+
+.lounge-breadcrumb strong {
+  color: #385577;
+  font-weight: 500;
+}
+
+.lounge-header-label {
+  color: #8295ad;
+  font-size: 11px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.community-standalone .lounge-main>.community-content {
+  flex: 1;
+  min-width: 0;
+  padding: 36px 40px;
+  background: #f5f8fc;
+}
+
+.lounge-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 40px;
+  color: #94a1b1;
+  font-size: 10px;
+}
+
+/* ===================================
+   커뮤니티 홈 배너
+=================================== */
+
+.lounge-page-heading .community-title {
+  margin-bottom: 8px;
+}
+
+.lounge-page-heading .community-description {
+  margin-bottom: 26px;
+  font-size: 14px;
+}
+
+.lounge-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 240px;
+  margin-bottom: 26px;
+  padding: 32px 36px;
+  overflow: hidden;
+  border: 1px solid #dceaff;
+  border-radius: 16px;
+  background: #eaf3ff;
+}
+
+.lounge-eyebrow {
+  margin: 0 0 12px;
+  color: #3886ca;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1.8px;
+}
+
+.lounge-hero h2 {
+  margin: 0;
+  color: #133c68;
+  font-size: 28px;
+  line-height: 1.5;
+  letter-spacing: -1px;
+}
+
+.lounge-hero-description {
+  margin: 14px 0 20px;
+  color: #6b86a4;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.lounge-hero-button {
+  padding: 10px 16px;
+  border: 1px solid #cbdff7;
+  border-radius: 8px;
+  background: white;
+  color: #087BDF;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.lounge-hero-button:hover {
+  background: #f5f9ff;
+}
+
+/* 말풍선 장식 */
+.lounge-hero-art {
+  position: relative;
+  width: 240px;
+  height: 170px;
+  flex-shrink: 0;
+}
+
+.lounge-bubble {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 22px;
+  font-weight: bold;
+  box-shadow: 0 14px 32px rgba(75, 140, 213, 0.15);
+}
+
+.lounge-bubble-first {
+  top: 20px;
+  left: 0;
+  width: 125px;
+  height: 85px;
+  transform: rotate(-9deg);
+  background: white;
+  color: #087BDF;
+  font-size: 26px;
+}
+
+.lounge-bubble-second {
+  right: 0;
+  bottom: 12px;
+  width: 125px;
+  height: 80px;
+  transform: rotate(9deg);
+  background: #1486ec;
+  color: white;
+  font-size: 20px;
+}
+
+.lounge-spark {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  color: #66a8e8;
+  font-size: 36px;
+}
+
+/* 작은 화면 */
+@media (max-width: 1000px) {
+  .lounge-hero-art {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .community-standalone>.lounge-main {
+    min-height: auto;
+  }
+
+  .lounge-header {
+    min-height: 64px;
+    padding: 18px 20px;
+  }
+
+  .lounge-header-label {
+    display: none;
+  }
+
+  .community-standalone .lounge-main>.community-content {
+    padding: 24px 16px;
+  }
+
+  .lounge-sidebar-bottom {
+    padding-top: 20px;
+  }
+
+  .lounge-hero {
+    min-height: auto;
+    padding: 26px 22px;
+  }
+
+  .lounge-hero h2 {
+    font-size: 24px;
+  }
+
+  .lounge-footer {
+    flex-wrap: wrap;
+    padding: 20px;
+  }
+}
+
+/* ===================================
+   홈 최신 게시글 카드
+=================================== */
+
+.community-panel.lounge-feed-panel {
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #e2eaf4;
+  border-radius: 14px;
+  background: white;
+}
+
+.lounge-feed-panel>.community-board-header {
+  margin: 0;
+  padding: 24px;
+}
+
+.lounge-feed {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lounge-feed-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 24px;
+  border-top: 1px solid #edf2f8;
+  transition: background-color 0.2s;
+}
+
+.lounge-feed-item:hover {
+  background: #f8fbff;
+}
+
+.lounge-feed-number {
+  min-width: 26px;
+  padding-top: 3px;
+  color: #8c9aab;
+  font-size: 12px;
+  text-align: center;
+}
+
+.lounge-feed-body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 게시판 종류 */
+.lounge-post-badge {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: 5px;
+  background: #edf4ff;
+  color: #087BDF;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.lounge-post-badge-question {
+  background: #eaf8f1;
+  color: #438a70;
+}
+
+.lounge-post-badge-info {
+  background: #fff3e7;
+  color: #a76a24;
+}
+
+/* 제목 */
+.lounge-feed-title {
+  margin: 10px 0 7px;
+}
+
+.lounge-feed-title-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #087BDF;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1.6;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.lounge-feed-title-button:hover {
+  text-decoration: underline;
+}
+
+/* 내용 한 줄 미리보기 */
+.lounge-feed-preview {
+  margin: 0 0 12px;
+  overflow: hidden;
+  color: #7c8da2;
+  font-size: 13px;
+  line-height: 1.6;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 작성자와 작성일 */
+.lounge-feed-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  color: #8c9aab;
+  font-size: 11px;
+}
+
+.lounge-feed-arrow {
+  align-self: center;
+  color: #a6bad1;
+  font-size: 28px;
+}
+
+/* 홈 페이지 이동 버튼 여백 */
+.lounge-feed-panel>.community-home-pagination {
+  margin: 0;
+  padding: 22px;
+  border-top: 1px solid #edf2f8;
+}
+
+/* 게시글이 없을 때 */
+.lounge-empty {
+  padding: 45px 24px;
+  border-top: 1px solid #edf2f8;
+  text-align: center;
+}
+
+.lounge-empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 16px;
+  border-radius: 18px;
+  background: #eaf4ff;
+  color: #087BDF;
+  font-size: 28px;
+}
+
+.lounge-empty h3 {
+  margin: 0 0 10px;
+  color: #385577;
+  font-size: 17px;
+}
+
+.lounge-empty p {
+  margin: 0 0 22px;
+  color: #8291a6;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+@media (max-width: 700px) {
+  .lounge-feed-panel>.community-board-header {
+    padding: 20px;
+  }
+
+  .lounge-feed-item {
+    gap: 10px;
+    padding: 20px 16px;
+  }
+
+  .lounge-feed-title-button {
+    font-size: 15px;
+  }
+}
+
+/* ===================================
+   홈: 최신 글 + 오른쪽 카드
+=================================== */
+
+.lounge-home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 24px;
+  align-items: start;
+}
+
+.lounge-home-grid>.lounge-feed-panel {
+  min-width: 0;
+}
+
+.lounge-home-side {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.lounge-side-card {
+  padding: 24px;
+  border: 1px solid #e2eaf4;
+  border-radius: 14px;
+  background: white;
+}
+
+.lounge-side-title {
+  margin: 0;
+  color: #263a56;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.lounge-side-description {
+  margin: 9px 0 20px;
+  color: #8291a6;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* 전체 게시글 수 */
+.lounge-total-posts {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 17px;
+  border-radius: 10px;
+  background: #f0f7ff;
+}
+
+.lounge-total-posts span {
+  color: #58718e;
+  font-size: 12px;
+}
+
+.lounge-total-posts strong {
+  color: #087BDF;
+  font-size: 24px;
+}
+
+/* 게시판별 글 개수 */
+.lounge-board-counts {
+  margin: 14px 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.lounge-board-counts li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #eef3f8;
+  color: #58718e;
+  font-size: 13px;
+}
+
+.lounge-board-counts li>span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.lounge-board-counts strong {
+  color: #385577;
+  font-size: 13px;
+}
+
+.lounge-category-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.lounge-dot-free {
+  background: #5a9ee8;
+}
+
+.lounge-dot-question {
+  background: #65b395;
+}
+
+.lounge-dot-info {
+  background: #e6b16a;
+}
+
+.lounge-side-button {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid #dce6f2;
+  border-radius: 8px;
+  background: white;
+  color: #087BDF;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.lounge-side-button:hover {
+  background: #f0f7ff;
+}
+
+/* 이용 안내 */
+.lounge-guide-list {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lounge-guide-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.lounge-guide-list li:last-child {
+  margin-bottom: 0;
+}
+
+.lounge-guide-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #edf5ff;
+  color: #087BDF;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.lounge-guide-list strong {
+  color: #385577;
+  font-size: 13px;
+}
+
+.lounge-guide-list p {
+  margin: 6px 0 0;
+  color: #8291a6;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* 환영 카드 */
+.lounge-welcome-card {
+  padding: 24px;
+  border: 1px solid #dceaff;
+  border-radius: 14px;
+  background: #edf5ff;
+}
+
+.lounge-welcome-label {
+  color: #3886ca;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 1.2px;
+}
+
+.lounge-welcome-card h2 {
+  margin: 12px 0;
+  color: #244d78;
+  font-size: 17px;
+}
+
+.lounge-welcome-card p {
+  margin: 0;
+  color: #6b86a4;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+/* 좁은 화면에서는 안내 카드를 아래로 이동 */
+@media (max-width: 1100px) {
+  .lounge-home-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lounge-home-side {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lounge-welcome-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  .lounge-home-side {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 홈 게시글 검색 */
+.lounge-search-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 24px 20px;
+}
+
+.lounge-board-select,
+.lounge-search-input {
+  min-height: 42px;
+  border: 1px solid #dce6f2;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #385577;
+  font: inherit;
+  font-size: 13px;
+}
+
+.lounge-board-select {
+  width: 140px;
+  padding: 10px;
+}
+
+.lounge-search-input {
+  flex: 1;
+  min-width: 160px;
+  padding: 10px 14px;
+}
+
+.lounge-search-input::placeholder {
+  color: #94a1b1;
+}
+
+.lounge-board-select:focus,
+.lounge-search-input:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+  border-color: #087BDF;
+}
+
+.lounge-search-reset {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid #dce6f2;
+  border-radius: 8px;
+  background: #f5f9ff;
+  color: #087BDF;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.lounge-search-reset:hover {
+  background: #eaf4ff;
+}
+
+@media (max-width: 700px) {
+  .lounge-search-toolbar {
+    padding: 0 16px 18px;
+  }
+
+  .lounge-board-select {
+    width: 100%;
+  }
+
+  .lounge-search-input {
+    min-width: 0;
+  }
+}
+
+/* 상단 로그인 직원 정보 */
+.lounge-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex-shrink: 0;
+}
+
+.lounge-user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #e8f1fd;
+  color: #087BDF;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.lounge-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lounge-user-info strong {
+  color: #385577;
+  font-size: 13px;
+}
+
+.lounge-user-info span {
+  color: #8c9aad;
+  font-size: 11px;
+}
+
+@media (max-width: 700px) {
+  .lounge-header {
+    flex-wrap: wrap;
+  }
+
+  .lounge-user-avatar {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+/* 댓글 영역 */
+.community-comments {
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid #e4ebf5;
+}
+
+.community-comments-title {
+  margin: 0 0 18px;
+  color: #263a56;
+  font-size: 18px;
+}
+
+.community-comment-message {
+  padding: 24px 0;
+  color: #8291a6;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* 댓글 목록 */
+.community-comment-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.community-comment-item {
+  padding: 20px 0;
+  border-bottom: 1px solid #edf2f8;
+}
+
+.community-comment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.community-comment-header strong {
+  color: #385577;
+  font-size: 14px;
+}
+
+.community-comment-delete {
+  padding: 5px 9px;
+  border: 1px solid #dce6f2;
+  border-radius: 6px;
+  background: white;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.community-comment-content {
+  margin: 10px 0;
+  color: #4a5e78;
+  font-size: 14px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.community-comment-date {
+  color: #94a1b1;
+  font-size: 11px;
+}
+
+/* 댓글 입력창 */
+.community-comment-form {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #e2eaf4;
+  border-radius: 12px;
+  background: #f8fbff;
+}
+
+.community-comment-form label {
+  display: block;
+  margin-bottom: 10px;
+  color: #385577;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.community-comment-form textarea {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #dce6f2;
+  border-radius: 8px;
+  background: white;
+  color: #385577;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.community-comment-form textarea:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.community-comment-form-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.community-comment-form-bottom span {
+  color: #94a1b1;
+  font-size: 12px;
+}
+
+.community-comments button:disabled,
+.community-comment-form textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 홈 오른쪽 게시판 바로가기 */
+.lounge-board-counts li {
+  padding: 0;
+}
+
+.lounge-board-shortcut {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lounge-board-shortcut>span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.lounge-board-shortcut:hover {
+  background: #f0f7ff;
+}
+
+/* 질문 해결 상태 */
+.question-status {
+  display: inline-block;
+  margin: 8px 0;
+  padding: 4px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1.5;
+}
+
+.question-status-waiting {
+  background: #fff3e7;
+  color: #a76a24;
+}
+
+.question-status-resolved {
+  background: #eaf8f1;
+  color: #32765b;
+}
+
+/* 좋아요 버튼 */
+.community-like-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.community-like-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-width: 140px;
+  padding: 12px 20px;
+  border: 1px solid #dce6f2;
+  border-radius: 30px;
+  background: white;
+  color: #087BDF;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.community-like-button:hover {
+  background: #f0f7ff;
+  border-color: #a7ccf4;
+}
+
+.community-like-button.community-like-selected {
+  background: #eaf4ff;
+  border-color: #087BDF;
+}
+
+.community-like-heart {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.community-like-button strong {
+  font-size: 14px;
+}
+
+.community-like-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.community-like-message {
+  margin: 0;
+  color: #8291a6;
+  font-size: 13px;
+}
+
+/* 댓글 수 바로 위에 작은 좋아요 버튼 */
+.community-like-area {
+  justify-content: flex-start;
+  margin: 14px 0 8px;
+}
+
+.community-like-button {
+  min-width: 0;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.community-like-heart {
+  font-size: 16px;
+}
+
+.community-like-button strong {
+  font-size: 12px;
+}
+
+/* 좋아요와 댓글 제목 사이 간격 */
+.community-like-area+.community-comments {
+  margin-top: 0;
+  padding-top: 12px;
+  border-top: none;
+}
+
+/* 댓글 답글 기능 */
+.community-comments .community-comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.community-comments .community-reply-button {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #2563eb;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.community-comments .community-reply-button:hover {
+  background: #eff6ff;
+}
+
+.community-comments .community-reply-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.community-comments .community-reply-list {
+  list-style: none;
+  margin: 16px 0 0 16px;
+  padding: 0 0 0 16px;
+  border-left: 2px solid #e2e8f0;
+}
+
+.community-comments .community-reply-item {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.community-comments .community-reply-form {
+  margin-top: 14px;
+}
+
+.community-comments .community-reply-form-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 글쓰기와 수정 화면으로 이동하는 링크 */
+.community-layout a.community-primary-button,
+.community-layout a.community-button {
+  display: inline-block;
+  text-decoration: none;
+}
+
+/* 내 활동 탭과 게시글 제목 링크 */
+.community-layout a.community-tab-button {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.community-layout a.community-home-title-button,
+.community-layout a.lounge-feed-title-button {
+  text-decoration: none;
+}
+
+/* 본인 댓글의 수정·삭제 버튼 */
+.community-comments .community-comment-owner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 왼쪽 메뉴 링크 */
+.community-sidebar .community-side-menu a.community-menu-button {
+  display: block;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+/* 로고 링크의 기본 밑줄과 방문 색상 제거 */
+.community-standalone a.lounge-brand {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 게시글 제목 링크 */
+.community-layout a.community-board-title-button,
+.community-layout a.community-home-title-button,
+.community-layout a.lounge-feed-title-button {
+  color: #087bdf;
+  text-decoration: none;
+}
+
+/* 제목에 마우스를 올리면 밑줄 표시 */
+.community-layout a.community-board-title-button:hover,
+.community-layout a.community-home-title-button:hover,
+.community-layout a.lounge-feed-title-button:hover {
+  text-decoration: underline;
+}
+
+/* 링크로 만든 글쓰기·목록·수정 버튼 */
+.community-layout a.community-primary-button,
+.community-layout a.community-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  color: #087bdf;
+  text-decoration: none;
+}
+
+/* 내 활동 탭 링크 */
+.community-layout a.community-tab-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  color: #087bdf;
+  text-decoration: none;
+}
+
+/* 프로젝트 목록: ID 열 제거 후 배치 */
+.team-shell .todo-manage-page .todo-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+/* 공통 간격과 정렬 */
+.team-shell .todo-manage-page .todo-table th,
+.team-shell .todo-manage-page .todo-table td {
+  padding: 16px 12px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* 번호 */
+.team-shell .todo-manage-page .todo-table th:nth-child(1) {
+  width: 7%;
+}
+
+/* 프로젝트 제목 */
+.team-shell .todo-manage-page .todo-table th:nth-child(2) {
+  width: 55%;
+}
+
+/* 작성자 */
+.team-shell .todo-manage-page .todo-table th:nth-child(3) {
+  width: 13%;
+}
+
+/* 작성일자 */
+.team-shell .todo-manage-page .todo-table th:nth-child(4) {
+  width: 17%;
+}
+
+/* 조회수 */
+.team-shell .todo-manage-page .todo-table th:nth-child(5) {
+  width: 8%;
+}
+
+/* 제목은 왼쪽 정렬 */
+.team-shell .todo-manage-page .todo-table th:nth-child(2),
+.team-shell .todo-manage-page .todo-table td:nth-child(2) {
+  padding-left: 24px;
+  padding-right: 24px;
+  text-align: center;
+}
+
+/* 제목 버튼 */
+.team-shell .todo-manage-page .todo-table .todo-title-link {
+  display: block;
+  width: 100%;
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+  color: #087bdf;
+  font: inherit;
+  font-weight: 500;
+  line-height: 1.6;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.team-shell .todo-manage-page .todo-table .todo-title-link:hover {
+  color: #075eac;
+  text-decoration: underline;
+}
+
+/* 행에 마우스를 올렸을 때 */
+.team-shell .todo-manage-page .todo-table tbody tr:hover {
+  background-color: #f5f9ff;
+}
+
+/* 목록이 없을 때 */
+.team-shell .todo-manage-page .todo-table .todo-empty {
+  text-align: center;
+}
+
+/* 프로젝트 목록 상태 탭 */
+.team-shell .todo-manage-page .todo-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.team-shell .todo-manage-page .todo-status-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.team-shell .todo-manage-page .todo-status-tab {
+  padding: 10px 18px;
+  border: 1px solid #dce9f8;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #617792;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.team-shell .todo-manage-page .todo-status-tab:hover {
+  background: #f0f7ff;
+  border-color: #a9d0ff;
+  color: #087bdf;
+}
+
+.team-shell .todo-manage-page .todo-status-tab.active {
+  background: #1689ec;
+  border-color: #1689ec;
+  color: #ffffff;
+}
+
+.team-shell .todo-manage-page .todo-status-tab:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+/* 아직 프로젝트 상세가 없는 요청 제목 */
+.team-shell .todo-manage-page .todo-request-title {
+  display: block;
+  padding: 4px 0;
+  color: #365575;
+  line-height: 1.6;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* 승인 상태 */
+.team-shell .todo-manage-page .todo-request-status {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.team-shell .todo-manage-page .todo-request-status.waiting {
+  background: #fff5dc;
+  color: #926200;
+}
+
+.team-shell .todo-manage-page .todo-request-status.approved {
+  background: #e8f7ef;
+  color: #21764b;
+}
+
+/* 프로젝트 요청 상세 */
+.team-shell .request-detail-page {
+  grid-column: 1 / -1;
+  grid-row: 2 / 4;
+  min-width: 0;
+  width: calc(100% - 32px);
+  max-width: 1100px;
+  box-sizing: border-box;
+  margin: 36px auto;
+  padding: 32px;
+  border: 1px solid #dce9f8;
+  border-radius: 18px;
+  background: #ffffff;
+  color: #263a56;
+  box-shadow: 0 8px 28px rgba(30, 80, 140, 0.05);
+}
+
+.team-shell .request-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e7eff9;
+}
+
+.team-shell .request-detail-header>div {
+  min-width: 0;
+}
+
+.team-shell .request-detail-caption {
+  margin: 0 0 10px;
+  color: #7186a1;
+  font-size: 13px;
+}
+
+.team-shell .request-detail-header h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.team-shell .request-detail-status {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.team-shell .request-detail-status.waiting {
+  background: #fff5dc;
+  color: #926200;
+}
+
+.team-shell .request-detail-status.approved {
+  background: #e8f7ef;
+  color: #21764b;
+}
+
+.team-shell .request-detail-status.rejected {
+  background: #fff0f0;
+  color: #bd4141;
+}
+
+/* 기본 정보: 한 줄에 두 칸 */
+.team-shell .request-detail-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 28px;
+  margin-top: 16px;
+}
+
+.team-shell .request-detail-info>div {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  min-width: 0;
+  padding: 18px 0;
+  border-bottom: 1px solid #edf3fa;
+}
+
+.team-shell .request-detail-info span {
+  flex-shrink: 0;
+  width: 90px;
+  color: #7186a1;
+  font-size: 14px;
+}
+
+.team-shell .request-detail-info strong {
+  font-size: 14px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+/* 요청 내용 */
+.team-shell .request-detail-content {
+  margin-top: 30px;
+}
+
+.team-shell .request-detail-content h2,
+.team-shell .request-detail-process h2 {
+  margin: 0 0 16px;
+  font-size: 17px;
+}
+
+.team-shell .request-detail-content p {
+  min-height: 140px;
+  margin: 0;
+  padding: 24px;
+  border: 1px solid #e3edf9;
+  border-radius: 12px;
+  background: #f8fbff;
+  font-size: 15px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.team-shell .request-detail-notice {
+  margin-top: 22px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: #fff9e9;
+  color: #886313;
+  font-size: 14px;
+}
+
+.team-shell .request-detail-process {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f2f8ff;
+}
+
+.team-shell .request-detail-process p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+/* 하단 버튼 */
+.team-shell .request-detail-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.team-shell .request-detail-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 18px;
+  border: 1px solid #cfe1f6;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #087bdf;
+  font: inherit;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.team-shell .request-detail-button:hover {
+  background: #eef6ff;
+}
+
+.team-shell .request-detail-button.primary {
+  border-color: #1689ec;
+  background: #1689ec;
+  color: #ffffff;
+}
+
+.team-shell .request-detail-button.primary:hover {
+  background: #087bdf;
+}
+
+.team-shell .request-detail-button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+/* 프로젝트 표의 제목 링크 */
+.team-shell .todo-manage-page .todo-table a.todo-title-link {
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.team-shell .todo-manage-page .todo-table a.todo-title-link:hover {
+  text-decoration: underline;
+}
+
+/* 작은 화면 */
+@media (max-width: 700px) {
+  .team-shell .request-detail-page {
+    margin: 20px auto;
+    padding: 20px;
+  }
+
+  .team-shell .request-detail-header h1 {
+    font-size: 21px;
+  }
+
+  .team-shell .request-detail-info {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 요청 상세 화면 버튼 색상 통일 */
+.team-shell .request-detail-button {
+  background-color: #1689ec;
+  border-color: #1689ec;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.team-shell .request-detail-button:hover {
+  background-color: #087bdf;
+  border-color: #087bdf;
+  color: #ffffff;
+}
+
+/* 프로젝트 목록 제목 */
+.team-shell .todo-manage-page .todo-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 15px;
+}
+
+.team-shell .todo-manage-page .todo-list-header h3 {
+  margin: 0;
+  color: #183b63;
+  font-size: 17px;
+}
+
+.team-shell .todo-manage-page .todo-list-header span {
+  color: #087bdf;
+  font-size: 13px;
+}
+
+/* 제목 아래 탭 */
+.team-shell .todo-manage-page .todo-status-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* 이슈 목록처럼 행 간격 조정 */
+.team-shell .todo-manage-page .todo-table th,
+.team-shell .todo-manage-page .todo-table td {
+  padding: 14px 12px;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+
+/* 프로젝트 제목 가운데 정렬 유지 */
+.team-shell .todo-manage-page .todo-table th:nth-child(2),
+.team-shell .todo-manage-page .todo-table td:nth-child(2) {
+  text-align: center;
+}
+
+.team-shell .todo-manage-page .todo-title-link,
+.team-shell .todo-manage-page .todo-request-title {
+  padding: 0;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* 표시 건수와 페이지 이동 */
+.team-shell .todo-manage-page .todo-list-pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-summary {
+  color: #617792;
+  font-size: 13px;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-buttons button {
+  min-width: 40px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #dce9f8;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #617792;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-buttons button:hover:not(:disabled) {
+  border-color: #a9d0ff;
+  background-color: #f0f7ff;
+  color: #087bdf;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-buttons button.active {
+  border-color: #1689ec;
+  background-color: #1689ec;
+  color: #fff;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-buttons button.active:hover {
+  border-color: #087bdf;
+  background-color: #087bdf;
+  color: #fff;
+}
+
+.team-shell .todo-manage-page .todo-list-pagination-buttons button:disabled {
+  border-color: #e4ebf4;
+  background-color: #f7f9fc;
+  color: #9aa9bc;
+  cursor: default;
+}
+
+/* 프로젝트 목록: 클라이언트 추가 및 상태 표시 */
+.team-shell .todo-manage-page .todo-table th,
+.team-shell .todo-manage-page .todo-table td {
+  padding: 14px 12px;
+  text-align: center;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+/* 번호 */
+.team-shell .todo-manage-page .todo-table th:nth-child(1) {
+  width: 7%;
+}
+
+/* 클라이언트 */
+.team-shell .todo-manage-page .todo-table th:nth-child(2) {
+  width: 17%;
+}
+
+/* 프로젝트 제목 */
+.team-shell .todo-manage-page .todo-table th:nth-child(3) {
+  width: 37%;
+}
+
+/* 작성자 */
+.team-shell .todo-manage-page .todo-table th:nth-child(4) {
+  width: 12%;
+}
+
+/* 작성일자 또는 요청일자 */
+.team-shell .todo-manage-page .todo-table th:nth-child(5) {
+  width: 17%;
+}
+
+/* 상태 */
+.team-shell .todo-manage-page .todo-table th:nth-child(6) {
+  width: 10%;
+}
+
+/* 기존 두 번째 열의 제목용 여백 초기화 */
+.team-shell .todo-manage-page .todo-table th:nth-child(2),
+.team-shell .todo-manage-page .todo-table td:nth-child(2) {
+  padding: 14px 12px;
+}
+
+/* 제목 가운데 정렬 */
+.team-shell .todo-manage-page .todo-table th:nth-child(3),
+.team-shell .todo-manage-page .todo-table td:nth-child(3),
+.team-shell .todo-manage-page .todo-title-link {
+  text-align: center;
+}
+
+/* 커뮤니티 홈: 위 자유게시판, 아래 질문 답변 / 정보공유 */
+.lounge-home-boards {
+  min-width: 0;
+}
+
+.lounge-home-search {
+  padding: 0 0 18px;
+}
+
+.lounge-board-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.lounge-board-card {
+  min-width: 0;
+  margin: 0;
+}
+
+.lounge-board-card-free {
+  grid-column: 1 / -1;
+}
+
+.lounge-board-card>.community-board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 20px 24px 8px;
+}
+
+.lounge-board-card .community-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+}
+
+.lounge-board-more {
+  border: 0;
+  background: transparent;
+  color: #087bdf;
+  padding: 6px 0;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lounge-board-more:hover {
+  text-decoration: underline;
+}
+
+.lounge-board-more:focus-visible {
+  outline: 2px solid #087bdf;
+  outline-offset: 4px;
+}
+
+.lounge-board-summary {
+  margin: 0;
+  padding: 0 24px 16px;
+  color: #7c8da2;
+  font-size: 12px;
+}
+
+.lounge-board-card .lounge-feed-item {
+  padding: 13px 24px;
+  gap: 12px;
+}
+
+.lounge-board-card .lounge-feed-title {
+  margin: 0 0 5px;
+}
+
+.lounge-board-card .lounge-feed-title-button {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 15px;
+}
+
+@media (max-width: 700px) {
+  .lounge-board-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .lounge-board-card>.community-board-header {
+    padding: 18px 16px 8px;
+  }
+
+  .lounge-board-summary {
+    padding: 0 16px 14px;
+  }
+
+  .lounge-board-card .lounge-feed-item {
+    padding: 13px 16px;
+  }
+}
+
+/* 제목과 글 개수 사이의 구분선 제거 */
+.lounge-board-card>.community-board-header {
+  border-bottom: none;
+}
+
+/* 글 개수 안내 아래 여백 정리 */
+.lounge-board-card .lounge-board-summary {
+  margin: 0;
+  padding: 0 24px 16px;
+}
+
+@media (max-width: 700px) {
+  .lounge-board-card .lounge-board-summary {
+    padding: 0 16px 14px;
   }
 }

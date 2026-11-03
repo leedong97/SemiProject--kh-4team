@@ -1,0 +1,937 @@
+/* 페이지 공통 설정 */
+.pricing-page {
+    --pricing-primary: #635bff;
+    --pricing-text: #182230;
+    --pricing-muted: #667085;
+    --pricing-border: #eaecf0;
+
+    width: 100%;
+    color: var(--pricing-text);
+    background: #fff;
+    font-family: Arial, "Malgun Gothic", sans-serif;
+    line-height: 1.6;
+}
+
+.pricing-page,
+.pricing-page *,
+.pricing-page *::before,
+.pricing-page *::after {
+    box-sizing: border-box;
+}
+
+.pricing-page .pricing-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.pricing-page a {
+    text-decoration: none;
+}
+
+.pricing-page a:focus-visible,
+.pricing-page button:focus-visible {
+    outline: 3px solid var(--pricing-primary);
+    outline-offset: 4px;
+}
+
+/* 상단 메뉴 */
+.pricing-page .pricing-header {
+    background: #fff;
+    border-bottom: 1px solid var(--pricing-border);
+}
+
+.pricing-page .pricing-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 80px;
+    gap: 24px;
+}
+
+.pricing-page .pricing-logo {
+    color: var(--pricing-text);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.pricing-page .pricing-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+}
+
+.pricing-page .pricing-nav a {
+    color: var(--pricing-muted);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.pricing-page .pricing-nav a:hover {
+    color: var(--pricing-primary);
+}
+
+/* 상단 소개 */
+.pricing-page .pricing-hero {
+    padding: 100px 0 80px;
+    text-align: center;
+    background: linear-gradient(180deg, #f6f5ff 0%, #fff 100%);
+}
+
+.pricing-page .pricing-eyebrow {
+    margin: 0 0 20px;
+    color: var(--pricing-primary);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.pricing-page .pricing-hero h1 {
+    margin: 0;
+    font-size: clamp(32px, 5vw, 56px);
+    line-height: 1.25;
+    letter-spacing: -1.5px;
+    word-break: keep-all;
+}
+
+.pricing-page .pricing-description {
+    margin: 24px 0 32px;
+    color: var(--pricing-muted);
+    font-size: 18px;
+    word-break: keep-all;
+}
+
+/* 소개 및 하단 영역 버튼 */
+.pricing-page .pricing-primary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    background: var(--pricing-primary);
+    color: #fff;
+    font-weight: 700;
+    transition: background 0.2s;
+}
+
+.pricing-page .pricing-primary-button:hover {
+    background: #5148e5;
+}
+
+/* 모바일 */
+@media (max-width: 640px) {
+    .pricing-page .pricing-header-inner {
+        flex-direction: column;
+        justify-content: center;
+        gap: 12px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+    }
+
+    .pricing-page .pricing-nav {
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .pricing-page .pricing-hero {
+        padding: 64px 0;
+    }
+
+    .pricing-page .pricing-description {
+        font-size: 16px;
+    }
+}
+
+.pricing-page .pricing-plans {
+    padding: 64px 0 80px;
+    scroll-margin-top: 24px;
+}
+
+.pricing-page .pricing-section-title {
+    margin: 0 0 28px;
+    text-align: center;
+    font-size: 32px;
+    letter-spacing: -1px;
+}
+
+.pricing-page .pricing-toggle {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 40px;
+    padding: 6px;
+    gap: 6px;
+    border-radius: 12px;
+    background: #f2f4f7;
+}
+
+.pricing-page .pricing-toggle button {
+    padding: 12px 20px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--pricing-muted);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pricing-page .pricing-toggle button.is-active {
+    background: #fff;
+    color: var(--pricing-primary);
+    box-shadow: 0 2px 6px rgb(16 24 40 / 8%);
+}
+
+.pricing-page .pricing-toggle span {
+    margin-left: 6px;
+    font-size: 12px;
+    color: var(--pricing-primary);
+}
+
+.pricing-page .pricing-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.pricing-page .pricing-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    border: 2px solid var(--pricing-border);
+    border-radius: 16px;
+    background: #fff;
+}
+
+.pricing-page .pricing-card.is-recommended {
+    border-color: var(--pricing-primary);
+    box-shadow: 0 12px 32px rgb(99 91 255 / 10%);
+}
+
+.pricing-page .pricing-badge {
+    position: absolute;
+    top: -15px;
+    left: 24px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    background: var(--pricing-primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.pricing-page .pricing-card h3 {
+    margin: 0 0 8px;
+    font-size: 24px;
+}
+
+.pricing-page .pricing-card-description {
+    min-height: 48px;
+    margin: 0 0 24px;
+    color: var(--pricing-muted);
+    font-size: 15px;
+    word-break: keep-all;
+}
+
+.pricing-page .pricing-price strong {
+    font-size: clamp(26px, 3vw, 36px);
+    letter-spacing: -1px;
+}
+
+.pricing-page .pricing-price>span {
+    color: var(--pricing-muted);
+}
+
+.pricing-page .pricing-billing-note {
+    margin: 8px 0 24px;
+    color: var(--pricing-muted);
+    font-size: 13px;
+}
+
+.pricing-page .pricing-feature-list {
+    flex: 1;
+    margin: 0 0 32px;
+    padding: 0;
+    list-style: none;
+}
+
+.pricing-page .pricing-feature-list li {
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+
+.pricing-page .pricing-feature-list li>span {
+    margin-right: 8px;
+    color: var(--pricing-primary);
+    font-weight: 700;
+}
+
+.pricing-page .pricing-select-button {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--pricing-primary);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--pricing-primary);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pricing-page .pricing-select-button[aria-pressed="true"] {
+    background: var(--pricing-primary);
+    color: #fff;
+}
+
+.pricing-page .pricing-select-button:hover {
+    background: #efedff;
+    color: var(--pricing-primary);
+}
+
+.pricing-page button:focus-visible {
+    outline: 3px solid var(--pricing-primary);
+    outline-offset: 4px;
+}
+
+.pricing-page .pricing-selection-message {
+    margin: 24px 0 0;
+    text-align: center;
+    color: var(--pricing-muted);
+    font-size: 14px;
+}
+
+@media (max-width: 900px) {
+    .pricing-page .pricing-card-grid {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+        margin: 0 auto;
+        gap: 32px;
+    }
+
+    .pricing-page .pricing-card-description {
+        min-height: auto;
+    }
+}
+
+.pricing-page .fc-section {
+    padding: 80px 0;
+    background: #f8fafc;
+    scroll-margin-top: 24px;
+}
+
+.pricing-page .fc-heading {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.pricing-page .fc-eyebrow {
+    margin: 0 0 12px;
+    color: var(--pricing-primary);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.pricing-page .fc-heading h2 {
+    margin: 0 0 16px;
+    font-size: clamp(26px, 4vw, 36px);
+    line-height: 1.35;
+    letter-spacing: -1px;
+    word-break: keep-all;
+}
+
+.pricing-page .fc-heading>p:last-child {
+    margin: 0;
+    color: var(--pricing-muted);
+    word-break: keep-all;
+}
+
+.pricing-page .fc-table-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--pricing-border);
+    border-radius: 16px;
+    background: #fff;
+}
+
+.pricing-page .fc-table-scroll:focus-visible {
+    outline: 3px solid var(--pricing-primary);
+    outline-offset: 4px;
+}
+
+.pricing-page .fc-table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.pricing-page .fc-table th,
+.pricing-page .fc-table td {
+    padding: 22px 16px;
+    border-bottom: 1px solid var(--pricing-border);
+    text-align: center;
+    font-size: 15px;
+}
+
+.pricing-page .fc-table thead th {
+    padding-top: 28px;
+    padding-bottom: 28px;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.pricing-page .fc-table th:first-child {
+    width: 31%;
+    padding-left: 24px;
+    text-align: left;
+}
+
+.pricing-page .fc-table tbody th {
+    font-weight: 600;
+}
+
+.pricing-page .fc-table tbody tr:last-child th,
+.pricing-page .fc-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.pricing-page .fc-team-column {
+    background: #f4f3ff;
+}
+
+.pricing-page .fc-recommend-label {
+    display: block;
+    width: fit-content;
+    margin: 8px auto 0;
+    padding: 2px 10px;
+    border-radius: 20px;
+    background: var(--pricing-primary);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.pricing-page .fc-supported {
+    color: var(--pricing-primary);
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.pricing-page .fc-unsupported {
+    color: #98a2b3;
+    font-size: 20px;
+}
+
+.pricing-page .fc-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+.pricing-page .fc-scroll-hint {
+    display: none;
+    margin: 16px 0 0;
+    color: var(--pricing-muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+@media (max-width: 700px) {
+    .pricing-page .fc-section {
+        padding: 56px 0;
+    }
+
+    .pricing-page .fc-scroll-hint {
+        display: block;
+    }
+}
+
+/* FAQ */
+.pricing-page .pricing-faq {
+    padding: 80px 0;
+    background: #fff;
+    scroll-margin-top: 24px;
+}
+
+.pricing-page .pricing-faq-heading {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.pricing-page .pricing-faq-heading h2 {
+    margin: 0 0 16px;
+    font-size: clamp(28px, 4vw, 36px);
+    letter-spacing: -1px;
+}
+
+.pricing-page .pricing-faq-heading>p:last-child {
+    margin: 0;
+    color: var(--pricing-muted);
+}
+
+.pricing-page .pricing-faq-list {
+    max-width: 800px;
+    margin: 0 auto;
+    border-top: 1px solid var(--pricing-border);
+}
+
+.pricing-page .pricing-faq-item {
+    border-bottom: 1px solid var(--pricing-border);
+}
+
+.pricing-page .pricing-faq-question {
+    margin: 0;
+}
+
+.pricing-page .pricing-faq-question button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    width: 100%;
+    padding: 24px 16px;
+    border: 0;
+    background: transparent;
+    color: var(--pricing-text);
+    font: inherit;
+    font-size: 17px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.pricing-page .pricing-faq-question button:hover {
+    background: #f8fafc;
+}
+
+.pricing-page .pricing-faq-question button:focus-visible {
+    outline-offset: -3px;
+}
+
+.pricing-page .pricing-faq-icon {
+    flex-shrink: 0;
+    color: var(--pricing-primary);
+    font-size: 26px;
+    line-height: 1;
+}
+
+.pricing-page .pricing-faq-item.is-open {
+    background: #fafaff;
+}
+
+.pricing-page .pricing-faq-answer {
+    padding: 0 16px 24px;
+    color: var(--pricing-muted);
+    font-size: 15px;
+    line-height: 1.8;
+    word-break: keep-all;
+}
+
+.pricing-page .pricing-faq-answer p {
+    margin: 0;
+}
+
+/* 하단 안내 영역 */
+.pricing-page .pricing-footer-banner {
+    padding: 72px 0;
+    background: #f4f3ff;
+    text-align: center;
+}
+
+.pricing-page .pricing-footer-banner h2 {
+    margin: 0 0 16px;
+    font-size: clamp(28px, 4vw, 36px);
+    letter-spacing: -1px;
+    word-break: keep-all;
+}
+
+.pricing-page .pricing-footer-banner p {
+    margin: 0 0 28px;
+    color: var(--pricing-muted);
+    word-break: keep-all;
+}
+
+/* 푸터 */
+.pricing-page .pricing-footer {
+    background: #fff;
+}
+
+.pricing-page .pricing-footer-main {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    padding: 48px 0;
+}
+
+.pricing-page .pricing-footer-description {
+    margin: 12px 0 0;
+    color: var(--pricing-muted);
+    font-size: 14px;
+}
+
+.pricing-page .pricing-footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.pricing-page .pricing-footer-nav a {
+    color: var(--pricing-muted);
+    font-size: 14px;
+}
+
+.pricing-page .pricing-footer-nav a:hover {
+    color: var(--pricing-primary);
+}
+
+.pricing-page .pricing-footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 24px 0;
+    border-top: 1px solid var(--pricing-border);
+    color: var(--pricing-muted);
+    font-size: 12px;
+}
+
+.pricing-page .pricing-footer-bottom p {
+    margin: 0;
+}
+
+@media (max-width: 640px) {
+    .pricing-page .pricing-faq {
+        padding: 56px 0;
+    }
+
+    .pricing-page .pricing-faq-question button {
+        padding: 20px 12px;
+        font-size: 15px;
+    }
+
+    .pricing-page .pricing-faq-answer {
+        padding: 0 12px 20px;
+    }
+
+    .pricing-page .pricing-footer-banner {
+        padding: 56px 0;
+    }
+
+    .pricing-page .pricing-footer-main {
+        flex-direction: column;
+        padding: 32px 0;
+    }
+
+    .pricing-page .pricing-footer-bottom {
+        flex-direction: column;
+    }
+}
+
+/* =====================================
+   COMMAND ERP 스타일 — 요금제 페이지
+===================================== */
+
+.pricing-page {
+    --pricing-primary: #087bdf;
+    --pricing-text: #263a56;
+    --pricing-muted: #536881;
+    --pricing-border: #dce9f8;
+
+    --pricing-navy: #0b2551;
+    --pricing-light: #eef6ff;
+    --pricing-shadow: 0 10px 28px rgba(15, 55, 110, 0.07);
+
+    color: var(--pricing-text);
+    background: #fff;
+}
+
+/* 헤더 */
+.pricing-page .pricing-header {
+    background: #fff;
+    border-bottom-color: var(--pricing-border);
+}
+
+.pricing-page .pricing-logo {
+    color: var(--pricing-navy);
+    font-weight: 800;
+}
+
+.pricing-page .pricing-nav a {
+    color: var(--pricing-muted);
+}
+
+.pricing-page .pricing-nav a:hover {
+    color: var(--pricing-primary);
+}
+
+/* 소개 영역 */
+.pricing-page .pricing-hero {
+    background: linear-gradient(180deg,
+            #eef6ff 0%,
+            #f8fbff 65%,
+            #fff 100%);
+}
+
+.pricing-page .pricing-hero h1,
+.pricing-page .pricing-section-title,
+.pricing-page .fc-heading h2,
+.pricing-page .pricing-faq-heading h2,
+.pricing-page .pricing-footer-banner h2 {
+    color: var(--pricing-navy);
+}
+
+.pricing-page .pricing-eyebrow,
+.pricing-page .fc-eyebrow {
+    color: var(--pricing-primary);
+}
+
+/* 소개·하단 이동 버튼 */
+.pricing-page .pricing-primary-button {
+    background: var(--pricing-primary);
+    color: #fff;
+    border: 1px solid var(--pricing-primary);
+    border-radius: 9px;
+    box-shadow: 0 4px 13px rgba(8, 123, 223, 0.12);
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.pricing-page .pricing-primary-button:hover {
+    background: #0866c2;
+    border-color: #0866c2;
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(8, 123, 223, 0.2);
+}
+
+/* 월간·연간 선택 */
+.pricing-page .pricing-toggle {
+    background: var(--pricing-light);
+    border: 1px solid var(--pricing-border);
+    border-radius: 12px;
+}
+
+.pricing-page .pricing-toggle button {
+    color: var(--pricing-muted);
+}
+
+.pricing-page .pricing-toggle button.is-active {
+    background: #fff;
+    color: var(--pricing-primary);
+    box-shadow: 0 3px 10px rgba(15, 55, 110, 0.09);
+}
+
+.pricing-page .pricing-toggle span {
+    color: var(--pricing-primary);
+}
+
+/* 요금제 카드 */
+.pricing-page .pricing-card {
+    background: #fff;
+    border-color: var(--pricing-border);
+    border-radius: 18px;
+    box-shadow: var(--pricing-shadow);
+}
+
+.pricing-page .pricing-card.is-recommended {
+    border-color: var(--pricing-primary);
+    box-shadow: 0 10px 28px rgba(8, 123, 223, 0.12);
+}
+
+.pricing-page .pricing-card h3,
+.pricing-page .pricing-price strong {
+    color: var(--pricing-navy);
+}
+
+.pricing-page .pricing-badge {
+    background: var(--pricing-primary);
+    color: #fff;
+}
+
+.pricing-page .pricing-feature-list li>span {
+    color: var(--pricing-primary);
+}
+
+/* 선택 전: 추천 플랜도 흰색 버튼 */
+.pricing-page .pricing-select-button,
+.pricing-page .is-recommended .pricing-select-button {
+    background: #fff;
+    color: var(--pricing-primary);
+    border: 1px solid #a7cff7;
+    border-radius: 9px;
+    box-shadow: none;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.pricing-page .pricing-select-button:hover {
+    background: #edf6ff;
+    border-color: var(--pricing-primary);
+    color: var(--pricing-primary);
+}
+
+/* 선택한 버튼만 파란색 */
+.pricing-page .pricing-select-button[aria-pressed="true"] {
+    background: var(--pricing-primary);
+    border-color: var(--pricing-primary);
+    color: #fff;
+}
+
+.pricing-page .pricing-select-button[aria-pressed="true"]:hover {
+    background: #0866c2;
+    border-color: #0866c2;
+    color: #fff;
+}
+
+/* 기능 비교 */
+.pricing-page .fc-section {
+    background: #f4f9ff;
+}
+
+.pricing-page .fc-table-scroll {
+    background: #fff;
+    border-color: var(--pricing-border);
+    border-radius: 18px;
+    box-shadow: var(--pricing-shadow);
+}
+
+.pricing-page .fc-table thead th {
+    background: #eef7ff;
+    color: #395a7d;
+}
+
+.pricing-page .fc-table th,
+.pricing-page .fc-table td {
+    border-bottom-color: #e5effb;
+}
+
+.pricing-page .fc-table tbody th {
+    color: var(--pricing-text);
+}
+
+.pricing-page .fc-table tbody td {
+    color: var(--pricing-muted);
+}
+
+.pricing-page .fc-table .fc-team-column {
+    background: #eaf4ff;
+}
+
+.pricing-page .fc-recommend-label {
+    background: var(--pricing-primary);
+    color: #fff;
+}
+
+.pricing-page .fc-supported {
+    color: var(--pricing-primary);
+}
+
+.pricing-page .fc-unsupported {
+    color: #7c8fa6;
+}
+
+/* FAQ */
+.pricing-page .pricing-faq {
+    background: #fff;
+}
+
+.pricing-page .pricing-faq-list {
+    border-top-color: var(--pricing-border);
+}
+
+.pricing-page .pricing-faq-item {
+    border-bottom-color: var(--pricing-border);
+}
+
+.pricing-page .pricing-faq-question button {
+    color: var(--pricing-navy);
+}
+
+.pricing-page .pricing-faq-question button:hover,
+.pricing-page .pricing-faq-item.is-open {
+    background: #f4f9ff;
+}
+
+.pricing-page .pricing-faq-icon {
+    color: var(--pricing-primary);
+}
+
+.pricing-page .pricing-faq-answer {
+    color: var(--pricing-muted);
+}
+
+/* 하단 안내 및 푸터 */
+.pricing-page .pricing-footer-banner {
+    background: #eef6ff;
+    border-top: 1px solid #e1edfa;
+    border-bottom: 1px solid #e1edfa;
+}
+
+.pricing-page .pricing-footer {
+    background: #fff;
+}
+
+.pricing-page .pricing-footer-nav a {
+    color: var(--pricing-muted);
+}
+
+.pricing-page .pricing-footer-nav a:hover {
+    color: var(--pricing-primary);
+}
+
+.pricing-page .pricing-footer-bottom {
+    border-top-color: var(--pricing-border);
+    color: var(--pricing-muted);
+}
+
+/* 키보드 포커스 */
+.pricing-page a:focus-visible,
+.pricing-page button:focus-visible,
+.pricing-page .fc-table-scroll:focus-visible {
+    outline-color: var(--pricing-primary);
+}
+
+/* 움직임 줄이기 설정 */
+@media (prefers-reduced-motion: reduce) {
+
+    .pricing-page .pricing-primary-button,
+    .pricing-page .pricing-select-button {
+        transition: none;
+    }
+}
+
+.pricing-page .pricing-hero-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.pricing-page .pricing-demo-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 12px 24px;
+
+    border: 1px solid var(--pricing-primary);
+    border-radius: 9px;
+    background: #fff;
+    color: var(--pricing-primary);
+
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.pricing-page .pricing-demo-button:hover {
+    background: #edf6ff;
+}
