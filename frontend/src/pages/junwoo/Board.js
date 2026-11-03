@@ -6,6 +6,7 @@ import getLoginUser from "../woojin/getLoginUser";
 import CommunityComments from "./CommunityComments";
 import CommunityLike from "./CommunityLike";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import BoardBanner from "./BoardBanner";
 
 function Board(props) {
 
@@ -588,7 +589,15 @@ function Board(props) {
                                         </Link>
                                     </td>
 
-                                    <td>{authorName}</td>
+                                    <td>
+                                        <span className="board-author">
+                                            <span className="board-author-avatar" aria-hidden="true">
+                                                {authorName.slice(0, 1)}
+                                            </span>
+
+                                            <span>{authorName}</span>
+                                        </span>
+                                    </td>
 
                                     <td>{createdDate}</td>
                                 </tr>
@@ -828,19 +837,11 @@ function Board(props) {
     } else {
         // 목록 화면
         boardContent = (
-            <div className="community-panel">
-                <div className="community-board-header">
-                    <h2 className="community-panel-title">
-                        {boardName}
-                    </h2>
-
-                    <Link
-                        to={writeAddress}
-                        className="community-primary-button"
-                    >
-                        글쓰기
-                    </Link>
-                </div>
+            <div className={"community-panel board-list-panel board-theme-" + boardCode}>
+                <BoardBanner
+                    boardName={boardName}
+                    writeAddress={writeAddress}
+                />
 
                 <div className="lounge-search-toolbar">
                     {questionFilterControl}
@@ -879,12 +880,13 @@ function Board(props) {
                 게시판
             </h1>
 
-            <div className="community-tabs">
+            <div className="community-tabs board-pretty-tabs">
                 <button
                     type="button"
                     className={freeClass}
                     onClick={showFreeBoard}
                 >
+                    <span aria-hidden="true">💬 </span>
                     자유게시판
                 </button>
 
@@ -893,6 +895,7 @@ function Board(props) {
                     className={questionClass}
                     onClick={showQuestionBoard}
                 >
+                    <span aria-hidden="true">❔ </span>
                     질문 답변
                 </button>
 
@@ -901,6 +904,7 @@ function Board(props) {
                     className={infoClass}
                     onClick={showInfoBoard}
                 >
+                    <span aria-hidden="true">💡 </span>
                     정보공유
                 </button>
             </div>

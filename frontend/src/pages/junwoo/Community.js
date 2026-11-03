@@ -8,7 +8,6 @@ import Board from "./Board";
 import MyActivity from "./MyActivity";
 import getLoginUser from "../woojin/getLoginUser";
 import "./junwoo.css";
-import "./communityTheme.css"; // ERP 공통 틀과 같은 분위기로 덧입히는 스타일 (junwoo.css 뒤에 와야 해요)
 
 function Community(props) {
     const [posts, setPosts] = useState([]);
@@ -187,14 +186,13 @@ function Community(props) {
                     className="lounge-brand"
                     aria-label="COMMAND LOUNGE 홈"
                 >
-                    <img
-                        className="lounge-brand-logo"
-                        src="/images/command-logo.png"
-                        alt="COMMAND ERP"
-                    />
+                    <span className="lounge-brand-mark">
+                        C
+                    </span>
 
-                    <span className="lounge-brand-sub">
-                        LOUNGE · 사내 커뮤니티
+                    <span className="lounge-brand-text">
+                        COMMAND
+                        <small>LOUNGE · 사내 커뮤니티</small>
                     </span>
                 </Link>
 
