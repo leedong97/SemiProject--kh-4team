@@ -15,6 +15,7 @@ SELECT
     p.project_id AS id,
     p.project_title AS title,
     p.project_content AS content,
+     c.customer_name AS customerName,
 
     p.created_by AS authorId,
     COALESCE(a.employee_name, '직원 정보 없음') AS author,
@@ -41,6 +42,9 @@ LEFT JOIN employees a
 
 LEFT JOIN employees m
     ON p.manager_id = m.employee_id
+
+LEFT JOIN customers c
+    ON p.customer_id = c.customer_id
 
 ORDER BY p.project_id DESC
 

@@ -1,14 +1,22 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // 수정: projects, issues, setIssues를 App에서 전달받는다.
 function Issue({ projects, issues, setIssues }) {
 
-   
+
     const navigate = useNavigate();
     const [selectedProject, setSelectedProject] = useState("");
     const [search, setSearch] = useState("");
+    const [searchPerson, setSearchPerson] = useState("")
+    const [issueView, setIssueView] = useState("all");
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 10;
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedProject, search, searchPerson, issueView]);
     const handleProjectChange = (e) => {
         setSelectedProject(e.target.value);
         setSearch("");
@@ -17,11 +25,39 @@ function Issue({ projects, issues, setIssues }) {
     const filteredIssues = issues.filter((issue) => {
         const projectMatch =
             selectedProject === "" ||
-            issue.projectId === selectedProject;
+            String(issue.projectId) === selectedProject;
+
         const titleMatch =
-            issue.title.toLowerCase().includes(search.toLowerCase());
-        return projectMatch && titleMatch;
+            (issue.title ?? "")
+                .toLowerCase()
+                .includes(search.trim().toLowerCase());
+
+        const personMatch =
+            (issue.reporterName ?? "")
+                .toLowerCase()
+                .includes(searchPerson.trim().toLowerCase());
+
+        const statusMatch =
+            issueView === "all" ||
+            (issueView === "review" && issue.status === "검토 중") ||
+            (issueView === "completed" && issue.status === "완료");
+
+        return projectMatch && titleMatch && personMatch && statusMatch;
     });
+    const totalPages = Math.max(1, Math.ceil(filteredIssues.length / pageSize));
+    const activePage = Math.min(currentPage, totalPages);
+    const startIndex = (activePage - 1) * pageSize;
+    const pagedIssues = filteredIssues.slice(startIndex, startIndex + pageSize);
+    const firstPageInGroup = Math.floor((activePage - 1) / 5) * 5 + 1;
+    const pageNumbers = Array.from(
+        { length: Math.min(5, totalPages - firstPageInGroup + 1) },
+        (_, index) => firstPageInGroup + index
+    );
+
+    // 마지막 페이지의 데이터가 삭제되면 남아 있는 마지막 페이지로 이동합니다.
+    useEffect(() => {
+        setCurrentPage((page) => Math.min(page, totalPages));
+    }, [totalPages]);
 
     // 이슈 건의 페이지로 이동
     const handleIssueRequest = () => {
@@ -36,10 +72,10 @@ function Issue({ projects, issues, setIssues }) {
                     <p>
                         프로젝트별 이슈를 조회하고 관리할 수 있습니다.
                     </p>
-                </div>               
-                
+                </div>
+
                 <button className="issue-reset" onClick={handleIssueRequest}>
-                 이슈 건의
+                    이슈 건의
                 </button>
             </div>
 
@@ -48,6 +84,7 @@ function Issue({ projects, issues, setIssues }) {
                 <span>조회된 이슈 {filteredIssues.length}개</span>
             </div>
 
+           
             <section className="issue-filter">
 
                 <label htmlFor="project-select">
@@ -73,41 +110,67 @@ function Issue({ projects, issues, setIssues }) {
                     이슈 건의자 검색
                 </label>
 
-                <input id="issue-search" type="text" placeholder="건의자 이름" value={search} onChange={(e) => setSearch(e.target.value)} />
+                <input id="issue-search" type="text" placeholder="건의자 이름" value={searchPerson} onChange={(e) => setSearchPerson(e.target.value)} />
             </section>
 
-           
+
 
             <section className="issue-list-section">
 
                 <div className="issue-list-header">
-                    <h3>이슈 목록</h3>
+                    <h3>
+                        {{ all: "전체 이슈 목록", review: "검토 중인 이슈", completed: "완료된 이슈" }[issueView]}
+                    </h3>
                     <span>{filteredIssues.length}건</span>
                 </div>
+                <div className="issue-view-switch" role="group" aria-label="이슈 목록 구분">
+                <button
+                    type="button"
+                    aria-pressed={issueView === "all"}
+                    onClick={() => setIssueView("all")}
+                >
+                    전체 이슈
+                </button>
+
+                <button
+                    type="button"
+                    aria-pressed={issueView === "review"}
+                    onClick={() => setIssueView("review")}
+                >
+                    검토 중
+                </button>
+
+                <button
+                    type="button"
+                    aria-pressed={issueView === "completed"}
+                    onClick={() => setIssueView("completed")}
+                >
+                    완료
+                </button>
+            </div>
 
                 <table className="issue-table">
                     <thead>
                         <tr>
+                            <th scope="col" className="issue-row-number">번호</th>
                             <th>클라이언트</th>
                             <th>프로젝트</th>
                             <th>이슈제목</th>
-                            <th>이슈 ID</th>
                             <th>우선도</th>
-                            <th>담당자</th>
-                       
-
-                         
+                            <th>건의자</th>
+                            <th>상태</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         {filteredIssues.length > 0 ? (
-                            filteredIssues.map((issue) => {
+                            pagedIssues.map((issue, index) => {
                                 const project = projects.find(
                                     (p) => p.id === issue.projectId
                                 );
                                 return (
                                     <tr key={issue.id}>
+                                        <td className="issue-row-number">{startIndex + index + 1}</td>
                                         <td>{issue.customerName || "-"}</td>
                                         <td>{project?.name || "-"}</td>
                                         {/*수정: 제목 클릭 시 상세 페이지 이동 */}
@@ -116,15 +179,15 @@ function Issue({ projects, issues, setIssues }) {
                                                 {issue.title}
                                             </button>
                                         </td>
-                                        <td> {`ISS-${String(issue.id).padStart(3, "0")}`}</td>
                                         <td>{issue.priority || "보통"}</td>
                                         <td>{issue.reporterName || "-"}</td>
+                                        <td>{issue.status || "-"}</td>
                                     </tr>
                                 );
                             })
                         ) : (
                             <tr>
-                                <td colSpan="3" className="issue-empty">
+                                <td colSpan="7" className="issue-empty">
                                     조회된 이슈가 없습니다.
                                 </td>
                             </tr>
@@ -132,6 +195,25 @@ function Issue({ projects, issues, setIssues }) {
                     </tbody>
                 </table>
             </section>
+
+            {filteredIssues.length > 0 && (
+                <nav className="issue-pagination" aria-label="이슈 목록 페이지">
+                    <span className="issue-pagination-summary" aria-live="polite">
+                        전체 {filteredIssues.length}건 중 {startIndex + 1}–{startIndex + pagedIssues.length}건
+                    </span>
+                    <div className="issue-pagination-buttons">
+                        <button type="button" disabled={activePage === 1}
+                            onClick={() => setCurrentPage(activePage - 1)}>이전</button>
+                        {pageNumbers.map((page) => (
+                            <button key={page} type="button" aria-label={`${page}페이지`}
+                                aria-current={activePage === page ? "page" : undefined}
+                                onClick={() => setCurrentPage(page)}>{page}</button>
+                        ))}
+                        <button type="button" disabled={activePage === totalPages}
+                            onClick={() => setCurrentPage(activePage + 1)}>다음</button>
+                    </div>
+                </nav>
+            )}
 
             <p className="issue-footer">
                 프로젝트를 선택하면 해당 프로젝트의 이슈만 표시됩니다.
