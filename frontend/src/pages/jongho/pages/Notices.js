@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useJunwoo } from "../../junwoo/JunwooContext";
-import "./Notices.css";
 
 function Notices() {
     const { info, addInfo, updateInfo, pinInfo, delInfo, noticeLoading, noticeError } = useJunwoo();
@@ -12,6 +12,11 @@ function Notices() {
     const [search, setSearch] = useState("");
     const [saving, setSaving] = useState(false);
 
+    // 대시보드에서 ?notice=번호 로 넘어오면 해당 공지를 수정 폼에 채움
+    const [searchParams] = useSearchParams();
+    const focusNoticeId = searchParams.get("notice");
+    const openedNoticeRef = useRef(null);
+
     function resetForm() {
         setTitle(""); setContent(""); setImportant(false);
         setEmployeeId(""); setEditId(null);
@@ -20,16 +25,13 @@ function Notices() {
     async function handleSubmit(event) {
         event.preventDefault();
         if (!title.trim() || !content.trim()) return alert("제목과 내용을 입력해주세요.");
-        if (editId === null && (!employeeId || !Number.isInteger(Number(employeeId)) || Number(employeeId) <= 0)) {
-            return alert("올바른 작성자 직원 번호를 입력해주세요.");
-        }
         setSaving(true);
         try {
             if (editId === null) {
-                await addInfo(title.trim(), content.trim(), important, Number(employeeId));
+                await addInfo(title.trim(), content.trim(), null);
                 alert("공지사항이 등록되었습니다.");
             } else {
-                await updateInfo(editId, title.trim(), content.trim(), important);
+                await updateInfo(editId, title.trim(), content.trim());
                 alert("공지사항이 수정되었습니다.");
             }
             resetForm();
@@ -64,6 +66,19 @@ function Notices() {
         item.title.toLowerCase().includes(search.toLowerCase()) ||
         item.content.toLowerCase().includes(search.toLowerCase())
     );
+
+    // 대시보드에서 넘어온 공지를 찾아 수정 폼에 바로 채움 (같은 공지는 한 번만)
+    useEffect(() => {
+        if (!focusNoticeId || openedNoticeRef.current === focusNoticeId) return;
+        const target = info.find(item => String(item.id) === focusNoticeId);
+        if (!target) return;
+        openedNoticeRef.current = focusNoticeId;
+        handleEdit({
+            ...target,
+            important: Boolean(target.isPinned ?? target.important),
+            employee_id: target.employee_id ?? target.employeeId ?? "",
+        });
+    }, [focusNoticeId, info]);
 
     return (
         <div className="admin-boards">

@@ -1,4 +1,3 @@
-import { Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import './styles/jongho.css';
 import AdminLayout from './components/AdminLayout';
@@ -12,6 +11,7 @@ import IssueManagement from '../heeseung/components/IssueManagement';
 import HRManagement from '../heeseung/components/HRManagement';
 import EmployeeEvaluation from '../heeseung/components/EmployeeEvaluation';
 import { JonghoProvider, useJongho } from './JonghoContext';
+import { clearLoginUser } from "../woojin/getLoginUser";
 
 // 종호 담당: 관리자 페이지(/admin/...)
 // 로컬 개발용: 로그인 검사 없이 바로 관리자 화면을 보여줍니다.
@@ -19,18 +19,29 @@ import { JonghoProvider, useJongho } from './JonghoContext';
 
 function AdminRoute() {
   const navigate = useNavigate();
-  return <AdminLayout onLogout={() => { sessionStorage.removeItem('nexus_token'); sessionStorage.removeItem('nexus_role'); navigate('/login'); }} />;
+
+  return (
+    <AdminLayout
+      onLogout={() => {
+        clearLoginUser();
+        sessionStorage.removeItem("nexus_token");
+        sessionStorage.removeItem("nexus_role");
+        navigate("/login");
+      }}
+    />
+  );
 }
 function DashboardRoute() {
   const { projects, data } = useJongho();
   return <Dashboard projects={projects} data={data} />;
 }
 function ProjectsRoute() {
-  const { projects, setProjects, data, createProject, updateProject, removeProject } = useJongho();
+  const { projects, setProjects, resetProjects, data, createProject, updateProject, removeProject } = useJongho();
   return (
     <ProjectManagement
       projects={projects}
       setProjects={setProjects}
+      reloadProjects={resetProjects}
       createProject={createProject}
       updateProject={updateProject}
       removeProject={removeProject}
@@ -39,11 +50,10 @@ function ProjectsRoute() {
   );
 }
 function AssignmentsRoute() {
-  const { projects, setProjects, data, createProject, updateProject, removeProject } = useJongho();
+  const { projects, data, updateProject } = useJongho();
   return (
     <ManagerAssignment
       projects={projects}
-      setProjects={setProjects}
       updateProject={updateProject}
       employees={data.employees.map((e) => ({ ...e, role: e.role || e.position }))}
     />
@@ -96,10 +106,11 @@ export const standaloneRoutes = [
       { path: 'issues', element: <IssuesRoute /> },
       { path: 'employees', element: <EmployeesRoute /> },
       { path: 'evaluations', element: <EvaluationsRoute /> },
-      { path: 'boards',element: <Notices />,},
+      { path: 'boards', element: <Notices />, },
       { path: 'settings', element: <SettingsRoute /> },
       { path: 'audit', element: <AdminAudit /> },
       { path: 'workload', element: <Workload /> },
     ],
   },
 ];
+

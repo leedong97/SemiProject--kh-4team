@@ -35,8 +35,22 @@ function Login() {
         setErrors({})
         axios.post(`${API_BASE}/api/login`, values)
             .then((res) => {
-                localStorage.setItem('communityToken', res.data.communityToken);
-                saveLoginUser(res.data.user); // 서버가 준 직원 정보를 저장 (마이페이지에서 꺼내 써요)
+                if (!res.data.authToken || !res.data.communityToken) {
+                    setErrors({
+                        login: "로그인 인증 정보가 없습니다. 백엔드를 재시작한 뒤 다시 로그인해주세요.",
+                    });
+                    return;
+                }
+
+                // 인사·성과 평가 화면에서 사용하는 토큰
+                localStorage.setItem("nexus_auth_token", res.data.authToken);
+
+                // 기존 커뮤니티에서 사용하는 토큰
+                localStorage.setItem("communityToken", res.data.communityToken);
+
+                saveLoginUser(res.data.user);
+
+                // 아래의 기존 권한별 페이지 이동 코드는 유지
                 // 로그인 성공 → 권한에 따라 이동할 화면을 나눈다
                 if (res.data.user.employee_role === "관리자") {
                     navi("/admin"); // 관리자 → 관리자 화면

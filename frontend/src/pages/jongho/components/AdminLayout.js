@@ -1,7 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { getPendingProjectRequests } from "../adminApi";
 
 function AdminLayout({ onLogout }) {
+
+  // 대기 중인 요청(완료 + 등록) 알림
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [alertOpen, setAlertOpen] = useState(false);
+
+  const loadPendingRequests = async () => {
+    try {
+      const rows = await getPendingProjectRequests();
+      setPendingRequests(Array.isArray(rows) ? rows : []);
+    } catch (err) {
+      setPendingRequests([]);
+    }
+  };
+
+  useEffect(() => {
+    loadPendingRequests();
+    const timer = setInterval(loadPendingRequests, 30000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // 알림 항목을 누르면: 완료 요청은 해당 프로젝트 상세, 등록 요청은 프로젝트 관리 목록
+  const openRequest = (req) => {
+    setAlertOpen(false);
+    if (req.type === "완료" && req.projectId) {
+      navigate(`/admin/projects?project=${req.projectId}`);
+    } else {
+      navigate("/admin/projects");
+    }
+  };
 
   const navigate = useNavigate();
 
@@ -50,6 +80,43 @@ function AdminLayout({ onLogout }) {
               일반 페이지로 이동
             </span>
 
+            <div className="admin-alert-wrap">
+              <button
+                type="button"
+                className="btn btn-outline admin-alert-button"
+                title="대기 중인 요청"
+                onClick={() => { setAlertOpen((prev) => !prev); loadPendingRequests(); }}
+              >
+                🔔 요청
+                {pendingRequests.length > 0 && (
+                  <span className="admin-alert-count">{pendingRequests.length}</span>
+                )}
+              </button>
+
+              {alertOpen && (
+                <div className="admin-alert-panel">
+                  <div className="admin-alert-head">대기 중인 요청 {pendingRequests.length}건</div>
+
+                  {pendingRequests.length === 0 && (
+                    <p className="admin-alert-empty">대기 중인 요청이 없습니다.</p>
+                  )}
+
+                  {pendingRequests.map((req) => (
+                    <button
+                      key={req.id}
+                      type="button"
+                      className="admin-alert-item"
+                      onClick={() => openRequest(req)}
+                    >
+                      <span className="admin-alert-type">{req.type === "완료" ? "완료 요청" : "등록 요청"}</span>
+                      <strong>{req.type === "완료" ? req.projectName : req.title}</strong>
+                      <small>{req.requesterName || "요청자 미상"} · {req.requestedAt}</small>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button className="btn btn-outline" type="button" onClick={onLogout}>
               로그아웃
             </button>
@@ -88,3 +155,5 @@ function AdminLayout({ onLogout }) {
 }
 
 export default AdminLayout;
+
+
