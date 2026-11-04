@@ -18,11 +18,11 @@ module.exports = {
     },
     {
       prefix: "/api/community",
-      router: require("./community")
+      router: require("../dong/communityService").posts
     },
     {
       prefix: "/api/community-comments",
-      router: require("./communityComments")
+      router: require("../dong/communityService").comments
     },
     {
       prefix: "/api/community-likes",

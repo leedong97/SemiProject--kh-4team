@@ -1,6 +1,8 @@
 import React, { useState, useRef, useCallback } from "react";
 import PostForm from "./PostForm";
-import axios from "axios";
+import axios, {
+    encodeAttachments
+} from "../dong/communityClient";
 import { API_BASE } from "../../shared/config";
 import getLoginUser from "../woojin/getLoginUser";
 import CommunityComments from "./CommunityComments";
@@ -8,6 +10,9 @@ import CommunityLike from "./CommunityLike";
 import CommunityBookmark from "./CommunityBookmark";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import BoardBanner from "./BoardBanner";
+import FileAttachment from "../dong/components/FileAttachment";
+import AnonymousToggle from "../dong/components/AnonymousToggle";
+import StoredAttachments from "../dong/components/StoredAttachments";
 
 function Board(props) {
 

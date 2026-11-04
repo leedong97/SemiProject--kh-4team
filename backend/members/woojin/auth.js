@@ -48,7 +48,8 @@ router.post("/login", async (req, res) => {
         // 이유: 아래에서 emp를 화면으로 응답하는데, 비밀번호 해시는 노출하면 안 되기 때문.
         // (DB의 원본은 그대로. 지워지는 건 메모리 속 복사본뿐)
         delete emp.employee_pw;
-        res.json({ ok: true, user: emp });
+        const communityToken = await require('../dong/communitySession').issueSession(emp.employee_id);
+        res.json({ ok: true, user: emp, communityToken });
         // 모든 검사를 통과했으니 성공 응답(200)을 JSON 형식으로 화면에 보낸다.
         // ok: true = 성공 표시, user: emp = 로그인한 직원 정보(비밀번호 해시는 위에서 지움)
     } catch (err) { // try 안에서 예상 못 한 에러가 나면 여기로 온다
