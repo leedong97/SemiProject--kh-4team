@@ -4,9 +4,9 @@
 module.exports = {
   routes: [
     { prefix: '/api/health',    router: require('./health') },
-    { prefix: '/api',           router: require('./auth') },       // /api/login, /api/signup
+    { prefix: '/api/auth',      router: require('./auth') },       // /api/auth/login, /api/auth/signup
     { prefix: '/api/schedules', router: require('./schedules') },
-    { prefix: '/api',           router: require('./mypage') },      // /api/leaves, /api/my-...
+    { prefix: '/api/mypage',    router: require('./mypage') },      // /api/mypage/leaves, /api/mypage/my-...
     { prefix: '/api/profile',   router: require('./profile') },
     { prefix: '/api/notifications', router: require('./notifications') },
   ],

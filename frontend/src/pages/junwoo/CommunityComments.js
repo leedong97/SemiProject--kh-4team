@@ -1,7 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import axios, {
+    encodeAttachments
+} from "../dong/communityClient";
 import { API_BASE } from "../../shared/config";
 import getLoginUser from "../woojin/getLoginUser";
+import FileAttachment from '../dong/components/FileAttachment';
+import AnonymousToggle from '../dong/components/AnonymousToggle';
+import StoredAttachments from '../dong/components/StoredAttachments';
 
 function CommunityComments(props) {
     const [comments, setComments] = useState([]);
@@ -10,6 +15,19 @@ function CommunityComments(props) {
     const [loadError, setLoadError] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [reloadCount, setReloadCount] = useState(0);
+
+    // 댓글 작성
+    const [isAnonymous, setIsAnonymous] = useState(false);
+    const [files, setFiles] = useState([]);
+
+    // 댓글 수정
+    const [editAnonymous, setEditAnonymous] = useState(false);
+    const [editFiles, setEditFiles] = useState([]);
+    const [removeAttachmentIds, setRemoveAttachmentIds] = useState([]);
+
+    // 답글 작성
+    const [replyAnonymous, setReplyAnonymous] = useState(false);
+    const [replyFiles, setReplyFiles] = useState([]);
 
     // 수정 중인 댓글 번호
     const [editingId, setEditingId] = useState(null);
@@ -26,6 +44,7 @@ function CommunityComments(props) {
     const savingRef = useRef(false);
     const loginUser = getLoginUser();
     const postId = props.postId;
+    const onCountChange = props.onCountChange;
 
     const isLoggedIn =
         !loginUser.isDummy && loginUser.id != null;
@@ -52,7 +71,19 @@ function CommunityComments(props) {
                 );
 
                 if (!cancelled) {
-                    setComments(response.data);
+                    const loadedComments = response.data;
+
+                    setComments(loadedComments);
+
+                    // 삭제되지 않은 댓글·답글 개수
+                    const count = loadedComments.filter(function (comment) {
+                        return Number(comment.isDeleted) === 0;
+                    }).length;
+
+                    // 게시판 목록에도 개수 전달
+                    if (onCountChange) {
+                        onCountChange(postId, count);
+                    }
                 }
             } catch (error) {
                 if (!cancelled) {
@@ -70,7 +101,7 @@ function CommunityComments(props) {
         return function () {
             cancelled = true;
         };
-    }, [postId, reloadCount]);
+    }, [postId, reloadCount, onCountChange]);
 
     function reloadComments() {
         setReloadCount(function (previousCount) {
@@ -84,7 +115,7 @@ function CommunityComments(props) {
 
     // 서버에서 받은 오류 메시지 표시
     function showError(error, defaultMessage) {
-        let message = defaultMessage;
+        let message = error.message || defaultMessage;
 
         if (
             error.response &&
@@ -132,7 +163,9 @@ function CommunityComments(props) {
                 {
                     postId: postId,
                     authorId: loginUser.id,
-                    content: content.trim()
+                    content: content.trim(),
+                    isAnonymous,
+                    files: await encodeAttachments(files)
                 }
             );
 
@@ -163,6 +196,14 @@ function CommunityComments(props) {
             return;
         }
 
+        setContent("");
+        setIsAnonymous(false);
+        setFiles([]);
+        setReplyAnonymous(false);
+        setReplyFiles([]);
+
+        reloadComments();
+
         setReplyParentId(commentId);
         setReplyContent("");
         setEditingId(null);
@@ -177,6 +218,8 @@ function CommunityComments(props) {
 
         setReplyParentId(null);
         setReplyContent("");
+        setReplyAnonymous(false);
+        setReplyFiles([]);
     }
 
     // ===================================
@@ -223,12 +266,17 @@ function CommunityComments(props) {
                     postId: postId,
                     authorId: loginUser.id,
                     content: trimmedContent,
-                    parentId: replyParentId
+                    parentId: replyParentId,
+                    isAnonymous: replyAnonymous,
+                    files: await encodeAttachments(replyFiles),
                 }
             );
 
             setReplyContent("");
             setReplyParentId(null);
+            setReplyAnonymous(false);
+            setReplyFiles([]);
+
             reloadComments();
 
         } catch (error) {
@@ -314,6 +362,14 @@ function CommunityComments(props) {
         setEditingId(comment.id);
         setEditContent(comment.content);
 
+        setEditAnonymous(
+            comment.isAnonymous === true ||
+            comment.isAnonymous === 1
+        );
+
+        setEditFiles([]);
+        setRemoveAttachmentIds([]);
+
         // 열려 있던 답글 입력창 닫기
         setReplyParentId(null);
         setReplyContent("");
@@ -330,6 +386,9 @@ function CommunityComments(props) {
 
         setEditingId(null);
         setEditContent("");
+        setEditAnonymous(false);
+        setEditFiles([]);
+        setRemoveAttachmentIds([]);
     }
 
     // ===================================
@@ -372,15 +431,20 @@ function CommunityComments(props) {
                 API_BASE + "/api/community-comments/" + editingId,
                 {
                     authorId: loginUser.id,
-                    content: trimmedContent
+                    content: trimmedContent,
+                    isAnonymous: editAnonymous,
+                    files: await encodeAttachments(editFiles),
+                    removeAttachmentIds,
                 }
             );
 
             // 저장 성공 후 수정창 닫기
             setEditingId(null);
             setEditContent("");
+            setEditAnonymous(false);
+            setEditFiles([]);
+            setRemoveAttachmentIds([]);
 
-            // 수정된 목록 다시 조회
             reloadComments();
         } catch (error) {
             showError(error, "댓글 수정에 실패했습니다.");
@@ -478,6 +542,9 @@ function CommunityComments(props) {
 
                         <div className="community-comment-form-bottom">
                             <span>{editContent.length} / 1000</span>
+                            <AnonymousToggle checked={editAnonymous} onChange={setEditAnonymous} anonymousNumber={comment.anonymousNumber} disabled={isSaving} />
+                            <StoredAttachments files={(comment.attachments || []).filter(f => !removeAttachmentIds.includes(f.id))} onRemove={id => setRemoveAttachmentIds(old => [...old, id])} disabled={isSaving} />
+                            <FileAttachment files={editFiles} onChange={setEditFiles} disabled={isSaving} />
 
                             <div className="community-reply-form-buttons">
                                 <button
@@ -508,6 +575,10 @@ function CommunityComments(props) {
                             ? "삭제된 댓글입니다."
                             : comment.content}
                     </p>
+                )}
+
+                {!isDeleted && !isEditing && (
+                    <StoredAttachments files={comment.attachments || []} />
                 )}
 
                 <div className="community-comment-actions">
@@ -554,6 +625,8 @@ function CommunityComments(props) {
 
                         <div className="community-comment-form-bottom">
                             <span>{replyContent.length} / 1000</span>
+                            <AnonymousToggle checked={replyAnonymous} onChange={setReplyAnonymous} disabled={isSaving} />
+                            <FileAttachment files={replyFiles} onChange={setReplyFiles} disabled={isSaving} />
 
                             <div className="community-reply-form-buttons">
                                 <button type="button"
@@ -745,6 +818,8 @@ function CommunityComments(props) {
 
                 <div className="community-comment-form-bottom">
                     <span>{content.length} / 1000</span>
+                    <AnonymousToggle checked={isAnonymous} onChange={setIsAnonymous} disabled={!isLoggedIn || isSaving} />
+                    <FileAttachment files={files} onChange={setFiles} disabled={!isLoggedIn || isSaving} />
 
                     <button
                         type="submit"
