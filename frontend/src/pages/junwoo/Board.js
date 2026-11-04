@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import PostForm from "./PostForm";
-import axios from "axios";
+import axios, { encodeAttachments } from "../dong/communityClient";
+import StoredAttachments from "../dong/components/StoredAttachments";
 import { API_BASE } from "../../shared/config";
 import getLoginUser from "../woojin/getLoginUser";
 import CommunityComments from "./CommunityComments";
@@ -268,7 +269,13 @@ function Board(props) {
     // title과 content는 PostForm에서 전달
     // ===================================
 
-    async function savePost(title, content) {
+    async function savePost(title, content, options = {}) {
+        const {
+            isAnonymous = false,
+            files = [],
+            removeAttachmentIds = [],
+        } = options;
+
         if (savingRef.current) {
             return;
         }
@@ -294,6 +301,7 @@ function Board(props) {
         setIsSaving(true);
 
         try {
+            const encodedFiles = await encodeAttachments(files);
             let response;
 
             if (isNewPost) {
@@ -304,7 +312,10 @@ function Board(props) {
                         boardName: boardName,
                         title: title,
                         content: content,
-                        authorId: loginUser.id
+                        authorId: loginUser.id,
+                        isAnonymous,
+                        files: encodedFiles,
+                        removeAttachmentIds,
                     }
                 );
             } else {
@@ -314,7 +325,10 @@ function Board(props) {
                     {
                         title: title,
                         content: content,
-                        authorId: loginUser.id
+                        authorId: loginUser.id,
+                        isAnonymous,
+                        files: encodedFiles,
+                        removeAttachmentIds,
                     }
                 );
             }
@@ -351,7 +365,7 @@ function Board(props) {
 
             showList();
         } catch (error) {
-            let message = "게시글 저장에 실패했습니다.";
+            let message = error.message || "게시글 저장에 실패했습니다.";
 
             if (
                 error.response &&
@@ -831,11 +845,11 @@ function Board(props) {
 
         boardContent = (
             <PostForm
-                key={formKey}
+                key={selectedPost.id ?? "new"}
                 post={selectedPost}
+                isSaving={isSaving}
                 onSave={savePost}
                 onCancel={showList}
-                isSaving={isSaving}
             />
         );
     } else if (screen === "detail") {
@@ -852,6 +866,8 @@ function Board(props) {
                 <p className="community-post-content">
                     {selectedPost.content}
                 </p>
+
+                <StoredAttachments files={selectedPost.attachments || []} />
 
                 <CommunityLike
                     key={"like-" + selectedPost.id}

@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import axios, { encodeAttachments } from "../dong/communityClient";
 import { API_BASE } from "../../shared/config";
 import getLoginUser from "../woojin/getLoginUser";
+import FileAttachment from '../dong/components/FileAttachment';
+import AnonymousToggle from '../dong/components/AnonymousToggle';
+import StoredAttachments from '../dong/components/StoredAttachments';
 
 function CommunityComments(props) {
     const [comments, setComments] = useState([]);
@@ -10,6 +13,19 @@ function CommunityComments(props) {
     const [loadError, setLoadError] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [reloadCount, setReloadCount] = useState(0);
+
+    // 댓글 작성
+    const [isAnonymous, setIsAnonymous] = useState(false);
+    const [files, setFiles] = useState([]);
+
+    // 댓글 수정
+    const [editAnonymous, setEditAnonymous] = useState(false);
+    const [editFiles, setEditFiles] = useState([]);
+    const [removeAttachmentIds, setRemoveAttachmentIds] = useState([]);
+
+    // 답글 작성
+    const [replyAnonymous, setReplyAnonymous] = useState(false);
+    const [replyFiles, setReplyFiles] = useState([]);
 
     // 수정 중인 댓글 번호
     const [editingId, setEditingId] = useState(null);
@@ -145,7 +161,9 @@ function CommunityComments(props) {
                 {
                     postId: postId,
                     authorId: loginUser.id,
-                    content: content.trim()
+                    content: content.trim(),
+                    isAnonymous,
+                    files: await encodeAttachments(files)
                 }
             );
 
@@ -236,7 +254,9 @@ function CommunityComments(props) {
                     postId: postId,
                     authorId: loginUser.id,
                     content: trimmedContent,
-                    parentId: replyParentId
+                    parentId: replyParentId,
+                    isAnonymous: replyAnonymous,
+                    files: await encodeAttachments(replyFiles)
                 }
             );
 
@@ -326,6 +346,11 @@ function CommunityComments(props) {
         // 수정할 댓글 번호와 기존 내용을 저장
         setEditingId(comment.id);
         setEditContent(comment.content);
+        setEditAnonymous(
+            comment.isAnonymous === true || comment.isAnonymous === 1
+        );
+        setEditFiles([]);
+        setRemoveAttachmentIds([]);
 
         // 열려 있던 답글 입력창 닫기
         setReplyParentId(null);
@@ -385,7 +410,10 @@ function CommunityComments(props) {
                 API_BASE + "/api/community-comments/" + editingId,
                 {
                     authorId: loginUser.id,
-                    content: trimmedContent
+                    content: trimmedContent,
+                    isAnonymous: editAnonymous,
+                    files: await encodeAttachments(editFiles),
+                    removeAttachmentIds
                 }
             );
 
@@ -491,6 +519,9 @@ function CommunityComments(props) {
 
                         <div className="community-comment-form-bottom">
                             <span>{editContent.length} / 1000</span>
+                            <AnonymousToggle checked={editAnonymous} onChange={setEditAnonymous} anonymousNumber={comment.anonymousNumber} disabled={isSaving} />
+                            <StoredAttachments files={(comment.attachments || []).filter(f => !removeAttachmentIds.includes(f.id))} onRemove={id => setRemoveAttachmentIds(old => [...old, id])} disabled={isSaving} />
+                            <FileAttachment files={editFiles} onChange={setEditFiles} disabled={isSaving} />
 
                             <div className="community-reply-form-buttons">
                                 <button
@@ -521,6 +552,11 @@ function CommunityComments(props) {
                             ? "삭제된 댓글입니다."
                             : comment.content}
                     </p>
+                )}
+
+                {/* 저장된 첨부파일 표시 */}
+                {!isEditing && !isDeleted && (
+                    <StoredAttachments files={comment.attachments || []} />
                 )}
 
                 <div className="community-comment-actions">
@@ -567,6 +603,8 @@ function CommunityComments(props) {
 
                         <div className="community-comment-form-bottom">
                             <span>{replyContent.length} / 1000</span>
+                            <AnonymousToggle checked={replyAnonymous} onChange={setReplyAnonymous} disabled={isSaving} />
+                            <FileAttachment files={replyFiles} onChange={setReplyFiles} disabled={isSaving} />
 
                             <div className="community-reply-form-buttons">
                                 <button type="button"
@@ -758,6 +796,8 @@ function CommunityComments(props) {
 
                 <div className="community-comment-form-bottom">
                     <span>{content.length} / 1000</span>
+                    <AnonymousToggle checked={isAnonymous} onChange={setIsAnonymous} disabled={!isLoggedIn || isSaving} />
+                    <FileAttachment files={files} onChange={setFiles} disabled={!isLoggedIn || isSaving} />
 
                     <button
                         type="submit"

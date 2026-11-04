@@ -45,7 +45,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-app.use(express.json());
+app.use(express.json({ limit: "16mb" }));
 
 // 4) 공통 확인용 주소 (팀원 API 와 겹치지 않는 이름만 사용)
 app.get('/api/db-check', async (req, res) => {

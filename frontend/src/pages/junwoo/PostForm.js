@@ -1,6 +1,18 @@
 import React, { useState } from "react";
 
+import FileAttachment from '../dong/components/FileAttachment';
+import AnonymousToggle from '../dong/components/AnonymousToggle';
+import StoredAttachments from '../dong/components/StoredAttachments';
+
 function PostForm(props) {
+
+    const [isAnonymous, setIsAnonymous] = useState(
+        props.post.isAnonymous === true ||
+        props.post.isAnonymous === 1
+    );
+
+    const [removeAttachmentIds, setRemoveAttachmentIds] = useState([]);
+    const [files, setFiles] = useState([]);
 
     const [title, setTitle] = useState(props.post.title);
     const [content, setContent] = useState(props.post.content);
@@ -43,7 +55,11 @@ function PostForm(props) {
             return;
         }
 
-        props.onSave(trimmedTitle, trimmedContent);
+        props.onSave(trimmedTitle, trimmedContent, {
+            isAnonymous,
+            files,
+            removeAttachmentIds,
+        });
 
     }
 
@@ -105,6 +121,30 @@ function PostForm(props) {
                 <p id="community-content-count">
                     {content.length} / 10000자
                 </p>
+
+                <AnonymousToggle
+                    checked={isAnonymous}
+                    onChange={setIsAnonymous}
+                    anonymousNumber={props.post.anonymousNumber}
+                    disabled={props.isSaving}
+                />
+
+                <StoredAttachments
+                    files={(props.post.attachments || []).filter(
+                        file => !removeAttachmentIds.includes(file.id)
+                    )}
+                    onRemove={id =>
+                        setRemoveAttachmentIds(previous => [...previous, id])
+                    }
+                    disabled={props.isSaving}
+                />
+
+                <FileAttachment
+                    files={files}
+                    onChange={setFiles}
+                    disabled={props.isSaving}
+                />
+                <p>파일당 5MB, 총 10MB, 최대 5개까지 첨부할 수 있습니다.</p>
 
                 <div className="community-actions">
                     <button
