@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DashboardPanel from "../components/DashboardPanel";
+import { adminRequest } from "../adminApi";
 
 // 프로젝트 + 이슈 + 인사 + 평가를 하나의 화면에서 보여줍니다.
 export default function Dashboard({ projects = [], data }) {
@@ -49,7 +51,16 @@ export default function Dashboard({ projects = [], data }) {
     ];
 
 
-    // 재무관리 패널: 프로젝트의 예상 계약 금액(budget) 기준 요약
+    // 재무관리 패널: 재직자 연봉 합계 (서버에서 합계만 받음)
+    const [finance, setFinance] = useState(null);
+    const [financeError, setFinanceError] = useState("");
+    useEffect(() => {
+        adminRequest("/finance/summary")
+            .then(setFinance)
+            .catch((err) => setFinanceError(err.message));
+    }, []);
+
+    // 프로젝트의 예상 계약 금액(budget) 기준 요약
     const budgetOf = (project) => Number(project.budget) || 0;
     const totalBudget = projects.reduce((sum, project) => sum + budgetOf(project), 0);
     const activeBudget = projects
@@ -135,17 +146,11 @@ export default function Dashboard({ projects = [], data }) {
             <div className="merge-columns">
 
                 {/* 프로젝트 진행 현황 */}
-                <section className="card merge-panel">
-
-                    <div className="merge-panel-head">
-                        <h2>프로젝트 진행 현황</h2>
-
-                        <button className="btn btn-ghost"
-                            onClick={() => navigate("/admin/projects")}
-                        >
-                            전체 보기 →
-                        </button>
-                    </div>
+                <DashboardPanel
+                    title="프로젝트 진행 현황"
+                    actionLabel="전체 보기 →"
+                    onAction={() => navigate("/admin/projects")}
+                >
 
                     {/* 프로젝트가 없는 경우 안내 문구 출력 */}
                     {projects.length === 0 ? (
@@ -209,23 +214,15 @@ export default function Dashboard({ projects = [], data }) {
 
                     )}
 
-                </section>
+                </DashboardPanel>
 
 
                 {/* 최근 공지사항 */}
-                <section className="card merge-panel">
-
-                    <div className="merge-panel-head">
-                        <h2>공지사항</h2>
-
-                        <button
-                            type="button"
-                            className="btn btn-ghost"
-                            onClick={() => navigate("/admin/boards")}
-                        >
-                            공지사항 관리 →
-                        </button>
-                    </div>
+                <DashboardPanel
+                    title="공지사항"
+                    actionLabel="공지사항 관리 →"
+                    onAction={() => navigate("/admin/boards")}
+                >
 
                     {noticeLoading && <p>공지사항을 불러오는 중입니다.</p>}
 
@@ -238,10 +235,9 @@ export default function Dashboard({ projects = [], data }) {
                     {!noticeLoading && !noticeError && visibleNotices.map((notice) => (
                         <button
                             type="button"
-                            className="merge-log"
+                            className="merge-log merge-log-button"
                             key={notice.id}
                             onClick={() => navigate(`/admin/boards?notice=${notice.id}`)}
-                            style={{ width: "100%", textAlign: "left", background: "none", border: 0, cursor: "pointer" }}
                         >
                             <strong>
                                 {isPinned(notice) && (
@@ -256,7 +252,7 @@ export default function Dashboard({ projects = [], data }) {
                         </button>
                     ))}
 
-                </section>
+                </DashboardPanel>
 
             </div>
 
@@ -268,17 +264,11 @@ export default function Dashboard({ projects = [], data }) {
             <div className="merge-columns">
 
                 {/* 최근 이슈 목록 */}
-                <section className="card merge-panel">
-
-                    <div className="merge-panel-head">
-                        <h2>최근 이슈</h2>
-
-                        <button className="btn btn-ghost"
-                            onClick={() => navigate("/admin/issues")}
-                        >
-                            이슈 관리 →
-                        </button>
-                    </div>
+                <DashboardPanel
+                    title="최근 이슈"
+                    actionLabel="이슈 관리 →"
+                    onAction={() => navigate("/admin/issues")}
+                >
 
                     {/* 이슈 정보를 표 형태로 출력 */}
                     <div className="merge-table-wrap">
@@ -342,21 +332,25 @@ export default function Dashboard({ projects = [], data }) {
 
                     </div>
 
-                </section>
+                </DashboardPanel>
 
                 {/* 재무관리: 프로젝트 예상 계약 금액 요약 */}
-                <section className="card merge-panel">
+                <DashboardPanel
+                    title="재무관리"
+                    actionLabel="프로젝트 관리 →"
+                    onAction={() => navigate("/admin/projects")}
+                >
 
-                    <div className="merge-panel-head">
-                        <h2>재무관리</h2>
-
-                        <button
-                            type="button"
-                            className="btn btn-ghost"
-                            onClick={() => navigate("/admin/projects")}
-                        >
-                            프로젝트 관리 →
-                        </button>
+                    <div className="merge-alert">
+                        <b>총 급여 (재직자 연봉 합계)</b>
+                        <strong>
+                            {finance
+                                ? `${finance.totalSalary.toLocaleString()}원`
+                                : financeError
+                                    ? "불러오기 실패"
+                                    : "불러오는 중..."}
+                        </strong>
+                        {finance && <small> 재직 {finance.headcount}명</small>}
                     </div>
 
                     <div className="merge-alert">
@@ -374,10 +368,9 @@ export default function Dashboard({ projects = [], data }) {
                     {topProjects.map((project) => (
                         <button
                             type="button"
-                            className="merge-log"
+                            className="merge-log merge-log-button"
                             key={project.id}
                             onClick={() => navigate(`/admin/projects?project=${project.id}`)}
-                            style={{ width: "100%", textAlign: "left", background: "none", border: 0, cursor: "pointer" }}
                         >
                             <strong>{project.name}</strong>
 
@@ -389,7 +382,7 @@ export default function Dashboard({ projects = [], data }) {
 
                     {topProjects.length === 0 && <p>등록된 프로젝트가 없습니다.</p>}
 
-                </section>
+                </DashboardPanel>
 
             </div>
 

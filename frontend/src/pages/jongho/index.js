@@ -41,11 +41,10 @@ function ProjectsRoute() {
   );
 }
 function AssignmentsRoute() {
-  const { projects, setProjects, data, createProject, updateProject, removeProject } = useJongho();
+  const { projects, data, updateProject } = useJongho();
   return (
     <ManagerAssignment
       projects={projects}
-      setProjects={setProjects}
       updateProject={updateProject}
       employees={data.employees.map((e) => ({ ...e, role: e.role || e.position }))}
     />
@@ -105,3 +104,4 @@ export const standaloneRoutes = [
     ],
   },
 ];
+

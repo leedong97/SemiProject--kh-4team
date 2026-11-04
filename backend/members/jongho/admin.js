@@ -49,6 +49,21 @@ router.get('/employees', async (req, res) => {
   }
 });
 
+// 재무 요약: 재직자 연봉 합계와 인원 수만 내려줍니다 (개인별 급여는 내려주지 않음)
+router.get('/finance/summary', async (req, res) => {
+  try {
+    const [[row]] = await pool.query(`
+      SELECT COUNT(*)                        AS headcount,
+             COALESCE(SUM(employee_salary), 0) AS totalSalary
+      FROM employees
+      WHERE employee_status = '재직'
+    `);
+    res.json({ headcount: Number(row.headcount), totalSalary: Number(row.totalSalary) });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // 이슈 목록 (대시보드·이슈 관리용)
 // due 는 날짜 문자열(YYYY-MM-DD)로 맞춰서 화면의 날짜 비교가 그대로 동작하도록 합니다.
 router.get('/issues', async (req, res) => {
