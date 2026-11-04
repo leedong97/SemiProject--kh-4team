@@ -1,5 +1,6 @@
 import { API_BASE } from '../../shared/config';
 import { createContext, useCallback, useContext, useState, useEffect } from 'react';
+import getLoginUser from "../woojin/getLoginUser";
 
 // 준우 페이지(대시보드·공지사항·프로젝트)가 같이 쓰는 데이터 상자
 const JunwooContext = createContext(null);
@@ -231,7 +232,7 @@ export function JunwooProvider({ children }) {
 
 
 
-  /* 프로젝트 등록 */
+  /* 프로젝트 등록 요청 */
   const addTodo = async (
     title,
     content,
@@ -241,15 +242,25 @@ export function JunwooProvider({ children }) {
     priority
   ) => {
 
-    // 테스트용 직원번호 (추후 로그인 정보 연결)
-    const created_by = 1;
+    // 로그인한 직원 정보
+    const user = getLoginUser();
 
+    if (user.isDummy || !user.id) {
+      throw new Error(
+        "로그인 후 프로젝트 등록을 요청해주세요."
+      );
+    }
+
+    const created_by = Number(user.id);
+
+
+    // 프로젝트 등록 요청 API
     const response = await fetch(
-      `${API_BASE}/api/projects`,
+      `${API_BASE}/api/project-requests`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           title,
@@ -263,31 +274,21 @@ export function JunwooProvider({ children }) {
       }
     );
 
+
     const data = await response.json();
 
+
     if (!response.ok) {
-      throw new Error(data.message || '프로젝트 등록 실패');
+      throw new Error(
+        data.message || "프로젝트 등록 요청 실패"
+      );
     }
 
-    // React 화면에도 등록한 프로젝트 반영
-    const newTodo = {
-      id: data.id,
-      title,
-      content,
-      date: new Date().toLocaleDateString('ko-KR'),
-      author: created_by,
-      views: 0,
-      progress: 0,
-      status,
-      priority,
-      startDate,
-      endDate,
-      sortAt: Date.now() / 1000,
-    };
 
-    setTodo(prev => [newTodo, ...prev]);
+    // 아직 승인 전이므로 React 프로젝트 목록에 추가하지 않음
 
-    return data.id;
+    // 요청 번호 반환
+    return data.requestId;
   };
 
 

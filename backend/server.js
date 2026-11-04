@@ -45,7 +45,10 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+// 첨부 데이터는 최대 10MB이며 JSON 인코딩 여유를 포함합니다.
+app.use(['/api/community', '/api/community-comments'], express.json({ limit: '16mb' }));
 app.use(express.json());
+app.use('/api/community-files', require('./members/dong/communityService').files);
 
 // 4) 공통 확인용 주소 (팀원 API 와 겹치지 않는 이름만 사용)
 app.get('/api/db-check', async (req, res) => {

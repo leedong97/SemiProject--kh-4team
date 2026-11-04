@@ -68,8 +68,7 @@ function MyInfoTab({ user, pw, pwMsg, minPwLength, handlePwChange, handlePwSubmi
                 <button type="submit" className="mp-submit">비밀번호 변경</button>
             </form>
             <p className="mp-note">
-                프로토타입: 지금은 입력 검사만 해요. 실제 변경은 서버에서 현재 비밀번호를 확인하고
-                새 비밀번호를 암호화해 저장하는 API를 만든 뒤 연결해요.
+                현재 비밀번호를 확인한 뒤, 새 비밀번호는 암호화되어 저장돼요.
             </p>
         </section>
     );

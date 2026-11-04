@@ -15,6 +15,7 @@ import MyWorkTab from "./components/mypageTab/MyWorkTab";
 import AttendanceTab from "./components/mypageTab/AttendanceTab";
 import MyActivityTab from "./components/mypageTab/MyActivityTab";
 import MyInfoTab from "./components/mypageTab/MyInfoTab";
+import NotificationTab from "./components/mypageTab/NotificationTab";
 import "./Mypage.css";
 
 /* ---------------------------------------------------------
@@ -72,7 +73,7 @@ const myIssues = [
 const myNotices = [{ id: 1, title: "11월 정기 보안 교육 안내", date: "2026-10-20", pinned: true }];
 
 const WEEK_DAYS = ["일", "월", "화", "수", "목", "금", "토"];
-const TABS = ["일정 관리", "내 업무", "근태·휴가", "내 활동", "내 정보"];
+const TABS = ["일정 관리", "내 업무", "근태·휴가", "내 활동", "내 정보","알림"];
 // 일정 등록 폼에서 고를 수 있는 유형. "프로젝트"는 관리자 페이지에서만 등록하므로 마이페이지 폼에는 없어요.
 const TYPES = ["개인", "업무", "휴가"];
 // 필터 버튼: "프로젝트"를 누르면 위쪽 프로젝트 막대만 보여요
@@ -99,11 +100,61 @@ const isProject = (s) => s.type === "프로젝트";
 
 // 시작일~종료일이 며칠인지 (둘 다 포함해서 센다: 10/12~10/14 = 3일)
 const countDays = (start, end) => Math.round((new Date(end) - new Date(start)) / 86400000) + 1;
+
+// 알림 더미 데이터 (서버 연결 전에 화면부터 만들려고 쓰는 가짜 데이터예요)
+const DUMMY_NOTIFICATIONS = [
+    { id: 1, type: "이슈", message: "이슈 '로그인 오류'가 \"처리 중\"으로 바뀌었어요", time: "3분 전", isRead: false },
+    { id: 2, type: "프로젝트", message: "프로젝트 '모바일 근태관리' 등록이 승인됐어요", time: "1시간 전", isRead: false },
+    { id: 3, type: "이슈", message: "이슈 '표 정렬'이 \"완료\"로 바뀌었어요", time: "어제", isRead: true },
+];
+
+// 새 알림이 왔는지 서버에 묻는 간격 (3초). 웹소켓 없이 "주기적으로 물어보는" 폴링 방식이에요
+const NOTI_POLL_MS = 3000;
+
+// 직원 평가를 쓸 수 있는 직급: 희승의 평가 화면(EmployeeEvaluation.js)의 규칙과 똑같이 맞췄어요.
+// (그쪽 규칙이 바뀌면 여기도 같이 바꿔야 해요. 평가 화면은 인사팀도 허용해서 아래에서 같이 확인해요.)
+const EVALUATOR_RANKS = ["팀장", "실장", "부장", "이사", "상무", "전무", "대표", "대표이사"];
+
 function Mypage() {
     // 로그인한 직원 정보 (로그인 없이 들어오면 shared/user.js 더미가 들어와요: isDummy)
     const user = getLoginUser();
     const today = new Date();
     const todayKey = toKey(today.getFullYear(), today.getMonth(), today.getDate());
+
+    // 알림: 로그인한 직원은 서버에서 3초마다 가져오고, 더미 사용자는 가짜 데이터를 그대로 보여줘요
+    const [notifications, setNotifications] = useState(user.isDummy ? DUMMY_NOTIFICATIONS : []);
+    useEffect(() => {
+        if (user.isDummy) return;
+
+        const loadNotifications = () => {
+            axios
+                .get(`${API_BASE}/api/notifications`, { params: { employeeId: user.id } })
+                .then((res) => setNotifications(res.data.notifications))
+                .catch((err) => console.error("알림 조회 실패:", err.message));
+        };
+
+        loadNotifications(); // 화면이 열리자마자 한 번
+        const timerId = setInterval(loadNotifications, NOTI_POLL_MS); // 그다음부터 3초마다
+        return () => clearInterval(timerId); // 화면을 떠나면 타이머를 꺼요 (안 끄면 계속 돌아요)
+    }, [user.id, user.isDummy]);
+
+    // 알림 하나를 읽음 처리: 화면을 먼저 바꾸고(바로 반응하게) 서버에도 알려요
+    const handleReadNotification = (id) => {
+        setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
+        if (user.isDummy) return;
+        axios
+            .patch(`${API_BASE}/api/notifications/${id}/read`, { employeeId: user.id })
+            .catch((err) => console.error("알림 읽음 처리 실패:", err.message));
+    };
+
+    // 모두 읽음
+    const handleReadAllNotifications = () => {
+        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+        if (user.isDummy) return;
+        axios
+            .patch(`${API_BASE}/api/notifications/read-all`, { employeeId: user.id })
+            .catch((err) => console.error("알림 전체 읽음 처리 실패:", err.message));
+    };
 
     const [tab, setTab] = useState("일정 관리");
     const [year, setYear] = useState(today.getFullYear());
@@ -127,6 +178,19 @@ function Mypage() {
             .then((res) => setTasks(res.data.tasks))
             .catch((err) => console.error("업무를 불러오지 못했어요:", err));
     }, [user.id, user.isDummy]);
+
+    // 내가 "담당자"인 프로젝트: 있으면 내 업무 탭에 직원 평가 바로가기가 보여요 (더미 사용자는 없음)
+    const [managedProjects, setManagedProjects] = useState([]);
+    useEffect(() => {
+        if (user.isDummy) return;
+        axios
+            .get(`${API_BASE}/api/my-managed-projects`, { params: { employeeId: user.id } })
+            .then((res) => setManagedProjects(res.data.projects))
+            .catch((err) => console.error("담당 프로젝트를 불러오지 못했어요:", err));
+    }, [user.id, user.isDummy]);
+
+    // 평가 권한: 책임자급 직급이거나 인사팀이면 "팀원 평가하러 가기"를 보여 줘요 (그 외에는 숨겨요)
+    const canEvaluate = !user.isDummy && (EVALUATOR_RANKS.includes(user.rank) || user.team === "인사팀");
 
     // 내가 등록한 이슈: 로그인한 직원이면 DB에서, 더미 사용자면 위쪽 더미 배열을 써요
     const [issues, setIssues] = useState(user.isDummy ? myIssues : []);
@@ -222,7 +286,15 @@ function Mypage() {
     // 프로젝트는 관리자 페이지에서만 등록하고, 마이페이지는 DB(projects + project_members)에서 읽어 와 보여 주기만 해요.
     // 위쪽 카드, 일정 탭의 막대, "내 업무" 탭이 모두 같은 projects 데이터를 쓰니까 숫자와 목록이 어긋나지 않아요.
     // 막대로 그릴 프로젝트: "완료"가 아니고, 시작일·종료일이 둘 다 있는 것 (날짜가 비어 있으면 막대를 못 그려요)
-    const projectBars = projects
+    // 담당자는 참여자 명단(project_members)에 없을 수 있어서, "참여 프로젝트 + 내가 담당자인 프로젝트"를 합쳐서 써요.
+    // (my-projects 는 동협 이슈 건의 화면도 쓰니까 그쪽은 그대로 두고, 여기 화면에서만 합쳐요. 같은 프로젝트는 한 번만, 역할은 "담당자")
+    const allProjects = [
+        ...projects.map((p) => (managedProjects.some((m) => m.id === p.id) ? { ...p, role: "담당자" } : p)),
+        ...managedProjects
+            .filter((m) => !projects.some((p) => p.id === m.id))
+            .map((m) => ({ ...m, role: "담당자" })),
+    ];
+    const projectBars = allProjects
         .filter((p) => p.status !== "완료" && p.start && p.end)
         .map((p) => ({ id: p.id, title: p.name, start: p.start, end: p.end, status: p.status }))
         .sort((a, b) => a.start.localeCompare(b.start));
@@ -423,13 +495,18 @@ function Mypage() {
     // 진행 중 업무 개수 (요약 카드에 보여 줘요)
     const inProgressCount = tasks.filter((t) => t.status === "진행 중").length;
 
-    /* ---------- 비밀번호 변경 (서버 연결 전: 입력 검사만) ---------- */
+    /* ---------- 비밀번호 변경: 입력 검사 후 서버(DB)에 저장해요 ---------- */
+    // 비밀번호 입력칸의 글자가 바뀔 때마다 실행될 함수를 만든다. e는 입력창에서 일어난 일(이벤트)을 담은 객체
     const handlePwChange = (e) => {
+        // e.target = 글자가 바뀐 입력창. 그 입력창의 name(어느 칸인지)과 value(입력된 글자)를 꺼낸다
         const { name, value } = e.target;
+        // 기존 pw 를 복사해 두고, 글자가 바뀐 칸(name)의 값만 새 값(value)으로 덮어써서 새 객체를 만든다
         setPw({ ...pw, [name]: value });
     };
 
+    // 엔터나 버튼 클릭으로 form 이 제출(submit)되면 실행되는 함수를 정의한다
     const handlePwSubmit = (e) => {
+        //새로고침되면 읽어온 정보가 지워지기에 프리벤트디폴트 로 막음
         e.preventDefault(); // form 의 기본 동작(페이지 새로고침) 막기
 
         if (!pw.current || !pw.next || !pw.confirm) {
@@ -449,10 +526,29 @@ function Mypage() {
             return;
         }
 
-        // TODO: 서버 연결 후 여기서 비밀번호 변경 API 호출
-        //       (서버가 현재 비밀번호를 bcrypt 로 확인한 뒤, 새 비밀번호를 암호화해 저장해야 해요)
-        setPw(EMPTY_PW); // 비밀번호를 화면(state)에 오래 두지 않기
-        setPwMsg({ type: "ok", text: "입력 검사를 통과했어요. (프로토타입: 서버 연결 후 실제로 변경돼요)" });
+        // 로그인 없이 들어온 더미 사용자는 바꿀 직원이 없어서 안내만 해요
+        if (user.isDummy) {
+            setPwMsg({ type: "error", text: "로그인한 뒤에 비밀번호를 바꿀 수 있어요." });
+            return;
+        }
+
+        // 서버가 현재 비밀번호를 bcrypt 로 확인한 뒤, 새 비밀번호를 암호화해 DB 에 저장해요
+        axios
+            .put(`${API_BASE}/api/profile/password`, {
+                employeeId: user.id,
+                currentPassword: pw.current,
+                newPassword: pw.next,
+            })
+            .then(() => {
+                setPw(EMPTY_PW); // 비밀번호를 화면(state)에 오래 두지 않기
+                setPwMsg({ type: "ok", text: "비밀번호가 변경됐어요." });
+            })
+            .catch((err) => {
+                setPwMsg({
+                    type: "error",
+                    text: err.response?.data?.message || "변경하지 못했어요. 잠시 후 다시 시도해 주세요.",
+                });
+            });
     };
 
     /* 선택한 날짜를 "10월 22일" 처럼 보여 주기 */
@@ -540,7 +636,7 @@ function Mypage() {
             )}
 
             {/* ===== 탭 2: 내 업무 ===== */}
-            {tab === "내 업무" && <MyWorkTab projects={projects} tasks={tasks} />}
+            {tab === "내 업무" && <MyWorkTab projects={allProjects} tasks={tasks} managedProjects={managedProjects} canEvaluate={canEvaluate} />}
 
             {/* ===== 탭 3: 근태·휴가 ===== */}
             {tab === "근태·휴가" && (
@@ -556,6 +652,14 @@ function Mypage() {
 
             {/* ===== 탭 4: 내 활동 (내가 등록한 이슈·공지) ===== */}
             {tab === "내 활동" && <MyActivityTab myIssues={issues} myNotices={notices} />}
+
+            {tab === "알림" && (
+                <NotificationTab
+                    notifications={notifications}
+                    onRead={handleReadNotification}
+                    onReadAll={handleReadAllNotifications}
+                />
+            )}
 
             {/* ===== 탭 5: 내 정보 (보기 전용) + 비밀번호 변경 ===== */}
             {tab === "내 정보" && (
