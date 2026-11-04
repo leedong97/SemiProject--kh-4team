@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios, { encodeAttachments } from "../dong/communityClient";
+import axios from "axios";
 import { API_BASE } from "../../shared/config";
 import getLoginUser from "../woojin/getLoginUser";
 import FileAttachment from '../dong/components/FileAttachment';
@@ -161,9 +161,7 @@ function CommunityComments(props) {
                 {
                     postId: postId,
                     authorId: loginUser.id,
-                    content: content.trim(),
-                    isAnonymous,
-                    files: await encodeAttachments(files)
+                    content: content.trim()
                 }
             );
 
@@ -254,9 +252,7 @@ function CommunityComments(props) {
                     postId: postId,
                     authorId: loginUser.id,
                     content: trimmedContent,
-                    parentId: replyParentId,
-                    isAnonymous: replyAnonymous,
-                    files: await encodeAttachments(replyFiles)
+                    parentId: replyParentId
                 }
             );
 
@@ -346,11 +342,6 @@ function CommunityComments(props) {
         // 수정할 댓글 번호와 기존 내용을 저장
         setEditingId(comment.id);
         setEditContent(comment.content);
-        setEditAnonymous(
-            comment.isAnonymous === true || comment.isAnonymous === 1
-        );
-        setEditFiles([]);
-        setRemoveAttachmentIds([]);
 
         // 열려 있던 답글 입력창 닫기
         setReplyParentId(null);
@@ -410,10 +401,7 @@ function CommunityComments(props) {
                 API_BASE + "/api/community-comments/" + editingId,
                 {
                     authorId: loginUser.id,
-                    content: trimmedContent,
-                    isAnonymous: editAnonymous,
-                    files: await encodeAttachments(editFiles),
-                    removeAttachmentIds
+                    content: trimmedContent
                 }
             );
 
@@ -552,11 +540,6 @@ function CommunityComments(props) {
                             ? "삭제된 댓글입니다."
                             : comment.content}
                     </p>
-                )}
-
-                {/* 저장된 첨부파일 표시 */}
-                {!isEditing && !isDeleted && (
-                    <StoredAttachments files={comment.attachments || []} />
                 )}
 
                 <div className="community-comment-actions">

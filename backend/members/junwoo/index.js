@@ -31,10 +31,6 @@ module.exports = {
     {
       prefix: "/api/community-bookmarks",
       router: require("./communityBookmarks")
-    },
-    {
-      prefix: "/api/community-files",
-      router: require("./communityFiles")
-    },
+    }
   ]
 };

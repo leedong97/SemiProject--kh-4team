@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "../dong/communityClient";
+import axios from "axios";
 import { API_BASE } from "../../shared/config";
 import { Link, useNavigate } from "react-router-dom";
 import CommunityMenu from "./CommunityMenu";

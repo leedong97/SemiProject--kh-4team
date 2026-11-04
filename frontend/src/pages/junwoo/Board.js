@@ -1,7 +1,6 @@
 import React, { useState, useRef, useCallback } from "react";
 import PostForm from "./PostForm";
-import axios, { encodeAttachments } from "../dong/communityClient";
-import StoredAttachments from "../dong/components/StoredAttachments";
+import axios from "axios";
 import { API_BASE } from "../../shared/config";
 import getLoginUser from "../woojin/getLoginUser";
 import CommunityComments from "./CommunityComments";
@@ -301,7 +300,6 @@ function Board(props) {
         setIsSaving(true);
 
         try {
-            const encodedFiles = await encodeAttachments(files);
             let response;
 
             if (isNewPost) {
@@ -312,10 +310,7 @@ function Board(props) {
                         boardName: boardName,
                         title: title,
                         content: content,
-                        authorId: loginUser.id,
-                        isAnonymous,
-                        files: encodedFiles,
-                        removeAttachmentIds,
+                        authorId: loginUser.id
                     }
                 );
             } else {
@@ -325,10 +320,7 @@ function Board(props) {
                     {
                         title: title,
                         content: content,
-                        authorId: loginUser.id,
-                        isAnonymous,
-                        files: encodedFiles,
-                        removeAttachmentIds,
+                        authorId: loginUser.id
                     }
                 );
             }
@@ -365,7 +357,7 @@ function Board(props) {
 
             showList();
         } catch (error) {
-            let message = error.message || "게시글 저장에 실패했습니다.";
+            let message = "게시글 저장에 실패했습니다.";
 
             if (
                 error.response &&
@@ -866,8 +858,6 @@ function Board(props) {
                 <p className="community-post-content">
                     {selectedPost.content}
                 </p>
-
-                <StoredAttachments files={selectedPost.attachments || []} />
 
                 <CommunityLike
                     key={"like-" + selectedPost.id}

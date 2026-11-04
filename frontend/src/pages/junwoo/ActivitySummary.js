@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "../dong/communityClient";
+import axios from "axios";
 import { API_BASE } from "../../shared/config";
 
 function ActivitySummary(props) {
