@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { clearLoginUser } from '../woojin/getLoginUser';
 import './styles/jongho.css';
 import AdminLayout from './components/AdminLayout';
 import Dashboard from './pages/Dashboard';
 import ProjectManagement from './pages/ProjectManagement';
 import ManagerAssignment from './pages/ManagerAssignment';
 import Notices from './pages/Notices';
-import AdminAudit from './pages/AdminAudit';
 import Workload from './pages/Workload';
 import IssueManagement from '../heeseung/components/IssueManagement';
 import HRManagement from '../heeseung/components/HRManagement';
@@ -18,9 +18,29 @@ import { JonghoProvider, useJongho } from './JonghoContext';
 
 function AdminRoute() {
   const navigate = useNavigate();
-  return <AdminLayout onLogout={() => {
-    sessionStorage.removeItem('nexus_token'); sessionStorage.removeItem('nexus_role'); navigate('/login');
-  }} />;
+  const token = localStorage.getItem('nexus_auth_token');
+  let user = null;
+
+  try {
+    user = JSON.parse(localStorage.getItem('erpUser') || 'null');
+  } catch (error) {
+    user = null;
+  }
+
+  // 관리자 화면은 로그인한 관리자만 볼 수 있습니다.
+  // 실제 데이터 권한은 백엔드에서도 다시 확인합니다.
+  if (!token || !user || user.employee_role !== '관리자') {
+    return <Navigate to='/login' replace />;
+  }
+
+  function handleLogout() {
+    clearLoginUser();
+    sessionStorage.removeItem('nexus_token');
+    sessionStorage.removeItem('nexus_role');
+    navigate('/login', { replace: true });
+  }
+
+  return <AdminLayout onLogout={handleLogout} />;
 }
 function DashboardRoute() {
   const { projects, data } = useJongho();
@@ -100,7 +120,6 @@ export const standaloneRoutes = [
       { path: 'evaluations', element: <EvaluationsRoute /> },
       { path: 'boards', element: <Notices />, },
       { path: 'settings', element: <SettingsRoute /> },
-      { path: 'audit', element: <AdminAudit /> },
       { path: 'workload', element: <Workload /> },
     ],
   },

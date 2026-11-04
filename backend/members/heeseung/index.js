@@ -1,5 +1,8 @@
-// 희승 폴더 (아직 서버 API 없음). 필요해지면 아래 routes 에 추가하세요.
-// 예) const myRouter = require('./my'); routes: [{ prefix: '/api/heeseung', router: myRouter }]
+// 희승 담당 API. 기존 다른 팀원 라우터는 수정하지 않습니다.
 module.exports = {
-  routes: [],
+    routes: [
+        { prefix: "/api/hr", router: require("./hr") },
+        { prefix: "/api/evaluations", router: require("./evaluations") },
+        { prefix: "/api/management", router: require("./operations") }
+    ]
 };

@@ -45,7 +45,6 @@ function AdminLayout({ onLogout }) {
     { name: "직원 평가", path: "/admin/evaluations" },
     { name: "공지 관리", path: "/admin/boards" },
     { name: "업무량 분석", path: "/admin/workload" },
-    { name: "감사 로그", path: "/admin/audit" },
     { name: "데이터 초기화", path: "/admin/settings" }
   ];
 

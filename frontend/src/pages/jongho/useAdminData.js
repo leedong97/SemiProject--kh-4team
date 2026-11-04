@@ -36,16 +36,8 @@ export default function useAdminData() {
   function changeData(action, updater) {
     setData((previous) => {
       const next = updater(previous);
-      const logs = [
-        {
-          id: Date.now() + Math.random(),
-          action,
-          at: new Date().toLocaleString('ko-KR'),
-        },
-        ...previous.logs,
-      ].slice(0, 100);
-
-      return { ...next, logs };
+      // 감사 로그 화면을 제거했으므로 별도 로그 배열을 추가하지 않습니다.
+      return next;
     });
   }
 
