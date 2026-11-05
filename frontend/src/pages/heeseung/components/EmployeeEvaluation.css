@@ -1,4 +1,3 @@
-
 /* ==========================================
    NEXUS ERP - 직원 인사평가
    EmployeeEvaluation.css
@@ -125,7 +124,7 @@
     font-size: 13px;
 }
 
-.employee-evaluation .ev-header > button {
+.employee-evaluation .ev-header>button {
     min-height: 42px;
     padding: 11px 20px;
 }
@@ -145,7 +144,7 @@
     background-color: #eef4ff;
 }
 
-.employee-evaluation .ev-test-bar > div {
+.employee-evaluation .ev-test-bar>div {
     flex: 1;
 }
 
@@ -254,7 +253,7 @@
     font-size: 12px;
 }
 
-.employee-evaluation .ev-panel-head > span {
+.employee-evaluation .ev-panel-head>span {
     color: #7e8ea3;
     font-size: 12px;
 }
@@ -371,7 +370,7 @@
     margin-bottom: 26px;
 }
 
-.employee-evaluation .ev-chart-stats > div {
+.employee-evaluation .ev-chart-stats>div {
     padding: 22px;
     border: 1px solid #e6edf8;
     border-radius: 10px;
@@ -450,15 +449,13 @@
     height: 100%;
     min-width: 0;
     border-radius: 20px;
-    background: linear-gradient(
-        90deg,
-        #8db4ff 0%,
-        #245fe6 100%
-    );
+    background: linear-gradient(90deg,
+            #8db4ff 0%,
+            #245fe6 100%);
     transition: width 0.35s ease;
 }
 
-.employee-evaluation .ev-chart-row > strong {
+.employee-evaluation .ev-chart-row>strong {
     width: 65px;
     flex-shrink: 0;
     color: #245fe6;
@@ -511,7 +508,7 @@
     padding: 28px;
 }
 
-.employee-evaluation .ev-form > h3 {
+.employee-evaluation .ev-form>h3 {
     margin: 0 0 25px;
     color: #253247;
     font-size: 18px;
@@ -724,3 +721,270 @@
     font-size: 11px;
     line-height: 1.8;
 }
+
+/* 신규 기능: 평가 변경 이력과 이의신청 */
+
+.ev-history {
+    margin: 12px 0;
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+    background: #fafbff;
+}
+
+.ev-history summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.ev-history p {
+    font-size: 13px;
+    margin: 7px 0;
+    color: #475569;
+}
+
+.ev-appeal {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    background: #fff7ed;
+    color: #9a3412;
+}
+
+/* ===== 2026 UI 개선: 기존 기능/클래스 유지, 시각적 스타일만 보강 ===== */
+
+:where(.employee-evaluation, .hr-management, .issue-Management) {
+    --ui-accent: #355de8;
+    --ui-ink: #19243b;
+    --ui-muted: #68778f;
+    --ui-line: #e5ebf3;
+    --ui-soft: #f5f8ff;
+    background: #f6f8fc;
+    color: var(--ui-ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+:where(.employee-evaluation, .hr-management, .issue-Management) :is(button, input, select, textarea) {
+    font: inherit;
+    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease, transform .18s ease;
+}
+
+:where(.employee-evaluation, .hr-management, .issue-Management) :is(input, select, textarea):focus-visible {
+    outline: 2px solid #93adff;
+    outline-offset: 2px;
+    border-color: #688af4;
+}
+
+:where(.employee-evaluation, .hr-management, .issue-Management) button:focus-visible {
+    outline: 3px solid #93adff;
+    outline-offset: 3px;
+}
+
+:where(.employee-evaluation, .hr-management, .issue-Management) button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :where(.employee-evaluation, .hr-management, .issue-Management) * {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+    }
+}
+
+.employee-evaluation {
+    max-width: 1520px;
+    margin-inline: auto;
+    padding: 32px clamp(18px, 2.5vw, 40px) 64px;
+}
+
+.employee-evaluation .ev-header {
+    margin-bottom: 26px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--ui-line);
+}
+
+.employee-evaluation .ev-header h2 {
+    font-size: clamp(25px, 2vw, 32px);
+    letter-spacing: -.035em;
+    color: var(--ui-ink);
+}
+
+.employee-evaluation .ev-eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .15em;
+    color: #4b68bd;
+}
+
+.employee-evaluation :is(.ev-panel, .ev-stat, .ev-review-item, .ev-test-bar) {
+    border: 1px solid var(--ui-line);
+    box-shadow: 0 5px 22px rgba(27, 47, 90, .045);
+}
+
+.employee-evaluation .ev-panel {
+    border-radius: 18px;
+    background: #fff;
+}
+
+.employee-evaluation .ev-stat {
+    border-radius: 16px;
+    background: linear-gradient(155deg, #fff, #f8faff);
+}
+
+.employee-evaluation .ev-stat strong {
+    font-variant-numeric: tabular-nums;
+}
+
+.employee-evaluation .ev-review-item {
+    border-radius: 14px;
+}
+
+.employee-evaluation .ev-review-item:hover {
+    border-color: #bdcdfd;
+    box-shadow: 0 9px 28px rgba(34, 72, 154, .08);
+}
+
+.employee-evaluation .ev-total {
+    border-radius: 14px;
+    background: #eef3ff;
+    border: 1px solid #dce6ff;
+}
+
+.employee-evaluation .ev-chart-track {
+    overflow: hidden;
+    border-radius: 999px;
+}
+
+.employee-evaluation .ev-chart-fill {
+    border-radius: 999px;
+    background: linear-gradient(90deg, #4166ea, #7799ff);
+}
+
+.employee-evaluation .ev-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.employee-evaluation .ev-table th {
+    background: #f5f8fd;
+    color: #50627d;
+    font-size: 12px;
+}
+
+.employee-evaluation .ev-table td {
+    border-bottom: 1px solid #edf1f6;
+}
+
+.employee-evaluation .ev-table tr:hover td {
+    background: #f9fbff;
+}
+
+@media (max-width: 760px) {
+    .employee-evaluation {
+        padding: 18px 14px 40px;
+    }
+
+    .employee-evaluation .ev-header {
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .employee-evaluation .ev-test-bar {
+        flex-wrap: wrap;
+    }
+}
+
+/* 평가 근거 카드 */
+
+.employee-evaluation .ev-evidence-panel {
+    margin: 16px 0;
+    padding: 18px 22px;
+    border: 1px solid #dce6f4;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.employee-evaluation .ev-evidence-panel h3 {
+    margin: 0 0 8px;
+}
+
+.employee-evaluation .ev-evidence-panel small {
+    color: #718096;
+}
+/* 2026 직원평가: 기존 CSS와 충돌하지 않도록 ev2026 범위만 사용합니다. */
+.ev2026 { background: #f7f9fc; min-height: 100%; padding: 28px; }
+.ev2026-header, .ev2026-panel-head, .ev2026-top-actions, .ev2026-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ev2026-header { margin-bottom: 24px; }
+.ev2026-header h2 { margin: 5px 0 8px; font-size: 26px; color: #17253d; }
+.ev2026-header p, .ev2026-meta { color: #728099; margin: 5px 0; }
+.ev2026-eyebrow { color: #5774a5; font-size: 11px; letter-spacing: 1.5px; font-weight: 700; }
+.ev2026-role { padding: 9px 12px; border-radius: 30px; background: #e6f4ed; color: #167347; font-weight: 700; }
+.ev2026 .ev2026-top-actions button.secondary { background: #245fe6; border-color: #245fe6; color: #fff; opacity: 1; }
+.ev2026-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 20px; }
+.ev2026-stats > div { background: #fff; border: 1px solid #e4eaf2; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 9px; box-shadow: 0 3px 15px #1c345008; }
+.ev2026-stats span, .ev2026-stats small { color: #7c889b; }
+.ev2026-stats strong { font-size: 30px; color: #1c2c48; }
+.ev2026-content { display: grid; grid-template-columns: minmax(320px, 1fr) minmax(380px, 1.15fr); gap: 18px; align-items: start; }
+.ev2026-panel { padding: 22px; border: 1px solid #e4eaf2; background: #fff; border-radius: 16px; min-width: 0; }
+.ev2026-panel h3 { margin: 0 0 15px; font-size: 17px; }
+.ev2026-panel > input { width: 100%; margin-bottom: 14px; }
+.ev2026-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.ev2026 .ev2026-tabs button { min-height: 32px; padding: 6px 10px; border-radius: 20px; }
+.ev2026 .ev2026-tabs button.active { background: #245fe6; color: #fff; }
+.ev2026-person { width: 100%; display: flex !important; justify-content: space-between !important; flex-wrap: wrap; text-align: left; gap: 8px; background: #fff !important; color: #253247 !important; border: 1px solid #e5eaf3 !important; margin-top: 9px; padding: 14px !important; border-radius: 12px !important; }
+.ev2026-person.chosen { border-color: #245fe6 !important; background: #f4f7ff !important; }
+.ev2026-person > span:first-child, .ev2026-person-right { display: flex; flex-direction: column; gap: 5px; }
+.ev2026-person small { color: #7b8ba0; font-size: 11px; }
+.ev2026-person-right { align-items: end; }
+.ev2026-progress, .ev2026-track { display: block; height: 7px; width: 100%; background: #e9eff8; border-radius: 20px; overflow: hidden; }
+.ev2026-progress > span, .ev2026-track > span { display: block; height: 100%; background: #4a7bef; border-radius: 20px; }
+.ev2026-status { font-style: normal; font-size: 11px; padding: 5px 9px; border-radius: 20px; background: #edf1f6; color: #5c6d83; font-weight: 700; }
+.ev2026-status.status-승인 { background: #e2f5e9; color: #167347; }
+.ev2026-status.status-승인-요청 { background: #fff0d6; color: #9a6200; }
+.ev2026-status.status-반려 { background: #fde8e8; color: #b52929; }
+.ev2026-score { display: flex; align-items: baseline; gap: 8px; margin: 20px 0; }
+.ev2026-score strong { font-size: 40px; color: #245fe6; }
+.ev2026-score-row { margin: 16px 0; }
+.ev2026-score-row > div:first-child, .ev2026-slider > div { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.ev2026-score-row small { color: #8694a6; }
+.ev2026-feedback { background: #f5f8fc; border-radius: 12px; padding: 15px; margin: 20px 0; white-space: pre-wrap; }
+.ev2026-feedback p { line-height: 1.65; margin-bottom: 0; }
+.ev2026-history { margin-top: 20px; border-top: 1px solid #e6ebf2; padding-top: 15px; }
+.ev2026-history summary { cursor: pointer; font-weight: 700; }
+.ev2026-history > div { padding: 12px 0; border-bottom: 1px solid #eef1f5; }
+.ev2026-history small { display: block; color: #7b889a; margin-top: 5px; }
+.ev2026-empty { color: #8a97a8; padding: 24px 0; text-align: center; }
+.ev2026-error { color: #ad2626; background: #fff0f0; padding: 12px; border-radius: 10px; }
+.ev2026-modal-backdrop { position: fixed; inset: 0; background: #13233b88; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.ev2026-modal { background: #fff; width: min(580px, 100%); max-height: 90vh; overflow-y: auto; padding: 25px; border-radius: 18px; box-shadow: 0 25px 80px #13233b33; }
+.ev2026-modal > label { display: flex; flex-direction: column; gap: 7px; margin: 14px 0; font-weight: 700; }
+.ev2026-modal select, .ev2026-modal input, .ev2026-modal textarea { width: 100%; }
+.ev2026-modal .ev2026-slider input { padding: 0; min-height: 20px; accent-color: #245fe6; }
+.ev2026-total { display: flex; justify-content: space-between; padding: 15px; border-radius: 10px; background: #f1f5ff; }
+.ev2026-hint { color: #66758a; font-size: 12px; }
+@media (max-width: 1050px) { .ev2026-content { grid-template-columns: 1fr; } .ev2026-stats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .ev2026 { padding: 14px; } .ev2026-stats { grid-template-columns: 1fr 1fr; } }
+
+/* 프로젝트별 평가 권한: 모든 프로젝트 조회, PM만 평가 작성 */
+.ev2026-project-panel { background: #fff; border: 1px solid #dce5f1; border-radius: 16px; padding: 20px; margin: 18px 0; }
+.ev2026-project-picker { display: flex; align-items: center; gap: 14px; margin: 14px 0; }
+.ev2026-project-picker label { color: #334155; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.ev2026-project-picker select { flex: 1; min-width: 0; padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; color: #172b4d; }
+.ev2026-project-help { font-size: 13px; color: #64748b; margin: 12px 0; }
+.ev2026-project-info { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 15px; background: #f5f8fd; border-radius: 12px; }
+.ev2026-project-info > div { display: flex; flex-direction: column; gap: 5px; }
+.ev2026-project-info small, .ev2026-team-member small { color: #64748b; font-size: 12px; }
+.ev2026-permission { padding: 7px 11px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.ev2026-permission.allowed { background: #dcfce7; color: #166534; }
+.ev2026-permission.denied { background: #f1f5f9; color: #475569; }
+.ev2026-team-head { display: flex; justify-content: space-between; margin: 18px 0 8px; color: #26364a; }
+.ev2026-team-head span { font-size: 12px; color: #64748b; }
+.ev2026-team-list { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 10px; }
+.ev2026-team-member { display: flex; justify-content: space-between; align-items: center; gap: 12px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 13px; }
+.ev2026-team-member > div { display: flex; flex-direction: column; gap: 5px; }
+.ev2026-team-member button { background: #245fe6 !important; color: #fff !important; padding: 8px 12px !important; border-radius: 8px; white-space: nowrap; }
+.ev2026-team-disabled { color: #64748b; background: #f1f5f9; padding: 6px 9px; border-radius: 8px; font-size: 12px; white-space: nowrap; }
+@media(max-width:600px) { .ev2026-project-picker,.ev2026-project-info { flex-direction: column; align-items: stretch; } }

@@ -86,6 +86,7 @@
 }
 
 .praise-box .praise-field input,
+.praise-box .praise-field select,
 .praise-box .praise-field textarea {
     box-sizing: border-box;
     width: 100%;
@@ -104,6 +105,7 @@
 }
 
 .praise-box input:focus-visible,
+.praise-box select:focus-visible,
 .praise-box textarea:focus-visible,
 .praise-box button:focus-visible {
     outline: 2px solid #a34e43;

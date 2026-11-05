@@ -30,7 +30,7 @@ function IssueRequest({ setIssues }) {
         async function loadMyProjects() {
             try {
                 const response = await fetch(
-                    `${API_BASE}/api/my-projects?employeeId=${encodeURIComponent(user.id)}`,
+                    `${API_BASE}/api/mypage/my-projects?employeeId=${encodeURIComponent(user.id)}`,
                     { signal: controller.signal }
                 );
                 const data = await response.json();

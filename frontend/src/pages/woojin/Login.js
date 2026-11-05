@@ -36,6 +36,7 @@ function Login() {
         axios.post(`${API_BASE}/api/auth/login`, values)
             .then((res) => {
                 localStorage.setItem('communityToken', res.data.communityToken);
+                if (res.data.authToken) localStorage.setItem('nexus_auth_token', res.data.authToken); // 직원평가 등에서 사용
                 saveLoginUser(res.data.user); // 서버가 준 직원 정보를 저장 (마이페이지에서 꺼내 써요)
                 // 로그인 성공 → 권한에 따라 이동할 화면을 나눈다
                 if (res.data.user.employee_role === "관리자") {
