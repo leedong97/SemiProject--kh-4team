@@ -1,21 +1,51 @@
-import { encodeAttachments } from '../dong/communityClient';
-import StoredAttachments from '../dong/components/StoredAttachments';
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import PostForm from "./PostForm";
-import axios from "../dong/communityClient";
+import axios, {
+    encodeAttachments
+} from "../dong/communityClient";
 import { API_BASE } from "../../shared/config";
 import getLoginUser from "../woojin/getLoginUser";
 import CommunityComments from "./CommunityComments";
 import CommunityLike from "./CommunityLike";
+import CommunityBookmark from "./CommunityBookmark";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import BoardBanner from "./BoardBanner";
+import FileAttachment from "../dong/components/FileAttachment";
+import AnonymousToggle from "../dong/components/AnonymousToggle";
+import StoredAttachments from "../dong/components/StoredAttachments";
 
 function Board(props) {
 
     const currentUser = getLoginUser();
 
+    const setPosts = props.setPosts;
+
+    // 해당 게시글의 댓글 수를 목록에도 반영
+    const updateCommentCount = useCallback(function (postId, count) {
+        setPosts(function (previousPosts) {
+            return previousPosts.map(function (post) {
+                if (String(post.id) !== String(postId)) {
+                    return post;
+                }
+
+                // 개수가 같으면 기존 데이터 유지
+                if (Number(post.commentCount) === count) {
+                    return post;
+                }
+
+                return {
+                    ...post,
+                    commentCount: count
+                }
+            })
+        })
+    }, [setPosts]);
+
     // 중복 등록 방지
     const savingRef = useRef(false);
+
+    // 화면에 표시할 저장 상태
+    const [isSaving, setIsSaving] = useState(false);
 
     // 페이지네이션 기능
     const [page, setPage] = useState(1);
@@ -202,7 +232,10 @@ function Board(props) {
             props.setPosts(function (previousPosts) {
                 return previousPosts.map(function (post) {
                     if (String(post.id) === String(updatedPost.id)) {
-                        return updatedPost;
+                        return {
+                            ...post,
+                            ...updatedPost
+                        };
                     }
 
                     return post;
@@ -241,6 +274,12 @@ function Board(props) {
     // ===================================
 
     async function savePost(title, content, options = {}) {
+        const {
+            isAnonymous = false,
+            files = [],
+            removeAttachmentIds = [],
+        } = options;
+
         if (savingRef.current) {
             return;
         }
@@ -263,9 +302,10 @@ function Board(props) {
         }
 
         savingRef.current = true;
+        setIsSaving(true);
 
         try {
-            const extra = { isAnonymous: options.isAnonymous, files: await encodeAttachments(options.files), removeAttachmentIds: options.removeAttachmentIds || [] };
+            const encodedFiles = await encodeAttachments(files);
             let response;
 
             if (isNewPost) {
@@ -277,7 +317,8 @@ function Board(props) {
                         title: title,
                         content: content,
                         authorId: loginUser.id,
-                        ...extra
+                        isAnonymous,
+                        files: encodedFiles
                     }
                 );
             } else {
@@ -288,7 +329,9 @@ function Board(props) {
                         title: title,
                         content: content,
                         authorId: loginUser.id,
-                        ...extra
+                        isAnonymous,
+                        files: encodedFiles,
+                        removeAttachmentIds
                     }
                 );
             }
@@ -307,7 +350,10 @@ function Board(props) {
 
                 return previousPosts.map(function (post) {
                     if (String(post.id) === String(savedPost.id)) {
-                        return savedPost;
+                        return {
+                            ...post,
+                            ...savedPost
+                        };
                     }
 
                     return post;
@@ -335,6 +381,7 @@ function Board(props) {
             alert(message);
         } finally {
             savingRef.current = false;
+            setIsSaving(false);
         }
     }
 
@@ -591,6 +638,12 @@ function Board(props) {
                                             to={"/community/post/" + post.id}
                                         >
                                             {post.title}
+
+                                            {Number(post.commentCount) > 0 && (
+                                                <span aria-label={`댓글 ${post.commentCount}개`}>
+                                                    {" "} [{post.commentCount}]
+                                                </span>
+                                            )}
                                         </Link>
                                     </td>
 
@@ -795,8 +848,9 @@ function Board(props) {
 
         boardContent = (
             <PostForm
-                key={formKey}
+                key={selectedPost.id ?? "new"}
                 post={selectedPost}
+                isSaving={isSaving}
                 onSave={savePost}
                 onCancel={showList}
             />
@@ -810,7 +864,6 @@ function Board(props) {
                     {selectedPost.title}
                 </h2>
 
-                <p>작성자: {selectedPost.authorName || '작성자'}</p>
                 {renderQuestionStatus(selectedPost)}
 
                 <p className="community-post-content">
@@ -818,14 +871,21 @@ function Board(props) {
                 </p>
 
                 <StoredAttachments files={selectedPost.attachments || []} />
+
                 <CommunityLike
                     key={"like-" + selectedPost.id}
+                    postId={selectedPost.id}
+                />
+
+                <CommunityBookmark
+                    key={"bookmark-" + selectedPost.id}
                     postId={selectedPost.id}
                 />
 
                 <CommunityComments
                     key={"comments-" + selectedPost.id}
                     postId={selectedPost.id}
+                    onCountChange={updateCommentCount}
                 />
 
                 <div className="community-actions">

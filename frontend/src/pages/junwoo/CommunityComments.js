@@ -1,26 +1,33 @@
+import React, { useEffect, useRef, useState } from "react";
+import axios, {
+    encodeAttachments
+} from "../dong/communityClient";
+import { API_BASE } from "../../shared/config";
+import getLoginUser from "../woojin/getLoginUser";
 import FileAttachment from '../dong/components/FileAttachment';
 import AnonymousToggle from '../dong/components/AnonymousToggle';
 import StoredAttachments from '../dong/components/StoredAttachments';
-import { encodeAttachments } from '../dong/communityClient';
-import React, { useEffect, useRef, useState } from "react";
-import axios from "../dong/communityClient";
-import { API_BASE } from "../../shared/config";
-import getLoginUser from "../woojin/getLoginUser";
 
 function CommunityComments(props) {
     const [comments, setComments] = useState([]);
-    const [files, setFiles] = useState([]);
-    const [isAnonymous, setIsAnonymous] = useState(false);
-    const [replyFiles, setReplyFiles] = useState([]);
-    const [replyAnonymous, setReplyAnonymous] = useState(false);
-    const [editFiles, setEditFiles] = useState([]);
-    const [editAnonymous, setEditAnonymous] = useState(false);
-    const [removeAttachmentIds, setRemoveAttachmentIds] = useState([]);
     const [content, setContent] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [reloadCount, setReloadCount] = useState(0);
+
+    // 댓글 작성
+    const [isAnonymous, setIsAnonymous] = useState(false);
+    const [files, setFiles] = useState([]);
+
+    // 댓글 수정
+    const [editAnonymous, setEditAnonymous] = useState(false);
+    const [editFiles, setEditFiles] = useState([]);
+    const [removeAttachmentIds, setRemoveAttachmentIds] = useState([]);
+
+    // 답글 작성
+    const [replyAnonymous, setReplyAnonymous] = useState(false);
+    const [replyFiles, setReplyFiles] = useState([]);
 
     // 수정 중인 댓글 번호
     const [editingId, setEditingId] = useState(null);
@@ -37,6 +44,7 @@ function CommunityComments(props) {
     const savingRef = useRef(false);
     const loginUser = getLoginUser();
     const postId = props.postId;
+    const onCountChange = props.onCountChange;
 
     const isLoggedIn =
         !loginUser.isDummy && loginUser.id != null;
@@ -63,7 +71,19 @@ function CommunityComments(props) {
                 );
 
                 if (!cancelled) {
-                    setComments(response.data);
+                    const loadedComments = response.data;
+
+                    setComments(loadedComments);
+
+                    // 삭제되지 않은 댓글·답글 개수
+                    const count = loadedComments.filter(function (comment) {
+                        return Number(comment.isDeleted) === 0;
+                    }).length;
+
+                    // 게시판 목록에도 개수 전달
+                    if (onCountChange) {
+                        onCountChange(postId, count);
+                    }
                 }
             } catch (error) {
                 if (!cancelled) {
@@ -81,7 +101,7 @@ function CommunityComments(props) {
         return function () {
             cancelled = true;
         };
-    }, [postId, reloadCount]);
+    }, [postId, reloadCount, onCountChange]);
 
     function reloadComments() {
         setReloadCount(function (previousCount) {
@@ -95,7 +115,7 @@ function CommunityComments(props) {
 
     // 서버에서 받은 오류 메시지 표시
     function showError(error, defaultMessage) {
-        let message = defaultMessage;
+        let message = error.message || defaultMessage;
 
         if (
             error.response &&
@@ -144,13 +164,13 @@ function CommunityComments(props) {
                     postId: postId,
                     authorId: loginUser.id,
                     content: content.trim(),
-                    isAnonymous, files: await encodeAttachments(files)
+                    isAnonymous,
+                    files: await encodeAttachments(files)
                 }
             );
 
             // 저장 성공 후 입력창 비우기
             setContent("");
-            setFiles([]); setIsAnonymous(false);
 
             // DB에서 댓글 목록 다시 불러오기
             reloadComments();
@@ -176,8 +196,15 @@ function CommunityComments(props) {
             return;
         }
 
+        setContent("");
+        setIsAnonymous(false);
+        setFiles([]);
+        setReplyAnonymous(false);
+        setReplyFiles([]);
+
+        reloadComments();
+
         setReplyParentId(commentId);
-        setReplyFiles([]); setReplyAnonymous(false);
         setReplyContent("");
         setEditingId(null);
         setEditContent("");
@@ -191,6 +218,8 @@ function CommunityComments(props) {
 
         setReplyParentId(null);
         setReplyContent("");
+        setReplyAnonymous(false);
+        setReplyFiles([]);
     }
 
     // ===================================
@@ -238,12 +267,16 @@ function CommunityComments(props) {
                     authorId: loginUser.id,
                     content: trimmedContent,
                     parentId: replyParentId,
-                    isAnonymous: replyAnonymous, files: await encodeAttachments(replyFiles)
+                    isAnonymous: replyAnonymous,
+                    files: await encodeAttachments(replyFiles),
                 }
             );
 
             setReplyContent("");
             setReplyParentId(null);
+            setReplyAnonymous(false);
+            setReplyFiles([]);
+
             reloadComments();
 
         } catch (error) {
@@ -328,7 +361,14 @@ function CommunityComments(props) {
         // 수정할 댓글 번호와 기존 내용을 저장
         setEditingId(comment.id);
         setEditContent(comment.content);
-        setEditAnonymous(!!comment.isAnonymous); setEditFiles([]); setRemoveAttachmentIds([]);
+
+        setEditAnonymous(
+            comment.isAnonymous === true ||
+            comment.isAnonymous === 1
+        );
+
+        setEditFiles([]);
+        setRemoveAttachmentIds([]);
 
         // 열려 있던 답글 입력창 닫기
         setReplyParentId(null);
@@ -346,6 +386,9 @@ function CommunityComments(props) {
 
         setEditingId(null);
         setEditContent("");
+        setEditAnonymous(false);
+        setEditFiles([]);
+        setRemoveAttachmentIds([]);
     }
 
     // ===================================
@@ -389,15 +432,19 @@ function CommunityComments(props) {
                 {
                     authorId: loginUser.id,
                     content: trimmedContent,
-                    isAnonymous: editAnonymous, files: await encodeAttachments(editFiles), removeAttachmentIds
+                    isAnonymous: editAnonymous,
+                    files: await encodeAttachments(editFiles),
+                    removeAttachmentIds,
                 }
             );
 
             // 저장 성공 후 수정창 닫기
             setEditingId(null);
             setEditContent("");
+            setEditAnonymous(false);
+            setEditFiles([]);
+            setRemoveAttachmentIds([]);
 
-            // 수정된 목록 다시 조회
             reloadComments();
         } catch (error) {
             showError(error, "댓글 수정에 실패했습니다.");
@@ -530,7 +577,10 @@ function CommunityComments(props) {
                     </p>
                 )}
 
-                {!isDeleted && !isEditing && <StoredAttachments files={comment.attachments || []} />}
+                {!isDeleted && !isEditing && (
+                    <StoredAttachments files={comment.attachments || []} />
+                )}
+
                 <div className="community-comment-actions">
                     <span className="community-comment-date">
                         {formatDate(comment.createdAt)}

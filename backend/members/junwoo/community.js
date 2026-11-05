@@ -77,7 +77,13 @@ router.get("/", async function (req, res) {
                 ) AS authorName,
                 p.created_at AS createdAt,
                 p.updated_at AS updatedAt,
-                p.is_resolved AS isResolved
+                p.is_resolved AS isResolved,
+                (
+            SELECT COUNT(*)
+            FROM community_comment c
+            WHERE c.post_id = p.id
+            AND c.is_deleted = 0
+                ) AS commentCount
             FROM community_post p
             LEFT JOIN employees e
                 ON p.author_id = e.employee_id

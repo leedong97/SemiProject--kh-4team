@@ -81,10 +81,37 @@ function Community(props) {
                     }
                 }
 
-                // 모든 페이지를 받은 뒤 화면에 반영
-                if (!cancelled) {
-                    setPosts(allPosts);
+                // 게시글 목록에 댓글 수를 합쳐서 화면에 반영
+                if (cancelled) {
+                    return;
                 }
+
+                const countsResponse = await axios.get(
+                    API_BASE + "/api/community-comment-counts"
+                );
+
+                if (cancelled) {
+                    return;
+                }
+
+                const countByPostId = new Map(
+                    countsResponse.data.map(function (item) {
+                        return [
+                            String(item.postId),
+                            Number(item.commentCount),
+                        ];
+                    })
+                );
+
+                const postsWithCounts = allPosts.map(function (post) {
+                    return {
+                        ...post,
+                        commentCount:
+                            countByPostId.get(String(post.id)) ?? 0,
+                    };
+                });
+
+                setPosts(postsWithCounts);
             } catch (error) {
                 console.error("커뮤니티 글 불러오기 실패:", error);
 

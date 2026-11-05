@@ -1,10 +1,8 @@
-
 /* =========================================
    NEXUS ERP - ISSUE MANAGEMENT
    PC 전용 이슈 관리 디자인
    실제 JS 클래스명: issue-Management
    ========================================= */
-
 
 /* 1. 전체 화면 */
 
@@ -26,7 +24,6 @@
 .issue-Management *::after {
     box-sizing: border-box;
 }
-
 
 /* 2. 페이지 제목 */
 
@@ -50,7 +47,6 @@
     color: #8390a3;
 }
 
-
 /* 3. 공통 카드 */
 
 .issue-Management .panel {
@@ -72,7 +68,6 @@
     font-size: 15px;
     font-weight: 700;
 }
-
 
 /* 4. 통계 카드 */
 
@@ -143,7 +138,6 @@
     color: #d48b24;
 }
 
-
 /* 5. 긴급 이슈 / 마감 임박 */
 
 .issue-Management .issue-alert-grid {
@@ -174,7 +168,7 @@
     font-weight: 750;
 }
 
-.issue-Management .issue-alert-panel > p {
+.issue-Management .issue-alert-panel>p {
     margin: 0 0 14px;
     font-size: 12px;
     color: #8290a4;
@@ -216,7 +210,6 @@
     color: #2451c7;
     text-decoration: underline;
 }
-
 
 /* 6. 담당자별 업무량 */
 
@@ -262,7 +255,6 @@
     color: #0d9c82;
 }
 
-
 /* 7. 공통 입력창 */
 
 .issue-Management input,
@@ -305,8 +297,8 @@
     gap: 12px;
 }
 
-.issue-Management .form-row > input,
-.issue-Management .form-row > select {
+.issue-Management .form-row>input,
+.issue-Management .form-row>select {
     flex: 1 1 160px;
     min-width: 0;
 }
@@ -324,7 +316,6 @@
 .issue-Management .form-row label select {
     min-width: 190px;
 }
-
 
 /* 8. 공통 버튼 */
 
@@ -363,7 +354,6 @@
     cursor: not-allowed;
 }
 
-
 /* 9. 검색 및 등록 버튼 */
 
 .issue-Management .issue-toolbar {
@@ -380,11 +370,10 @@
     min-height: 44px;
 }
 
-.issue-Management .issue-toolbar > button {
+.issue-Management .issue-toolbar>button {
     min-height: 44px;
     padding: 10px 20px;
 }
-
 
 /* 10. 이슈 등록 폼 */
 
@@ -406,10 +395,9 @@
     margin-bottom: 12px;
 }
 
-.issue-Management .issue-register-form > button {
+.issue-Management .issue-register-form>button {
     margin-top: 5px;
 }
-
 
 /* 11. 상태별 탭 */
 
@@ -440,7 +428,6 @@
     background: #f3f6fa;
 }
 
-
 /* 12. 필터 영역 */
 
 .issue-Management .issue-filter-panel {
@@ -460,7 +447,6 @@
     font-size: 12px;
     color: #8290a4;
 }
-
 
 /* 13. 이슈 목록 */
 
@@ -493,7 +479,6 @@
     color: #8290a4;
 }
 
-
 /* 14. 중요도별 테두리 */
 
 .issue-Management .issue-border-낮음 {
@@ -512,7 +497,6 @@
     border-left-color: #e85b69;
     background: #fffafb;
 }
-
 
 /* 15. 상태 및 중요도 배지 */
 
@@ -585,7 +569,6 @@
     color: #d47a25;
 }
 
-
 /* 16. 이슈 상세 영역 */
 
 .issue-Management .issue-expanded-content {
@@ -617,7 +600,7 @@
     color: #253347;
 }
 
-.issue-Management .issue-expanded-content > .form-row {
+.issue-Management .issue-expanded-content>.form-row {
     margin-bottom: 18px;
     padding: 18px 20px;
     background: #ffffff;
@@ -625,16 +608,15 @@
     border-radius: 11px;
 }
 
-.issue-Management .issue-status-section > input,
-.issue-Management .issue-work-section > input {
+.issue-Management .issue-status-section>input,
+.issue-Management .issue-work-section>input {
     width: 100%;
     margin-bottom: 12px;
 }
 
-.issue-Management .issue-status-section > button {
+.issue-Management .issue-status-section>button {
     margin-top: 10px;
 }
-
 
 /* 17. 작업 시간 선택 */
 
@@ -656,10 +638,9 @@
     border-color: #245fe6;
 }
 
-.issue-Management .issue-work-section > .form-row {
+.issue-Management .issue-work-section>.form-row {
     margin: 12px 0;
 }
-
 
 /* 18. 댓글 및 작업 이력 */
 
@@ -677,7 +658,6 @@
     font-size: 12px;
     overflow-wrap: anywhere;
 }
-
 
 /* 19. 변경 이력 */
 
@@ -700,7 +680,6 @@
     margin-bottom: 14px;
 }
 
-
 /* 20. 오류 경고 */
 
 .issue-Management .error {
@@ -711,7 +690,6 @@
     border-radius: 8px;
     font-size: 13px;
 }
-
 
 /* 21. 이슈 삭제 */
 
@@ -731,7 +709,6 @@
 .issue-Management .issue-delete-area button.secondary:hover {
     background: #fff0f0;
 }
-
 
 /* 22. 페이지네이션 */
 
@@ -753,7 +730,6 @@
     min-width: 72px;
 }
 
-
 /* 23. 임시 저장 / 휴지통 */
 
 .issue-Management .issue-trash {
@@ -764,7 +740,7 @@
     border-radius: 13px;
 }
 
-.issue-Management .issue-trash > summary {
+.issue-Management .issue-trash>summary {
     font-size: 14px;
     font-weight: 750;
     color: #162b5c;
@@ -794,4 +770,500 @@
     color: #8290a4;
 }
 
+/* ===== 2026 UI 개선: 기존 기능/클래스 유지, 시각적 스타일만 보강 ===== */
 
+:where(.employee-evaluation, .hr-management, .issue-Management) {
+    --ui-accent: #355de8;
+    --ui-ink: #19243b;
+    --ui-muted: #68778f;
+    --ui-line: #e5ebf3;
+    --ui-soft: #f5f8ff;
+    background: #f6f8fc;
+    color: var(--ui-ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+:where(.employee-evaluation, .hr-management, .issue-Management) :is(button, input, select, textarea) {
+    font: inherit;
+    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease, transform .18s ease;
+}
+
+:where(.employee-evaluation, .hr-management, .issue-Management) :is(input, select, textarea):focus-visible {
+    outline: 2px solid #93adff;
+    outline-offset: 2px;
+    border-color: #688af4;
+}
+
+:where(.employee-evaluation, .hr-management, .issue-Management) button:focus-visible {
+    outline: 3px solid #93adff;
+    outline-offset: 3px;
+}
+
+:where(.employee-evaluation, .hr-management, .issue-Management) button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :where(.employee-evaluation, .hr-management, .issue-Management) * {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+    }
+}
+
+.issue-Management {
+    max-width: 1520px;
+    margin-inline: auto;
+    padding: 32px clamp(18px, 2.5vw, 40px) 64px;
+}
+
+.issue-Management .section-head {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--ui-line);
+}
+
+.issue-Management .section-head h2 {
+    font-size: clamp(25px, 2vw, 32px);
+    letter-spacing: -.035em;
+    color: var(--ui-ink);
+}
+
+.issue-Management :is(.panel, .issue-alert-panel, .issue-workload-panel) {
+    border: 1px solid var(--ui-line);
+    border-radius: 18px;
+    box-shadow: 0 5px 22px rgba(27, 47, 90, .045);
+}
+
+.issue-Management .issue-stat-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, #fff, #f8faff);
+}
+
+.issue-Management .issue-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #5878ee;
+}
+
+.issue-Management .issue-stat-card:nth-child(2)::before {
+    background: #27a589;
+}
+
+.issue-Management .issue-stat-card:nth-child(3)::before {
+    background: #e29a42;
+}
+
+.issue-Management .issue-stat-card:nth-child(4)::before {
+    background: #d96772;
+}
+
+.issue-Management .issue-stat-card h3 {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.04em;
+}
+
+.issue-Management .issue-alert-panel {
+    background: #fff;
+}
+
+.issue-Management .issue-alert-item {
+    border-bottom: 1px solid #edf1f6;
+    padding-block: 10px;
+}
+
+.issue-Management .issue-alert-item:last-child {
+    border-bottom: 0;
+}
+
+.issue-Management .issue-alert-link {
+    text-align: left;
+    font-weight: 650;
+}
+
+.issue-Management .issue-list-item {
+    border-radius: 16px;
+}
+
+.issue-Management .issue-list-item:hover {
+    border-color: #c4d1fa;
+    box-shadow: 0 8px 25px rgba(34, 72, 154, .07);
+}
+
+.issue-Management .issue-toolbar {
+    gap: 10px;
+}
+
+.issue-Management .issue-filter-panel {
+    background: #fff;
+}
+
+.issue-Management .issue-pagination {
+    padding-top: 14px;
+}
+
+.issue-Management :is(.issue-detail, .issue-expanded-content) {
+    border-radius: 12px;
+}
+
+.issue-Management details summary {
+    cursor: pointer;
+}
+
+@media (max-width: 760px) {
+    .issue-Management {
+        padding: 18px 14px 40px;
+    }
+    .issue-Management .issue-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .issue-Management .issue-alert-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 담당자별 업무량 */
+
+.issue-Management .issue-workload-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.issue-Management .issue-workload-list button {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 12px 16px;
+    background: #f7faff;
+    border: 1px solid #dce6f4;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #253347;
+}
+
+.issue-Management .issue-workload-list button.active {
+    border-color: #2563eb;
+    background: #eaf2ff;
+}
+
+/* ================================================
+   간결한 이슈 관리 화면: 기존 기능 유지, 정보 밀도 축소
+   ================================================ */
+
+.issue-Management {
+    max-width: 1280px;
+    background: #f8fafc;
+    padding: 26px 28px 48px;
+    color: #263449;
+}
+
+.issue-Management .section-head {
+    border-bottom: none;
+    margin-bottom: 18px;
+    padding-bottom: 0;
+}
+
+.issue-Management .section-head h2 {
+    font-size: 25px;
+    color: #1e293b;
+}
+
+.issue-Management .section-head p {
+    color: #64748b;
+}
+
+.issue-Management .issue-stats {
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.issue-Management .issue-stat-card {
+    min-height: 96px;
+    padding: 16px 18px;
+    border-radius: 11px;
+    background: #fff;
+    box-shadow: none;
+}
+
+.issue-Management .issue-stat-card h3 {
+    margin-top: 6px;
+    font-size: 27px;
+}
+
+.issue-Management .issue-stat-card span {
+    font-size: 12px;
+}
+
+.issue-Management :is(.panel, .issue-alert-panel, .issue-workload-panel) {
+    border-radius: 11px;
+    box-shadow: none;
+}
+
+.issue-Management .issue-optional-section {
+    margin: 0 0 12px;
+    padding: 0;
+    background: #fff;
+    border: 1px solid #e4e9f0;
+    border-radius: 11px;
+}
+
+.issue-Management .issue-optional-section > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 13px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+    list-style: none;
+}
+
+.issue-Management .issue-optional-section > summary::-webkit-details-marker {
+    display: none;
+}
+
+.issue-Management .issue-optional-section > summary span {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.issue-Management .issue-optional-section[open] > summary {
+    border-bottom: 1px solid #e4e9f0;
+}
+
+.issue-Management .issue-workload-panel > p,
+.issue-Management .issue-workload-panel > .issue-workload-list {
+    margin: 12px 18px;
+}
+
+.issue-Management .issue-alert-grid {
+    margin: 12px;
+    gap: 12px;
+}
+
+.issue-Management .issue-alert-panel {
+    padding: 14px 16px;
+    border-top-width: 1px !important;
+}
+
+.issue-Management .issue-alert-panel h3 {
+    font-size: 14px;
+}
+
+.issue-Management .issue-toolbar {
+    margin: 20px 0 14px;
+}
+
+.issue-Management .issue-tabs {
+    margin-bottom: 12px;
+}
+
+.issue-Management .issue-filter-panel {
+    padding: 14px 16px;
+    margin-bottom: 14px;
+}
+
+.issue-Management .issue-list-item {
+    padding: 0;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.issue-Management .issue-list-header {
+    padding: 16px 18px;
+}
+
+.issue-Management .issue-list-item:hover {
+    box-shadow: none;
+    border-color: #cbd5e1;
+}
+
+.issue-Management .issue-expanded-content {
+    padding: 18px;
+}
+
+.issue-Management .issue-workload-list button {
+    background: #f8fafc;
+}
+
+@media (max-width: 850px) {
+    .issue-Management {
+        padding: 18px 14px 32px;
+    }
+    .issue-Management .issue-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .issue-Management .issue-alert-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 담당자별 업무량: 카드 대신 간결한 가로 목록 */
+
+.issue-Management .issue-workload-panel .issue-workload-title {
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.issue-Management .issue-workload-panel .issue-workload-hint {
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.issue-Management .issue-workload-body {
+    padding: 12px 18px 14px;
+}
+
+.issue-Management .issue-workload-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+}
+
+.issue-Management .issue-workload-list .issue-workload-row {
+    display: grid;
+    grid-template-columns: minmax(90px, 140px) minmax(90px, 1fr) 48px minmax(105px, auto);
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 11px 10px;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid #edf1f5;
+    border-radius: 0;
+    background: transparent;
+    color: #334155;
+    text-align: left;
+    cursor: pointer;
+}
+
+.issue-Management .issue-workload-list .issue-workload-row:hover {
+    background: #f8fafc;
+}
+
+.issue-Management .issue-workload-list .issue-workload-row.active {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.issue-Management .issue-workload-name {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.issue-Management .issue-workload-meter {
+    display: block;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: #e9eef5;
+}
+
+.issue-Management .issue-workload-meter > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: #8da7dc;
+}
+
+.issue-Management .issue-workload-count {
+    font-size: 13px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.issue-Management .issue-workload-flags {
+    display: flex;
+    justify-content: flex-end;
+    gap: 7px;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.issue-Management .issue-workload-urgent {
+    color: #b45309;
+}
+
+.issue-Management .issue-workload-overdue {
+    color: #b91c1c;
+}
+
+.issue-Management .issue-workload-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.issue-Management .issue-workload-footer button {
+    border: 0;
+    background: transparent;
+    color: #475569;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.issue-Management .issue-workload-empty {
+    margin: 10px 0;
+    color: #64748b;
+}
+
+@media (max-width: 700px) {
+    .issue-Management .issue-workload-list .issue-workload-row {
+        grid-template-columns: 90px 1fr 40px;
+        gap: 8px;
+    }
+    .issue-Management .issue-workload-flags {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+    .issue-Management .issue-workload-hint {
+        display: none;
+    }
+}
+
+/* 프로젝트 참여 직원 기준 업무량: 이름과 프로젝트 수를 간결하게 표시 */
+.issue-Management .issue-workload-person {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.issue-Management .issue-workload-projects {
+    color: #78869a;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+/* 관리자 이슈 화면 제목 설명과 완료 요청 검토 영역 */
+.issue-Management > .section-head > p {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.6;
+}
+.issue-Management > .issue-completion {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin: 0 0 24px;
+}

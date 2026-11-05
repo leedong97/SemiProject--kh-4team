@@ -49,7 +49,15 @@ router.post("/login", async (req, res) => {
         // (DB의 원본은 그대로. 지워지는 건 메모리 속 복사본뿐)
         delete emp.employee_pw;
         const communityToken = await require('../dong/communitySession').issueSession(emp.employee_id);
-        res.json({ ok: true, user: emp, communityToken });
+        // 직원평가·인사·운영 화면용 로그인 토큰 (middleware/session.js 의 createToken, 8시간 유효)
+        // AUTH_SECRET 이 .env 에 없으면 createToken 이 에러를 내므로, 로그인 자체는 막히지 않게 try/catch 로 감싼다.
+        let authToken = null;
+        try {
+            authToken = require("../../middleware/session").createToken(emp.employee_id);
+        } catch (tokenErr) {
+            console.error("로그인 토큰 발급 실패(.env 의 AUTH_SECRET 확인):", tokenErr.message);
+        }
+        res.json({ ok: true, user: emp, communityToken, authToken });
         // 모든 검사를 통과했으니 성공 응답(200)을 JSON 형식으로 화면에 보낸다.
         // ok: true = 성공 표시, user: emp = 로그인한 직원 정보(비밀번호 해시는 위에서 지움)
     } catch (err) { // try 안에서 예상 못 한 에러가 나면 여기로 온다

@@ -1,69 +1,43 @@
 import React, { useState } from "react";
 import { canLeadProject } from "../shared/permissions";
+import { matchesProjectSearch } from "../utils/projectFilters";
+import useSortableList from "../utils/useSortableList";
 
 function ManagerAssignment({
     projects = [],
-    setProjects,
     updateProject,
     employees = []
 }) {
 
-    // ===== 정렬 =====
-    const [sortKey, setSortKey] = useState(null);
-    const [sortDir, setSortDir] = useState("asc");
-
     // 검색어
     const [search, setSearch] = useState("");
+    const findEmployee = (id) => id == null ? null : employees.find((employee) => String(employee.id) === String(id));
 
     // 담당자 칸에 보이는 글자 그대로
     const getManagerLabel = (project) => {
         if (project.managerId == null) return "미배정";
-        const manager = employees.find((e) => String(e.id) === String(project.managerId));
+        const manager = findEmployee(project.managerId);
         if (!manager) return `ID: ${project.managerId}`;
         if (!canLeadProject(manager)) return `직급 미달 담당자 (${manager.name})`;
         return manager.name;
     };
 
     // 정렬용 값
-    const getSortValue = (project) => {
-        if (sortKey === "manager") return getManagerLabel(project);
-        if (sortKey === "assigned") {
-            const manager = employees.find((e) => String(e.id) === String(project.managerId));
+    const getSortValue = (project, key) => {
+        if (key === "manager") return getManagerLabel(project);
+        if (key === "assigned") {
+            const manager = findEmployee(project.managerId);
             return manager && canLeadProject(manager) ? "배정 완료" : "배정 없음";
         }
-        return project[sortKey] ?? "";
+        return project[key] ?? "";
     };
+    const { changeSort, sortItems, sortMark } = useSortableList(getSortValue);
 
     // 화면에 보일 프로젝트 목록 (필터 후 정렬)
-    const sortedProjects = projects
-        .filter((project) =>
-            project.status !== "승인 대기" &&
-            project.status !== "반려"
-        )
-        .filter((project) => {
-            const keyword = search.toLowerCase();
-            return (
-                (project.name || "").toLowerCase().includes(keyword) ||
-                (project.customer || "").toLowerCase().includes(keyword)
-            );
-        })
-        .sort((a, b) => {
-            if (!sortKey) return 0;
-            const result = String(getSortValue(a)).localeCompare(String(getSortValue(b)), "ko");
-            return sortDir === "asc" ? result : -result;
-        });
-
-    // 헤더 클릭: 같은 항목이면 방향 전환, 다른 항목이면 오름차순
-    const changeSort = (key) => {
-        if (sortKey === key) {
-            setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
-        } else {
-            setSortKey(key);
-            setSortDir("asc");
-        }
-    };
-
-    const sortMark = (key) => (sortKey === key ? (sortDir === "asc" ? " ▲" : " ▼") : "");
+    const filteredProjects = projects
+        .filter((project) => !["승인 대기", "반려"].includes(project.status))
+        .filter((project) => matchesProjectSearch(project, search));
+    const sortedProjects = sortItems(filteredProjects);
 
     // 프로젝트 담당자 배정
     const assignManager = async (projectId, managerId) => {
@@ -76,14 +50,14 @@ function ManagerAssignment({
             return;
         }
 
-        if (managerId !== null && !employees.some(e => e.id === managerId && canLeadProject(e))) {
+        if (managerId !== null && !canLeadProject(findEmployee(managerId))) {
             window.alert("팀장 이상 직급만 담당자로 배정할 수 있습니다.");
             return;
         }
 
         // 확인 창: 취소하면 아무 것도 바뀌지 않음
         const target = managerId !== null
-            ? employees.find((e) => e.id === managerId)
+            ? findEmployee(managerId)
             : null;
         const message = target
             ? `${target.name} 님을 담당자로 배정하시겠습니까?`
@@ -135,15 +109,9 @@ function ManagerAssignment({
                             {sortedProjects
                                 .map((project) => {
                                     // 드롭다운 선택지(팀장 이상)에 있는 담당자만 실제 배정으로 인정
-                                    const currentManager = employees.find(
-                                        (e) => e.id === project.managerId && canLeadProject(e)
-                                    );
-                                    const hasManager = Boolean(currentManager);
-
-                                    // 담당자는 있지만 팀장 미만이라 선택지에 없는 경우
-                                    const underRankManager = !hasManager && project.managerId != null
-                                        ? employees.find((e) => e.id === project.managerId)
-                                        : null;
+                                    const assignedManager = findEmployee(project.managerId);
+                                    const hasManager = canLeadProject(assignedManager);
+                                    const underRankManager = !hasManager ? assignedManager : null;
 
                                     return (
 
@@ -213,3 +181,5 @@ function ManagerAssignment({
 }
 
 export default ManagerAssignment;
+
+

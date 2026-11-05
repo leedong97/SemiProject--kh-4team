@@ -10,3 +10,9 @@ export async function adminRequest(path, options = {}) {
     if (!response.ok) throw new Error(data.message || '서버 요청 실패 (' + response.status + ')');
     return data;
 }
+
+export function getPendingProjectRequests(type) {
+    const query = new URLSearchParams({ status: '대기' });
+    if (type) query.set('type', type);
+    return adminRequest('/project-requests?' + query.toString());
+}

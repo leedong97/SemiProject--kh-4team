@@ -78,6 +78,10 @@ export const standaloneRoutes = [
     element: <Community menu="내 활동" activity="내가 작성한 댓글" />
   },
   {
+    path: "/community/activity/bookmarks",
+    element: <Community menu="내 활동" activity="저장한 글" />
+  },
+  {
     path: "/community/post/:postId",
     element: <Community menu="게시판" screen="detail" />
   },

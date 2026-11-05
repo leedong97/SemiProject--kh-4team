@@ -109,6 +109,9 @@ function Issue_detail({ projects, issues }) {
             </div>
 
             <div className="issue-detail-bottom">
+                {issue.status !== "완료" && <button onClick={() => navigate(`/issue/completion-request?issueId=${issue.id}`)}>
+                    이슈 완료 요청
+                </button>}
                 <button onClick={() => navigate("/issue")}>
                     이슈 목록으로 돌아가기
                 </button>
