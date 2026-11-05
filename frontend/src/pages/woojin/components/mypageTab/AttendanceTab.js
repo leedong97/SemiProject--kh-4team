@@ -1,4 +1,31 @@
-function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey, isDemo }) {
+import { useState } from "react";
+
+// 휴가 상태별 배지 색: 승인=초록, 대기=주황, 반려=빨강 (색은 Mypage.css)
+const LEAVE_BADGE = { 승인: "s-approved", 대기: "s-pending", 반려: "s-rejected" };
+
+function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey, isDemo, onRequestLeave }) {
+    // 휴가 신청 폼 입력값
+    const [leaveType, setLeaveType] = useState("연차");
+    const [leaveStart, setLeaveStart] = useState("");
+    const [leaveEnd, setLeaveEnd] = useState("");
+    const [leaveError, setLeaveError] = useState("");
+
+    // 신청 버튼: 서버가 검사해서 거절하면 그 이유를 폼 아래에 보여 줘요
+    const submitLeave = async (e) => {
+        e.preventDefault();
+        setLeaveError("");
+        const end = leaveType === "반차" ? leaveStart : leaveEnd; // 반차는 하루라서 종료일 = 시작일
+        if (!leaveStart || !end || leaveStart > end) return setLeaveError("휴가 기간을 확인해 주세요.");
+        const result = await onRequestLeave({
+            leave_type: leaveType,
+            start_date: leaveStart,
+            end_date: end,
+        });
+        if (!result.ok) return setLeaveError(result.message);
+        setLeaveStart("");
+        setLeaveEnd("");
+    };
+
     // 근태 · 연차 계산 (이 탭에서만 사용)
     const totalHours = weekHours.reduce((sum, w) => sum + w.hours, 0);
     // 하루 평균은 "근무 기록이 있는 날"만으로 나눠요. 아직 안 온 날(목·금)이나 휴가 날(0시간)까지 나누면 평균이 실제보다 낮아져요.
@@ -58,6 +85,38 @@ function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey
                 </div>
             </div>
 
+            {/* 로그인한 직원만 신청할 수 있어요 (체험 모드는 토큰이 없어서 서버가 거절해요) */}
+            {!isDemo && (
+                <form className="mp-form" onSubmit={submitLeave}>
+                    <h4>휴가 신청</h4>
+                    <div className="mp-form-row">
+                        <label>
+                            종류
+                            <select value={leaveType} onChange={(e) => setLeaveType(e.target.value)}>
+                                <option>연차</option>
+                                <option>반차</option>
+                                <option>병가</option>
+                                <option>경조사</option>
+                            </select>
+                        </label>
+                        <label>
+                            시작일
+                            <input type="date" value={leaveStart} onChange={(e) => setLeaveStart(e.target.value)} />
+                        </label>
+                        {leaveType !== "반차" && (
+                            <label>
+                                종료일
+                                <input type="date" min={leaveStart} value={leaveEnd} onChange={(e) => setLeaveEnd(e.target.value)} />
+                            </label>
+                        )}
+                    </div>
+                    {leaveError && <p className="mp-error">{leaveError}</p>}
+                    <div className="mp-form-btns">
+                        <button type="submit" className="mp-submit">신청하기</button>
+                    </div>
+                </form>
+            )}
+
             <h3>휴가 신청 내역</h3>
             {/* 휴가 내역이 0건이면(새로 가입한 직원 등) 빈 안내를 보여 줘요 */}
             {sortedLeave.length === 0 && <p className="mp-note">휴가 신청 내역이 없어요.</p>}
@@ -66,7 +125,7 @@ function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey
                     <span>
                         {l.start}{l.end !== l.start ? ` ~ ${l.end}` : ""} · {l.type}
                     </span>
-                    <span className="mp-badge s-wait">{l.days}일 · {l.status}</span>
+                    <span className={`mp-badge ${LEAVE_BADGE[l.status] || "s-wait"}`}>{l.days}일 · {l.status}</span>
                 </div>
             ))}
 
