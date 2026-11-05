@@ -1,5 +1,6 @@
 import { API_BASE } from '../../shared/config';
 import { createContext, useCallback, useContext, useState, useEffect } from 'react';
+import { useLocation } from "react-router-dom";
 import getLoginUser from "../woojin/getLoginUser";
 
 // 준우 페이지(대시보드·공지사항·프로젝트)가 같이 쓰는 데이터 상자
@@ -11,40 +12,77 @@ export function useJunwoo() {
 
 export function JunwooProvider({ children }) {
 
+  const { pathname } = useLocation();
 
   const [info, setInfo] = useState([]);
   const [todo, setTodo] = useState([]);
 
-  /* MySQL 프로젝트 전체 조회 */
+  /* 프로젝트 목록 자동 갱신 */
   useEffect(() => {
+    let disposed = false;
+    let controller = null;
 
     const loadProjects = async () => {
+      // 이전 조회가 진행 중이면 취소
+      controller?.abort();
+      controller = new AbortController();
 
       try {
-
         const response = await fetch(
-          `${API_BASE}/api/projects`
+          `${API_BASE}/api/projects`,
+          {
+            signal: controller.signal,
+            cache: "no-store"
+          }
         );
 
         if (!response.ok) {
-          throw new Error('프로젝트 조회 실패');
+          throw new Error("프로젝트 조회 실패");
         }
 
         const data = await response.json();
 
-        setTodo(data);
-
+        if (!disposed) {
+          setTodo(data);
+        }
       } catch (error) {
-
-        console.error('프로젝트 불러오기 오류:', error);
-
+        if (error.name !== "AbortError") {
+          console.error("프로젝트 불러오기 오류:", error);
+        }
       }
-
     };
 
+    // 화면에 들어오거나 주소가 바뀌면 최신 목록 조회
     loadProjects();
 
-  }, []);
+    // 다른 창에서 돌아왔을 때 최신 목록 조회
+    const handleFocus = () => {
+      loadProjects();
+    };
+
+    window.addEventListener("focus", handleFocus);
+
+    // 메인·프로젝트 목록에서는 5초마다 갱신
+    const timer =
+      pathname === "/" || pathname === "/todo"
+        ? window.setInterval(() => {
+          if (document.visibilityState === "visible") {
+            loadProjects();
+          }
+        }, 5000)
+        : null;
+
+    return () => {
+      disposed = true;
+      controller?.abort();
+
+      window.removeEventListener("focus", handleFocus);
+
+      if (timer !== null) {
+        window.clearInterval(timer);
+      }
+    };
+  }, [pathname]);
 
   /* MySQL 공지사항 전체 조회 */
   useEffect(() => {
@@ -461,7 +499,7 @@ export function JunwooProvider({ children }) {
   const requestProjectCompletion = async (projectId) => {
     const token = localStorage.getItem("nexus_auth_token");
 
-    if(!token){
+    if (!token) {
       throw new Error("로그아웃 후 다시 로그인해주세요.")
     }
 
@@ -477,16 +515,16 @@ export function JunwooProvider({ children }) {
 
     const data = await response.json();
 
-    if(!response.ok){
+    if (!response.ok) {
       throw new Error(data.message || "완료 요청을 저장하지 못했습니다.");
     }
 
     setTodo(previous =>
-        previous.map(project =>
-            String(project.id) === String(data.projectId)
-              ? {...project, status: data.status}
-              : project
-        )
+      previous.map(project =>
+        String(project.id) === String(data.projectId)
+          ? { ...project, status: data.status }
+          : project
+      )
     );
 
     return data;
