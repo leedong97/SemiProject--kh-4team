@@ -9,5 +9,6 @@ module.exports = {
     { prefix: '/api/mypage',    router: require('./mypage') },      // /api/mypage/leaves, /api/mypage/my-...
     { prefix: '/api/profile',   router: require('./profile') },
     { prefix: '/api/notifications', router: require('./notifications') },
+    { prefix: '/api/shop/auth', router: require('./shop/auth') },   // 쇼핑몰 고객: /signup, /login, /me
   ],
 };

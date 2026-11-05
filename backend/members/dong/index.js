@@ -3,6 +3,7 @@
 // '/api/dong/projects' 로 옮겼어요. (프론트 DongContext.js 도 같이 바뀜)
 const express = require('express');
 const db = require('../../db');
+const { createNotification } = require('../../notify');
 
 const router = express.Router();
 
@@ -201,6 +202,26 @@ router.post('/issues', async (req, res) => {
     );
 
     await connection.commit();
+
+    // 알림: 프로젝트 담당자(PM)에게 새 이슈 건의를 알려요 (담당자가 없거나 본인이면 건너뜀)
+    try {
+      const [owner] = await db.query(
+        'SELECT manager_id FROM projects WHERE project_id = ?',
+        [projectId]
+      );
+      const managerId = owner[0] && owner[0].manager_id;
+      if (managerId && String(managerId) !== String(employees[0].employee_id)) {
+        await createNotification(
+          managerId,
+          '이슈',
+          employees[0].employee_name + '님이 새 이슈 "' + title + '"를 건의했어요.',
+          '/issue/' + result.insertId
+        );
+      }
+    } catch (notifyError) {
+      console.error('이슈 건의 알림 오류:', notifyError.message);
+    }
+
     return res.status(201).json(rows[0]);
   } catch (err) {
     if (connection) {
@@ -218,6 +239,7 @@ router.post('/issues', async (req, res) => {
     }
   }
 });
+router.use(require('./issueCompletion'));
 module.exports = {
   routes: [{ prefix: '/api/dong', router }],
 };

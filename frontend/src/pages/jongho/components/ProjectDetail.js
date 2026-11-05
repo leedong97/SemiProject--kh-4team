@@ -4,7 +4,7 @@ import { PROJECT_STATUS_OPTIONS, DEFAULT_PROJECT_STATUS } from "../shared/projec
 import { getProgress, isInvalidDateRange } from "../utils/projectHelpers";
 
 // 프로젝트 상세정보 화면: 기본 정보 보기, 정보 수정, 완료 요청 승인
-function ProjectDetail({ project, manager, pendingRequest, busy, onApprove, onClose, setProjects }) {
+function ProjectDetail({ project, manager, pendingRequest, busy, onApprove, onClose, setProjects, customers = [] }) {
   const selectedProject = project;
   const selectedManager = manager;
 
@@ -200,8 +200,17 @@ function ProjectDetail({ project, manager, pendingRequest, busy, onApprove, onCl
                 </label>
 
                 <label>
-                  고객사 (등록된 이름)
-                  <input value={editForm.customer} onChange={updateEdit("customer")} />
+                  고객사
+                  <select value={editForm.customer} onChange={updateEdit("customer")}>
+                    <option value="">고객사를 선택하세요</option>
+                    {/* 현재 고객사가 목록에 없더라도 기존 값은 보여준다 */}
+                    {editForm.customer && !customers.some((c) => c.name === editForm.customer) && (
+                      <option value={editForm.customer}>{editForm.customer}</option>
+                    )}
+                    {customers.map((c) => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ))}
+                  </select>
                 </label>
 
                 <label>

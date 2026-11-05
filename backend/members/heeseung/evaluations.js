@@ -2,6 +2,7 @@
 const express = require("express");
 const pool = require("../../db");
 const { requireAuth } = require("../../middleware/session");
+const { createNotification, createNotificationForManagers } = require("../../notify");
 const router = express.Router();
 router.use(requireAuth);
 
@@ -126,6 +127,15 @@ router.patch("/:id/status", async (req, res) => {
             await conn.query("UPDATE nexus_evaluations SET status=?, reject_reason=? WHERE id=?", [status, status === "반려" ? reason : null, id]);
             await addHistory(conn, id, req.user.employee_id, status, reason);
             await conn.commit(); res.json({ message: "처리 완료" });
+            // 알림 (응답을 보낸 뒤 보내요. 알림이 실패해도 처리 결과는 그대로예요)
+            if (status === "승인 요청") {
+                await createNotificationForManagers("평가", "인사평가 승인 요청이 도착했어요.", null, [item.evaluator_id, item.employee_id]);
+            } else if (status === "승인") {
+                await createNotification(item.evaluator_id, "평가", "제출한 인사평가가 승인됐어요.", null);
+                await createNotification(item.employee_id, "평가", "인사평가 결과가 확정됐어요.", null);
+            } else if (status === "반려") {
+                await createNotification(item.evaluator_id, "평가", "제출한 인사평가가 반려됐어요. 사유: " + reason, null);
+            }
         } catch (error) { await conn.rollback(); errorResponse(res, error); } finally { conn.release(); }
     } catch (error) { errorResponse(res, error); }
 });
@@ -141,6 +151,7 @@ router.post("/:id/appeal", async (req, res) => {
             await conn.query("UPDATE nexus_evaluations SET appeal_reason=?, appeal_status='접수' WHERE id=?", [reason, id]);
             await addHistory(conn, id, req.user.employee_id, "이의신청", reason);
             await conn.commit(); res.json({ message: "신청 완료" });
+            await createNotificationForManagers("평가", "인사평가 이의신청이 접수됐어요.", null, [item.evaluator_id, item.employee_id]);
         } catch (error) { await conn.rollback(); errorResponse(res, error); } finally { conn.release(); }
     } catch (error) { errorResponse(res, error); }
 });
@@ -156,6 +167,7 @@ router.patch("/:id/appeal", async (req, res) => {
             await conn.query("UPDATE nexus_evaluations SET appeal_status=? WHERE id=?", [result, id]);
             await addHistory(conn, id, req.user.employee_id, "이의신청 " + result, String(req.body.comment || ""));
             await conn.commit(); res.json({ message: "처리 완료" });
+            await createNotification(item.employee_id, "평가", "신청한 인사평가 이의신청이 " + result + "됐어요.", null);
         } catch (error) { await conn.rollback(); errorResponse(res, error); } finally { conn.release(); }
     } catch (error) { errorResponse(res, error); }
 });

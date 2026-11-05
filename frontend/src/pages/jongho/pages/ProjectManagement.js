@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { canLeadProject } from "../shared/permissions";
-import { adminRequest, getPendingProjectRequests } from "../adminApi";
+import { adminRequest } from "../adminApi";
 import { matchesProjectSearch } from "../utils/projectFilters";
 import useSortableList from "../utils/useSortableList";
 import { PROJECT_STATUS_OPTIONS, DEFAULT_PROJECT_STATUS } from "../shared/projectConstants";
@@ -28,7 +28,6 @@ const SORTABLE_COLUMNS = [
 function ProjectManagement({
   projects = [],
   setProjects,
-  reloadProjects,
   createProject,
   removeProject,
   employees = []
@@ -64,7 +63,9 @@ function ProjectManagement({
     startDate: "",
     endDate: "",
     budget: "",
-    description: ""
+    description: "",
+    managerId: "",
+    memberIds: []
   });
 
   // 입력값 변경
@@ -74,6 +75,22 @@ function ProjectManagement({
     setForm((prev) => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  // 팀원 추가 / 제거 (셀렉트로 추가, 칩의 × 로 제거)
+  const addMember = (employeeId) => {
+    setForm((prev) => (
+      prev.memberIds.includes(employeeId)
+        ? prev
+        : { ...prev, memberIds: [...prev.memberIds, employeeId] }
+    ));
+  };
+
+  const removeMember = (employeeId) => {
+    setForm((prev) => ({
+      ...prev,
+      memberIds: prev.memberIds.filter((id) => id !== employeeId)
     }));
   };
 
@@ -108,10 +125,11 @@ function ProjectManagement({
       endDate: form.endDate,
       budget: Number(form.budget || 0),
       description: form.description,
-      status: DEFAULT_PROJECT_STATUS,
+      status: form.managerId ? "진행중" : DEFAULT_PROJECT_STATUS,
       progress: 0,
       plannedProgress: 0,
-      managerId: null
+      managerId: form.managerId ? Number(form.managerId) : null,
+      memberIds: form.memberIds.filter((id) => String(id) !== String(form.managerId))
     };
 
     try {
@@ -121,7 +139,7 @@ function ProjectManagement({
       return;
     }
 
-    alert("프로젝트가 등록되었습니다. 담당자를 배정할 수 있습니다.");
+    alert("프로젝트가 등록되었습니다.");
 
     setForm({
       customer: "",
@@ -129,7 +147,9 @@ function ProjectManagement({
       startDate: "",
       endDate: "",
       budget: "",
-      description: ""
+      description: "",
+      managerId: "",
+      memberIds: []
     });
 
     setPage("list");
@@ -211,11 +231,33 @@ function ProjectManagement({
     return Boolean(manager) && !canLeadProject(manager);
   };
 
-  // 대기 중인 완료 요청 다시 불러오기
+  // 고객사 목록 (등록·수정 때 선택지로 쓴다)
+  const [customers, setCustomers] = useState([]);
+  useEffect(() => {
+    adminRequest("/customers")
+      .then((rows) => setCustomers(Array.isArray(rows) ? rows : []))
+      .catch(() => setCustomers([]));
+  }, []);
+
+  // 완료 요청 목록: 상태가 '완료 요청'인 프로젝트를 요청 형태로 바꿔서 보여준다
   const loadPendingRequests = async () => {
     try {
-      const rows = await getPendingProjectRequests();
-      setPendingRequests(Array.isArray(rows) ? rows : []);
+      const rows = await adminRequest("/projects");
+      const list = Array.isArray(rows) ? rows : [];
+      setPendingRequests(
+        list
+          .filter((p) => p.status === "완료 요청")
+          .map((p) => ({
+            id: "status-" + p.id,
+            type: "완료",
+            source: "status",
+            projectId: p.id,
+            projectName: p.name,
+            title: p.name,
+            requesterName: p.customer || "",
+            requestedAt: ""
+          }))
+      );
     } catch (err) {
       setPendingRequests([]);
     }
@@ -225,29 +267,23 @@ function ProjectManagement({
   const pendingFor = (projectId) =>
     pendingRequests.find((req) => String(req.projectId) === String(projectId));
 
-  // 완료 요청 승인: 서버에서 프로젝트를 완료로 바꾸고, 화면 상태도 맞춤
+  // 완료 요청 승인: 프로젝트 상태를 '완료'로 바꾸고, 화면 상태도 맞춤
   const approveRequest = async (req) => {
     const name = req.projectName || req.title;
-    const isRegister = req.type === "등록";
-    const question = isRegister
-      ? `"${name}" 프로젝트를 등록할까요?`
-      : `"${name}" 프로젝트를 완료 처리할까요?`;
-    if (!window.confirm(question)) return;
+    if (!window.confirm(`"${name}" 프로젝트를 완료 처리할까요?`)) return;
     setRequestBusy(true);
     try {
-      await adminRequest(`/project-requests/${req.id}/approve`, { method: "POST" });
-      if (isRegister) {
-        // 새 프로젝트가 생겼으므로 프로젝트 목록을 서버에서 다시 불러옴
-        if (reloadProjects) await reloadProjects();
-      } else {
-        setProjects((prev) =>
-          prev.map((p) =>
-            String(p.id) === String(req.projectId) ? { ...p, status: "완료", progress: 100 } : p
-          )
-        );
-      }
+      await adminRequest(`/projects/${req.projectId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: "완료", progress: 100 })
+      });
+      setProjects((prev) =>
+        prev.map((p) =>
+          String(p.id) === String(req.projectId) ? { ...p, status: "완료", progress: 100 } : p
+        )
+      );
       await loadPendingRequests();
-      alert(isRegister ? "프로젝트를 등록했습니다." : "프로젝트를 완료 처리했습니다.");
+      alert("프로젝트를 완료 처리했습니다.");
     } catch (err) {
       alert(err.message);
     } finally {
@@ -255,14 +291,18 @@ function ProjectManagement({
     }
   };
 
-  // 완료 요청 반려: 사유를 입력받아 서버에 저장
+  // 완료 요청 반려: 상태를 '진행중'으로 되돌린다 (반려 사유는 화면에서 알림으로만 확인)
   const rejectRequest = async (req, reason) => {
     setRequestBusy(true);
     try {
-      await adminRequest(`/project-requests/${req.id}/reject`, {
-        method: "POST",
-        body: JSON.stringify({ reason })
+      await adminRequest(`/projects/${req.projectId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: "진행중" })
       });
+      setProjects((prev) =>
+        prev.map((p) => (String(p.id) === String(req.projectId) ? { ...p, status: "진행중" } : p))
+      );
+      alert(`완료 요청을 반려했습니다. (사유: ${reason})`);
       await loadPendingRequests();
     } catch (err) {
       alert(err.message);
@@ -393,15 +433,15 @@ function ProjectManagement({
                             상세보기
                           </button>
 
-                          {/* 담당자 배정 */}
-                          {(project.status === "예정" || (project.status === "진행중" && isUnderRankManager(project))) && (
+                          {/* 인원 관리 (담당자·팀원 배정) */}
+                          {project.status !== "완료" && (
                             <button className="btn btn-outline btn-sm"
                               type="button"
                               onClick={() =>
-                                navigate("/admin/assignments")
+                                navigate("/admin/members")
                               }
                             >
-                              담당자 배정
+                              인원 관리
                             </button>
                           )}
 
@@ -438,6 +478,7 @@ function ProjectManagement({
       ) : page === "detail" ? (
         <ProjectDetail
           key={selectedProjectId}
+          customers={customers}
           project={selectedProject}
           manager={selectedManager}
           pendingRequest={selectedProject ? pendingFor(selectedProject.id) : undefined}
@@ -453,10 +494,14 @@ function ProjectManagement({
         /* ============================= */
 
         <ProjectRegisterForm
+          customers={customers}
           form={form}
           onChange={handleChange}
           onSubmit={registerProject}
           onBack={() => setPage("list")}
+          employees={employees}
+          onAddMember={addMember}
+          onRemoveMember={removeMember}
         />
       )}
 

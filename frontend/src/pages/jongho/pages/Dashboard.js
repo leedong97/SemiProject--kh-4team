@@ -94,7 +94,7 @@ export default function Dashboard({ projects = [], data }) {
             <div className="nexus-alerts">
                 <div><strong>운영 알림 센터</strong><p>현재 데이터에서 확인된 관리 필요 항목</p></div>
                 <button onClick={() => navigate('/admin/issues')}>기한 초과 이슈 <b>{overdue.length}건</b></button>
-                <button onClick={() => navigate('/admin/assignments')}>미배정 프로젝트 <b>{unassigned.length}건</b></button>
+                <button onClick={() => navigate('/admin/members')}>미배정 프로젝트 <b>{unassigned.length}건</b></button>
                 <button onClick={() => navigate('/admin/evaluations')}>평가 승인 요청 <b>{pending.length}건</b></button>
             </div>
 
@@ -241,7 +241,7 @@ export default function Dashboard({ projects = [], data }) {
                         >
                             <strong>
                                 {isPinned(notice) && (
-                                    <span className="pill" style={{ marginRight: 6 }}>고정</span>
+                                    <span className="dash-pinned-badge">고정</span>
                                 )}
                                 {notice.title}
                             </strong>
