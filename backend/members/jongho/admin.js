@@ -126,6 +126,91 @@ async function saveProjectMembers(conn, projectId, managerId, memberIds) {
   }
 }
 
+// ===== 커뮤니티 관리 (게시글·댓글 목록과 삭제만 제공) =====
+// 익명 글은 작성자를 '익명'으로만 보여준다 (실제 작성자는 노출하지 않음)
+
+// 게시글 목록
+router.get('/community/posts', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT p.id, p.board_name AS boardName, p.title, p.is_anonymous AS isAnonymous,
+             e.employee_name AS authorName,
+             DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i') AS createdAt,
+             (SELECT COUNT(*) FROM community_comment c WHERE c.post_id = p.id AND c.is_deleted = 0) AS commentCount
+      FROM community_post p
+      LEFT JOIN employees e ON e.employee_id = p.author_id
+      ORDER BY p.id DESC
+      LIMIT 300
+    `);
+    res.json(rows.map((r) => ({
+      ...r,
+      authorName: r.isAnonymous ? '익명' : r.authorName,
+    })));
+  } catch (err) {
+    res.status(500).json({ message: '게시글 목록을 불러오지 못했습니다.' });
+  }
+});
+
+// 게시글 한 건 + 댓글
+router.get('/community/posts/:id', async (req, res) => {
+  const postId = Number(req.params.id);
+  if (!validId(postId)) return res.status(400).json({ message: '잘못된 게시글 번호입니다.' });
+  try {
+    const [posts] = await pool.query(`
+      SELECT p.id, p.board_name AS boardName, p.title, p.content, p.is_anonymous AS isAnonymous,
+             e.employee_name AS authorName,
+             DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i') AS createdAt
+      FROM community_post p
+      LEFT JOIN employees e ON e.employee_id = p.author_id
+      WHERE p.id = ?
+    `, [postId]);
+    if (!posts.length) return res.status(404).json({ message: '게시글을 찾을 수 없습니다.' });
+    const post = posts[0];
+    post.authorName = post.isAnonymous ? '익명' : post.authorName;
+
+    const [comments] = await pool.query(`
+      SELECT c.id, c.content, c.is_deleted AS isDeleted, e.employee_name AS authorName,
+             DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i') AS createdAt
+      FROM community_comment c
+      LEFT JOIN employees e ON e.employee_id = c.author_id
+      WHERE c.post_id = ?
+      ORDER BY c.id
+    `, [postId]);
+    res.json({ post, comments: comments.map((c) => ({ ...c, content: c.isDeleted ? '' : c.content })) });
+  } catch (err) {
+    res.status(500).json({ message: '게시글을 불러오지 못했습니다.' });
+  }
+});
+
+// 게시글 삭제 (준우 쪽과 같이 실제로 지운다)
+router.delete('/community/posts/:id', async (req, res) => {
+  const postId = Number(req.params.id);
+  if (!validId(postId)) return res.status(400).json({ message: '잘못된 게시글 번호입니다.' });
+  try {
+    const [result] = await pool.query('DELETE FROM community_post WHERE id = ?', [postId]);
+    if (result.affectedRows === 0) return res.status(404).json({ message: '삭제할 게시글이 없습니다.' });
+    res.json({ message: '게시글을 삭제했습니다.' });
+  } catch (err) {
+    res.status(500).json({ message: '게시글 삭제에 실패했습니다.' });
+  }
+});
+
+// 댓글 삭제 (준우 쪽과 같이 내용을 비우고 삭제 표시)
+router.delete('/community/comments/:id', async (req, res) => {
+  const commentId = Number(req.params.id);
+  if (!validId(commentId)) return res.status(400).json({ message: '잘못된 댓글 번호입니다.' });
+  try {
+    const [result] = await pool.query(
+      "UPDATE community_comment SET content = '', is_deleted = 1 WHERE id = ? AND is_deleted = 0",
+      [commentId]
+    );
+    if (result.affectedRows === 0) return res.status(404).json({ message: '삭제할 댓글이 없거나 이미 삭제되었습니다.' });
+    res.json({ message: '댓글을 삭제했습니다.' });
+  } catch (err) {
+    res.status(500).json({ message: '댓글 삭제에 실패했습니다.' });
+  }
+});
+
 // 고객사 목록 (등록·수정 화면의 선택지)
 router.get('/customers', async (req, res) => {
   try {

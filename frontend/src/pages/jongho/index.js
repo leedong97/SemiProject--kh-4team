@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import ProjectManagement from './pages/ProjectManagement';
 import MemberManagement from './pages/MemberManagement';
 import Notices from './pages/Notices';
+import Community from './pages/Community';
 import Workload from './pages/Workload';
 import IssueManagement from '../heeseung/components/IssueManagement';
 import HRManagement from '../heeseung/components/HRManagement';
@@ -96,6 +97,7 @@ export const standaloneRoutes = [
       { path: 'employees', element: <EmployeesRoute /> },
       { path: 'evaluations', element: <EvaluationsRoute /> },
       { path: 'boards', element: <Notices />, },
+      { path: 'community', element: <Community /> },
       { path: 'workload', element: <Workload /> },
     ],
   },
