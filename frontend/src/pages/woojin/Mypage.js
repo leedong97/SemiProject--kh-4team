@@ -170,11 +170,11 @@ function Mypage() {
     useEffect(() => {
         if (user.isDummy) return;
         axios
-            .get(`${API_BASE}/api/my-projects`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/my-projects`, { params: { employeeId: user.id } })
             .then((res) => setProjects(res.data.projects))
             .catch((err) => console.error("프로젝트를 불러오지 못했어요:", err));
         axios
-            .get(`${API_BASE}/api/my-tasks`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/my-tasks`, { params: { employeeId: user.id } })
             .then((res) => setTasks(res.data.tasks))
             .catch((err) => console.error("업무를 불러오지 못했어요:", err));
     }, [user.id, user.isDummy]);
@@ -184,7 +184,7 @@ function Mypage() {
     useEffect(() => {
         if (user.isDummy) return;
         axios
-            .get(`${API_BASE}/api/my-managed-projects`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/my-managed-projects`, { params: { employeeId: user.id } })
             .then((res) => setManagedProjects(res.data.projects))
             .catch((err) => console.error("담당 프로젝트를 불러오지 못했어요:", err));
     }, [user.id, user.isDummy]);
@@ -197,7 +197,7 @@ function Mypage() {
     useEffect(() => {
         if (user.isDummy) return;
         axios
-            .get(`${API_BASE}/api/my-issues`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/my-issues`, { params: { employeeId: user.id } })
             .then((res) => setIssues(res.data.issues))
             .catch((err) => console.error("이슈를 불러오지 못했어요:", err));
     }, [user.id, user.isDummy]);
@@ -207,7 +207,7 @@ function Mypage() {
     useEffect(() => {
         if (user.isDummy) return;
         axios
-            .get(`${API_BASE}/api/my-notices`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/my-notices`, { params: { employeeId: user.id } })
             .then((res) => setNotices(res.data.notices))
             .catch((err) => console.error("공지를 불러오지 못했어요:", err));
     }, [user.id, user.isDummy]);
@@ -221,7 +221,7 @@ function Mypage() {
     useEffect(() => {
         if (user.isDummy) return;
         axios
-            .get(`${API_BASE}/api/my-attendance`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/my-attendance`, { params: { employeeId: user.id } })
             .then((res) => {
                 setWeekHoursData(res.data.weekHours);
                 setLeaveTotalData(res.data.leaveTotal);
@@ -399,7 +399,7 @@ function Mypage() {
     useEffect(() => {
         if (user.isDummy) return;
         axios
-            .get(`${API_BASE}/api/leaves`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/leaves`, { params: { employeeId: user.id } })
             .then((res) => setLeaves(res.data.leaves))
             .catch((err) => console.error("휴가 내역을 불러오지 못했어요:", err));
     }, [user.id, user.isDummy]);

@@ -3,14 +3,14 @@ import './styles/jongho.css';
 import AdminLayout from './components/AdminLayout';
 import Dashboard from './pages/Dashboard';
 import ProjectManagement from './pages/ProjectManagement';
-import ManagerAssignment from './pages/ManagerAssignment';
+import MemberManagement from './pages/MemberManagement';
 import Notices from './pages/Notices';
-import AdminAudit from './pages/AdminAudit';
 import Workload from './pages/Workload';
 import IssueManagement from '../heeseung/components/IssueManagement';
 import HRManagement from '../heeseung/components/HRManagement';
 import EmployeeEvaluation from '../heeseung/components/EmployeeEvaluation';
 import { JonghoProvider, useJongho } from './JonghoContext';
+import { clearLoginUser } from "../woojin/getLoginUser";
 
 // 종호 담당: 관리자 페이지(/admin/...)
 // 로컬 개발용: 로그인 검사 없이 바로 관리자 화면을 보여줍니다.
@@ -18,9 +18,17 @@ import { JonghoProvider, useJongho } from './JonghoContext';
 
 function AdminRoute() {
   const navigate = useNavigate();
-  return <AdminLayout onLogout={() => {
-    sessionStorage.removeItem('nexus_token'); sessionStorage.removeItem('nexus_role'); navigate('/login');
-  }} />;
+
+  return (
+    <AdminLayout
+      onLogout={() => {
+        clearLoginUser();
+        sessionStorage.removeItem("nexus_token");
+        sessionStorage.removeItem("nexus_role");
+        navigate("/login");
+      }}
+    />
+  );
 }
 function DashboardRoute() {
   const { projects, data } = useJongho();
@@ -32,7 +40,6 @@ function ProjectsRoute() {
     <ProjectManagement
       projects={projects}
       setProjects={setProjects}
-      reloadProjects={resetProjects}
       createProject={createProject}
       updateProject={updateProject}
       removeProject={removeProject}
@@ -40,21 +47,22 @@ function ProjectsRoute() {
     />
   );
 }
-function AssignmentsRoute() {
-  const { projects, data, updateProject } = useJongho();
+function MembersRoute() {
+  const { projects, data, updateProject, updateProjectMembers } = useJongho();
   return (
-    <ManagerAssignment
+    <MemberManagement
       projects={projects}
       updateProject={updateProject}
+      updateProjectMembers={updateProjectMembers}
       employees={data.employees.map((e) => ({ ...e, role: e.role || e.position }))}
     />
   );
 }
 function IssuesRoute() {
-  const { data, changeData } = useJongho();
+  const { data, changeData, projects } = useJongho();
   return (
     <div className="merge-erp-module">
-      <IssueManagement data={data} changeData={changeData} />
+      <IssueManagement data={{ ...data, projects: projects || [] }} changeData={changeData} />
     </div>
   );
 }
@@ -74,16 +82,6 @@ function EvaluationsRoute() {
     </div>
   );
 }
-function SettingsRoute() {
-  const { resetDemo } = useJongho();
-  return (
-    <div className="merge-placeholder">
-      <h2>브라우저 연습 데이터 관리</h2><p>DB 데이터는 삭제되지 않습니다. 인사·이슈·평가의 화면 변경은 현재 DB 저장이 연결되지 않았습니다.</p>
-      <button className="btn btn-outline" onClick={resetDemo}>샘플 데이터 초기화</button>
-    </div>
-  );
-}
-
 export const Provider = JonghoProvider;
 
 export const standaloneRoutes = [
@@ -93,13 +91,11 @@ export const standaloneRoutes = [
     children: [
       { index: true, element: <DashboardRoute /> },
       { path: 'projects', element: <ProjectsRoute /> },
-      { path: 'assignments', element: <AssignmentsRoute /> },
+      { path: 'members', element: <MembersRoute /> },
       { path: 'issues', element: <IssuesRoute /> },
       { path: 'employees', element: <EmployeesRoute /> },
       { path: 'evaluations', element: <EvaluationsRoute /> },
       { path: 'boards', element: <Notices />, },
-      { path: 'settings', element: <SettingsRoute /> },
-      { path: 'audit', element: <AdminAudit /> },
       { path: 'workload', element: <Workload /> },
     ],
   },

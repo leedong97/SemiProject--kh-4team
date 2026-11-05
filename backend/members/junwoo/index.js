@@ -18,15 +18,31 @@ module.exports = {
     },
     {
       prefix: "/api/community",
-      router: require("./community")
+      router: require("../dong/communityService").posts
     },
     {
       prefix: "/api/community-comments",
-      router: require("./communityComments")
+      router: require("../dong/communityService").comments
     },
     {
       prefix: "/api/community-likes",
       router: require("./communityLikes")
+    },
+    {
+      prefix: "/api/community-bookmarks",
+      router: require("./communityBookmarks")
+    },
+    {
+      prefix: "/api/community-comment-counts",
+      router: require("./communityCommentCounts")
+    },
+    {
+      prefix: "/api/community-praises",
+      router: require("./communityPraises")
+    },
+    {
+      prefix: "/api/dong/project-workload-members",
+      router: require("./projectWorkloadMembers")
     }
   ]
 };

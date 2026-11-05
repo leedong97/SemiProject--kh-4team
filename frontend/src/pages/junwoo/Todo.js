@@ -1,623 +1,287 @@
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import "./ProjectList.css";
 
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
-import { API_BASE } from "../../shared/config";
+const STATUS_TABS = [
+    "전체",
+    "예정",
+    "진행중",
+    "완료 요청",
+    "완료",
+    "보류"
+];
 
-function Todo({ todo, onAddTodo }) {
+const PAGE_SIZE = 10;
 
-    const navigate = useNavigate();
-
-    const location = useLocation();
-
-    // 캘린더에서 선택한 날짜
-    const selectedDate = location.state?.startDate || "";
-
-    // 검색 및 페이지
+function Todo({ todo = [], onRequestCompletion }) {
+    const [selectedProject, setSelectedProject] = useState("");
     const [search, setSearch] = useState("");
-    const [pages, setPages] = useState(1);
+    const [searchManager, setSearchManager] = useState("");
+    const [status, setStatus] = useState("전체");
+    const [page, setPage] = useState(1);
 
-    // 선택한 탭
-    let initialTab = "프로젝트 목록";
+    useEffect(() => {
+        setPage(1);
+    }, [selectedProject, search, searchManager, status]);
 
-    if (location.state) {
-        if (location.state.requestTab === "대기") {
-            initialTab = "대기";
-        } else if (location.state.requestTab === "승인") {
-            initialTab = "승인";
-        }
-    }
+    const filteredProjects = todo
+        .filter(project => {
+            const matchesProject =
+                selectedProject === "" ||
+                String(project.id) === selectedProject;
 
-    const [listTab, setListTab] = useState(initialTab);
+            const matchesTitle = String(project.title ?? "")
+                .toLowerCase()
+                .includes(search.trim().toLowerCase());
 
-    // 서버에서 가져온 등록 요청 목록
-    const [requests, setRequests] = useState([]);
+            const matchesManager = String(project.managerName ?? "")
+                .toLowerCase()
+                .includes(searchManager.trim().toLowerCase());
 
-    // 요청 목록 조회 상태
-    const [requestLoading, setRequestLoading] = useState(
-        initialTab !== "프로젝트 목록"
-    );
-    const [requestError, setRequestError] = useState("");
+            const matchesStatus =
+                status === "전체" ||
+                project.status === status;
 
-    // 등록 후 목록을 다시 불러올 때 사용
-    const [requestReload, setRequestReload] = useState(0);
-
-    // ===================================
-    // 목록 탭 변경
-    // ===================================
-
-    function changeListTab(nextTab) {
-        if (listTab === nextTab) {
-            return;
-        }
-
-        setListTab(nextTab);
-        setPages(1);
-        setRequests([]);
-        setRequestError("");
-
-        if (nextTab === "프로젝트 목록") {
-            setRequestLoading(false);
-        } else {
-            setRequestLoading(true);
-        }
-    }
-
-    // ===================================
-    // 대기 · 승인 요청 목록 불러오기
-    // ===================================
-
-    useEffect(function () {
-        if (listTab === "프로젝트 목록") {
-            return;
-        }
-
-        let cancelled = false;
-
-        async function loadRequests() {
-            setRequestLoading(true);
-            setRequestError("");
-
-            try {
-                const response = await axios.get(
-                    API_BASE + "/api/project-requests",
-                    {
-                        params: {
-                            requestStatus: listTab
-                        }
-                    }
-                );
-
-                if (!cancelled) {
-                    setRequests(response.data);
-                }
-            } catch (error) {
-                if (!cancelled) {
-                    setRequestError(
-                        "요청 목록을 불러오지 못했습니다."
-                    );
-                }
-            } finally {
-                if (!cancelled) {
-                    setRequestLoading(false);
-                }
-            }
-        }
-
-        loadRequests();
-
-        return function () {
-            cancelled = true;
-        };
-    }, [listTab, requestReload]);
-
-    // 새로운 프로젝트
-    const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
-
-    const [isSaving, setIsSaving] = useState(false);
-
-    // 프로젝트 상태와 우선순위
-    const [status, setStatus] = useState("예정");
-    const [priority, setPriority] = useState("보통");
-
-    // 프로젝트 시작일과 종료일
-    const [startDate, setStartDate] = useState(selectedDate);
-    const [endDate, setEndDate] = useState(selectedDate);
-
-    // 현재 탭에서 사용할 목록
-    let sourceList = todo;
-
-    if (listTab !== "프로젝트 목록") {
-        sourceList = requests;
-    }
-
-    // 제목 검색
-    const filteredTodo = sourceList.filter(function (item) {
-        return item.title
-            .toLowerCase()
-            .includes(search.trim().toLowerCase());
-    });
-
-    // 일반 프로젝트만 기존 방식으로 정렬
-    // 요청 목록은 서버에서 최신순으로 받아옴
-    if (listTab === "프로젝트 목록") {
-        filteredTodo.sort(function (a, b) {
             return (
-                Number(b.sortAt ?? 0) - Number(a.sortAt ?? 0)
-            ) || (
-                    b.id - a.id
-                );
-        });
-    }
-
-    const totalPages = Math.ceil(filteredTodo.length / 10);
-    const currentPage = Math.min(pages, Math.max(totalPages, 1));
-    const start = (currentPage - 1) * 10;
-    const end = start + 10;
-
-    // 현재 페이지가 속한 페이지 번호 묶음
-    // 1~5, 6~10처럼 최대 5개씩 표시
-    const firstPageInGroup = Math.floor((currentPage - 1) / 5) * 5 + 1;
-    const lastPageInGroup = Math.min(firstPageInGroup + 4, totalPages);
-
-    const pageNumbers = [];
-
-    for (let page = firstPageInGroup; page <= lastPageInGroup; page++) {
-        pageNumbers.push(page);
-    }
-
-    // 마지막 페이지에서는 실제 전체 개수까지만 표시
-    const lastItemNumber = Math.min(end, filteredTodo.length);
-
-
-    /* 프로젝트 등록 */
-    const handleAddTodo = async () => {
-
-        // 이미 등록 중이면 추가 요청하지 않음
-        if (isSaving) return;
-
-        if (title.trim() === "") {
-            alert("프로젝트 제목을 입력해주세요.");
-            return;
-        }
-
-        if (content.trim() === "") {
-            alert("프로젝트 내용을 입력해주세요.");
-            return;
-        }
-
-        if (title.trim().length > 200) {
-            alert("제목은 최대 200자까지 입력할 수 있습니다.");
-            return;
-        }
-
-        if (!startDate || !endDate) {
-            alert("프로젝트 시작일과 종료일을 선택해주세요.");
-            return;
-        }
-
-        if (endDate < startDate) {
-            alert("종료일은 시작일보다 빠를 수 없습니다.");
-            return;
-        }
-
-        // 입력값 검사가 끝났으므로 등록 시작
-        setIsSaving(true);
-
-        try {
-            await onAddTodo(
-                title.trim(),
-                content.trim(),
-                startDate,
-                endDate,
-                status,
-                priority
+                matchesProject &&
+                matchesTitle &&
+                matchesManager &&
+                matchesStatus
             );
+        })
+        .sort((a, b) => Number(b.id) - Number(a.id));
 
-            setTitle("");
-            setContent("");
-            setStartDate("");
-            setEndDate("");
-            setStatus("예정");
-            setPriority("보통");
+    const totalPages = Math.max(
+        1,
+        Math.ceil(filteredProjects.length / PAGE_SIZE)
+    );
 
-            alert(
-                "프로젝트 등록 요청이 접수되었습니다.\n" +
-                "관리자 승인 후 프로젝트가 등록됩니다."
-            );
+    const currentPage = Math.min(page, totalPages);
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
 
-            setRequests([]);
-            setRequestError("");
-            setRequestLoading(true);
+    const pageItems = filteredProjects.slice(
+        startIndex,
+        startIndex + PAGE_SIZE
+    );
 
-            setListTab("대기");
-            setPages(1);
-            setSearch("");
+    const firstPage = Math.floor((currentPage - 1) / 5) * 5 + 1;
 
-            setRequestReload(function (count) {
-                return count + 1;
-            });
+    const pageNumbers = Array.from(
+        {
+            length: Math.min(5, totalPages - firstPage + 1)
+        },
+        (_, index) => firstPage + index
+    );
 
-        } catch (error) {
-            console.error("프로젝트 등록 오류:", error);
-            alert(error.message || "프로젝트 등록 실패");
+    useEffect(() => {
+        setPage(previous => Math.min(previous, totalPages));
+    }, [totalPages]);
 
-        } finally {
-            // 성공하든 실패하든 등록 중 상태 해제
-            setIsSaving(false);
-        }
-    };
-
-
-    // 검색 리셋
-    const handleReset = () => {
+    function resetFilters() {
+        setSelectedProject("");
         setSearch("");
-        setPages(1);
-    };
+        setSearchManager("");
+        setStatus("전체");
+        setPage(1);
+    }
+
+    const listTitle =
+        status === "전체"
+            ? "전체 프로젝트 목록"
+            : `${status} 프로젝트 목록`;
 
     return (
-        <main className="todo-page todo-manage-page">
-
-            {/* 상단 제목 */}
-            <div className="todo-header todo-manage-header">
+        <main className="junwoo-project-list">
+            <header className="jpl-header">
                 <div>
-                    <h1>프로젝트</h1>
-                    <p>
-                        사내 프로젝트를 조회할 수 있습니다.
-                    </p>
+                    <h1>SI 프로젝트 목록</h1>
+                    <p>사내 프로젝트를 조회하고 진행 상태를 확인할 수 있습니다.</p>
                 </div>
 
                 <button
-                    className="todo-reset"
-                    onClick={handleReset}
+                    type="button"
+                    className="jpl-reset"
+                    onClick={resetFilters}
                 >
                     검색 리셋
                 </button>
-            </div>
+            </header>
 
-            {/* 프로젝트 통계 */}
-            <div className="todo-summary">
+            <div className="jpl-summary" aria-live="polite">
                 <span>전체 프로젝트 {todo.length}개</span>
-                <span>현재 목록 검색 결과 {filteredTodo.length}개</span>
+                <span>조회된 프로젝트 {filteredProjects.length}개</span>
             </div>
 
-            {/* 프로젝트 검색 */}
-            <section className="todo-filter">
+            <section className="jpl-filter" aria-label="프로젝트 검색">
+                <label htmlFor="jpl-project">프로젝트 선택</label>
+                <select
+                    id="jpl-project"
+                    value={selectedProject}
+                    onChange={event =>
+                        setSelectedProject(event.target.value)
+                    }
+                >
+                    <option value="">전체 프로젝트</option>
 
-                <label htmlFor="todo-search">
-                    프로젝트 제목 검색
-                </label>
+                    {todo.map(project => (
+                        <option key={project.id} value={project.id}>
+                            {project.id} - {project.title}
+                        </option>
+                    ))}
+                </select>
 
+                <label htmlFor="jpl-title">프로젝트 제목 검색</label>
                 <input
-                    id="todo-search"
-                    type="text"
+                    id="jpl-title"
+                    type="search"
                     placeholder="프로젝트 제목 검색"
                     value={search}
-                    onChange={(e) => {
-                        setSearch(e.target.value);
-                        setPages(1);
-                    }}
+                    onChange={event => setSearch(event.target.value)}
                 />
 
+                <label htmlFor="jpl-manager">프로젝트 담당자 검색</label>
+                <input
+                    id="jpl-manager"
+                    type="search"
+                    placeholder="담당자 이름"
+                    value={searchManager}
+                    onChange={event =>
+                        setSearchManager(event.target.value)
+                    }
+                />
             </section>
 
-            {/* 프로젝트 등록 */}
-            <section className="todo-register">
+            <section className="jpl-results" aria-labelledby="jpl-heading">
+                <div className="jpl-list-header">
+                    <h2 id="jpl-heading">{listTitle}</h2>
+                    <span>{filteredProjects.length}건</span>
+                </div>
 
-                <h3>새로운 프로젝트 등록</h3>
-
-                <div className="todo-register-form">
-
-                    <input
-                        type="text"
-                        placeholder="프로젝트 제목을 입력하세요"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                    />
-
-                    <textarea
-                        placeholder="프로젝트 내용을 입력하세요"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        rows="5"
-                    />
-
-                    {/* 프로젝트 상태 */}
-                    <div className="todo-select-field">
-                        <label htmlFor="todo-status">프로젝트 상태</label>
-
-                        <select
-                            id="todo-status"
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
+                <div
+                    className="jpl-tabs"
+                    role="group"
+                    aria-label="프로젝트 상태"
+                >
+                    {STATUS_TABS.map(tab => (
+                        <button
+                            key={tab}
+                            type="button"
+                            aria-pressed={status === tab}
+                            onClick={() => setStatus(tab)}
                         >
-                            <option value="예정">예정</option>
-                            <option value="진행중">진행중</option>
-                            <option value="완료">완료</option>
-                            <option value="보류">보류</option>
-                        </select>
-                    </div>
-
-                    {/* 프로젝트 우선순위 */}
-                    <div className="todo-select-field">
-                        <label htmlFor="todo-priority">우선순위</label>
-
-                        <select
-                            id="todo-priority"
-                            value={priority}
-                            onChange={(e) => setPriority(e.target.value)}
-                        >
-                            <option value="낮음">낮음</option>
-                            <option value="보통">보통</option>
-                            <option value="높음">높음</option>
-                        </select>
-                    </div>
-
-                    {/* 프로젝트 일정 설정 */}
-                    <div className="todo-date-fields">
-
-                        <div>
-                            <label htmlFor="todo-start-date">
-                                프로젝트 시작일
-                            </label>
-
-                            <input
-                                id="todo-start-date"
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="todo-end-date">
-                                프로젝트 종료일
-                            </label>
-
-                            <input
-                                id="todo-end-date"
-                                type="date"
-                                value={endDate}
-                                min={startDate || undefined}
-                                onChange={(e) => setEndDate(e.target.value)}
-                            />
-                        </div>
-
-                    </div>
-
-
-                    <button
-                        type="button"
-                        onClick={handleAddTodo}
-                        disabled={isSaving}
-                    >
-                        {isSaving ? "등록 중…" : "+ 프로젝트 등록 요청"}
-                    </button>
-
-                </div>
-            </section>
-
-            {/* 프로젝트 목록 */}
-            <section className="todo-list-section">
-
-                <div className="todo-list-header">
-                    <h3>
-                        {listTab === "프로젝트 목록"
-                            ? "전체 프로젝트 목록"
-                            : listTab === "대기"
-                                ? "대기 중인 프로젝트"
-                                : "승인된 프로젝트"}
-                    </h3>
-
-                    {!requestLoading && requestError === "" && (
-                        <span>{filteredTodo.length}건</span>
-                    )}
+                            {tab === "전체" ? "전체 프로젝트" : tab}
+                        </button>
+                    ))}
                 </div>
 
-                <div className="todo-status-tabs">
-                    <button
-                        type="button"
-                        className={
-                            listTab === "프로젝트 목록"
-                                ? "todo-status-tab active"
-                                : "todo-status-tab"
-                        }
-                        onClick={function () {
-                            changeListTab("프로젝트 목록");
-                        }}
-                    >
-                        프로젝트 목록
-                    </button>
-
-                    <button
-                        type="button"
-                        className={
-                            listTab === "대기"
-                                ? "todo-status-tab active"
-                                : "todo-status-tab"
-                        }
-                        onClick={function () {
-                            changeListTab("대기");
-                        }}
-                    >
-                        대기 중
-                    </button>
-
-                    <button
-                        type="button"
-                        className={
-                            listTab === "승인"
-                                ? "todo-status-tab active"
-                                : "todo-status-tab"
-                        }
-                        onClick={function () {
-                            changeListTab("승인");
-                        }}
-                    >
-                        승인됨
-                    </button>
-                </div>
-
-                <table className="todo-table">
-                    <thead>
-                        <tr>
-                            <th scope="col">번호</th>
-                            <th scope="col">클라이언트</th>
-                            <th scope="col">프로젝트 제목</th>
-                            <th scope="col">작성자</th>
-                            <th scope="col">
-                                {listTab === "프로젝트 목록" ? "작성일자" : "요청일자"}
-                            </th>
-                            <th scope="col">상태</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {requestLoading ? (
+                <div className="jpl-table-wrap">
+                    <table className="jpl-table">
+                        <thead>
                             <tr>
-                                <td colSpan="5" className="todo-empty">
-                                    목록을 불러오는 중입니다.
-                                </td>
+                                <th scope="col">번호</th>
+                                <th scope="col">클라이언트</th>
+                                <th scope="col">프로젝트</th>
+                                <th scope="col">우선도</th>
+                                <th scope="col">담당자</th>
+                                <th scope="col">진행률</th>
+                                <th scope="col">상태</th>
                             </tr>
-                        ) : requestError !== "" ? (
-                            <tr>
-                                <td colSpan="5" className="todo-empty">
-                                    <p role="alert">{requestError}</p>
+                        </thead>
 
-                                    <button
-                                        type="button"
-                                        onClick={function () {
-                                            setRequestReload(function (count) {
-                                                return count + 1;
-                                            });
-                                        }}
-                                    >
-                                        다시 시도
-                                    </button>
-                                </td>
-                            </tr>
-                        ) : filteredTodo.length === 0 ? (
-                            <tr>
-                                <td colSpan="5" className="todo-empty">
-                                    {search.trim() !== ""
-                                        ? "검색 결과가 없습니다."
-                                        : "해당 목록에 등록된 항목이 없습니다."}
-                                </td>
-                            </tr>
-                        ) : (
-                            filteredTodo.slice(start, end).map(function (item, index) {
-                                let rowKey;
-                                let detailAddress;
-
-                                if (listTab === "프로젝트 목록") {
-                                    rowKey = "project-" + item.id;
-                                    detailAddress = "/todo/" + item.id;
-                                } else {
-                                    rowKey = "request-" + item.requestId;
-                                    detailAddress = "/project-requests/" + item.requestId;
-                                }
-
-                                const titleContent = (
-                                    <Link
-                                        to={detailAddress}
-                                        className="todo-title-link"
-                                    >
-                                        {item.title}
-                                    </Link>
-                                );
-
-                                let statusClass = "todo-request-status";
-
-                                if (item.requestStatus === "대기") {
-                                    statusClass += " waiting";
-                                } else if (item.requestStatus === "승인") {
-                                    statusClass += " approved";
-                                }
-
-                                return (
-                                    <tr key={rowKey}>
-                                        <td>{start + index + 1}</td>
-
-                                        <td>{item.customerName || "-"}</td>
-
-                                        <td>{titleContent}</td>
-
-                                        <td>{item.author}</td>
-
-                                        <td>{item.date}</td>
+                        <tbody>
+                            {pageItems.length > 0 ? (
+                                pageItems.map((project, index) => (
+                                    <tr key={project.id}>
+                                        <td>{startIndex + index + 1}</td>
 
                                         <td>
-                                            {listTab === "프로젝트 목록" ? (
-                                                item.status || "-"
-                                            ) : (
-                                                <span className={statusClass}>
-                                                    {item.requestStatus}
-                                                </span>
-                                            )}
+                                            {project.customerName || "-"}
+                                        </td>
+
+                                        <td className="jpl-project-title">
+                                            <Link to={`/todo/${project.id}`}>
+                                                {project.title}
+                                            </Link>
+                                        </td>
+
+                                        <td>{project.priority || "보통"}</td>
+
+                                        <td>
+                                            {project.managerName || "미지정"}
+                                        </td>
+
+                                        <td>
+                                            {project.progress ?? 0}%
+                                        </td>
+
+                                        <td>
+                                            <span
+                                                className="jpl-status"
+                                                data-status={project.status}
+                                            >
+                                                {project.status || "-"}
+                                            </span>
                                         </td>
                                     </tr>
-                                );
-                            })
-                        )}
-                    </tbody>
-                </table>
-
-                {/* 표시 건수와 페이지 이동 */}
-                {!requestLoading &&
-                    requestError === "" &&
-                    filteredTodo.length > 0 && (
-                        <nav className="todo-list-pagination">
-                            <span className="todo-list-pagination-summary">
-                                전체 {filteredTodo.length}건 중 {start + 1}–{lastItemNumber}건
-                            </span>
-
-                            <div className="todo-list-pagination-buttons">
-                                <button
-                                    type="button"
-                                    disabled={currentPage === 1}
-                                    onClick={function () {
-                                        setPages(currentPage - 1);
-                                    }}
-                                >
-                                    이전
-                                </button>
-
-                                {pageNumbers.map(function (page) {
-                                    return (
-                                        <button
-                                            type="button"
-                                            key={page}
-                                            className={currentPage === page ? "active" : ""}
-                                            onClick={function () {
-                                                setPages(page);
-                                            }}
-                                        >
-                                            {page}
-                                        </button>
-                                    );
-                                })}
-
-                                <button
-                                    type="button"
-                                    disabled={currentPage === totalPages}
-                                    onClick={function () {
-                                        setPages(currentPage + 1);
-                                    }}
-                                >
-                                    다음
-                                </button>
-                            </div>
-                        </nav>
-                    )}
-
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={7} className="jpl-empty">
+                                        조회된 프로젝트가 없습니다.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </section>
 
-            {/* 하단 설명 */}
-            <p className="todo-footer">
-                프로젝트 제목을 클릭하면 상세 내용을 확인할 수 있습니다.
-            </p>
+            {filteredProjects.length > 0 && (
+                <nav className="jpl-pagination" aria-label="프로젝트 목록 페이지">
+                    <span aria-live="polite">
+                        전체 {filteredProjects.length}건 중{" "}
+                        {startIndex + 1}–{startIndex + pageItems.length}건
+                    </span>
 
+                    <div className="jpl-page-buttons">
+                        <button
+                            type="button"
+                            disabled={currentPage === 1}
+                            onClick={() => setPage(currentPage - 1)}
+                        >
+                            이전
+                        </button>
+
+                        {pageNumbers.map(number => (
+                            <button
+                                key={number}
+                                type="button"
+                                aria-label={`${number}페이지`}
+                                aria-current={
+                                    currentPage === number
+                                        ? "page"
+                                        : undefined
+                                }
+                                onClick={() => setPage(number)}
+                            >
+                                {number}
+                            </button>
+                        ))}
+
+                        <button
+                            type="button"
+                            disabled={currentPage === totalPages}
+                            onClick={() => setPage(currentPage + 1)}
+                        >
+                            다음
+                        </button>
+                    </div>
+                </nav>
+            )}
+
+            <p className="jpl-footer">
+                프로젝트 제목을 누르면 상세정보와 완료 요청 상태를 확인할 수 있습니다.
+            </p>
         </main>
     );
 }

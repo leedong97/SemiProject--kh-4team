@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../dong/communityClient";
 import { API_BASE } from "../../shared/config";
 import { Link } from "react-router-dom";
 
@@ -209,34 +209,45 @@ function MyComments(props) {
                 전체 {comments.length}개
             </p>
 
-            <ul className="community-comment-list">
-                {currentComments.map(function (comment, index) {
-                    const number = startIndex + index + 1;
-
+            <ul className="activity-comment-list">
+                {currentComments.map(function (comment) {
                     return (
                         <li
                             key={comment.id}
-                            className="community-comment-item"
+                            className="activity-comment-card"
                         >
-                            <div className="community-comment-header">
-                                <strong>
-                                    {number}. {comment.boardName}
-                                </strong>
+                            <div className="activity-comment-top">
+                                <span
+                                    className="activity-board-badge"
+                                    data-board={comment.boardName}
+                                >
+                                    {comment.boardName}
+                                </span>
 
-                                <span className="community-comment-date">
+                                <span className="activity-comment-date">
                                     {formatDate(comment.createdAt)}
                                 </span>
                             </div>
 
-                            <p className="community-comment-content">
+                            <p className="activity-comment-message">
                                 {comment.content}
                             </p>
 
                             <Link
                                 to={"/community/post/" + comment.postId}
-                                className="lounge-feed-title-button"
+                                className="activity-original-link"
                             >
-                                원문: {comment.postTitle}
+                                <span className="activity-original-label">
+                                    댓글을 남긴 글
+                                </span>
+
+                                <span className="activity-original-title">
+                                    {comment.postTitle}
+                                </span>
+
+                                <span className="activity-original-action">
+                                    대화 이어보기 ↗
+                                </span>
                             </Link>
                         </li>
                     );

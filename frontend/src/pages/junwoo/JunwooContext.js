@@ -80,16 +80,23 @@ export function JunwooProvider({ children }) {
 
   /* 공지사항 등록 */
   const addInfo = async (title, content, eventDate = null) => {
+    const loginUser = getLoginUser();
+    const employee_id = Number(loginUser.id);
 
-    // 테스트용 직원번호
-    const employee_id = 1;
+    if (
+      loginUser.isDummy ||
+      !Number.isSafeInteger(employee_id) ||
+      employee_id <= 0
+    ) {
+      throw new Error("로그인 후 공지사항을 등록해주세요.");
+    }
 
     const response = await fetch(
       `${API_BASE}/api/notices`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           title,
@@ -103,19 +110,21 @@ export function JunwooProvider({ children }) {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || '공지사항 등록 실패');
+      throw new Error(data.message || "공지사항 등록 실패");
     }
 
-    // React 화면에도 등록한 공지사항 반영
+    // 등록 직후 화면에도 작성자 이름을 표시
     const newInfo = {
       id: data.id,
       title,
       content,
-      date: new Date().toLocaleDateString('ko-KR'),
-      author: employee_id,
+      date: new Date().toLocaleDateString("ko-KR"),
+      author: loginUser.name,
+      employee_id,
       views: 0,
+      isPinned: false,
       eventDate,
-      sortAt: Date.now() / 1000,
+      sortAt: Date.now() / 1000
     };
 
     setInfo(prev => [...prev, newInfo]);
@@ -448,12 +457,48 @@ export function JunwooProvider({ children }) {
 
   }, []);
 
+  // 완료 요청 저장 후 공통 프로젝트 목록에도 반영
+  const requestProjectCompletion = async (projectId) => {
+    const token = localStorage.getItem("nexus_auth_token");
+
+    if(!token){
+      throw new Error("로그아웃 후 다시 로그인해주세요.")
+    }
+
+    const response = await fetch(
+      `${API_BASE}/api/projects/${projectId}/completion-request`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.message || "완료 요청을 저장하지 못했습니다.");
+    }
+
+    setTodo(previous =>
+        previous.map(project =>
+            String(project.id) === String(data.projectId)
+              ? {...project, status: data.status}
+              : project
+        )
+    );
+
+    return data;
+
+  };
 
   const value = {
     info, todo,
     addInfo, delInfo, updateInfo, pinInfo,
     addTodo, delTodo, updateTodo,
-    viewInfo, viewTodo
+    viewInfo, viewTodo,
+    requestProjectCompletion
   };
 
   return <JunwooContext.Provider value={value}>{children}</JunwooContext.Provider>;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardPanel from "../components/DashboardPanel";
 import { adminRequest } from "../adminApi";
+import { API_BASE } from "../../../shared/config";
 
 // 프로젝트 + 이슈 + 인사 + 평가를 하나의 화면에서 보여줍니다.
 export default function Dashboard({ projects = [], data }) {
@@ -28,7 +29,7 @@ export default function Dashboard({ projects = [], data }) {
 
     useEffect(() => {
         let alive = true;
-        fetch("http://localhost:3333/api/notices")
+        fetch(`${API_BASE}/api/notices`)
             .then(async (res) => {
                 const body = await res.json().catch(() => ({}));
                 if (!res.ok) throw new Error(body.message || "공지사항을 불러오지 못했습니다.");
@@ -94,7 +95,7 @@ export default function Dashboard({ projects = [], data }) {
             <div className="nexus-alerts">
                 <div><strong>운영 알림 센터</strong><p>현재 데이터에서 확인된 관리 필요 항목</p></div>
                 <button onClick={() => navigate('/admin/issues')}>기한 초과 이슈 <b>{overdue.length}건</b></button>
-                <button onClick={() => navigate('/admin/assignments')}>미배정 프로젝트 <b>{unassigned.length}건</b></button>
+                <button onClick={() => navigate('/admin/members')}>미배정 프로젝트 <b>{unassigned.length}건</b></button>
                 <button onClick={() => navigate('/admin/evaluations')}>평가 승인 요청 <b>{pending.length}건</b></button>
             </div>
 
