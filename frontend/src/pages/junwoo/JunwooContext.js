@@ -457,12 +457,48 @@ export function JunwooProvider({ children }) {
 
   }, []);
 
+  // 완료 요청 저장 후 공통 프로젝트 목록에도 반영
+  const requestProjectCompletion = async (projectId) => {
+    const token = localStorage.getItem("nexus_auth_token");
+
+    if(!token){
+      throw new Error("로그아웃 후 다시 로그인해주세요.")
+    }
+
+    const response = await fetch(
+      `${API_BASE}/api/projects/${projectId}/completion-request`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.message || "완료 요청을 저장하지 못했습니다.");
+    }
+
+    setTodo(previous =>
+        previous.map(project =>
+            String(project.id) === String(data.projectId)
+              ? {...project, status: data.status}
+              : project
+        )
+    );
+
+    return data;
+
+  };
 
   const value = {
     info, todo,
     addInfo, delInfo, updateInfo, pinInfo,
     addTodo, delTodo, updateTodo,
-    viewInfo, viewTodo
+    viewInfo, viewTodo,
+    requestProjectCompletion
   };
 
   return <JunwooContext.Provider value={value}>{children}</JunwooContext.Provider>;

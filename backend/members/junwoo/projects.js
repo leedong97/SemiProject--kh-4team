@@ -2,6 +2,7 @@
 // 원본: backend-junwoo/server.js 의 해당 구간을 Router 로 옮긴 것 (내용 로직은 그대로)
 const express = require('express');
 const db = require('../../db');
+const { requireAuth } = require("../../middleware/session");
 
 const router = express.Router();
 
@@ -531,6 +532,50 @@ router.delete('/:id', async (req, res) => {
 
 });
 
+router.post("/:id/completion-request", requireAuth, async(req, res) => {
+    const projectId = Number(req.params.id);
 
+    if(!Number.isSafeInteger(projectId) || projectId <= 0){
+        return res.status(400).json({
+            message: "올바른 프로젝트 번호가 아닙니다."
+        });
+    }
+
+    try {
+        // 담당자 확인과 상태 변경을 한 번의 SQL로 처리
+        const [result] = await db.query(
+            `UPDATE projects
+            SET status = "완료 요청", updated_at = NOW()
+            WHERE project_id = ?
+                AND manager_id = ?
+                AND status = "진행중"`,
+                [projectId, req.user.employee_id]
+        );
+
+        if(result.affectedRows !== 1){
+            return res.status(409).json({
+                message:
+                    "담당 중인 진행중 프로젝트만 완료 요청할 수 있습니다." +
+                    "이미 요청되었거나 상태가 변경됐는지 확인해주세요."
+            });
+        }
+
+        res.json({
+            projectId,
+            status: "완료 요청",
+            message: "완료 요청이 접수되었습니다."
+        });
+
+    } catch (error) {
+     
+        console.error("프로젝트 완료 요청 실패:", error);
+
+        res.status(500).json({
+            message: "완료 요청을 저장하지 못했습니다."
+        });
+
+    }
+
+});
 
 module.exports = router;

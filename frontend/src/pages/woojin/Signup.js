@@ -46,7 +46,7 @@ function Signup() {
 
         setErrors({})
 
-        axios.post(`${API_BASE}/api/signup`, {
+        axios.post(`${API_BASE}/api/auth/signup`, {
             name: values.name.trim(),
             email: values.email.trim(),
             password: values.password

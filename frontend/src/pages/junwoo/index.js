@@ -1,7 +1,6 @@
 import './junwoo.css';
 import Home from './Home';
 import Todo from './Todo';
-import Todo_set from './Todo_set';
 import Todo_detail from './Todo_detail';
 import Info from './Info';
 import Info_set from './Info_set';
@@ -19,16 +18,12 @@ function HomeRoute() {
   return <Home info={info} todo={todo} />;
 }
 function TodoRoute() {
-  const { todo, delTodo, addTodo } = useJunwoo();
-  return <Todo todo={todo} delTodo={delTodo} onAddTodo={addTodo} />;
-}
-function TodoSetRoute() {
-  const { todo, addTodo } = useJunwoo();
-  return <Todo_set todo={todo} onAddTodo={addTodo} />;
+  const { todo } = useJunwoo();
+  return <Todo todo={todo} />;
 }
 function TodoDetailRoute() {
-  const { todo, viewTodo, updateTodo } = useJunwoo();
-  return <Todo_detail todo={todo} onViewTodo={viewTodo} onUpdateTodo={updateTodo} />;
+  const { todo, viewTodo, requestProjectCompletion } = useJunwoo();
+  return <Todo_detail todo={todo} onViewTodo={viewTodo} onRequestCompletion={requestProjectCompletion} />;
 }
 function InfoRoute() {
   const { info, delInfo, addInfo } = useJunwoo();
@@ -48,7 +43,6 @@ export const Provider = JunwooProvider;
 export const shellRoutes = [
   { path: '/', element: <HomeRoute /> },
   { path: '/todo', element: <TodoRoute /> },
-  { path: '/todo/set', element: <TodoSetRoute /> },
   { path: '/todo/:id', element: <TodoDetailRoute /> },
   { path: '/info', element: <InfoRoute /> },
   { path: '/info/set', element: <InfoSetRoute /> },

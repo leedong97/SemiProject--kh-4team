@@ -13,8 +13,8 @@ export function saveLoginUser(dbUser) {
 // 로그아웃할 때 호출: 저장한 정보를 지워요
 export function clearLoginUser() {
     localStorage.removeItem(KEY);
-    localStorage.removeItem("communityToken");
-    localStorage.removeItem("nexus_auth_token");
+    localStorage.removeItem('communityToken');
+    localStorage.removeItem('nexus_auth_token');
 }
 
 // 마이페이지가 쓰는 모양(name, rank, division, team, empNo, role)으로 바꿔서 돌려줘요.
