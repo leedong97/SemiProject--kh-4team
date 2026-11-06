@@ -343,3 +343,17 @@
     font-size: 11px;
     white-space: nowrap;
 }
+
+.team-shell .junwoo-project-list .jpl-header-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.team-shell .junwoo-project-list a.jpl-reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}

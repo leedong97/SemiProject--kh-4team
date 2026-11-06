@@ -97,38 +97,72 @@ router.patch("/leaves/:id", async (req, res) => {
         const [result] = await pool.query("UPDATE leave_requests SET status = ?, reviewed_by = ?, reviewed_at = NOW(), updated_at = NOW() WHERE leave_id = ? AND status = '대기'", [status, req.user.employee_id, id]);
         if (!result.affectedRows) return res.status(409).json({ message: "대기 중인 휴가가 아닙니다." });
         // 휴가 승인 또는 반려 후 직원에게 알림 생성
-try {
-    const [leaveRows] = await pool.query(
-        `SELECT
+        try {
+            const [leaveRows] = await pool.query(
+                `SELECT
             employee_id,
             leave_type,
             DATE_FORMAT(start_date, '%m/%d') AS s,
             DATE_FORMAT(end_date, '%m/%d') AS e
          FROM leave_requests
          WHERE leave_id = ?`,
-        [id]
-    );
+                [id]
+            );
 
-    if (leaveRows[0]) {
-        const r = leaveRows[0];
+            if (leaveRows[0]) {
+                const r = leaveRows[0];
 
-        // 휴가 기간 표시
-        const period = r.s === r.e
-            ? r.s
-            : r.s + "~" + r.e;
+                // 휴가 기간 표시
+                const period = r.s === r.e
+                    ? r.s
+                    : r.s + "~" + r.e;
 
-        // 직원에게 알림 저장
-        await createNotification(
-            r.employee_id,
-            "휴가",
-            "신청한 휴가(" + period + " " + r.leave_type + ")가 " + status + "됐어요.",
-            null
-        );
-    }
-} catch (notifyError) {
-    console.error("휴가 알림 생성 오류:", notifyError.message);
-}
+                // 직원에게 알림 저장
+                await createNotification(
+                    r.employee_id,
+                    "휴가",
+                    "신청한 휴가(" + period + " " + r.leave_type + ")가 " + status + "됐어요.",
+                    null
+                );
+            }
+        } catch (notifyError) {
+            console.error("휴가 알림 생성 오류:", notifyError.message);
+        }
         res.json({ message: "휴가 " + status + " 완료. 현재 날짜가 휴가 기간이면 직원 조회에서 휴가로 표시됩니다." });
     } catch (error) { console.error(error); res.status(500).json({ message: "휴가 처리 실패" }); }
 });
+// 직원별 업무 현황: 프로젝트/참여 직원/담당 이슈를 MySQL에서 직접 조회합니다.
+router.get("/work-overview", async (req, res) => {
+    try {
+        // 배포된 DB마다 이슈 상태/마감일 컬럼명이 다를 수 있어 실제 컬럼을 확인합니다.
+        const [columns] = await pool.query("SHOW COLUMNS FROM issues");
+        const names = columns.map(column => column.Field);
+        function chooseColumn(candidates) {
+            for (const name of candidates) {
+                if (names.includes(name)) return "i.`" + name + "`";
+            }
+            return null;
+        }
+        const statusColumn = chooseColumn(["issue_status", "status"]);
+        const dueColumn = chooseColumn(["issue_due_date", "due_date", "deadline", "end_date"]);
+        const statusSql = statusColumn ? statusColumn + " AS status" : "NULL AS status";
+        const dueSql = dueColumn ? "DATE_FORMAT(" + dueColumn + ", '%Y-%m-%d') AS due" : "NULL AS due";
+
+        const [projectResult, memberResult, issueResult] = await Promise.all([
+            pool.query("SELECT project_id AS id, project_title AS name, manager_id AS managerId, status FROM projects"),
+            pool.query("SELECT project_id AS projectId, employee_id AS employeeId FROM project_members"),
+            pool.query(`SELECT i.issue_id AS id, i.project_id AS projectId,
+                i.issue_title AS title, ${statusSql},
+                i.assigned_employee_id AS assigneeId, ${dueSql},
+                p.project_title AS projectName
+                FROM issues i LEFT JOIN projects p ON p.project_id = i.project_id
+                ORDER BY i.issue_id DESC`)
+        ]);
+        res.json({ projects: projectResult[0], members: memberResult[0], issues: issueResult[0] });
+    } catch (error) {
+        console.error("인사 업무 현황 조회 오류:", error);
+        res.status(500).json({ message: "업무 현황 조회 실패: " + (error.code || "서버 오류") });
+    }
+});
+
 module.exports = router;

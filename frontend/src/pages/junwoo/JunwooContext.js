@@ -14,16 +14,23 @@ export function JunwooProvider({ children }) {
 
   const { pathname } = useLocation();
 
+
+  // 여러 페이지가 공유하느 목록을 저장한다.
+  // setInfo 또는 setTodo가 실행되면 이 데이터를 사용하는 화면도 갱신된다.
   const [info, setInfo] = useState([]);
   const [todo, setTodo] = useState([]);
 
   /* 프로젝트 목록 자동 갱신 */
   useEffect(() => {
+    // 화면 이동 후 이전 요청의 응답이 도착해도 상태를 갱신하지 않도록 표시한다
     let disposed = false;
+
+    // 진행 중인 요청을 취소할 때 사용할 객체를 보관한다.
     let controller = null;
 
     const loadProjects = async () => {
-      // 이전 조회가 진행 중이면 취소
+      // 이전 조회가 아직 끝나지 않았다면 취소한다.
+      // 이전 응답이 늦게 도착해 더 최신 데이터를 덮어쓰는 상황을 줄인다.
       controller?.abort();
       controller = new AbortController();
 
@@ -72,6 +79,8 @@ export function JunwooProvider({ children }) {
         }, 5000)
         : null;
 
+    // 주소가 변경되거나 Provider가 사라질 때 이전 작업을 정리한다.
+    // 요청, 이벤트 리스너, 타이머가 중복으로 남지 않도록 한다.
     return () => {
       disposed = true;
       controller?.abort();
@@ -279,7 +288,8 @@ export function JunwooProvider({ children }) {
 
 
 
-  /* 프로젝트 등록 요청 */
+  // 프로젝트를 바로 생성하지 않고 관리자에게 등록 요청을 보낸다.
+  // 승인 전이므로 todo 목록에는 추가하지 않고 요청 번호만 반환한다.
   const addTodo = async (
     title,
     content,
@@ -496,7 +506,7 @@ export function JunwooProvider({ children }) {
   }, []);
 
   // 완료 요청 저장 후 공통 프로젝트 목록에도 반영
-  const requestProjectCompletion = async (projectId) => {
+  const requestProjectCompletion = async (projectId, resolution) => {
     const token = localStorage.getItem("nexus_auth_token");
 
     if (!token) {
@@ -508,8 +518,10 @@ export function JunwooProvider({ children }) {
       {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify({ resolution })
       }
     );
 
@@ -531,6 +543,8 @@ export function JunwooProvider({ children }) {
 
   };
 
+  // 하위 화면에 공개할 데이터와 함수를 모은다.
+  // useJunwoo()를 호출하면 이 객체에 담긴 값을 꺼낼 수 있다.
   const value = {
     info, todo,
     addInfo, delInfo, updateInfo, pinInfo,

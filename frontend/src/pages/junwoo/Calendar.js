@@ -19,14 +19,18 @@ function Calendar({ schedules = [] }) {
   const year = month.getFullYear();
   const monthNumber = month.getMonth() + 1;
 
-  // 이번 달 1일의 요일
+  // getDat()는 일요일 0부터 토요일 6까지 반환한다.
+  // 이 값을 이용해 1일 앞에 필요한 빈 칸 수를 계산한다.
   const firstDay = new Date(year, monthNumber - 1, 1).getDay();
 
-  // 이번 달 마지막 날짜
+  // Date의 날짜에 0을 넣으면 이전 달의 마지막 날이 된다.
+  // monthNumber는 1~12이므로 현재 표시중인 달의 마지막 날짜를 얻는다.
   const lastDate = new Date(year, monthNumber, 0).getDate();
 
+  // 달력 첫 줄에서 1일 이전에 들어갈 빈 칸 배열
   const emptyDays = Array.from({ length: firstDay });
 
+  // 1일부터 해당 월의 마지막 날까지 날짜 숫자 배열 생성
   const days = Array.from(
     { length: lastDate },
     (_, i) => i + 1
@@ -60,7 +64,8 @@ function Calendar({ schedules = [] }) {
     );
   };
 
-  // 선택한 날짜의 일정 가져오기
+  // 전체 일정에서 선택한 날짜의 일정만 고른 뒤 시간순으로 정렬한다.
+  // 시간이 없으면 빈 문자열로 비교하므로 시간 없는 일정이 먼저 나온다.
   const selectedSchedules = schedules
     .filter(item => item.date === selectedDate)
     .sort((a, b) => (a.time || "").localeCompare(b.time || ""));
