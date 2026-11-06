@@ -3,6 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import { useJunwoo } from "../../junwoo/JunwooContext";
 import getLoginUser from "../../woojin/getLoginUser";
 import useSortableList from "../utils/useSortableList";
+import usePagination from "../utils/usePagination";
+import Pager from "../components/Pager";
 
 const PAGE_SIZE = 10;
 
@@ -23,7 +25,6 @@ function Notices() {
     const [search, setSearch] = useState("");
     const [pinnedOnly, setPinnedOnly] = useState(false);
     const [period, setPeriod] = useState("all");
-    const [page, setPage] = useState(1);
     const [saving, setSaving] = useState(false);
     // 고정 여부 (작성·수정 폼의 체크박스)
     const [pinned, setPinned] = useState(false);
@@ -143,12 +144,8 @@ function Notices() {
         ];
     }, [info, search, pinnedOnly, period, sortKey, sortItems]);
 
-    // 필터나 검색이 바뀌면 첫 페이지로
-    useEffect(() => { setPage(1); }, [search, pinnedOnly, period, sortKey]);
-
-    const totalPages = Math.max(1, Math.ceil(filteredInfo.length / PAGE_SIZE));
-    const currentPage = Math.min(page, totalPages);
-    const pageItems = filteredInfo.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+    const { pageItems, currentPage, totalPages, total, goPrev, goNext } =
+        usePagination(filteredInfo, PAGE_SIZE, [search, pinnedOnly, period, sortKey]);
 
     return (
         <div className="admin-boards">
@@ -247,13 +244,8 @@ function Notices() {
                     </table>
                 </div>
 
-                {filteredInfo.length > PAGE_SIZE && (
-                    <div className="boards-pager" style={{ display: "flex", gap: "8px", justifyContent: "center", marginTop: "12px" }}>
-                        <button type="button" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)}>이전</button>
-                        <span>{currentPage} / {totalPages}</span>
-                        <button type="button" disabled={currentPage === totalPages} onClick={() => setPage(currentPage + 1)}>다음</button>
-                    </div>
-                )}
+                <Pager currentPage={currentPage} totalPages={totalPages} total={total}
+                    onPrev={goPrev} onNext={goNext} />
             </div>
         </div>
     );

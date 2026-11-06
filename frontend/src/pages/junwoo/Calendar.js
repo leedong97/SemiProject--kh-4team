@@ -231,12 +231,13 @@ function Calendar({ schedules = [] }) {
             ) : (
 
               <ul>
-
                 {selectedSchedules.map(item => (
+
 
                   <li key={item.id}>
 
                     <strong>{item.time || "종일"}</strong>
+
 
                     <span>
 
@@ -268,7 +269,9 @@ function Calendar({ schedules = [] }) {
 
                     </span>
 
+
                   </li>
+
 
                 ))}
               </ul>
@@ -278,6 +281,28 @@ function Calendar({ schedules = [] }) {
           </>
 
         )}
+
+        {/* 캘린더에서 프로젝트 등록 */}
+
+        {selectedDate && (
+          <div className="calendar-register-actions">
+
+            {/* 프로젝트 등록 */}
+            <button
+              type="button"
+              className="calendar-add-project-btn"
+              onClick={() => navigate("/todo", {
+                state: {
+                  startDate: selectedDate
+                }
+              })}
+            >
+              + 프로젝트 등록 요청
+            </button>
+
+          </div>
+        )}
+
 
       </div>
 

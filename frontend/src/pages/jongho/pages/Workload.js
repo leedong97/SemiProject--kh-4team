@@ -1,3 +1,4 @@
+import { PROJECT_STATUS } from "../shared/projectConstants";
 import React from 'react';
 import { useJongho } from '../JonghoContext';
 import PageHeading from '../components/PageHeading';
@@ -5,7 +6,7 @@ export default function Workload() {
     const { data, projects } = useJongho();
     const employees = data.employees.filter(e => e.status === '재직').map(e => ({
         ...e,
-        projects: projects.filter(p => String(p.managerId) === String(e.id) && p.status !== '완료').length,
+        projects: projects.filter(p => String(p.managerId) === String(e.id) && p.status !== PROJECT_STATUS.DONE).length,
         issues: data.issues.filter(i => String(i.assigneeId) === String(e.id) && i.status !== '완료').length
     })).sort((a,b) => (b.projects+b.issues)-(a.projects+a.issues));
     const max = Math.max(1, ...employees.map(e => e.projects + e.issues));

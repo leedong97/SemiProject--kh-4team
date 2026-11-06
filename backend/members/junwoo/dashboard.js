@@ -1,15 +1,14 @@
 // 준우: dashboard API  (메인 서버에서 prefix '/api/dashboard' 로 연결됩니다)
 // 원본: backend-junwoo/server.js 의 해당 구간을 Router 로 옮긴 것 (내용 로직은 그대로)
-const { requireAuth } = require('../../middleware/session');
 const express = require('express');
 const db = require('../../db');
 
 const router = express.Router();
 
-router.get('/schedules', requireAuth, async (req, res) => {
+router.get('/schedules', async (req, res) => {
 
-    // 로그인 인증을 통과한 직원의 번호
-    const employeeId = req.user.employee_id;
+    // 임시 직원번호 (추후 로그인 정보 연결)
+    const employeeId = 1;
 
     try {
 

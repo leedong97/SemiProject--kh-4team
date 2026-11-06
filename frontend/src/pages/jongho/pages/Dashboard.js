@@ -1,7 +1,9 @@
+import { PROJECT_STATUS } from "../shared/projectConstants";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardPanel from "../components/DashboardPanel";
 import { adminRequest } from "../adminApi";
+import { API_BASE } from "../../../shared/config";
 
 // 프로젝트 + 이슈 + 인사 + 평가를 하나의 화면에서 보여줍니다.
 export default function Dashboard({ projects = [], data }) {
@@ -11,7 +13,7 @@ export default function Dashboard({ projects = [], data }) {
     const overdue = openIssues.filter(issue => issue.due && issue.due < today);
     const pending = data.evaluations.filter(item => item.status === "승인 요청");
     const unassigned = projects.filter(project => project.managerId == null);
-    const active = projects.filter(project => ["진행중", "진행 중"].includes(project.status));
+    const active = projects.filter(project => [PROJECT_STATUS.IN_PROGRESS, "진행 중"].includes(project.status));
     const cards = [
         { title: "전체 프로젝트", value: projects.length, detail: `진행 중 ${active.length}개`, path: "/admin/projects", icon: "▣" },
         { title: "미완료 이슈", value: openIssues.length, detail: `기한 초과 ${overdue.length}건`, path: "/admin/issues", icon: "◈" },
@@ -28,7 +30,7 @@ export default function Dashboard({ projects = [], data }) {
 
     useEffect(() => {
         let alive = true;
-        fetch("http://localhost:3333/api/notices")
+        fetch(`${API_BASE}/api/notices`)
             .then(async (res) => {
                 const body = await res.json().catch(() => ({}));
                 if (!res.ok) throw new Error(body.message || "공지사항을 불러오지 못했습니다.");
@@ -64,7 +66,7 @@ export default function Dashboard({ projects = [], data }) {
     const budgetOf = (project) => Number(project.budget) || 0;
     const totalBudget = projects.reduce((sum, project) => sum + budgetOf(project), 0);
     const activeBudget = projects
-        .filter((project) => ["진행중", "진행 중"].includes(project.status))
+        .filter((project) => [PROJECT_STATUS.IN_PROGRESS, "진행 중"].includes(project.status))
         .reduce((sum, project) => sum + budgetOf(project), 0);
     const topProjects = [...projects]
         .sort((a, b) => budgetOf(b) - budgetOf(a))

@@ -1,18 +1,11 @@
 import { canLeadProject } from "../shared/permissions";
+import EmployeePicker from "./EmployeePicker";
 
 // 신규 프로젝트 등록 폼 (입력값과 검사는 부모 화면에서 처리)
 // 담당자(팀장 이상 1명)와 팀원(재직자 여러 명)을 등록할 때 함께 정합니다.
 function ProjectRegisterForm({ form, onChange, onSubmit, onBack, employees = [], customers = [], onAddMember, onRemoveMember }) {
     const activeEmployees = employees.filter((e) => e.status === "재직");
     const leaderCandidates = activeEmployees.filter((e) => canLeadProject(e));
-    const selectedMembers = activeEmployees.filter(
-      (e) => form.memberIds.includes(e.id) && String(e.id) !== String(form.managerId)
-    );
-    // 아직 추가하지 않은 직원만 선택지에 보인다 (담당자도 팀원에 포함되므로 같이 제외)
-    const addableEmployees = activeEmployees.filter(
-      (e) => !form.memberIds.includes(e.id) && String(e.id) !== String(form.managerId)
-    );
-
     return (
       <>
         <div className="nexus-project-heading">
@@ -125,28 +118,15 @@ function ProjectRegisterForm({ form, onChange, onSubmit, onBack, employees = [],
             </select>
 
             <label>팀원 추가</label>
-            <select
-              className="nexus-project-input"
-              value=""
-              onChange={(e) => e.target.value && onAddMember(Number(e.target.value))}
-            >
-              <option value="">팀원을 선택하면 추가됩니다</option>
-              {addableEmployees.map((employee) => (
-                <option key={employee.id} value={employee.id}>
-                  {employee.name} ({employee.rank} · {employee.position})
-                </option>
-              ))}
-            </select>
-
-            <div style={{ marginTop: "10px" }}>
-              {selectedMembers.length === 0 && <p>아직 추가된 팀원이 없습니다.</p>}
-              {selectedMembers.map((employee) => (
-                <span key={employee.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', border: '1px solid #ccc', borderRadius: '14px', margin: '0 6px 6px 0' }}>
-                  {employee.name} ({employee.rank})
-                  <button type="button" onClick={() => onRemoveMember(employee.id)}>×</button>
-                </span>
-              ))}
-            </div>
+            <EmployeePicker
+              employees={employees}
+              selectedIds={form.memberIds}
+              excludedId={form.managerId}
+              selectClassName="nexus-project-input"
+              emptyMessage="아직 추가된 팀원이 없습니다."
+              onAdd={onAddMember}
+              onRemove={onRemoveMember}
+            />
             <small>담당자로 고른 직원은 팀원 명단에도 자동으로 포함됩니다.</small>
 
           </div>

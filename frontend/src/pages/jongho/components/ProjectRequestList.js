@@ -1,3 +1,4 @@
+import { PROJECT_STATUS } from "../shared/projectConstants";
 import { useState } from "react";
 
 // 프로젝트 완료 요청 목록
@@ -119,7 +120,7 @@ function ProjectRequestList({ requests, busy, onOpenProject, onApprove, onReject
                   </div>
                   <div>
                     <span>요청 상태</span>
-                    <strong>{req.projectStatus || "예정"}</strong>
+                    <strong>{req.projectStatus || PROJECT_STATUS.PLANNED}</strong>
                   </div>
                   <div>
                     <span>우선순위</span>
