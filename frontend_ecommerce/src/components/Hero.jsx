@@ -28,7 +28,7 @@ export default function Hero({ category, onNavigate }) {
         {/* 실제 통계가 아닌 디자인용 대시보드 미리보기입니다. */}
         <aside className="hero-art" aria-label="대시보드 디자인 예시">
           <div className="metric">
-            NEXUS IT 운영 대시보드 <strong>● ACTIVE</strong>
+            COMMAND IT 운영 대시보드 <strong>● ACTIVE</strong>
           </div>
           <div className="fake">
             {barHeights.map((height, index) => (

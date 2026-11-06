@@ -104,7 +104,7 @@ function PreviewHome() {
             </div>
 
             <div className="preview-grid">
-                <section className="preview-card">
+                <section className="preview-card preview-calendar-card">
                     <h2>캘린더</h2>
 
                     <div className="demo-calendar-toolbar">

@@ -10,6 +10,7 @@ import PreviewNotices from "./PreviewNotices";
 import PreviewNoticeDetail from "./PreviewNoticeDetail";
 
 import PreviewIssues from "./PreviewIssues";
+import PreviewIssueDetail from "./PreviewIssueDetail";
 
 console.log("Layout:", typeof PreviewLayout);
 console.log("Home:", typeof PreviewHome);
@@ -47,6 +48,10 @@ export const previewRoutes = [
             {
                 path: "issues",
                 element: <PreviewIssues />
+            },
+            {
+                path: "issues/:id",
+                element: <PreviewIssueDetail />
             }
         ]
     }

@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, Outlet, Link } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import "./Preview.css";
 
 function PreviewLayout() {
@@ -23,11 +23,6 @@ function PreviewLayout() {
 
         <div className="preview-header-actions">
           <span className="preview-user">데모 사용자</span>
-
-          <Link to="/pricing" className="preview-pricing-link">
-            <span aria-hidden="true">←</span>
-            요금제 보기
-          </Link>
         </div>
       </header>
 

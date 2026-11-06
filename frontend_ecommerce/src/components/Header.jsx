@@ -14,7 +14,7 @@ export default function Header({ onNavigate }) {
             onNavigate("home");
           }}
         >
-          NEXUS <strong>SOLUTIONS</strong>
+          COMMAND <strong>SOLUTIONS</strong>
           <small>BUSINESS IT SERVICE STORE</small>
         </a>
 

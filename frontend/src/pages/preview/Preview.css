@@ -314,43 +314,6 @@
     white-space: nowrap;
 }
 
-/* 요금제 이동 버튼 */
-.preview-page .preview-pricing-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 42px;
-    padding: 10px 16px;
-
-    border: 1px solid #cfe2f9;
-    border-radius: 9px;
-    background: #fff;
-    color: #087bdf;
-
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1.4;
-    text-decoration: none;
-    white-space: nowrap;
-
-    transition: background-color 0.2s, border-color 0.2s;
-}
-
-.preview-page .preview-pricing-link:visited {
-    color: #087bdf;
-}
-
-.preview-page .preview-pricing-link:hover {
-    background: #edf6ff;
-    border-color: #a7cff7;
-}
-
-.preview-page .preview-pricing-link:focus-visible {
-    outline: 3px solid #087bdf;
-    outline-offset: 3px;
-}
-
 /* 작은 화면에서는 메뉴를 아래 줄로 */
 @media (max-width: 768px) {
     .preview-page .preview-header {
@@ -373,17 +336,6 @@
         gap: 12px;
         width: 100%;
         min-width: 0;
-    }
-
-    .preview-page .preview-pricing-link {
-        padding: 10px 12px;
-        font-size: 13px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .preview-page .preview-pricing-link {
-        transition: none;
     }
 }
 
@@ -712,5 +664,202 @@
     .preview-page .demo-notice-list li {
         flex-direction: column;
         gap: 6px;
+    }
+}
+
+/* 상단 메뉴 간격 및 캘린더 크기 조정 */
+.preview-page .preview-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+    padding: 16px 24px;
+}
+
+.preview-page .preview-header>a {
+    justify-self: start;
+}
+
+.preview-page .preview-logo {
+    width: 170px;
+    max-width: 100%;
+    height: 48px;
+}
+
+/* 메뉴 4개의 너비를 동일하게 */
+.preview-page .preview-header .preview-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    width: auto;
+    min-width: 0;
+    order: initial;
+}
+
+.preview-page .preview-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 16px;
+    margin: 0;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.preview-page .preview-header-actions {
+    justify-self: end;
+    gap: 12px;
+    margin-left: 0;
+}
+
+/* 캘린더와 오른쪽 목록의 가로 비율 */
+.preview-page .preview-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 24px;
+}
+
+/* 캘린더 카드에만 적용 */
+.preview-page .preview-calendar-card {
+    padding: 24px;
+}
+
+.preview-page .preview-calendar-card h2 {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+}
+
+.preview-page .demo-calendar-toolbar {
+    margin: 0 0 16px;
+}
+
+.preview-page .demo-calendar-grid {
+    gap: 6px;
+}
+
+.preview-page .demo-weekday {
+    padding: 8px 0;
+}
+
+.preview-page .demo-calendar-day,
+.preview-page .demo-calendar-empty {
+    height: 52px;
+    min-height: 52px;
+}
+
+.preview-page .demo-calendar-day {
+    position: relative;
+    padding: 0;
+    gap: 0;
+}
+
+/* 일정 유무와 관계없이 날짜 숫자의 위치를 동일하게 */
+.preview-page .demo-event-dot {
+    position: absolute;
+    bottom: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.preview-page .demo-day-schedule {
+    margin-top: 18px;
+    padding: 14px 16px;
+}
+
+.preview-page .demo-day-schedule h3 {
+    margin-bottom: 10px;
+}
+
+/* 태블릿: 로고와 사용자 영역 아래에 메뉴 배치 */
+@media (max-width: 1100px) {
+    .preview-page .preview-header {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 16px;
+    }
+
+    .preview-page .preview-header .preview-nav {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        width: 100%;
+    }
+
+    .preview-page .preview-header-actions {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
+
+/* 좁은 화면에서는 캘린더와 목록을 세로 배치 */
+@media (max-width: 1000px) {
+    .preview-page .preview-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* 모바일 */
+@media (max-width: 600px) {
+    .preview-page .preview-header {
+        padding: 14px 12px;
+        gap: 12px;
+    }
+
+    .preview-page .preview-logo {
+        width: 140px;
+        height: 40px;
+    }
+
+    .preview-page .preview-header .preview-nav {
+        gap: 4px;
+    }
+
+    .preview-page .preview-nav a {
+        padding: 10px 4px;
+        font-size: 13px;
+    }
+
+    .preview-page .preview-calendar-card {
+        padding: 18px 14px;
+    }
+
+    .preview-page .demo-calendar-grid {
+        gap: 4px;
+    }
+
+    .preview-page .demo-calendar-day,
+    .preview-page .demo-calendar-empty {
+        height: 44px;
+        min-height: 44px;
+    }
+
+    .preview-page .demo-event-dot {
+        bottom: 5px;
+    }
+}
+
+/* PC: 로고와 사용자 영역 사이에 메뉴를 넓게 분산 */
+@media (min-width: 1101px) {
+    .preview-page .preview-header {
+        grid-template-columns: 170px minmax(0, 1fr) auto;
+        column-gap: 40px;
+        padding: 16px 28px;
+    }
+
+    .preview-page .preview-header .preview-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        gap: 16px;
+        width: 100%;
+    }
+
+    .preview-page .preview-nav a {
+        flex: 0 0 auto;
+        min-height: 44px;
+        padding: 12px 18px;
+        text-align: center;
+    }
+
+    .preview-page .preview-header-actions {
+        gap: 16px;
     }
 }

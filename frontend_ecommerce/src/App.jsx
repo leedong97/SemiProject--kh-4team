@@ -104,7 +104,7 @@ export default function App() {
             onNavigate={navigate}
           />
         )}
-        {page === "flow" && <FlowPage type={type} onNavigate={navigate} />}
+        {page === "flow" && <FlowPage type={type} />}
       </main>
 
       <Footer />
