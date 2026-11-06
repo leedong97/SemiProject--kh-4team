@@ -9,7 +9,8 @@ function DashboardCalendar() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    /* MySQL 일정 조회 */
+    // 백엔드 API에 일정 목록을 요청한다.
+    // 브라우저가 MySQL에 직접 접속하는 것은 아니다.
     useEffect(() => {
 
         const controller = new AbortController();
@@ -17,6 +18,9 @@ function DashboardCalendar() {
         const loadSchedules = async () => {
 
             try {
+
+                // 로그인할 때 저장한 인증 토큰을 가져온다.
+                // 서버는 이 토큰을 검증하여 요청한 직원이 누구인지 확인한다.
                 const token = localStorage.getItem('nexus_auth_token');
 
                 if (!token) {
@@ -55,8 +59,9 @@ function DashboardCalendar() {
                     data.filter(item => item.type === "공지사항")
                 );
 
-                // Calendar.js에 전달할 데이터
-
+                // 서버 응답을 Calendar에서 사용할 일정 객체로 정리한다.
+                // projectId와 noticeId는 상세 페이지로 이동할 때 사용한다.
+                // index + 1로 만든 id는 DB의 실제 일정 번호가 아니다.
                 const scheduleList = data.map((item, index) => ({
                     id: index + 1,
                     title: item.title,
@@ -92,6 +97,7 @@ function DashboardCalendar() {
 
         loadSchedules();
 
+        // 컴포넌트가 사라질 때 진행 중인 조회를 취소한다.
         return () => controller.abort();
 
     }, []);
