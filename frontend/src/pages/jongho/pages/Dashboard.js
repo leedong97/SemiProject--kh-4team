@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardPanel from "../components/DashboardPanel";
 import { adminRequest } from "../adminApi";
-import { API_BASE } from "../../../shared/config";
 
 // 프로젝트 + 이슈 + 인사 + 평가를 하나의 화면에서 보여줍니다.
 export default function Dashboard({ projects = [], data }) {
@@ -29,7 +28,7 @@ export default function Dashboard({ projects = [], data }) {
 
     useEffect(() => {
         let alive = true;
-        fetch(`${API_BASE}/api/notices`)
+        fetch("http://localhost:3333/api/notices")
             .then(async (res) => {
                 const body = await res.json().catch(() => ({}));
                 if (!res.ok) throw new Error(body.message || "공지사항을 불러오지 못했습니다.");
@@ -242,7 +241,7 @@ export default function Dashboard({ projects = [], data }) {
                         >
                             <strong>
                                 {isPinned(notice) && (
-                                    <span className="pill" style={{ marginRight: 6 }}>고정</span>
+                                    <span className="dash-pinned-badge">고정</span>
                                 )}
                                 {notice.title}
                             </strong>

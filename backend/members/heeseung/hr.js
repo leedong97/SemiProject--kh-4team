@@ -1,8 +1,10 @@
 const express = require("express");
+const bcrypt = require("bcryptjs");
 const pool = require("../../db");
 const { requireAuth, requireManager } = require("../../middleware/session");
 const router = express.Router();
 router.use(requireAuth, requireManager);
+const { createNotification } = require("../../notify");
 
 // 승인된 휴가 기간에만 휴가 표시. 휴직과 퇴사는 우선 적용
 const statusSql = `CASE
@@ -10,6 +12,18 @@ const statusSql = `CASE
     WHEN EXISTS (SELECT 1 FROM leave_requests l WHERE l.employee_id = e.employee_id
         AND l.status = '승인' AND DATE(UTC_TIMESTAMP() + INTERVAL 9 HOUR) BETWEEN l.start_date AND l.end_date)
     THEN '휴가' ELSE e.employee_status END`;
+
+
+router.post("/employees", async (req, res) => {
+    const { employee_code, employee_name, employee_email, employee_pw, employee_department, employee_grade, employee_position } = req.body || {};
+    if (!/^[A-Za-z0-9-]{2,20}$/.test(employee_code || '') || !String(employee_name || '').trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(employee_email || '') || typeof employee_pw !== 'string' || employee_pw.length < 8 || Buffer.byteLength(employee_pw, 'utf8') > 72) return res.status(400).json({ message: "사원코드, 이름, 이메일, 초기 비밀번호(8자 이상)를 확인하세요." });
+    try {
+        const hash = await bcrypt.hash(employee_pw, 10);
+        const [result] = await pool.query(`INSERT INTO employees (employee_code, employee_name, employee_email, employee_pw, employee_department, employee_grade, employee_position, employee_role, employee_status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, '일반 사용자', '재직')`, [employee_code, employee_name.trim(), employee_email.trim(), hash, employee_department || null, employee_grade || '사원', employee_position || null]);
+        res.status(201).json({ employee_id: result.insertId, message: "직원 등록 완료" });
+    } catch (error) { console.error(error); res.status(error.code === 'ER_DUP_ENTRY' ? 409 : 500).json({ message: error.code === 'ER_DUP_ENTRY' ? "중복된 사원코드 또는 이메일입니다." : "직원 등록 실패: 필수 DB 컬럼을 확인하세요." }); }
+});
 
 router.get("/employees", async (req, res) => {
     try {
@@ -75,27 +89,45 @@ router.get("/leaves", async (req, res) => {
         res.json(rows);
     } catch (error) { console.error(error); res.status(500).json({ message: "휴가 조회 실패" }); }
 });
-router.post("/leaves", async (req, res) => {
-    const { employee_id, leave_type, start_date, end_date, leave_reason } = req.body || {};
-    if (!Number.isInteger(employee_id) || typeof leave_type !== "string" || !leave_type.trim() || leave_type.length > 20 || !/^\d{4}-\d{2}-\d{2}$/.test(start_date || "") || !/^\d{4}-\d{2}-\d{2}$/.test(end_date || "") || start_date > end_date) return res.status(400).json({ message: "휴가 입력값 오류" });
-    let conn;
-    try {
-        conn = await pool.getConnection(); await conn.beginTransaction();
-        const [employees] = await conn.query("SELECT employee_status FROM employees WHERE employee_id = ? FOR UPDATE", [employee_id]);
-        if (!employees[0] || employees[0].employee_status !== "재직") { await conn.rollback(); return res.status(400).json({ message: "재직 중인 직원만 신청 가능합니다." }); }
-        const [overlaps] = await conn.query("SELECT leave_id FROM leave_requests WHERE employee_id = ? AND status <> '반려' AND start_date <= ? AND end_date >= ? LIMIT 1", [employee_id, end_date, start_date]);
-        if (overlaps.length) { await conn.rollback(); return res.status(409).json({ message: "겹치는 휴가 신청이 있습니다." }); }
-        const [result] = await conn.query("INSERT INTO leave_requests (employee_id, leave_type, start_date, end_date, leave_reason, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, '대기', NOW(), NOW())", [employee_id, leave_type.trim(), start_date, end_date, leave_reason || null]);
-        await conn.commit(); res.status(201).json({ leave_id: result.insertId, status: "대기" });
-    } catch (error) { if (conn) await conn.rollback(); console.error(error); res.status(500).json({ message: "휴가 등록 실패" }); }
-    finally { if (conn) conn.release(); }
-});
+
 router.patch("/leaves/:id", async (req, res) => {
     const id = Number(req.params.id); const { status } = req.body || {};
     if (!Number.isInteger(id) || !["승인", "반려"].includes(status)) return res.status(400).json({ message: "승인 또는 반려를 선택하세요." });
     try {
         const [result] = await pool.query("UPDATE leave_requests SET status = ?, reviewed_by = ?, reviewed_at = NOW(), updated_at = NOW() WHERE leave_id = ? AND status = '대기'", [status, req.user.employee_id, id]);
         if (!result.affectedRows) return res.status(409).json({ message: "대기 중인 휴가가 아닙니다." });
+        // 휴가 승인 또는 반려 후 직원에게 알림 생성
+try {
+    const [leaveRows] = await pool.query(
+        `SELECT
+            employee_id,
+            leave_type,
+            DATE_FORMAT(start_date, '%m/%d') AS s,
+            DATE_FORMAT(end_date, '%m/%d') AS e
+         FROM leave_requests
+         WHERE leave_id = ?`,
+        [id]
+    );
+
+    if (leaveRows[0]) {
+        const r = leaveRows[0];
+
+        // 휴가 기간 표시
+        const period = r.s === r.e
+            ? r.s
+            : r.s + "~" + r.e;
+
+        // 직원에게 알림 저장
+        await createNotification(
+            r.employee_id,
+            "휴가",
+            "신청한 휴가(" + period + " " + r.leave_type + ")가 " + status + "됐어요.",
+            null
+        );
+    }
+} catch (notifyError) {
+    console.error("휴가 알림 생성 오류:", notifyError.message);
+}
         res.json({ message: "휴가 " + status + " 완료. 현재 날짜가 휴가 기간이면 직원 조회에서 휴가로 표시됩니다." });
     } catch (error) { console.error(error); res.status(500).json({ message: "휴가 처리 실패" }); }
 });

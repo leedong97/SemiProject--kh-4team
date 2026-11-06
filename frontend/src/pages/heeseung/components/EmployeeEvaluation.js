@@ -220,10 +220,10 @@ export default function EmployeeEvaluation() {
             <label>프로젝트<select required disabled={!!editingId} value={form.projectId} onChange={e => setForm({ ...form, projectId: e.target.value, employeeId: "" })}><option value="">프로젝트 선택</option>{myProjects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></label>
             <label>평가 대상 직원<select required disabled={!!editingId} value={form.employeeId} onChange={e => setForm({ ...form, employeeId: e.target.value })}><option value="">팀원 선택</option>{availableEmployees.map(e => <option key={e.id} value={e.id}>{e.name} · {e.department}</option>)}{editingId && !availableEmployees.some(e => String(e.id) === String(form.employeeId)) && <option value={form.employeeId}>{name(form.employeeId)}</option>}</select></label>
             {selectedProject && <p className="ev2026-hint">선택한 프로젝트의 PM만 등록할 수 있습니다.</p>}
-            <label>평가 기간<input required maxLength={40} value={form.period} onChange={e => setForm({ ...form, period: e.target.value })}/></label>
-            {fields.map(field => <div className="ev2026-slider" key={field.key}><div><label>{field.title} ({field.weight})</label><strong>{form[field.key]}점</strong></div><input type="range" min="0" max="100" step="5" value={form[field.key]} onChange={e => setForm({ ...form, [field.key]: Number(e.target.value) })}/></div>)}
+            <label>평가 기간<input required maxLength={40} value={form.period} onChange={e => setForm({ ...form, period: e.target.value })} /></label>
+            {fields.map(field => <div className="ev2026-slider" key={field.key}><div><label>{field.title} ({field.weight})</label><strong>{form[field.key]}점</strong></div><input type="range" min="0" max="100" step="5" value={form[field.key]} onChange={e => setForm({ ...form, [field.key]: Number(e.target.value) })} /></div>)}
             <div className="ev2026-total">가중 평균 <strong>{total} / 100점</strong></div>
-            <label>평가 의견<textarea required rows="4" value={form.feedback} onChange={e => setForm({ ...form, feedback: e.target.value })} placeholder="평가 근거와 개선점을 구체적으로 작성하세요."/></label>
+            <label>평가 의견<textarea required rows="4" value={form.feedback} onChange={e => setForm({ ...form, feedback: e.target.value })} placeholder="평가 근거와 개선점을 구체적으로 작성하세요." /></label>
             <div className="ev2026-actions"><button type="submit" disabled={busy}>{busy ? "저장 중..." : "MySQL에 저장"}</button></div>
         </form></div>}
     </div>;

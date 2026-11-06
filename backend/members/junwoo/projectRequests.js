@@ -2,6 +2,7 @@
 
 const express = require("express");
 const db = require("../../db");
+const { createNotificationForManagers } = require("../../notify");
 
 const router = express.Router();
 
@@ -290,6 +291,14 @@ router.post("/", async (req, res) => {
             priority
         ]);
 
+
+        // 알림: 관리자에게 새 프로젝트 등록 요청을 알려요 (요청한 본인이 관리자면 제외)
+        await createNotificationForManagers(
+            "프로젝트",
+            '새 프로젝트 등록 요청 "' + title.trim() + '"이(가) 들어왔어요.',
+            null,
+            [created_by]
+        );
 
         res.status(201).json({
             message: "프로젝트 등록 요청 완료",

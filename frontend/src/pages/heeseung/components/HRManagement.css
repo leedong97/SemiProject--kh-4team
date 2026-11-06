@@ -518,21 +518,26 @@
     .hr-management {
         padding: 22px;
     }
+
     .hr-management .panel {
         padding: 22px;
     }
+
     .hr-management .employee-row {
         align-items: flex-start;
         flex-direction: column;
         gap: 16px;
     }
+
     .hr-management .hr-workload {
         width: 100%;
     }
+
     .hr-management .employee-row>select {
         flex: 0 0 auto;
         width: 100%;
     }
+
     .hr-management .hr-actions {
         width: 100%;
     }
@@ -546,55 +551,69 @@
     .hr-management {
         padding: 14px;
     }
+
     .hr-management .section-head {
         margin-bottom: 18px;
     }
+
     .hr-management .section-head h2 {
         font-size: 25px;
     }
+
     .hr-management .panel {
         margin-bottom: 16px;
         padding: 18px;
         border-radius: 12px;
     }
+
     .hr-management .panel h3 {
         font-size: 16px;
     }
+
     .hr-management .form-row {
         flex-direction: column;
         align-items: stretch;
         gap: 12px;
     }
+
     .hr-management form.form-row>input,
     .hr-management form.form-row>select,
     .hr-management form.form-row>label {
         flex: 0 0 auto;
         width: 100%;
     }
+
     .hr-management form.form-row>button {
         width: 100%;
     }
+
     .hr-management .employee-row {
         padding: 17px 0;
     }
+
     .hr-management .hr-workload {
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 7px;
     }
+
     .hr-management .hr-count {
         min-height: 76px;
         padding: 10px 5px;
     }
+
     .hr-management .hr-count strong {
         font-size: 20px;
     }
+
     .hr-management .hr-count span {
         font-size: 10px;
     }
+
     .hr-management .hr-actions {
         flex-direction: row;
         align-items: stretch;
     }
+
     .hr-management .hr-actions button {
         flex: 1;
     }
@@ -917,9 +936,11 @@
     .hr-management .hr-overview-grid {
         grid-template-columns: 1fr;
     }
+
     .hr-management .hr-tab {
         flex: 1 1 40%;
     }
+
     .hr-management .hr-compare-row {
         grid-template-columns: 75px minmax(0, 1fr) 40px;
         gap: 8px;
@@ -1113,13 +1134,16 @@
     .hr-management {
         padding: 18px 14px 40px;
     }
+
     .hr-management .hr-tabs {
         overflow-x: auto;
         flex-wrap: nowrap;
     }
+
     .hr-management .hr-tab {
         white-space: nowrap;
     }
+
     .hr-management .hr-filters {
         flex-wrap: wrap;
     }
@@ -1308,6 +1332,7 @@
     .hr-management .hr-employee-detail {
         padding: 16px;
     }
+
     .hr-management .hr-detail-summary-grid,
     .hr-management .hr-detail-fields {
         grid-template-columns: 1fr;
@@ -1347,6 +1372,7 @@
     color: #334155;
     font-size: 14px;
 }
+
 .hr-db-notice button {
     padding: 6px 12px;
     border: 1px solid #cbd5e1;
@@ -1369,10 +1395,30 @@
     font-weight: 800;
     line-height: 1.4;
 }
-.hr-management .hr-status-working { color: #065f46; background: #d1fae5; border-color: #6ee7b7; }
-.hr-management .hr-status-vacation { color: #1d4ed8; background: #dbeafe; border-color: #93c5fd; }
-.hr-management .hr-status-leave { color: #92400e; background: #fef3c7; border-color: #fbbf24; }
-.hr-management .hr-status-retired { color: #991b1b; background: #fee2e2; border-color: #fca5a5; }
+
+.hr-management .hr-status-working {
+    color: #065f46;
+    background: #d1fae5;
+    border-color: #6ee7b7;
+}
+
+.hr-management .hr-status-vacation {
+    color: #1d4ed8;
+    background: #dbeafe;
+    border-color: #93c5fd;
+}
+
+.hr-management .hr-status-leave {
+    color: #92400e;
+    background: #fef3c7;
+    border-color: #fbbf24;
+}
+
+.hr-management .hr-status-retired {
+    color: #991b1b;
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
 
 .hr-management .hr-inline-actions button {
     font-weight: 750;
@@ -1381,21 +1427,25 @@
     border: 1px solid transparent;
     opacity: 1;
 }
+
 .hr-management .hr-inline-actions .hr-action-detail {
     background: #e0f2fe !important;
     border-color: #7dd3fc !important;
     color: #075985 !important;
 }
+
 .hr-management .hr-inline-actions .hr-action-edit {
     background: #e0e7ff !important;
     border-color: #a5b4fc !important;
     color: #3730a3 !important;
 }
+
 .hr-management .hr-inline-actions .hr-danger-button {
     background: #fee2e2 !important;
     border-color: #f87171 !important;
     color: #991b1b !important;
 }
+
 .hr-management .hr-db-notice button {
     padding: 9px 16px;
     min-height: 38px;
@@ -1406,23 +1456,70 @@
     opacity: 1;
     box-shadow: 0 2px 5px rgba(30, 64, 175, .16);
 }
-.hr-management .hr-db-notice button:hover:not(:disabled) { background: #1e40af !important; }
-.hr-management .hr-db-notice button:disabled { opacity: .6; cursor: wait; }
-.hr-management .hr-leave-status { font-size: 12px; font-weight: 800; padding: 7px 13px; border-width: 1px; }
-.hr-management .hr-leave-status.pending { background: #fef3c7; color: #92400e; border-color: #f59e0b; }
-.hr-management .hr-leave-status.approved { background: #d1fae5; color: #065f46; border-color: #34d399; }
-.hr-management .hr-leave-status.rejected { background: #fee2e2; color: #991b1b; border-color: #f87171; }
+
+.hr-management .hr-db-notice button:hover:not(:disabled) {
+    background: #1e40af !important;
+}
+
+.hr-management .hr-db-notice button:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.hr-management .hr-leave-status {
+    font-size: 12px;
+    font-weight: 800;
+    padding: 7px 13px;
+    border-width: 1px;
+}
+
+.hr-management .hr-leave-status.pending {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #f59e0b;
+}
+
+.hr-management .hr-leave-status.approved {
+    background: #d1fae5;
+    color: #065f46;
+    border-color: #34d399;
+}
+
+.hr-management .hr-leave-status.rejected {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #f87171;
+}
 
 /* 상태별 명확한 대비: 재직=초록, 휴가=파랑, 휴직=주황, 퇴사=빨강 */
-.hr-management .hr-employee-status.hr-status-working { background: #dcfce7 !important; color: #166534 !important; border: 1px solid #4ade80 !important; }
-.hr-management .hr-employee-status.hr-status-vacation { background: #dbeafe !important; color: #1e40af !important; border: 1px solid #60a5fa !important; }
-.hr-management .hr-employee-status.hr-status-leave { background: #ffedd5 !important; color: #9a3412 !important; border: 1px solid #fb923c !important; }
-.hr-management .hr-employee-status.hr-status-retired { background: #fee2e2 !important; color: #991b1b !important; border: 1px solid #f87171 !important; }
+.hr-management .hr-employee-status.hr-status-working {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+    border: 1px solid #4ade80 !important;
+}
+
+.hr-management .hr-employee-status.hr-status-vacation {
+    background: #dbeafe !important;
+    color: #1e40af !important;
+    border: 1px solid #60a5fa !important;
+}
+
+.hr-management .hr-employee-status.hr-status-leave {
+    background: #ffedd5 !important;
+    color: #9a3412 !important;
+    border: 1px solid #fb923c !important;
+}
+
+.hr-management .hr-employee-status.hr-status-retired {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+    border: 1px solid #f87171 !important;
+}
 
 /* 공통 버튼 스타일이 텍스트를 숨기는 문제를 방지합니다. */
-.hr-management .hr-db-notice > button,
-.hr-management .hr-db-notice > button:link,
-.hr-management .hr-db-notice > button:visited {
+.hr-management .hr-db-notice>button,
+.hr-management .hr-db-notice>button:link,
+.hr-management .hr-db-notice>button:visited {
     background: #1d4ed8 !important;
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
@@ -1430,6 +1527,7 @@
     visibility: visible !important;
     min-width: 110px;
 }
+
 .hr-management .hr-db-notice .hr-refresh-label {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
@@ -1437,11 +1535,42 @@
     visibility: visible !important;
     font-weight: 800;
 }
-.hr-management .hr-db-notice > button:disabled { opacity: .75 !important; }
+
+.hr-management .hr-db-notice>button:disabled {
+    opacity: .75 !important;
+}
 
 /* 휴가 상태를 누르면 승인된 휴가 기간이 펼쳐집니다. */
-.hr-management .hr-vacation-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
-.hr-management .hr-vacation-button { cursor: pointer; font: inherit; font-weight: 700; padding: 5px 10px; }
-.hr-management .hr-vacation-button:hover { background: #bfdbfe !important; }
-.hr-management .hr-vacation-button:focus-visible { outline: 2px solid #1d4ed8; outline-offset: 2px; }
-.hr-management .hr-vacation-dates { background: #eff6ff; color: #1e3a8a; border: 1px solid #bfdbfe; border-radius: 8px; padding: 8px 10px; font-size: 12px; line-height: 1.6; white-space: nowrap; }
+.hr-management .hr-vacation-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.hr-management .hr-vacation-button {
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    padding: 5px 10px;
+}
+
+.hr-management .hr-vacation-button:hover {
+    background: #bfdbfe !important;
+}
+
+.hr-management .hr-vacation-button:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+}
+
+.hr-management .hr-vacation-dates {
+    background: #eff6ff;
+    color: #1e3a8a;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: nowrap;
+}

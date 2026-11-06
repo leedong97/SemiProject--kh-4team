@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+﻿import React, { useState, useEffect, useCallback } from "react";
 import "./HRManagement.css";
 
 // 인사 관리 컴포넌트
@@ -15,11 +15,6 @@ export default function HRManagement({
     const [position, setPosition] = useState("");
     const [rank, setRank] = useState("사원");
 
-    // 휴가 신청 입력값
-    const [leaveEmployee, setLeaveEmployee] = useState("");
-    const [leaveStart, setLeaveStart] = useState("");
-    const [leaveEnd, setLeaveEnd] = useState("");
-
     // 담당 업무 등록 입력값
     const [taskEmployee, setTaskEmployee] = useState("");
     const [taskTitle, setTaskTitle] = useState("");
@@ -34,8 +29,8 @@ export default function HRManagement({
     const [dbLoading, setDbLoading] = useState(true);
     const [dbError, setDbError] = useState("");
     const [dbReady, setDbReady] = useState(false);
-    const [leaveType, setLeaveType] = useState("연차");
     const [busy, setBusy] = useState(false);
+
     // 휴가 배지를 클릭했을 때 기간을 보여줄 직원 번호
     const [openedLeaveEmployeeId, setOpenedLeaveEmployeeId] = useState(null);
 
@@ -293,7 +288,7 @@ export default function HRManagement({
     }
 
     // 직원 등록
-    function addEmployee(event) {
+    async function addEmployee(event) {
         event.preventDefault();
         if (!name.trim()) {
             window.alert("직원 이름을 입력하세요.");
@@ -308,22 +303,28 @@ export default function HRManagement({
                 return;
             }
         }
-        const employee = {
-            id: Date.now(),
-            name: name.trim(),
-            team: team,
-            position: position.trim(),
-            role: position.trim(),
-            rank: rank,
-            status: "재직"
-        };
-        changeData("직원 등록: " + employee.name, old => ({
-            ...old,
-            employees: [...(old.employees || []), employee]
-        }));
-        setName("");
-        setPosition("");
-        window.alert("직원이 등록되었습니다.");
+        const employeeCode = window.prompt("신규 사원코드 (예: EMP-051)");
+        if (!employeeCode) return;
+        const employeeEmail = window.prompt("신규 직원 이메일");
+        if (!employeeEmail) return;
+        const initialPassword = window.prompt("초기 비밀번호 (8자 이상)");
+        if (!initialPassword) return;
+        try {
+            await apiRequest("/employees", {
+                method: "POST",
+                body: JSON.stringify({
+                    employee_code: employeeCode.trim(), employee_name: name.trim(),
+                    employee_email: employeeEmail.trim(), employee_pw: initialPassword,
+                    employee_department: team, employee_grade: rank, employee_position: position.trim()
+                })
+            });
+            await loadHrData();
+            setName("");
+            setPosition("");
+            window.alert("직원이 MySQL에 등록되었습니다.");
+        } catch (error) {
+            window.alert("직원 등록 실패: " + error.message);
+        }
     }
 
     // 담당 업무 등록
@@ -379,35 +380,7 @@ export default function HRManagement({
         }));
     }
 
-    // 휴가 신청
-    async function requestLeave(event) {
-        event.preventDefault();
-        if (!dbReady) return window.alert("DB 연결 상태를 확인하세요.");
-        if (!leaveEmployee || !leaveStart || !leaveEnd || leaveStart > leaveEnd) {
-            return window.alert("휴가 기간을 확인하세요.");
-        }
-        try {
-            setBusy(true);
-            await apiRequest("/leaves", {
-                method: "POST",
-                body: JSON.stringify({
-                    employee_id: Number(leaveEmployee),
-                    leave_type: leaveType,
-                    start_date: leaveStart,
-                    end_date: leaveEnd
-                })
-            });
-            await loadHrData();
-            setLeaveStart("");
-            setLeaveEnd("");
-            window.alert("휴가 신청이 DB에 등록되었습니다. 승인 후 휴가 기간에 표시됩니다.");
-        } catch (error) {
-            window.alert(error.message);
-        } finally {
-            setBusy(false);
-        }
-    }
-
+    // 휴가 승인 및 반려
     async function approveLeave(id, status) {
         if (!dbReady) return window.alert("DB 연결 상태를 확인하세요.");
         if (!window.confirm("휴가를 " + status + " 처리하시겠습니까?")) return;
@@ -768,49 +741,8 @@ export default function HRManagement({
             </div>
         </div>}
 
-        {/* 휴가 관리: 휴가 신청 및 승인/반려 */}
+        {/* 휴가 관리: 승인/반려 */}
         {activeTab === "leaves" && <div className="hr-tab-content">
-            {/* 휴가 신청 */}
-            <form className="panel form-row" onSubmit={requestLeave}>
-
-                <h3 className="full">
-                    휴가 신청 등록
-                </h3>
-
-                <select required value={leaveEmployee} onChange={e => setLeaveEmployee(e.target.value)}>
-
-                    <option value="">직원 선택</option>
-
-                    {employees.map(employee => <option key={employee.id} value={employee.id} disabled={employee.status === "퇴사" || employee.status === "휴직"}>
-                        {employee.name}
-                    </option>)}
-
-                </select>
-
-                <label>
-                    휴가 종류
-                    <select value={leaveType} onChange={e => setLeaveType(e.target.value)}>
-                        <option>연차</option>
-                        <option>반차</option>
-                        <option>병가</option>
-                        <option>경조사</option>
-                    </select>
-                </label>
-                <label>
-                    휴가 시작일
-                    <input required type="date" value={leaveStart} onChange={e => setLeaveStart(e.target.value)} />
-                </label>
-
-                <label>
-                    휴가 종료일
-                    <input required type="date" min={leaveStart} value={leaveEnd} onChange={e => setLeaveEnd(e.target.value)} />
-                </label>
-
-                <button type="submit">
-                    신청 등록
-                </button>
-
-            </form>
             {/* 휴가 승인 목록 */}
             <div className="panel">
 

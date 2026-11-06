@@ -63,9 +63,64 @@ export default function IssueManagement({
     const [verificationComments, setVerificationComments] = useState({});
 
     // 6. 부모 컴포넌트에서 받은 데이터
-    const issues = data?.issues || [];
+    // DB 조회가 성공하면 DB 목록만 표시합니다. 실패 시에는 오류를 보여줍니다.
+    const [dbIssues, setDbIssues] = useState([]);
+    const [issuesLoading, setIssuesLoading] = useState(true);
+    const [issuesError, setIssuesError] = useState("");
+    const issues = dbIssues;
     const employees = data?.employees || [];
     const projects = data?.projects || [];
+    // DB 프로젝트 목록과 이슈별 프로젝트/고객사 정보를 조회합니다.
+    const [dbProjects, setDbProjects] = useState([]);
+
+
+    // 이슈 목록은 DB가 유일한 기준입니다. 저장 후에도 다시 조회합니다.
+    async function loadIssues() {
+        try {
+            const rows = await erpRequest('/issues');
+            if (!Array.isArray(rows)) throw new Error('이슈 API 응답이 배열이 아닙니다.');
+            setDbIssues(rows.map(function (item) {
+                return {
+                    ...item,
+                    id: Number(item.id),
+                    number: Number(item.id),
+                    projectId: item.projectId == null ? null : Number(item.projectId),
+                    assigneeId: item.assigneeId == null ? null : Number(item.assigneeId),
+                    due: item.due || '',
+                    comments: [], history: [], workLogs: []
+                };
+            }));
+            setIssuesError('');
+        } catch (error) {
+            setIssuesError(error.message);
+        } finally {
+            setIssuesLoading(false);
+        }
+    }
+
+    useEffect(function () {
+        loadIssues();
+        erpRequest('/projects').then(function (rows) {
+            setDbProjects(Array.isArray(rows) ? rows : []);
+        }).catch(function (error) {
+            setIssuesError('프로젝트 목록 조회 실패: ' + error.message);
+        });
+    }, []);
+
+    function getProjectInfo(issue) {
+        const savedIssue = issue;
+        const id = savedIssue.projectId || issue.projectId || issue.project_id;
+        const project = dbProjects.find(function (p) {
+            return String(p.project_id) === String(id);
+        }) || projects.find(function (p) {
+            return String(p.id ?? p.project_id) === String(id);
+        });
+        return {
+            name: savedIssue.projectName || project?.project_title || project?.title || '프로젝트 미지정',
+            customer: savedIssue.customerName || project?.customer_name || project?.customerName || '고객사 미지정',
+            endDate: savedIssue.projectEndDate || project?.end_date || '미지정'
+        };
+    }
     const projectMembers = data?.projectMembers || data?.project_members || [];
 
     // DB에서 프로젝트 참여자 목록을 직접 불러옵니다.
@@ -134,67 +189,44 @@ export default function IssueManagement({
     // 9. 직원 이름 조회
 
     function employeeName(id) {
-        const employee = employees.find(e => String(e.id) === String(id));
+        const employee = employees.find(e => String(e.id ?? e.employee_id) === String(id));
         return employee?.name || employee?.employee_name || "미지정";
     }
 
     // 10. 프로젝트 이름 조회
 
     function projectName(id) {
-        const project = projects.find(p => String(p.id) === String(id));
+        const project = (dbProjects.length ? dbProjects : projects).find(p => String(p.id ?? p.project_id) === String(id));
         return project?.title || project?.name || project?.project_title || "프로젝트 미지정";
     }
 
     // 11. 새로운 이슈 등록
 
-    function addIssue(event) {
+    async function addIssue(event) {
         event.preventDefault();
         if (!title.trim()) {
             alert("이슈 제목을 입력하세요.");
             return;
         }
-        // 기존 이슈를 하나씩 확인하여 다음 번호를 구한다.
-        let maxNumber = 0;
-        for (let i = 0; i < issues.length; i++) {
-            let issueNumber = Number(issues[i].number);
-
-            // 예전 데이터에 번호가 없으면 숫자 ID를 확인한다.
-            if (!issueNumber) {
-                const oldId = Number(issues[i].id);
-                if (oldId < 100000) {
-                    issueNumber = oldId;
-                }
-            }
-            if (issueNumber > maxNumber) {
-                maxNumber = issueNumber;
-            }
+        if (!Number(projectId)) {
+            alert('프로젝트를 선택하세요.');
+            return;
         }
-        const nextNumber = maxNumber + 1;
-        const issue = {
-            id: createId(),
-            number: nextNumber,
-            title: title.trim(),
-            assigneeId: Number(assigneeId) || null,
-            due,
-            priority,
-            status: "접수",
-            projectId: Number(projectId) || null,
-            description: description.trim(),
-            reproduction: reproduction.trim(),
-            comments: [],
-            history: [],
-            workLogs: [],
-            createdAt: new Date().toLocaleString("ko-KR"),
-            resolvedAt: null,
-            deletedAt: null,
-            deletedBy: null,
-            deletedById: null
-        };
-        // 부모 컴포넌트의 데이터 변경 함수 호출
-        changeData("이슈 등록: " + issue.title, old => ({
-            ...old,
-            issues: [issue, ...(old.issues || [])]
-        }));
+        try {
+            const saved = await erpRequest('/issues', 'POST', {
+                title: title.trim(),
+                description: description.trim(),
+                projectId: Number(projectId),
+                assigneeId: assigneeId ? Number(assigneeId) : null,
+                due: due || null,
+                priority: priority
+            });
+            await loadIssues();
+            setExpandedIssueId(Number(saved.id));
+        } catch (error) {
+            window.alert('이슈 DB 등록 실패: ' + error.message);
+            return;
+        }
         // 등록 후 입력창 초기화
         setTitle("");
         setAssigneeId("");
@@ -205,7 +237,7 @@ export default function IssueManagement({
         setReproduction("");
         setShowRegister(false);
         setCurrentPage(1);
-        setExpandedIssueId(issue.id);
+        
         setSearch("");
         setStatusFilter("전체");
         setPriorityFilter("전체");
@@ -215,27 +247,22 @@ export default function IssueManagement({
 
     // 12. 이슈 수정 및 변경 이력 기록
 
-    function updateIssue(id, patch, description) {
-        changeData(description, old => ({
-            ...old,
-            issues: (old.issues || []).map(issue => {
-                if (issue.id !== id) {
-                    return issue;
-                }
-                const history = [...(issue.history || []), {
-                    id: createId(),
-                    at: new Date().toLocaleString("ko-KR"),
-                    text: description,
-                    userId: loginUser.id,
-                    userName: loginUserName
-                }];
-                return {
-                    ...issue,
-                    ...patch,
-                    history
-                };
-            })
-        }));
+    async function updateIssue(id, patch, description) {
+        // 실제 issues 테이블에 존재하는 필드만 수정 요청합니다.
+        const dbPatch = {};
+        ['title', 'description', 'priority', 'status', 'assigneeId', 'due', 'projectId'].forEach(function (key) {
+            if (patch[key] !== undefined) dbPatch[key] = patch[key];
+        });
+        if (Object.keys(dbPatch).length === 0) {
+            window.alert('이 변경사항은 DB 저장 기능이 아직 연결되지 않았습니다.');
+            return;
+        }
+        try {
+            await erpRequest('/issues/' + id, 'PATCH', dbPatch);
+            await loadIssues();
+        } catch (error) {
+            window.alert('이슈 DB 수정 실패: ' + error.message);
+        }
     }
 
     // 13. 담당자 변경
@@ -426,9 +453,7 @@ export default function IssueManagement({
                 [issue.id]: [workLog, ...(old[issue.id] || [])]
             };
         });
-        updateIssue(issue.id, {
-            workLogs: [...(issue.workLogs || []), workLog]
-        }, `${issue.title}: 작업 시간 ${minutes}분 등록`);
+
         setWorkDescriptions(old => ({
             ...old,
             [issue.id]: ""
@@ -662,7 +687,9 @@ export default function IssueManagement({
                         }}>
                             {issue.title}
                         </button>
-                        <span>{employeeName(issue.assigneeId)}</span>
+                        <strong>
+    {issue.assigneeName || employeeName(issue.assigneeId)}
+</strong>
                     </div>)}
                 </div>
                 <div className="issue-alert-panel">
@@ -701,14 +728,14 @@ export default function IssueManagement({
             <div className="form-row">
                 <input placeholder="이슈 제목" value={title} onChange={e => setTitle(e.target.value)} required />
                 <select value={projectId} onChange={e => setProjectId(e.target.value)}>
-                    <option value="">프로젝트 미지정</option>
-                    {projects.map(project => <option key={project.id} value={project.id}>
-                        {project.title || project.name || project.project_title}
+                    <option value="">프로젝트를 선택하세요</option>
+                    {(dbProjects.length ? dbProjects : projects).map(project => <option key={project.project_id || project.id} value={project.project_id || project.id}>
+                        {project.project_title || project.title || project.name}
                     </option>)}
                 </select>
                 <select value={assigneeId} onChange={e => setAssigneeId(e.target.value)}>
                     <option value="">담당자 미지정</option>
-                    {employees.map(employee => <option key={employee.id} value={employee.id}>
+                    {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>
                         {employee.name || employee.employee_name}
                     </option>)}
                 </select>
@@ -742,7 +769,7 @@ export default function IssueManagement({
                 }}>
                     <option value="전체">전체 프로젝트</option>
                     <option value="미지정">프로젝트 미지정</option>
-                    {projects.map(project => <option key={project.id} value={project.id}>
+                    {(dbProjects.length ? dbProjects : projects).map(project => <option key={project.project_id || project.id} value={project.project_id || project.id}>
                         {project.title || project.name || project.project_title}
                     </option>)}
                 </select>
@@ -762,17 +789,19 @@ export default function IssueManagement({
                 }}>
                     <option value="전체">전체 담당자</option>
                     <option value="미지정">담당자 미지정</option>
-                    {employees.map(employee => <option key={employee.id} value={employee.id}>
+                    {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>
                         {employee.name || employee.employee_name}
                     </option>)}
                 </select>
             </div>
             <p>검색 결과: {filtered.length}개</p>
         </div>
-        {paginatedIssues.length === 0 && <div className="panel">
+        {issuesLoading && <div className="panel"><p>DB에서 이슈를 불러오는 중입니다.</p></div>}
+        {issuesError && <div className="panel"><p className="error">DB 연결 오류: {issuesError}</p><button type="button" onClick={loadIssues}>다시 조회</button></div>}
+        {!issuesLoading && !issuesError && paginatedIssues.length === 0 && <div className="panel">
             <p>표시할 이슈가 없습니다.</p>
         </div>}
-        {paginatedIssues.map(issue => {
+        {!issuesError && paginatedIssues.map(issue => {
             const isExpanded = expandedIssueId === issue.id;
             const issueComments = issue.comments || [];
             const issueHistory = issue.history || [];
@@ -805,14 +834,13 @@ export default function IssueManagement({
                                 ⚠ 기한 초과
                             </span>}
                         </div>
-                        {/* 프로젝트, 담당자, 마감일 */}
-                        <p className="issue-meta">
-                            {projectName(issue.projectId)}
-                            {" · "}
-                            {employeeName(issue.assigneeId)}
-                            {" · "}
-                            마감 {issue.due || "미지정"}
-                        </p>
+                        {/* 프로젝트 정보만 카드형으로 변경하고 나머지 이슈 UI는 유지합니다. */}
+                        <div className="issue-project-info">
+                            <div><span>프로젝트명</span><strong>{getProjectInfo(issue).name}</strong></div>
+                            <div><span>고객사</span><strong>{getProjectInfo(issue).customer}</strong></div>
+                            <div><span>프로젝트 마감일</span><strong>{getProjectInfo(issue).endDate}</strong></div>
+                            <div><span>담당자</span><strong>{employeeName(issue.assigneeId)}</strong></div>
+                        </div>
                     </div>
                 </div>
                 {isExpanded && <div className="issue-expanded-content">
@@ -842,7 +870,7 @@ export default function IssueManagement({
                             담당자
                             <select value={issue.assigneeId || ""} onChange={e => changeAssignee(issue, e.target.value)}>
                                 <option value="">미지정</option>
-                                {employees.map(employee => <option key={employee.id} value={employee.id}>
+                                {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>
                                     {employee.name || employee.employee_name}
                                 </option>)}
                             </select>

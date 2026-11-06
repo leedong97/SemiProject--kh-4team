@@ -670,6 +670,22 @@
   color: #4d566c;
 }
 
+/* 휴가 상태 배지: 승인 초록 / 대기 주황 / 반려 빨강 */
+.mp-badge.s-approved {
+  background: #dcf3e4;
+  color: #1b7a3d;
+}
+
+.mp-badge.s-pending {
+  background: #ffeccc;
+  color: #a85d00;
+}
+
+.mp-badge.s-rejected {
+  background: #fde0e0;
+  color: #b3261e;
+}
+
 /* 고정 공지 배지 */
 .mp-badge.s-pin {
   background: #fff1d6;

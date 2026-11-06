@@ -390,6 +390,18 @@
     .merge-log small {
       color: #8793a5;
     }
+
+    /* 대시보드 공지 고정 표시 (관리자 공지 화면과 같은 색) */
+    .merge-log .dash-pinned-badge {
+      display: inline-block;
+      margin-right: 6px;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: #fff0ec;
+      color: #e15c45;
+      font-size: 11px;
+      font-weight: 600;
+    }
     
     .merge-demo-note {
       color: #7c8798;

@@ -1,5 +1,6 @@
 const express = require("express");
 const db = require("../../db");
+const { createNotification } = require("../../notify");
 
 const {
     session,
@@ -146,6 +147,14 @@ router.post("/", async function (req, res, next) {
         }
 
         await connection.commit();
+
+        // 알림: 칭찬받은 동료에게 (알림 저장이 실패해도 칭찬 등록은 성공으로 처리돼요)
+        await createNotification(
+            receiverId,
+            "커뮤니티",
+            rows[0].sender + "님이 나를 칭찬했어요.",
+            "/community"
+        );
 
         res.status(201).json({
             message: "칭찬이 등록되었습니다.",

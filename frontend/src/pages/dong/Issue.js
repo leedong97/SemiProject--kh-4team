@@ -74,9 +74,14 @@ function Issue({ projects, issues, setIssues }) {
                     </p>
                 </div>
 
-                <button className="issue-reset" onClick={handleIssueRequest}>
-                    이슈 건의
-                </button>
+                <div className="issue-header-actions">
+                    <button className="issue-reset" onClick={handleIssueRequest}>
+                        이슈 건의
+                    </button>
+                    <button className="issue-reset" onClick={() => navigate("/issue/completion-request")}>
+                        이슈 완료 요청
+                    </button>
+                </div>
             </div>
 
             <div className="issue-summary">
