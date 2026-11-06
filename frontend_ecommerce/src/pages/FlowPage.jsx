@@ -18,16 +18,18 @@ export default function FlowPage({ type }) {
         </div>
       </div>
 
-      <div className="flow-grid">
+      <div className="flow-carousel" key={type}>
         {stages.map((stage, index) => (
-          // React의 Fragment를 쓰면 불필요한 div를 추가하지 않고 그룹화할 수 있습니다.
-          <div key={stage.name} style={{ display: "contents" }}>
-            {index > 0 && <div className="arrow" aria-hidden="true">→</div>}
-            <div className="flow-box">
-              <div className="emo" aria-hidden="true">{stage.icon}</div>
-              <h3>{stage.name}</h3>
-              <p>{stage.description}</p>
+          <div
+            key={stage.name}
+            className="flow-box flow-orbit-card"
+            style={{ animationDelay: `${-index * 1.3}s` }}
+          >
+            <div className="emo" aria-hidden="true">
+              {stage.icon}
             </div>
+            <h3>{stage.name}</h3>
+            <p>{stage.description}</p>
           </div>
         ))}
       </div>

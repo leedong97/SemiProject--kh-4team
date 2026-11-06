@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { PROJECT_STATUS } from "../shared/projectConstants";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { adminRequest, getPendingProjectRequests } from "../adminApi";
 import { API_BASE } from "../../../shared/config";
@@ -48,7 +49,7 @@ function AdminLayout({ onLogout }) {
     try {
       const rows = await adminRequest('/projects');
       const list = Array.isArray(rows) ? rows : [];
-      setCompletionProjects(list.filter((p) => p.status === '완료 요청'));
+      setCompletionProjects(list.filter((p) => p.status === PROJECT_STATUS.REQUESTED));
     } catch (err) {
       setCompletionProjects([]);
     }

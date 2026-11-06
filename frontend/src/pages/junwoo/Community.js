@@ -6,7 +6,7 @@ import CommunityMenu from "./CommunityMenu";
 import CommunityHome from "./CommunityHome";
 import Board from "./Board";
 import MyActivity from "./MyActivity";
-import getLoginUser from "../woojin/getLoginUser";
+import getLoginUser, { clearLoginUser } from "../woojin/getLoginUser";
 import "./junwoo.css";
 
 function Community(props) {
@@ -23,6 +23,17 @@ function Community(props) {
     }
 
     const loginUser = getLoginUser();
+
+    function handleLogout() {
+        // 직원 정보와 커뮤니티·ERP 인증 토큰 삭제
+        clearLoginUser();
+
+        // 현재 탭에 남아 있는 관리자 인증 토큰도 삭제
+        sessionStorage.removeItem("nexus_token");
+
+        // 페이지를 새로 열어 메모리의 사용자 데이터와 연결도 초기화
+        window.location.replace("/login");
+    }
 
     let displayName = "로그인이 필요합니다";
     let displayTeam = "";
@@ -132,7 +143,7 @@ function Community(props) {
         return function () {
             cancelled = true;
         };
-    }, [retryCount]);
+    }, [retryCount, props.menu, props.activity]);
 
     function retryLoad() {
         setRetryCount(function (previousCount) {
@@ -260,6 +271,23 @@ function Community(props) {
                             <strong>{displayName}</strong>
                             <span>{displayTeam}</span>
                         </div>
+
+                        {!loginUser.isDummy ? (
+                            <button
+                                type="button"
+                                className="lounge-logout-button"
+                                onClick={handleLogout}
+                            >
+                                로그아웃
+                            </button>
+                        ) : (
+                            <Link
+                                to="/login"
+                                className="lounge-logout-button"
+                            >
+                                로그인
+                            </Link>
+                        )}
                     </div>
                 </header>
 

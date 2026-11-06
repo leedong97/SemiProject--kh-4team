@@ -2,6 +2,7 @@ import { API_BASE } from '../../shared/config';
 import { createContext, useCallback, useContext, useState, useEffect } from 'react';
 import { useLocation } from "react-router-dom";
 import getLoginUser from "../woojin/getLoginUser";
+import { connectProjectEvents } from "./projectEventsClient";
 
 // 준우 페이지(대시보드·공지사항·프로젝트)가 같이 쓰는 데이터 상자
 const JunwooContext = createContext(null);
@@ -20,25 +21,25 @@ export function JunwooProvider({ children }) {
   const [info, setInfo] = useState([]);
   const [todo, setTodo] = useState([]);
 
-  /* 프로젝트 목록 자동 갱신 */
+  /* 프로젝트 조회 + SSE 변경 알림 */
   useEffect(() => {
-    // 화면 이동 후 이전 요청의 응답이 도착해도 상태를 갱신하지 않도록 표시한다
     let disposed = false;
-
-    // 진행 중인 요청을 취소할 때 사용할 객체를 보관한다.
     let controller = null;
 
     const loadProjects = async () => {
-      // 이전 조회가 아직 끝나지 않았다면 취소한다.
-      // 이전 응답이 늦게 도착해 더 최신 데이터를 덮어쓰는 상황을 줄인다.
+      if (disposed) return;
+
       controller?.abort();
-      controller = new AbortController();
+
+      // 각 요청의 취소 상태를 별도로 확인한다.
+      const requestController = new AbortController();
+      controller = requestController;
 
       try {
         const response = await fetch(
           `${API_BASE}/api/projects`,
           {
-            signal: controller.signal,
+            signal: requestController.signal,
             cache: "no-store"
           }
         );
@@ -49,81 +50,107 @@ export function JunwooProvider({ children }) {
 
         const data = await response.json();
 
-        if (!disposed) {
+        if (!Array.isArray(data)) {
+          throw new Error("프로젝트 목록 형식이 올바르지 않습니다.");
+        }
+
+        if (
+          !disposed &&
+          !requestController.signal.aborted
+        ) {
           setTodo(data);
         }
       } catch (error) {
-        if (error.name !== "AbortError") {
+        if (
+          !disposed &&
+          error.name !== "AbortError"
+        ) {
           console.error("프로젝트 불러오기 오류:", error);
         }
       }
     };
 
-    // 화면에 들어오거나 주소가 바뀌면 최신 목록 조회
+    // 화면 진입 시 기본 목록 조회
     loadProjects();
 
-    // 다른 창에서 돌아왔을 때 최신 목록 조회
     const handleFocus = () => {
       loadProjects();
     };
 
     window.addEventListener("focus", handleFocus);
 
-    // 메인·프로젝트 목록에서는 5초마다 갱신
-    const timer =
+    // 기존에 자동 갱신하던 메인·프로젝트 목록에서 SSE 연결
+    const disconnect =
       pathname === "/" || pathname === "/todo"
-        ? window.setInterval(() => {
-          if (document.visibilityState === "visible") {
-            loadProjects();
-          }
-        }, 5000)
-        : null;
+        ? connectProjectEvents(loadProjects)
+        : () => { };
 
-    // 주소가 변경되거나 Provider가 사라질 때 이전 작업을 정리한다.
-    // 요청, 이벤트 리스너, 타이머가 중복으로 남지 않도록 한다.
     return () => {
       disposed = true;
+
+      disconnect();
       controller?.abort();
 
       window.removeEventListener("focus", handleFocus);
-
-      if (timer !== null) {
-        window.clearInterval(timer);
-      }
     };
   }, [pathname]);
 
-  /* MySQL 공지사항 전체 조회 */
+  /* 공지사항 조회: 화면 이동 및 창 복귀 시 최신 상태 반영 */
   useEffect(() => {
+    let disposed = false;
+    let controller = null;
 
     const loadInfo = async () => {
+      if (controller) {
+        controller.abort();
+      }
+
+      controller = new AbortController();
 
       try {
-
         const response = await fetch(
-          `${API_BASE}/api/notices`
+          `${API_BASE}/api/notices`,
+          {
+            signal: controller.signal,
+            cache: "no-store"
+          }
         );
 
         if (!response.ok) {
-          throw new Error('공지사항 조회 실패');
+          throw new Error("공지사항 조회 실패");
         }
 
         const data = await response.json();
 
-        setInfo([...data].reverse());
-
+        if (!disposed) {
+          // 기존 공유 배열 순서는 유지하고,
+          // 각 화면에서 고정 여부에 따라 정렬한다.
+          setInfo([...data].reverse());
+        }
       } catch (error) {
-        console.error('공지사항 조회 오류:', error);
+        if (error.name !== "AbortError" && !disposed) {
+          console.error("공지사항 조회 오류:", error);
+        }
       }
+    };
 
+    const handleFocus = () => {
+      loadInfo();
     };
 
     loadInfo();
+    window.addEventListener("focus", handleFocus);
 
-  }, []);
+    return () => {
+      disposed = true;
 
+      if (controller) {
+        controller.abort();
+      }
 
-
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [pathname]);
 
   /* 공지사항 등록 */
   const addInfo = async (title, content, eventDate = null) => {

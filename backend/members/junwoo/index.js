@@ -16,6 +16,10 @@ module.exports = {
       router: require("./projects")
     },
     {
+      prefix: "/api/project-events",
+      router: require("./projectEvents").router
+    },
+    {
       prefix: "/api/project-requests",
       router: require("./projectRequests")
     },
@@ -27,7 +31,7 @@ module.exports = {
     },
     {
       prefix: "/api/community-comments",
-      router: require("../dong/communityService").comments
+      router: require("./communityReplyService")
     },
     {
       prefix: "/api/community-likes",

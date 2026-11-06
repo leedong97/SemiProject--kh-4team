@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { previewIssues } from "./mockData";
 
 function PreviewIssues() {
@@ -9,13 +8,8 @@ function PreviewIssues() {
 
             {previewIssues.map(item => (
                 <div className="preview-list-item" key={item.id}>
-                    <Link to={`/preview/issues/${item.id}`}>
-                        {item.title}
-                    </Link>
-
-                    <span className="preview-tag">
-                        {item.status}
-                    </span>
+                    <span>{item.title}</span>
+                    <span className="preview-tag">{item.status}</span>
                 </div>
             ))}
         </section>

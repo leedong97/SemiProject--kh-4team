@@ -1,7 +1,14 @@
 import React, { Fragment, useState } from "react";
+import { PROJECT_STATUS } from "../shared/projectConstants";
+import { findEmployee } from "../shared/employees";
 import { canLeadProject } from "../shared/permissions";
+import EmployeePicker from "../components/EmployeePicker";
 import { matchesProjectSearch } from "../utils/projectFilters";
 import useSortableList from "../utils/useSortableList";
+import usePagination from "../utils/usePagination";
+import Pager from "../components/Pager";
+
+const MEMBER_PAGE_SIZE = 10;
 
 // 인원 관리: 프로젝트별 담당자(팀장 이상 1명)와 팀원을 배정합니다.
 function MemberManagement({
@@ -18,15 +25,16 @@ function MemberManagement({
     const [draftMemberIds, setDraftMemberIds] = useState([]);
     const [saving, setSaving] = useState(false);
 
-    const findEmployee = (id) => id == null ? null : employees.find((employee) => String(employee.id) === String(id));
+    // 직원 찾기 (번호가 없으면 null)
+    const findEmployeeOf = (id) => id == null ? null : findEmployee(employees, id);
     const activeEmployees = employees.filter((e) => e.status === "재직");
 
     // 담당자 칸에 보이는 글자 그대로
     const getManagerLabel = (project) => {
         if (project.managerId == null) return "미배정";
-        const manager = findEmployee(project.managerId);
+        const manager = findEmployeeOf(project.managerId);
         if (!manager) return `ID: ${project.managerId}`;
-        if (!canLeadProject(manager)) return `직급 미달 담당자 (${manager.name})`;
+        if (!canLeadProject(manager)) return "미배정";
         return manager.name;
     };
 
@@ -34,13 +42,13 @@ function MemberManagement({
     const getSortValue = (project, key) => {
         if (key === "manager") return getManagerLabel(project);
         if (key === "assigned") {
-            const manager = findEmployee(project.managerId);
+            const manager = findEmployeeOf(project.managerId);
             return manager && canLeadProject(manager) ? "배정 완료" : "배정 없음";
         }
         if (key === "members") return (project.memberIds || []).length;
         return project[key] ?? "";
     };
-    const { changeSort, sortItems, sortMark } = useSortableList(getSortValue);
+    const { sortKey, changeSort, sortItems, sortMark } = useSortableList(getSortValue);
 
     // 화면에 보일 프로젝트 목록 (필터 후 정렬)
     const filteredProjects = projects
@@ -48,24 +56,29 @@ function MemberManagement({
         .filter((project) => matchesProjectSearch(project, search));
     const sortedProjects = sortItems(filteredProjects);
 
+    // 한 페이지 10개씩 (검색이나 정렬이 바뀌면 1페이지로)
+    const { pageItems: pagedProjects, currentPage, totalPages, total, goPrev, goNext } =
+        usePagination(sortedProjects, MEMBER_PAGE_SIZE, [search, sortKey]);
+    const pageOffset = (currentPage - 1) * MEMBER_PAGE_SIZE;
+
     // 프로젝트 담당자 배정
     const assignManager = async (projectId, managerId) => {
 
         //완료된 프로젝트는 담당자 재배정 불가
         const currentProject = projects.find((p) => p.id === projectId)
-        if (currentProject && currentProject.status === "완료") {
+        if (currentProject && currentProject.status === PROJECT_STATUS.DONE) {
             window.alert("완료된 프로젝트는 담당자를 변경할 수 없습니다.");
             return;
         }
 
-        if (managerId !== null && !canLeadProject(findEmployee(managerId))) {
+        if (managerId !== null && !canLeadProject(findEmployeeOf(managerId))) {
             window.alert("팀장 이상 직급만 담당자로 배정할 수 있습니다.");
             return;
         }
 
         // 확인 창: 취소하면 아무 것도 바뀌지 않음
         const target = managerId !== null
-            ? findEmployee(managerId)
+            ? findEmployeeOf(managerId)
             : null;
         const message = target
             ? `${target.name} 님을 담당자로 배정하시겠습니까?`
@@ -77,7 +90,7 @@ function MemberManagement({
         try {
             await updateProject(projectId, {
                 managerId: managerId,
-                status: currentProject.status === '보류' ? '보류' : managerId !== null ? '진행중' : '예정'
+                status: currentProject.status === PROJECT_STATUS.ON_HOLD ? PROJECT_STATUS.ON_HOLD : managerId !== null ? PROJECT_STATUS.IN_PROGRESS : PROJECT_STATUS.PLANNED
             });
         } catch (error) {
             alert('DB 담당자 변경 실패: ' + error.message);
@@ -140,6 +153,7 @@ function MemberManagement({
 
                         <thead>
                             <tr>
+                                <th>번호</th>
                                 <th onClick={() => changeSort("name")} style={{ cursor: "pointer" }}>프로젝트명{sortMark("name")}</th>
                                 <th onClick={() => changeSort("status")} style={{ cursor: "pointer" }}>진행 상태{sortMark("status")}</th>
                                 <th onClick={() => changeSort("manager")} style={{ cursor: "pointer" }}>담당자{sortMark("manager")}</th>
@@ -149,12 +163,11 @@ function MemberManagement({
                         </thead>
 
                         <tbody>
-                            {sortedProjects
-                                .map((project) => {
+                            {pagedProjects
+                                .map((project, index) => {
                                     // 드롭다운 선택지(팀장 이상)에 있는 담당자만 실제 배정으로 인정
-                                    const assignedManager = findEmployee(project.managerId);
+                                    const assignedManager = findEmployeeOf(project.managerId);
                                     const hasManager = canLeadProject(assignedManager);
-                                    const underRankManager = !hasManager ? assignedManager : null;
                                     const isEditing = editingId === project.id;
                                     const memberCount = (project.memberIds || []).length;
 
@@ -162,6 +175,7 @@ function MemberManagement({
                                         <Fragment key={project.id}>
                                             <tr>
 
+                                                <td>{pageOffset + index + 1}</td>
                                                 <td>{project.name}</td>
 
                                                 <td>{project.status}</td>
@@ -209,10 +223,6 @@ function MemberManagement({
                                                         <span className="badge badge-done">
                                                             배정 완료
                                                         </span>
-                                                    ) : underRankManager ? (
-                                                        <span className="badge badge-pending">
-                                                            직급 미달 담당자 ({underRankManager.name})
-                                                        </span>
                                                     ) : (
                                                         <span className="badge badge-pending">
                                                             배정 없음
@@ -224,43 +234,21 @@ function MemberManagement({
 
                                             {isEditing && (
                                                 <tr>
-                                                    <td colSpan={5}>
+                                                    <td colSpan={6}>
                                                         {(() => {
                                                             const managerNo = project.managerId;
-                                                            const addable = activeEmployees.filter(
-                                                                (e) => !draftMemberIds.includes(e.id) && String(e.id) !== String(managerNo)
-                                                            );
-                                                            const chosen = activeEmployees.filter(
-                                                                (e) => draftMemberIds.includes(e.id) && String(e.id) !== String(managerNo)
-                                                            );
-                                                            const manager = findEmployee(managerNo);
+                                                            const manager = findEmployeeOf(managerNo);
                                                             return (
                                                                 <>
-                                                                    <select
-                                                                        className="nexus-assignment-select"
-                                                                        value=""
-                                                                        onChange={(e) => e.target.value && addDraftMember(Number(e.target.value))}
-                                                                    >
-                                                                        <option value="">팀원을 선택하면 추가됩니다</option>
-                                                                        {addable.map((employee) => (
-                                                                            <option key={employee.id} value={employee.id}>
-                                                                                {employee.name} ({employee.rank} · {employee.position})
-                                                                            </option>
-                                                                        ))}
-                                                                    </select>
-                                                                    <div style={{ marginTop: "10px" }}>
-                                                                        {manager && (
-                                                                            <span style={{ display: "inline-flex", gap: "6px", padding: "4px 10px", border: "1px solid #999", borderRadius: "14px", margin: "0 6px 6px 0" }}>
-                                                                                {manager.name} (담당자)
-                                                                            </span>
-                                                                        )}
-                                                                        {chosen.map((employee) => (
-                                                                            <span key={employee.id} style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", border: "1px solid #ccc", borderRadius: "14px", margin: "0 6px 6px 0" }}>
-                                                                                {employee.name} ({employee.rank})
-                                                                                <button type="button" onClick={() => removeDraftMember(employee.id)}>×</button>
-                                                                            </span>
-                                                                        ))}
-                                                                    </div>
+                                                                    <EmployeePicker
+                                                                        employees={employees}
+                                                                        selectedIds={draftMemberIds}
+                                                                        excludedId={managerNo}
+                                                                        lockedEmployee={manager}
+                                                                        selectClassName="nexus-assignment-select"
+                                                                        onAdd={addDraftMember}
+                                                                        onRemove={removeDraftMember}
+                                                                    />
                                                                 </>
                                                             );
                                                         })()}
@@ -290,6 +278,9 @@ function MemberManagement({
                     </table>
 
                 </div>
+
+                <Pager currentPage={currentPage} totalPages={totalPages} total={total}
+                    onPrev={goPrev} onNext={goNext} />
 
             </div>
 

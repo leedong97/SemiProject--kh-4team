@@ -255,6 +255,57 @@ router.patch('/issues/:id', async (req, res) => {
     }
 });
 
+// 이슈별 요청사항 코멘트 조회: DB에 저장된 댓글을 오래된 순서로 표시합니다.
+router.get('/issues/:id/comments', async (req, res) => {
+    const issueId = Number(req.params.id);
+    if (!Number.isInteger(issueId) || issueId <= 0) return res.status(400).json({ message: '이슈 번호 오류' });
+    try {
+        const [rows] = await pool.query(`
+            SELECT c.comment_id AS id, c.issue_id AS issueId,
+                   c.employee_id AS authorId, e.employee_name AS author,
+                   c.content,
+                   DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i') AS createdAt
+            FROM nexus_issue_comments c
+            JOIN employees e ON e.employee_id = c.employee_id
+            WHERE c.issue_id = ?
+            ORDER BY c.created_at ASC, c.comment_id ASC`, [issueId]);
+        res.json(rows);
+    } catch (error) {
+        console.error('이슈 코멘트 조회 오류:', error);
+        res.status(500).json({ message: '코멘트 조회 실패. SQL 설치 여부를 확인하세요.' });
+    }
+});
+
+// 댓글 작성자는 브라우저 입력값이 아닌 로그인 토큰에서 확인합니다.
+router.post('/issues/:id/comments', async (req, res) => {
+    const issueId = Number(req.params.id);
+    const content = typeof req.body?.content === 'string' ? req.body.content.trim() : '';
+    if (!Number.isInteger(issueId) || issueId <= 0 || !content || content.length > 2000) {
+        return res.status(400).json({ message: '이슈 번호와 코멘트 내용(2000자 이하)을 확인하세요.' });
+    }
+    try {
+        const [issues] = await pool.query(
+            'SELECT issue_title, assigned_employee_id FROM issues WHERE issue_id = ?', [issueId]);
+        if (!issues.length) return res.status(404).json({ message: '해당 이슈가 없습니다.' });
+        const [result] = await pool.query(
+            'INSERT INTO nexus_issue_comments (issue_id, employee_id, content) VALUES (?, ?, ?)',
+            [issueId, req.user.employee_id, content]);
+        // 본인에게는 알림을 보내지 않습니다. 기존 알림 탭에서 확인할 수 있습니다.
+        const assigneeId = issues[0].assigned_employee_id;
+        if (assigneeId && String(assigneeId) !== String(req.user.employee_id)) {
+            const [authors] = await pool.query('SELECT employee_name FROM employees WHERE employee_id = ?', [req.user.employee_id]);
+            const authorName = authors[0]?.employee_name || '직원';
+            await createNotification(assigneeId, '이슈',
+                authorName + '님이 이슈 "' + issues[0].issue_title + '"에 요청사항 코멘트를 남겼어요.',
+                '/issue/' + issueId);
+        }
+        res.status(201).json({ id: result.insertId, message: '코멘트 등록 완료' });
+    } catch (error) {
+        console.error('이슈 코멘트 등록 오류:', error);
+        res.status(500).json({ message: '코멘트 등록 실패. SQL 설치 여부를 확인하세요.' });
+    }
+});
+
 router.get("/issues/:id/work-logs", async (req, res) => {
     try {
         const [rows] = await pool.query("SELECT log_id AS id, issue_id AS issueId, employee_id AS employeeId, description, minutes, created_at AS createdAt FROM nexus_issue_work_logs WHERE issue_id = ? ORDER BY log_id DESC", [req.params.id]);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MyComments from "./MyComments";
 import MyBookmarks from "./MyBookmarks";
 import { Link } from "react-router-dom";
@@ -14,6 +14,11 @@ function MyActivity(props) {
     }
 
     const [page, setPage] = useState(1);
+
+    // 활동 메뉴 또는 로그인 사용자가 바뀌면 첫 페이지부터 표시
+    useEffect(() => {
+        setPage(1);
+    }, [activity, props.loginUser.id]);
 
     const postsPerPage = 10;
     const loginUser = props.loginUser;
@@ -50,11 +55,25 @@ function MyActivity(props) {
         return bTime - aTime;
     });
 
+    // 내가 작성한 질문 중 해결 완료된 글
+    const resolvedPosts = myPosts.filter(function (post) {
+        return (
+            post.boardName === "질문 답변" &&
+            Number(post.isResolved) === 1
+        );
+    });
+
+    // 현재 선택한 메뉴에 맞는 목록
+    const visiblePosts =
+        activity === "해결 완료한 질문"
+            ? resolvedPosts
+            : myPosts;
+
     // ===================================
     // 페이지 계산
     // ===================================
 
-    let totalPages = Math.ceil(myPosts.length / postsPerPage);
+    let totalPages = Math.ceil(visiblePosts.length / postsPerPage);
 
     if (totalPages === 0) {
         totalPages = 1;
@@ -69,7 +88,7 @@ function MyActivity(props) {
     const startIndex = (currentPage - 1) * postsPerPage;
     const endIndex = startIndex + postsPerPage;
 
-    const currentPosts = myPosts.slice(startIndex, endIndex);
+    const currentPosts = visiblePosts.slice(startIndex, endIndex);
 
     const pageNumbers = [];
 
@@ -110,6 +129,7 @@ function MyActivity(props) {
     let postsClass = "community-tab-button";
     let commentsClass = "community-tab-button";
     let bookmarksClass = "community-tab-button";
+    let resolvedClass = "community-tab-button";
 
     if (activity === "내가 작성한 글") {
         postsClass += " community-tab-selected";
@@ -117,6 +137,8 @@ function MyActivity(props) {
         commentsClass += " community-tab-selected";
     } else if (activity === "저장한 글") {
         bookmarksClass += " community-tab-selected";
+    } else if (activity === "해결 완료한 질문") {
+        resolvedClass += " community-tab-selected";
     }
 
     // ===================================
@@ -129,7 +151,7 @@ function MyActivity(props) {
         pagination = (
             <nav
                 className="community-home-pagination"
-                aria-label="내가 작성한 글 페이지"
+                aria-label={`${activity} 페이지`}
             >
                 <button
                     type="button"
@@ -199,10 +221,12 @@ function MyActivity(props) {
                 loginUser={loginUser}
             />
         );
-    } else if (myPosts.length === 0) {
+    } else if (visiblePosts.length === 0) {
         activityContent = (
             <p className="community-empty">
-                아직 작성한 게시글이 없습니다.
+                {activity === "해결 완료한 질문"
+                    ? "아직 해결 완료된 질문이 없습니다."
+                    : "아직 작성한 게시글이 없습니다."}
             </p>
         );
     } else {
@@ -263,6 +287,17 @@ function MyActivity(props) {
     let countLabel = "";
 
     if (
+        (
+            activity === "내가 작성한 글" ||
+            activity === "해결 완료한 질문"
+        ) &&
+        !loginUser.isDummy &&
+        loginUser.id != null
+    ) {
+        countLabel = "전체 " + visiblePosts.length + "개";
+    }
+
+    if (
         activity === "내가 작성한 글" &&
         !loginUser.isDummy &&
         loginUser.id != null
@@ -308,7 +343,15 @@ function MyActivity(props) {
                     className={bookmarksClass}
                 >
                     <span aria-hidden="true">★ </span>
-                    저장한 글
+                    북마크한 글
+                </Link>
+
+                <Link
+                    to="/community/activity/resolved"
+                    className={resolvedClass}
+                >
+                    <span aria-hidden="true">✓ </span>
+                    해결 완료한 질문
                 </Link>
             </div>
 

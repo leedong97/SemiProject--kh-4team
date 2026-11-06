@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./HRManagement.css";
 
 // 인사 관리 컴포넌트
@@ -15,17 +15,17 @@ export default function HRManagement({
     const [position, setPosition] = useState("");
     const [rank, setRank] = useState("사원");
 
-    // 담당 업무 등록 입력값
-    const [taskEmployee, setTaskEmployee] = useState("");
-    const [taskTitle, setTaskTitle] = useState("");
-    const [taskStart, setTaskStart] = useState("");
-    const [taskEnd, setTaskEnd] = useState("");
-    const [taskDescription, setTaskDescription] = useState("");
-
     // 실제 DB 연동: 토큰은 로그인 후 nexus_auth_token에 저장합니다.
     const [dbEmployees, setDbEmployees] = useState([]);
     const [dbLeaves, setDbLeaves] = useState([]);
     const [dbRetired, setDbRetired] = useState([]);
+    const [dbWork, setDbWork] = useState({ projects: [], issues: [], members: [] });
+    // 업무 관리 화면에서만 사용하는 검색·선택 상태입니다.
+    const [workSearch, setWorkSearch] = useState("");
+    const [workDepartment, setWorkDepartment] = useState("전체");
+    const [workStatus, setWorkStatus] = useState("전체");
+    const [workSelectedId, setWorkSelectedId] = useState(null);
+    const [workPage, setWorkPage] = useState(1);
     const [dbLoading, setDbLoading] = useState(true);
     const [dbError, setDbError] = useState("");
     const [dbReady, setDbReady] = useState(false);
@@ -55,11 +55,13 @@ export default function HRManagement({
     const loadHrData = useCallback(async () => {
         try {
             setDbLoading(true);
-            const [employeeRows, leaveRows, retiredRows] = await Promise.all([
+            const [employeeRows, leaveRows, retiredRows, workRows] = await Promise.all([
                 apiRequest("/employees"),
                 apiRequest("/leaves"),
-                apiRequest("/retired")
+                apiRequest("/retired"),
+                apiRequest("/work-overview")
             ]);
+            setDbWork(workRows);
             setDbEmployees(employeeRows.map(employee => ({
                 id: employee.employee_id,
                 name: employee.employee_name,
@@ -138,8 +140,8 @@ export default function HRManagement({
 
     // 상위 컴포넌트에서 받은 데이터
     const employees = dbReady ? [...dbEmployees, ...dbRetired] : [];
-    const issues = data?.issues || [];
-    const tasks = data?.tasks || [];
+    // 프로젝트와 이슈는 MySQL에서 조회한 최신 자료만 사용합니다.
+    const issues = dbWork.issues;
     const leaves = dbReady ? dbLeaves : [];
 
     // 추가 기능: 직원 검색, 정렬, 수정, 퇴사, 프로젝트 조회
@@ -154,8 +156,8 @@ export default function HRManagement({
     const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
     const [detailTab, setDetailTab] = useState("summary");
     const evaluations = data?.evaluations || [];
-    const projects = data?.projects || [];
-    const projectMembers = data?.projectMembers || data?.project_members || [];
+    const projects = dbWork.projects;
+    const projectMembers = dbWork.members;
     const employeeChangeHistory = data?.employeeChangeHistory || [];
 
     // 인사 정보 변경 이력은 ERP 상위 상태에 기록합니다.
@@ -172,7 +174,7 @@ export default function HRManagement({
 
     // 직원의 고유번호를 문자열로 비교하여 숫자/문자열 ID 차이를 방지합니다.
     function sameId(a, b) {
-        return String(a) === String(b);
+        return a !== null && a !== undefined && b !== null && b !== undefined && String(a) === String(b);
     }
 
     // 직원 이름/부서 필터를 적용하고 정렬합니다. 원본 배열은 변경하지 않습니다.
@@ -247,18 +249,33 @@ export default function HRManagement({
         }
     }
 
+    // 완료/해결/종료 상태는 미완료 업무량에서 제외합니다.
+    function isIssueComplete(issue) {
+        return ["완료", "해결", "종료", "closed", "resolved"].includes(String(issue.status || "").toLowerCase());
+    }
+
+    // DB의 업무 진행 상태는 변경하지 않고 마감일만 비교합니다.
+    // 완료되지 않은 이슈가 마감일을 지난 경우에만 일정 상태를 기한 초과로 표시합니다.
+    function isIssueOverdue(issue) {
+        if (isIssueComplete(issue) || !issue.due) return false;
+        const dueDate = String(issue.due).slice(0, 10);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) return false;
+        return dueDate < getToday();
+    }
+
+    // 기한 초과일 수는 화면 표시용으로만 계산합니다.
+    function getOverdueDays(issue) {
+        if (!isIssueOverdue(issue)) return 0;
+        const today = new Date(getToday() + "T00:00:00");
+        const dueDate = new Date(String(issue.due).slice(0, 10) + "T00:00:00");
+        return Math.round((today - dueDate) / 86400000);
+    }
+
     // 프로젝트의 담당자 또는 프로젝트 구성원 목록에서 참여 정보를 찾습니다.
     function getEmployeeProjects(employee) {
         return projects.filter(project => sameId(project.managerId || project.manager_id, employee.id) || projectMembers.some(member => sameId(member.projectId || member.project_id, project.id || project.project_id) && sameId(member.employeeId || member.employee_id, employee.id)));
     }
 
-    // 두 날짜 구간이 겹치는지 확인
-    function overlaps(aStart, aEnd, bStart, bEnd) {
-        if (!aStart || !aEnd || !bStart || !bEnd) {
-            return false;
-        }
-        return aStart <= bEnd && bStart <= aEnd;
-    }
 
     // 오늘 날짜를 YYYY-MM-DD 형식으로 반환
     function getToday() {
@@ -284,7 +301,8 @@ export default function HRManagement({
         if (!endDate) {
             return false;
         }
-        return endDate >= getToday() && endDate <= getSevenDaysLater();
+        const dateText = String(endDate).slice(0, 10);
+        return /^\d{4}-\d{2}-\d{2}$/.test(dateText) && dateText >= getToday() && dateText <= getSevenDaysLater();
     }
 
     // 직원 등록
@@ -325,59 +343,6 @@ export default function HRManagement({
         } catch (error) {
             window.alert("직원 등록 실패: " + error.message);
         }
-    }
-
-    // 담당 업무 등록
-    function addTask(event) {
-        event.preventDefault();
-        if (!taskEmployee || !taskTitle.trim() || !taskStart || !taskEnd || taskStart > taskEnd) {
-            window.alert("담당 업무와 날짜를 확인하세요.");
-            return;
-        }
-        const employeeId = Number(taskEmployee);
-        const employee = employees.find(x => x.id === employeeId);
-        if (!employee || employee.status === "퇴사") {
-            window.alert("업무를 배정할 수 없는 직원입니다.");
-            return;
-        }
-
-        // 해당 직원의 휴가와 업무 날짜 비교
-        const conflictingLeaves = leaves.filter(leave => leave.employeeId === employeeId && leave.status !== "반려" && overlaps(taskStart, taskEnd, leave.startDate || leave.date, leave.endDate || leave.date));
-        if (conflictingLeaves.length > 0) {
-            const details = conflictingLeaves.map(leave => (leave.startDate || leave.date) + " ~ " + (leave.endDate || leave.date) + " (" + leave.status + ")").join("\n");
-            const confirmed = window.confirm("휴가 일정과 겹칩니다.\n\n" + details + "\n\n그래도 업무를 등록할까요?");
-            if (!confirmed) {
-                return;
-            }
-        }
-        changeData("담당 업무 등록", old => ({
-            ...old,
-            tasks: [{
-                id: Date.now(),
-                employeeId: employeeId,
-                title: taskTitle.trim(),
-                startDate: taskStart,
-                endDate: taskEnd,
-                description: taskDescription,
-                status: "예정"
-            }, ...(old.tasks || [])]
-        }));
-        setTaskTitle("");
-        setTaskStart("");
-        setTaskEnd("");
-        setTaskDescription("");
-        window.alert("담당 업무가 등록되었습니다.");
-    }
-
-    // 담당 업무 상태 변경
-    function changeTaskStatus(id, status) {
-        changeData("담당 업무 상태 변경", old => ({
-            ...old,
-            tasks: (old.tasks || []).map(task => task.id === id ? {
-                ...task,
-                status: status
-            } : task)
-        }));
     }
 
     // 휴가 승인 및 반려
@@ -524,8 +489,7 @@ export default function HRManagement({
                 {selectedEmployeeId !== "" && employees.filter(employee => sameId(employee.id, selectedEmployeeId)).map(employee => {
                     const employeeProjects = getEmployeeProjects(employee);
                     const employeeIssues = issues.filter(issue => sameId(issue.assigneeId ?? issue.assignee_id, employee.id));
-                    const employeeTasks = tasks.filter(task => sameId(task.employeeId ?? task.employee_id, employee.id));
-                    const overdueTasks = employeeTasks.filter(task => task.status !== "완료" && (task.endDate || task.end_date) && String(task.endDate || task.end_date).slice(0, 10) < getToday());
+                    const overdueTasks = employeeIssues.filter(issue => !isIssueComplete(issue) && issue.due && String(issue.due).slice(0, 10) < getToday());
                     const completedIssues = employeeIssues.filter(issue => ["완료", "해결", "종료", "closed", "resolved"].includes(String(issue.status || "").toLowerCase()));
                     const employeeEvaluations = evaluations.filter(item => sameId(item.employeeId ?? item.employee_id ?? item.targetEmployeeId, employee.id));
                     const sortedEvaluations = [...employeeEvaluations].sort((first, second) => String(second.period || second.createdAt || second.created_at || "").localeCompare(String(first.period || first.createdAt || first.created_at || "")));
@@ -572,8 +536,8 @@ export default function HRManagement({
                                 </div>
                                 <div className="hr-detail-info-card">
                                     <h5>업무 진행 현황</h5>
-                                    <strong>{employeeTasks.filter(task => task.status !== "완료").length}건 진행 중</strong>
-                                    <p>담당 업무 {employeeTasks.length}건 · 평가 이력 {employeeEvaluations.length}건</p>
+                                    <strong>{employeeIssues.filter(issue => !isIssueComplete(issue)).length}건 진행 중</strong>
+                                    <p>담당 이슈 {employeeIssues.length}건 · 평가 이력 {employeeEvaluations.length}건</p>
                                 </div>
                             </div>
                         </div>}
@@ -593,10 +557,6 @@ export default function HRManagement({
                         </div>}
 
                         {detailTab === "work" && <div className="hr-detail-content" role="tabpanel">
-                            <h5>담당 업무 <span>{employeeTasks.length}건</span></h5>
-                            {employeeTasks.length === 0 ? <p className="hr-detail-empty">담당 업무가 없습니다.</p> : <ul className="hr-detail-records">
-                                {employeeTasks.map((task, index) => <li key={task.id || index}><strong>{task.title || task.name || "업무"}</strong><span>{task.status || "미등록"}</span></li>)}
-                            </ul>}
                             <h5>담당 이슈 <span>{employeeIssues.length}건</span></h5>
                             {employeeIssues.length === 0 ? <p className="hr-detail-empty">담당 이슈가 없습니다.</p> : <ul className="hr-detail-records">
                                 {employeeIssues.map((issue, index) => <li key={issue.id || issue.issue_id || index}><strong>{issue.title || issue.issue_title || "이슈"}</strong><span>{issue.status || "미등록"}</span></li>)}
@@ -657,87 +617,81 @@ export default function HRManagement({
             </form>
         </div>}
 
-        {/* 업무 관리: 직원별 담당 업무 등록 및 상태 변경 */}
+        {/* 프로젝트/이슈를 중복 등록하지 않고 MySQL 조회 결과만 표시합니다. */}
         {activeTab === "tasks" && <div className="hr-tab-content">
-            {/* 담당 업무 등록 */}
-            <form className="panel form-row" onSubmit={addTask}>
-
-                <h3 className="full">
-                    직원 담당 업무 등록 (프로젝트 이슈와 별도)
-                </h3>
-
-                <select required value={taskEmployee} onChange={e => setTaskEmployee(e.target.value)}>
-
-                    <option value="">직원 선택</option>
-
-                    {employees.map(employee => <option key={employee.id} value={employee.id} disabled={employee.status === "퇴사" || employee.status === "휴직"}>
-                        {employee.name}
-                    </option>)}
-
-                </select>
-
-                <input required placeholder="담당 업무명" value={taskTitle} onChange={e => setTaskTitle(e.target.value)} />
-
-                <label>
-                    시작일
-                    <input required type="date" value={taskStart} onChange={e => setTaskStart(e.target.value)} />
-                </label>
-
-                <label>
-                    종료일
-                    <input required type="date" min={taskStart} value={taskEnd} onChange={e => setTaskEnd(e.target.value)} />
-                </label>
-
-                <input placeholder="상세 업무 내용" value={taskDescription} onChange={e => setTaskDescription(e.target.value)} />
-
-                <button type="submit">
-                    업무 등록
-                </button>
-
-            </form>
-            {/* 담당 업무 상세 */}
-            <div className="panel">
-
-                <h3>직원별 담당 업무 상세</h3>
-
-                {tasks.length === 0 && <p className="muted">
-                    등록된 담당 업무가 없습니다.
-                </p>}
-
-                {tasks.map(task => {
-                    const employee = employees.find(e => e.id === task.employeeId);
-                    const dueSoon = task.status !== "완료" && isDueSoon(task.endDate);
-                    return <div className="employee-row" key={task.id}>
-
-                        <div className="hr-task-info">
-
-                            <strong>{task.title}</strong>
-
-                            <p className="muted">
-                                {employee ? employee.name : "알 수 없음"}
-                                {" · "}
-                                {task.startDate}
-                                {" ~ "}
-                                {task.endDate}
-                            </p>
-
-                            <p>{task.description}</p>
-
-                            {dueSoon && <span className="hr-due">
-                                마감 임박
-                            </span>}
-
+            <div className="panel hr-work-overview">
+                <div className="hr-enhanced-heading">
+                    <div>
+                        <h3>직원별 업무 현황</h3>
+                        <p className="muted">직원을 선택하면 참여 프로젝트와 담당 이슈를 확인할 수 있습니다. 프로젝트·이슈 관리 데이터가 자동 반영됩니다.</p>
+                    </div>
+                    <button type="button" onClick={loadHrData} disabled={dbLoading}>새로고침</button>
+                </div>
+                {dbError && <p role="alert" className="hr-detail-empty">업무 조회 오류: {dbError}</p>}
+                {(() => {
+                    // 실제 DB에서 조회한 직원·이슈만 집계합니다.
+                    const activeEmployees = employees.filter(employee => employee.status !== "퇴사");
+                    const assigned = issues.filter(issue => activeEmployees.some(employee => sameId(issue.assigneeId, employee.id)));
+                    const openIssues = assigned.filter(issue => !isIssueComplete(issue));
+                    const unlinked = issues.filter(issue => !issue.projectName);
+                    const teams = [...new Set(activeEmployees.map(employee => employee.team || "부서 미지정"))].sort();
+                    const visible = activeEmployees.filter(employee => {
+                        const nameMatches = (employee.name + " " + (employee.team || "")).toLowerCase().includes(workSearch.trim().toLowerCase());
+                        const teamMatches = workDepartment === "전체" || (employee.team || "부서 미지정") === workDepartment;
+                        const mine = issues.filter(issue => sameId(issue.assigneeId, employee.id));
+                        const statusMatches = workStatus === "전체" || (workStatus === "진행 중" && mine.some(issue => !isIssueComplete(issue))) || (workStatus === "완료" && mine.some(isIssueComplete)) || (workStatus === "업무 없음" && mine.length === 0);
+                        return nameMatches && teamMatches && statusMatches;
+                    }).sort((a, b) => String(a.name).localeCompare(String(b.name), "ko"));
+                    const pageCount = Math.max(1, Math.ceil(visible.length / 10));
+                    const page = Math.min(workPage, pageCount);
+                    const shown = visible.slice((page - 1) * 10, page * 10);
+                    // 선택한 직원이 현재 검색 결과에 없으면 첫 번째 직원을 자동으로 보여줍니다.
+                    const selected = shown.find(employee => sameId(employee.id, workSelectedId)) || shown[0] || null;
+                    const selectedProjects = selected ? getEmployeeProjects(selected) : [];
+                    const selectedIssues = selected ? issues.filter(issue => sameId(issue.assigneeId, selected.id)) : [];
+                    return <>
+                        <div className="hr-work-summary">
+                            <div><span>재직 직원</span><strong>{activeEmployees.length}명</strong></div>
+                            <div><span>담당자 지정 이슈</span><strong>{assigned.length}건</strong></div>
+                            <div><span>미완료 이슈</span><strong>{openIssues.length}건</strong><small className="hr-work-overdue-count">기한 초과 {openIssues.filter(isIssueOverdue).length}건</small></div>
+                            <div><span>프로젝트 미지정 이슈</span><strong>{unlinked.length}건</strong></div>
                         </div>
-
-                        <select value={task.status} onChange={e => changeTaskStatus(task.id, e.target.value)}>
-                            <option>예정</option>
-                            <option>진행 중</option>
-                            <option>완료</option>
-                        </select>
-
-                    </div>;
-                })}
-
+                        <p className="hr-work-hint">담당자 지정 이슈는 재직 직원에게 배정된 건수입니다. 프로젝트 미지정은 전체 이슈 중 프로젝트 연결이 없는 건수입니다.</p>
+                        <div className="hr-work-filters">
+                            <label>직원 검색<input value={workSearch} onChange={event => { setWorkSearch(event.target.value); setWorkPage(1); }} placeholder="이름 또는 부서 검색" /></label>
+                            <label>부서<select value={workDepartment} onChange={event => { setWorkDepartment(event.target.value); setWorkPage(1); }}><option value="전체">전체 부서</option>{teams.map(teamName => <option key={teamName}>{teamName}</option>)}</select></label>
+                            <label>업무 상태<select value={workStatus} onChange={event => { setWorkStatus(event.target.value); setWorkPage(1); }}><option>전체</option><option>진행 중</option><option>완료</option><option>업무 없음</option></select></label>
+                        </div>
+                        <div className="hr-work-layout">
+                            <div className="hr-work-list">
+                                <div className="hr-work-list-title">직원 목록 <span>{visible.length}명 검색됨</span></div>
+                                {shown.length === 0 && <p className="hr-work-empty">조건에 맞는 직원이 없습니다.</p>}
+                                {shown.map(employee => {
+                                    const mine = issues.filter(issue => sameId(issue.assigneeId, employee.id));
+                                    const open = mine.filter(issue => !isIssueComplete(issue));
+                                    const isSelected = selected && sameId(selected.id, employee.id);
+                                    return <button key={employee.id} type="button" className={isSelected ? "hr-work-person selected" : "hr-work-person"} onClick={() => setWorkSelectedId(employee.id)} aria-pressed={Boolean(isSelected)}>
+                                        <span><strong>{employee.name}</strong><small>{employee.team || "부서 미지정"} · {employee.rank || "직급 미지정"}</small></span>
+                                        <span className="hr-work-person-count">진행 {open.length} · 전체 {mine.length}</span>
+                                    </button>;
+                                })}
+                                {pageCount > 1 && <div className="hr-work-pages"><button type="button" disabled={page === 1} onClick={() => setWorkPage(page - 1)}>이전</button><span>{page} / {pageCount}</span><button type="button" disabled={page === pageCount} onClick={() => setWorkPage(page + 1)}>다음</button></div>}
+                            </div>
+                            <div className="hr-work-detail">
+                                {!selected ? <div className="hr-work-placeholder"><strong>직원을 선택해 주세요</strong><p>왼쪽 목록에서 직원을 선택하면 참여 프로젝트와 담당 이슈를 확인할 수 있습니다.</p></div> : <>
+                                    <div className="hr-work-detail-heading"><div><h4>{selected.name} <small>{selected.team || "부서 미지정"}</small></h4><p>참여 프로젝트 {selectedProjects.length}개 · 진행 중 {selectedIssues.filter(issue => !isIssueComplete(issue)).length}건 · 전체 이슈 {selectedIssues.length}건</p></div></div>
+                                    <h5>참여 프로젝트</h5>
+                                    {selectedProjects.length === 0 ? <p className="hr-work-empty">참여 프로젝트가 없습니다.</p> : <div className="hr-work-projects">{selectedProjects.map(project => <span key={project.id || project.project_id}>{project.name || project.project_title}</span>)}</div>}
+                                    <h5>담당 이슈 <small>{selectedIssues.length}건</small></h5>
+                                    {selectedIssues.length === 0 ? <p className="hr-work-empty">배정된 이슈가 없습니다.</p> : <div className="hr-work-detail-issues">{selectedIssues.map(issue => <div className="hr-work-detail-issue" key={issue.id}>
+                                        <div className="hr-work-issue-main"><strong>{issue.title}</strong><div className="hr-work-issue-badges"><span className={isIssueComplete(issue) ? "hr-work-state done" : "hr-work-state"}>{issue.status || "상태 미등록"}</span>{isIssueOverdue(issue) && <span className="hr-work-overdue" title="마감일이 지났지만 완료되지 않은 업무입니다.">기한 초과 · {getOverdueDays(issue)}일</span>}</div></div>
+                                        <div className="hr-work-issue-meta"><span className={!issue.projectName ? "hr-work-unlinked" : "hr-work-linked"}>{issue.projectName || "공통 업무 · 프로젝트 미배정"}</span><span>마감 {issue.due ? String(issue.due).slice(0, 10) : "미설정"}</span></div>
+                                    </div>)}</div>}
+                                </>}
+                            </div>
+                        </div>
+                    </>;
+                })()}
             </div>
         </div>}
 
@@ -793,104 +747,92 @@ export default function HRManagement({
         </div>}
 
         {/* 통계 분석: 기존 직원별 업무량 화면을 독립 탭으로 이동 */}
-        {activeTab === "analytics" && <div className="hr-tab-content">
+        {activeTab === "analytics" && <div className="hr-tab-content hr-analytics">
+            <div className="hr-analytics-heading">
+                <div>
+                    <span className="hr-analytics-eyebrow">HR INSIGHTS</span>
+                    <h2>인사 통계 대시보드</h2>
+                    <p>직원 현황과 업무 분포를 한눈에 확인하세요.</p>
+                </div>
+                <span className="hr-analytics-chip">실시간 데이터 기준</span>
+            </div>
             <div className="hr-overview-grid">
-                <div className="hr-overview-card"><span>전체 직원</span><strong>{employees.length}명</strong></div>
-                <div className="hr-overview-card"><span>재직 직원</span><strong>{employees.filter(employee => employee.status !== "퇴사").length}명</strong></div>
-                <div className="hr-overview-card"><span>미완료 담당 업무</span><strong>{tasks.filter(task => task.status !== "완료").length}건</strong></div>
-                <div className="hr-overview-card"><span>휴가 승인 대기</span><strong>{leaves.filter(leave => leave.status === "대기").length}건</strong></div>
+                <div className="hr-overview-card hr-overview-total"><span>전체 직원</span><strong>{employees.length}명</strong></div>
+                <div className="hr-overview-card hr-overview-active"><span>재직 직원</span><strong>{employees.filter(employee => employee.status !== "퇴사").length}명</strong></div>
+                <div className="hr-overview-card hr-overview-tasks"><span>미완료 담당 이슈</span><strong>{issues.filter(issue => !isIssueComplete(issue)).length}건</strong></div>
+                <div className="hr-overview-card hr-overview-leaves"><span>휴가 승인 대기</span><strong>{leaves.filter(leave => leave.status === "대기").length}건</strong></div>
             </div>
-            {/* 직원별 업무량 */}
-            <div className="panel">
+            {/* 직원별 업무 수치와 비교 그래프를 한 줄에 통합합니다. */}
+            <div className="panel hr-analytics-panel hr-unified-panel">
+                <div className="hr-unified-heading">
+                    <div>
+                        <h3>직원별 업무 현황</h3>
+                        <p className="muted">미완료 이슈를 직원별로 비교합니다. 업무량은 성과 평가 점수가 아닙니다.</p>
+                    </div>
+                    <span className="hr-unified-count">재직 직원 {employees.filter(employee => employee.status !== "퇴사").length}명</span>
+                </div>
+                {(() => {
+                    // 퇴사자를 제외한 직원만 분석합니다.
+                    const activeEmployees = employees.filter(employee => employee.status !== "퇴사");
 
-                <h3>직원별 업무량</h3>
+                    // 모든 직원에게 동일한 기준을 적용하여 건수를 계산합니다.
+                    const workloadRows = activeEmployees.map(employee => {
+                        const employeeIssues = issues.filter(issue =>
+                            sameId(issue.assigneeId ?? issue.assignee_id, employee.id) && !isIssueComplete(issue)
+                        );
+                        const dueSoonIssues = employeeIssues.filter(issue => isDueSoon(issue.due));
 
-                <p className="muted">
-                    담당 업무와 미완료 이슈를 구분해 표시합니다.
-                    실제 성과 평가 점수는 아닙니다.
-                </p>
+                        return {
+                            employee: employee,
+                            issueCount: employeeIssues.length,
+                            projectCount: getEmployeeProjects(employee).length,
+                            dueSoonCount: dueSoonIssues.length,
+                            total: employeeIssues.length
+                        };
+                    });
 
-                {employees.length === 0 && <p className="muted">
-                    등록된 직원이 없습니다.
-                </p>}
+                    // 그래프는 재직 직원 중 가장 큰 업무량을 100%로 표시합니다.
+                    const maxTotal = Math.max(1, ...workloadRows.map(row => row.total));
 
-                {employees.map(employee => {
-                    // 미완료 이슈 계산
-                    const employeeIssues = issues.filter(issue => issue.assigneeId === employee.id && issue.status !== "완료");
+                    if (workloadRows.length === 0) {
+                        return <p className="muted hr-unified-empty">재직 중인 직원이 없습니다.</p>;
+                    }
 
-                    // 미완료 담당 업무 계산
-                    const employeeTasks = tasks.filter(task => task.employeeId === employee.id && task.status !== "완료");
-
-                    // 마감 임박 업무 계산
-                    const dueSoonTasks = employeeTasks.filter(task => isDueSoon(task.endDate));
-                    return <div className="employee-row" key={employee.id}>
-
-                        <div className="hr-employee-info">
-
-                            <strong>
-                                {employee.name}
-                            </strong>
-
-                            <p className="muted">
-                                {employee.team}
-                                {" / "}
-                                {employee.position}
-                                {" / "}
-                                {employee.rank || "직급 미지정"}
-                            </p>
-
-                            <span className="hr-status">
-                                {employee.status || "재직"}
-                            </span>
-
-                        </div>
-
-                        <div className="hr-workload">
-
-                            <div className="hr-count">
-                                <strong>
-                                    {employeeIssues.length}
-                                </strong>
-                                <span>미완료 이슈</span>
-                            </div>
-
-                            <div className="hr-count">
-                                <strong>
-                                    {employeeTasks.length}
-                                </strong>
-                                <span>담당 업무</span>
-                            </div>
-
-                            <div className="hr-count hr-warning">
-                                <strong>
-                                    {dueSoonTasks.length}
-                                </strong>
-                                <span>7일 이내 마감</span>
-                            </div>
-
-                        </div>
-
+                    return <div className="hr-unified-table-wrap">
+                        <table className="hr-unified-table">
+                            <thead>
+                                <tr>
+                                    <th>직원 정보</th>
+                                    <th>미완료 이슈</th>
+                                    <th>참여 프로젝트</th>
+                                    <th>7일 이내 이슈 마감</th>
+                                    <th>업무량 비교</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {workloadRows.map(row => <tr key={row.employee.id}>
+                                    <td>
+                                        <strong className="hr-unified-name">{row.employee.name}</strong>
+                                        <span className="hr-unified-meta">
+                                            {row.employee.team || "부서 미지정"} / {row.employee.position || "직책 미지정"} / {row.employee.rank || "직급 미지정"}
+                                        </span>
+                                    </td>
+                                    <td><strong className="hr-unified-number">{row.issueCount}</strong>건</td>
+                                    <td><strong className="hr-unified-number">{row.projectCount}</strong>개</td>
+                                    <td><strong className={row.dueSoonCount > 0 ? "hr-unified-number hr-unified-warning" : "hr-unified-number"}>{row.dueSoonCount}</strong>건</td>
+                                    <td>
+                                        <div className="hr-unified-graph">
+                                            <div className="hr-compare-track">
+                                                <div className="hr-compare-fill" style={{ width: (row.total / maxTotal * 100) + "%" }} />
+                                            </div>
+                                            <strong>{row.total}건</strong>
+                                        </div>
+                                    </td>
+                                </tr>)}
+                            </tbody>
+                        </table>
                     </div>;
-                })}
-
-            </div>
-            <div className="panel">
-                <h3>직원별 업무 현황 비교</h3>
-                <p className="muted">진행 중인 업무와 미완료 이슈를 합산한 참고용 건수입니다. 성과 평가 점수가 아닙니다.</p>
-                {employees.filter(employee => employee.status !== "퇴사").map(employee => {
-                    const activeTaskCount = tasks.filter(task => sameId(task.employeeId, employee.id) && task.status !== "완료").length;
-                    const activeIssueCount = issues.filter(issue => sameId(issue.assigneeId || issue.assignee_id, employee.id) && issue.status !== "완료").length;
-                    const total = activeTaskCount + activeIssueCount;
-                    const maxTotal = Math.max(1, ...employees.map(item => tasks.filter(task => sameId(task.employeeId, item.id) && task.status !== "완료").length + issues.filter(issue => sameId(issue.assigneeId || issue.assignee_id, item.id) && issue.status !== "완료").length));
-                    return <div className="hr-compare-row" key={employee.id}>
-                        <span>{employee.name}</span>
-                        <div className="hr-compare-track"><div className="hr-compare-fill" style={{
-                            width: total / maxTotal * 100 + "%"
-                        }} /></div>
-                        <strong>{total}건</strong>
-                    </div>;
-                })}
-                {employees.filter(employee => employee.status !== "퇴사").length === 0 && <p className="muted">재직 중인 직원이 없습니다.</p>}
+                })()}
             </div>
         </div>}
 
