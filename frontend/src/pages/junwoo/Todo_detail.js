@@ -2,7 +2,7 @@ import { API_BASE } from '../../shared/config';
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 
-function Todo_detail({ todo, onViewTodo }) {
+function Todo_detail({ todo = [], onViewTodo }) {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -77,6 +77,7 @@ function Todo_detail({ todo, onViewTodo }) {
     const start = (currentPage - 1) * 5;
     const end = start + 5;
 
+    // 데이터가 도착하기 전에는 상세 화면을 그리지 않는다.
     if (loading) {
         return (
             <main className="todo-page todo-detail-page">
@@ -85,11 +86,18 @@ function Todo_detail({ todo, onViewTodo }) {
         );
     }
 
+    // 조회 실패 또는 데이터가 없는 경우
     if (error || !item) {
         return (
             <main className="todo-page todo-detail-page">
                 <h2>{error || "존재하지 않는 프로젝트입니다."}</h2>
-                <button onClick={() => navigate("/todo")}>목록으로 돌아가기</button>
+
+                <button
+                    type="button"
+                    onClick={() => navigate("/todo")}
+                >
+                    목록으로 돌아가기
+                </button>
             </main>
         );
     }
@@ -119,11 +127,7 @@ function Todo_detail({ todo, onViewTodo }) {
 
                 <div className="todo-detail-row">
                     <strong>담당자</strong>
-                    <span>
-                        {members.length > 1
-                            ? `${members[0]} 외 ${members.length - 1}명`
-                            : members[0] ?? item.managerName ?? "미지정"}
-                    </span>
+                    <span>{item.managerName || "미지정"}</span>
                 </div>
 
                 <div className="todo-detail-row">

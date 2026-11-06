@@ -1,0 +1,359 @@
+.team-shell .junwoo-project-list {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 20px;
+    color: #18385f;
+}
+
+.team-shell .junwoo-project-list * {
+    box-sizing: border-box;
+}
+
+.team-shell .junwoo-project-list .jpl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0edff;
+}
+
+.team-shell .junwoo-project-list .jpl-header h1 {
+    margin: 0;
+    color: #0782f5;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.team-shell .junwoo-project-list .jpl-header p {
+    margin: 10px 0 0;
+    color: #7890b0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.team-shell .junwoo-project-list button {
+    font: inherit;
+    cursor: pointer;
+}
+
+.team-shell .junwoo-project-list .jpl-reset,
+.team-shell .junwoo-project-list .jpl-tabs button,
+.team-shell .junwoo-project-list .jpl-page-buttons button {
+    min-height: 40px;
+    padding: 9px 18px;
+    border: 1px solid #d3e4ff;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #4774a7;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.team-shell .junwoo-project-list .jpl-reset:hover,
+.team-shell .junwoo-project-list .jpl-tabs button:hover,
+.team-shell .junwoo-project-list .jpl-page-buttons button:hover {
+    background: #eff6ff;
+    border-color: #8fc2ff;
+}
+
+.team-shell .junwoo-project-list .jpl-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin: 20px 0;
+    color: #0782f5;
+    font-size: 13px;
+}
+
+.team-shell .junwoo-project-list .jpl-filter {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.team-shell .junwoo-project-list .jpl-filter label {
+    margin-top: 2px;
+    color: #355983;
+    font-size: 13px;
+}
+
+.team-shell .junwoo-project-list .jpl-filter input,
+.team-shell .junwoo-project-list .jpl-filter select {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    margin: 0 0 3px;
+    padding: 0 14px;
+    border: 1px solid #d3e4ff;
+    border-radius: 10px;
+    background: #f5f9ff;
+    color: #18385f;
+    font: inherit;
+    font-size: 14px;
+}
+
+.team-shell .junwoo-project-list .jpl-filter input::placeholder {
+    color: #94accb;
+}
+
+.team-shell .junwoo-project-list :is(input, select, button, a):focus-visible {
+    outline: 2px solid #168bf5;
+    outline-offset: 3px;
+}
+
+.team-shell .junwoo-project-list .jpl-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.team-shell .junwoo-project-list .jpl-list-header h2 {
+    margin: 0;
+    color: #18385f;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.team-shell .junwoo-project-list .jpl-list-header>span {
+    color: #0782f5;
+    font-size: 13px;
+}
+
+.team-shell .junwoo-project-list .jpl-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.team-shell .junwoo-project-list .jpl-tabs button[aria-pressed="true"],
+.team-shell .junwoo-project-list .jpl-page-buttons button[aria-current="page"] {
+    border-color: #168bf5;
+    background: #168bf5;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.team-shell .junwoo-project-list .jpl-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.team-shell .junwoo-project-list .jpl-table {
+    width: 100%;
+    min-width: 780px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 13px;
+}
+
+.team-shell .junwoo-project-list .jpl-table th {
+    padding: 16px 10px;
+    border-bottom: 1px solid #d9e9ff;
+    background: #e8f2ff;
+    color: #0782f5;
+    text-align: center;
+    font-weight: 600;
+}
+
+.team-shell .junwoo-project-list .jpl-table td {
+    padding: 18px 10px;
+    border-bottom: 1px solid #e5efff;
+    color: #18385f;
+    text-align: center;
+    vertical-align: middle;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+}
+
+.team-shell .junwoo-project-list .jpl-table th:nth-child(1) {
+    width: 6%;
+}
+
+.team-shell .junwoo-project-list .jpl-table th:nth-child(2) {
+    width: 15%;
+}
+
+.team-shell .junwoo-project-list .jpl-table th:nth-child(3) {
+    width: 31%;
+}
+
+.team-shell .junwoo-project-list .jpl-table th:nth-child(4) {
+    width: 10%;
+}
+
+.team-shell .junwoo-project-list .jpl-table th:nth-child(5) {
+    width: 13%;
+}
+
+.team-shell .junwoo-project-list .jpl-table th:nth-child(6) {
+    width: 10%;
+}
+
+.team-shell .junwoo-project-list .jpl-table th:nth-child(7) {
+    width: 15%;
+}
+
+.team-shell .junwoo-project-list .jpl-table tbody tr:hover {
+    background: #f8fbff;
+}
+
+.team-shell .junwoo-project-list .jpl-project-title a {
+    color: #0782f5;
+    text-decoration: none;
+}
+
+.team-shell .junwoo-project-list .jpl-project-title a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.team-shell .junwoo-project-list .jpl-status {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.team-shell .junwoo-project-list .jpl-status[data-status="완료 요청"] {
+    color: #8a5c00;
+    background: #fff4d8;
+}
+
+.team-shell .junwoo-project-list .jpl-status[data-status="완료"] {
+    color: #22724b;
+    background: #edf8f1;
+}
+
+.team-shell .junwoo-project-list .jpl-table .jpl-empty {
+    padding: 45px 12px;
+    color: #7890b0;
+}
+
+.team-shell .junwoo-project-list .jpl-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 22px;
+    color: #7890b0;
+    font-size: 13px;
+}
+
+.team-shell .junwoo-project-list .jpl-page-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.team-shell .junwoo-project-list .jpl-page-buttons button {
+    min-width: 38px;
+    padding: 8px 12px;
+}
+
+.team-shell .junwoo-project-list .jpl-page-buttons button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #ffffff;
+}
+
+.team-shell .junwoo-project-list .jpl-footer {
+    margin: 22px 0 0;
+    color: #7890b0;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+    .team-shell .junwoo-project-list {
+        padding: 20px 16px;
+        border-radius: 14px;
+    }
+
+    .team-shell .junwoo-project-list .jpl-header {
+        align-items: flex-start;
+    }
+
+    .team-shell .junwoo-project-list .jpl-header h1 {
+        font-size: 21px;
+    }
+
+    .team-shell .junwoo-project-list .jpl-pagination {
+        justify-content: center;
+    }
+
+    .team-shell .junwoo-project-list .jpl-tabs button {
+        padding: 8px 12px;
+    }
+}
+
+/* 목록 건수와 페이지 버튼을 가운데 정렬 */
+.team-shell .junwoo-project-list .jpl-pagination {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.team-shell .junwoo-project-list .jpl-page-buttons {
+    justify-content: center;
+}
+
+.team-shell .junwoo-project-list .jpl-status-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+}
+
+.team-shell .junwoo-project-list .jpl-completion-button {
+    padding: 7px 12px;
+    border: 1px solid #168bf5;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #0782f5;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.team-shell .junwoo-project-list .jpl-completion-button:hover {
+    background: #168bf5;
+    color: #ffffff;
+}
+
+.team-shell .junwoo-project-list .jpl-completion-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.team-shell .junwoo-project-list .jpl-completion-wait {
+    color: #8a5c00;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.team-shell .junwoo-project-list .jpl-header-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.team-shell .junwoo-project-list a.jpl-reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}

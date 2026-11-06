@@ -9,22 +9,17 @@ export function useJongho() {
 }
 
 export function JonghoProvider({ children }) {
-  const { data, changeData, resetData } = useAdminData();
+  const { data, changeData } = useAdminData();
   const {
     projects,
     setProjects,
     resetProjects,
     createProject,
     updateProject,
+    updateProjectMembers,
     removeProject,
     projectError,
   } = useAdminProjects();
-
-  function resetDemo() {
-    if (!window.confirm('모든 연습 데이터를 초기화할까요?')) return;
-    resetData();
-    resetProjects();
-  }
 
   const value = {
     data,
@@ -32,9 +27,9 @@ export function JonghoProvider({ children }) {
     projects,
     setProjects,
     resetProjects,
-    resetDemo,
     createProject,
     updateProject,
+    updateProjectMembers,
     removeProject,
     projectError,
   };

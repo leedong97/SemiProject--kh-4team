@@ -1,5 +1,6 @@
 const express = require('express');
 const db = require('../../db');
+const { createNotification, createNotificationForManagers } = require('../../notify');
 const { requireAuth, requireManager } = require('../../middleware/session');
 const router = express.Router();
 router.use(requireAuth);
@@ -55,6 +56,13 @@ router.post('/issue-completion-requests', async (req, res, next) => {
     if (pending.length) fail(409, '이미 검토 대기 중인 완료 요청이 있습니다.');
     const [result] = await connection.query('INSERT INTO issue_completion_requests (issue_id, requester_id, resolution) VALUES (?, ?, ?)', [issueId, employeeId, resolution.trim()]);
     await connection.commit();
+    // 알림: 관리자에게 새 이슈 완료 요청을 알려요 (요청한 본인이 관리자면 제외, 실패해도 등록은 성공)
+    await createNotificationForManagers(
+      '이슈',
+      '이슈 "' + issues[0].issue_title + '"의 완료 요청이 들어왔어요.',
+      '/issue/' + issueId,
+      [employeeId]
+    );
     res.status(201).json({ id: result.insertId, message: '이슈 완료 요청을 등록했습니다.' });
   } catch (error) {
     if (connection) await connection.rollback();
@@ -83,6 +91,13 @@ router.patch('/issue-completion-requests/:id', requireManager, async (req, res, 
     }
     await connection.query('UPDATE issue_completion_requests SET status=?, review_comment=?, reviewer_id=?, reviewed_at=NOW() WHERE id=?', [decision, comment.trim(), req.user.employee_id, request.id]);
     await connection.commit();
+    // 알림: 완료를 요청한 직원에게 처리 결과를 알려요 (반려면 사유도 함께)
+    await createNotification(
+      request.requester_id,
+      '이슈',
+      '요청한 이슈 "' + issues[0].issue_title + '"의 완료 요청이 ' + decision + '됐어요.' + (decision === '반려' ? ' 사유: ' + comment.trim() : ''),
+      '/issue/' + request.issue_id
+    );
     res.json({ issueId: request.issue_id, issueStatus: decision === '승인' ? '완료' : issues[0].issue_status, message: decision + ' 처리했습니다.' });
   } catch (error) {
     if (connection) await connection.rollback();

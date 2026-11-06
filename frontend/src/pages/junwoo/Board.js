@@ -305,7 +305,6 @@ function Board(props) {
         setIsSaving(true);
 
         try {
-            const encodedFiles = await encodeAttachments(files);
             let response;
 
             if (isNewPost) {
@@ -316,9 +315,7 @@ function Board(props) {
                         boardName: boardName,
                         title: title,
                         content: content,
-                        authorId: loginUser.id,
-                        isAnonymous,
-                        files: encodedFiles
+                        authorId: loginUser.id
                     }
                 );
             } else {
@@ -328,10 +325,7 @@ function Board(props) {
                     {
                         title: title,
                         content: content,
-                        authorId: loginUser.id,
-                        isAnonymous,
-                        files: encodedFiles,
-                        removeAttachmentIds
+                        authorId: loginUser.id
                     }
                 );
             }
@@ -869,8 +863,6 @@ function Board(props) {
                 <p className="community-post-content">
                     {selectedPost.content}
                 </p>
-
-                <StoredAttachments files={selectedPost.attachments || []} />
 
                 <CommunityLike
                     key={"like-" + selectedPost.id}

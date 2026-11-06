@@ -1,6 +1,7 @@
+import { PROJECT_STATUS } from "../shared/projectConstants";
 import { useState } from "react";
 
-// 프로젝트 요청 목록 (등록 요청 / 완료 요청)
+// 프로젝트 완료 요청 목록
 // 행을 펼쳐 본 상태는 이 컴포넌트 안에서만 씁니다.
 function ProjectRequestList({ requests, busy, onOpenProject, onApprove, onReject }) {
   const [openIds, setOpenIds] = useState([]);
@@ -40,13 +41,12 @@ function ProjectRequestList({ requests, busy, onOpenProject, onApprove, onReject
       <header className="nexus-request-head">
         <div>
           <strong>프로젝트 요청</strong>
-          <p>승인하면 프로젝트 목록에 등록되거나 완료 처리됩니다.</p>
+          <p>승인하면 프로젝트가 완료 처리됩니다.</p>
         </div>
         <span className="nexus-request-count">대기 {requests.length}건</span>
       </header>
 
       {requests.map((req) => {
-        const isRegister = req.type === "등록";
         const isOpen = openIds.includes(req.id);
 
         return (
@@ -54,9 +54,7 @@ function ProjectRequestList({ requests, busy, onOpenProject, onApprove, onReject
             <div className="nexus-request-main">
               <div className="nexus-request-info">
                 <div className="nexus-request-title">
-                  <span className={`badge ${isRegister ? "badge-info" : "badge-done"}`}>
-                    {isRegister ? "등록 요청" : "완료 요청"}
-                  </span>
+                  <span className="badge badge-done">완료 요청</span>
                   <strong>{req.projectName || req.title}</strong>
                 </div>
                 <small className="nexus-request-meta">
@@ -122,7 +120,7 @@ function ProjectRequestList({ requests, busy, onOpenProject, onApprove, onReject
                   </div>
                   <div>
                     <span>요청 상태</span>
-                    <strong>{req.projectStatus || "예정"}</strong>
+                    <strong>{req.projectStatus || PROJECT_STATUS.PLANNED}</strong>
                   </div>
                   <div>
                     <span>우선순위</span>
@@ -141,7 +139,7 @@ function ProjectRequestList({ requests, busy, onOpenProject, onApprove, onReject
                   <p>{req.content || "-"}</p>
                 </div>
 
-                {!isRegister && req.projectId && (
+                {req.projectId && (
                   <button type="button" className="btn btn-ghost btn-sm" onClick={() => onOpenProject(req.projectId)}>
                     프로젝트 보기 →
                   </button>

@@ -1,12 +1,12 @@
 import './junwoo.css';
 import Home from './Home';
 import Todo from './Todo';
-import Todo_set from './Todo_set';
 import Todo_detail from './Todo_detail';
 import Info from './Info';
 import Info_set from './Info_set';
 import Info_detail from './Info_detail';
 import Community from './Community';
+import ProjectCompletion from "./ProjectCompletion";
 import ProjectRequestDetail from "./ProjectRequestDetail";
 import { JunwooProvider, useJunwoo } from './JunwooContext';
 
@@ -14,21 +14,19 @@ import { JunwooProvider, useJunwoo } from './JunwooContext';
 // 아래 *Route 컴포넌트는 "상자(Context)에서 데이터를 꺼내 기존 화면에 props 로 넘겨주는" 얇은 연결부예요.
 // Home, Todo, Info... 화면 코드는 원래 쓰던 그대로입니다.
 
+// Context에 저장된 공지사항과 프로젝트 데이터를 꺼내
+// Home 컴포넌트에 props로 전달하는 연결용 컴포넌트
 function HomeRoute() {
   const { info, todo } = useJunwoo();
   return <Home info={info} todo={todo} />;
 }
 function TodoRoute() {
-  const { todo, delTodo, addTodo } = useJunwoo();
-  return <Todo todo={todo} delTodo={delTodo} onAddTodo={addTodo} />;
-}
-function TodoSetRoute() {
-  const { todo, addTodo } = useJunwoo();
-  return <Todo_set todo={todo} onAddTodo={addTodo} />;
+  const { todo } = useJunwoo();
+  return <Todo todo={todo} />;
 }
 function TodoDetailRoute() {
-  const { todo, viewTodo, updateTodo } = useJunwoo();
-  return <Todo_detail todo={todo} onViewTodo={viewTodo} onUpdateTodo={updateTodo} />;
+  const { todo, viewTodo } = useJunwoo();
+  return <Todo_detail todo={todo} onViewTodo={viewTodo} />
 }
 function InfoRoute() {
   const { info, delInfo, addInfo } = useJunwoo();
@@ -43,12 +41,15 @@ function InfoDetailRoute() {
   return <Info_detail info={info} onViewInfo={viewInfo} />;
 }
 
+// App.js에서 이 Provider로 화면을 감싸면
+// 하위 컴포넌트들이 useJunwoo()로 공통 데이터와 함수를 사용할 수 있다.
 export const Provider = JunwooProvider;
 
+// ERP 공통 메뉴(TeamShell) 안에서 보여줄 페이지와 주소
 export const shellRoutes = [
   { path: '/', element: <HomeRoute /> },
   { path: '/todo', element: <TodoRoute /> },
-  { path: '/todo/set', element: <TodoSetRoute /> },
+  { path: '/todo/completion', element: <ProjectCompletion /> },
   { path: '/todo/:id', element: <TodoDetailRoute /> },
   { path: '/info', element: <InfoRoute /> },
   { path: '/info/set', element: <InfoSetRoute /> },
@@ -56,6 +57,8 @@ export const shellRoutes = [
   { path: "/project-requests/:id", element: <ProjectRequestDetail /> },
 ];
 
+// TeamShell 밖에서 별도 화면으로 보여줄 커뮤니티 페이지와 주소
+// standalone은 공통 데이터 Provider까지 제외한다는 뜻은 아니다
 export const standaloneRoutes = [
   {
     path: "/community",

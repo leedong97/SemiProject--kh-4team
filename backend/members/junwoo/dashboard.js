@@ -1,18 +1,22 @@
 // 준우: dashboard API  (메인 서버에서 prefix '/api/dashboard' 로 연결됩니다)
 // 원본: backend-junwoo/server.js 의 해당 구간을 Router 로 옮긴 것 (내용 로직은 그대로)
+const { requireAuth } = require('../../middleware/session');
 const express = require('express');
 const db = require('../../db');
 
 const router = express.Router();
 
-router.get('/schedules', async (req, res) => {
+// GET /api/dashboard/schedules
+// requireAuth가 인증을 통과시킨 뒤 일정 조회 함수를 실행한다
+router.get('/schedules', requireAuth, async (req, res) => {
 
-    // 임시 직원번호 (추후 로그인 정보 연결)
-    const employeeId = 1;
+    // 로그인 인증을 통과한 직원의 번호
+    const employeeId = req.user.employee_id;
 
     try {
 
-        /* 1. 직원 개인 일정 */
+        // 현재 코드는 직원별 참여 여부로 제한하지 않고
+        // 시작일이 있는 프로젝트의 일정을 조회한다
         const [scheduleRows] = await db.query(`
             SELECT
                 schedule_title AS title,
@@ -53,7 +57,8 @@ router.get('/schedules', async (req, res) => {
         `);
 
 
-        /* 3. 프로젝트 종료일 */
+        // 시작일과 종료일이 같은 프로젝트는 시작일 조회에서 이미 포함되므로
+        // 종료 일정으로 다시 표시하지 않는다
         const [projectEndRows] = await db.query(`
             SELECT
             project_id AS projectId,
@@ -90,7 +95,8 @@ router.get('/schedules', async (req, res) => {
 
         console.log('MySQL 공지사항 일정:', noticeRows);
 
-        /* 4. 모든 일정 합치기 */
+        // 개인 일정, 프로젝트 시작.종료, 공지 행사 일정을
+        // 하나의 배열로 합쳐 프론트엔드에 전달할 준비를 한다.
         const allSchedules = [
             ...scheduleRows,
             ...projectStartRows,

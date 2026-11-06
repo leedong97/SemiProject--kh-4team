@@ -99,25 +99,10 @@
       border: 1px solid #3a5a9c;
     }
     
-    .merge-placeholder button {
-      background: var(--primary);
-      color: white;
-      border: 0;
-      border-radius: 8px;
-      padding: 10px 14px;
-      cursor: pointer;
-    }
-    
     .nexus-header-top, .merge-title, .merge-panel-head, .nexus-project-heading, .nexus-detail-title {
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-    
-    .merge-placeholder {
-      background: white;
-      border-radius: 14px;
-      padding: 30px;
     }
     
     .nexus-admin-layout {
@@ -230,7 +215,6 @@
     }
     
     .merge-title h1 {
-      font-size: 28px;
       margin: 6px 0 8px;
     }
     
@@ -293,7 +277,8 @@
       margin: 0;
     }
     
-    .merge-panel-head span {
+    .merge-panel-head span,
+    .admin-alert-item small {
       color: var(--text-muted);
       font-size: 12px;
     }
@@ -390,11 +375,17 @@
     .merge-log small {
       color: #8793a5;
     }
-    
-    .merge-demo-note {
-      color: #7c8798;
-      font-size: 12px;
-      margin-top: 15px;
+
+    /* 대시보드 공지 고정 표시 (관리자 공지 화면과 같은 색) */
+    .merge-log .dash-pinned-badge {
+      display: inline-block;
+      margin-right: 6px;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: #fff0ec;
+      color: #e15c45;
+      font-size: 11px;
+      font-weight: 600;
     }
     
     .nexus-assignment {
@@ -458,7 +449,9 @@
       color: var(--ink);
     }
     
-    .nexus-project-heading {
+    .nexus-project-heading,
+    .nexus-project-panel,
+    .nexus-project-panel h3 {
       margin-bottom: 20px;
     }
     
@@ -472,13 +465,7 @@
       margin-top: 5px;
     }
     
-    .nexus-project-panel {
-      margin-bottom: 20px;
-    }
     
-    .nexus-project-panel h3 {
-      margin-bottom: 20px;
-    }
     
     .nexus-project-panel label {
       display: block;
@@ -656,10 +643,6 @@
     .nexus-extra-heading span {font-size:11px; letter-spacing:2px; color:#7a8ca8; font-weight:700;}
     .nexus-extra-heading h1 {margin:8px 0;}
     .nexus-extra-heading p {color:#75849a; margin:0;}
-    .nexus-table-card {overflow-x:auto;}
-    .nexus-simple-table {width:100%; border-collapse:collapse; text-align:left; font-size:14px;}
-    .nexus-simple-table th,.nexus-simple-table td {padding:15px 18px; border-bottom:1px solid #edf1f7;}
-    .nexus-simple-table th {background:#f7f9fd; color:#53637c;}
     .nexus-alert {padding:14px; border-radius:9px; background:#fff1ee; color:#a83c2b;}
     .nexus-workload-list {padding:10px 22px;}
     .nexus-workload-row {display:grid; grid-template-columns:190px minmax(0,1fr) 55px; gap:20px; align-items:center; padding:19px 0; border-bottom:1px solid #edf1f7;}
@@ -669,28 +652,6 @@
     .nexus-workload-track {height:12px; border-radius:20px; background:#edf2fb; overflow:hidden; margin-bottom:7px;}
     .nexus-workload-track div {height:100%; border-radius:20px; background:linear-gradient(90deg,var(--primary),#8db4ff);}
     @media(max-width:900px){.nexus-admin-header{padding:16px;}.nexus-admin-main{padding:20px 14px;}.nexus-workload-row{grid-template-columns:120px minmax(0,1fr) 42px;gap:10px;}}
-    
-    /* 프로젝트 상세: 실제 진행률 수정 입력창 */
-    .nexus-detail-progress-edit {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 8px 0 12px;
-      font-size: 13px;
-    }
-    
-    .nexus-detail-progress-edit label {
-      color: #5b667a;
-    }
-    
-    .nexus-detail-progress-edit input {
-      width: 80px;
-      height: 32px;
-      padding: 0 8px;
-      border: 1px solid #d6dfeb;
-      border-radius: 8px;
-      font-size: 13px;
-    }
     
     /* 프로젝트 상세: 정보 수정 폼 */
     .nexus-detail-edit-toggle {
@@ -826,10 +787,6 @@
       background: #f7f8fa;
     }
     
-    .admin-alert-item small {
-      color: var(--text-muted);
-      font-size: 12px;
-    }
     
     .admin-alert-type {
       padding: 1px 7px;
@@ -1073,10 +1030,17 @@
       padding: 36px !important;
       color: #8995a7;
   }
-  
-  /* ===== 담당자 배정 화면 ===== */
-  .nexus-assign-search {margin-bottom: 16px}
+  /* ===== 담당자 배정 화면 (인원 관리) ===== */
   .nexus-sortable {cursor: pointer}
   
   /* ===== 프로젝트 목록: 기간 초과 표시 ===== */
   .nexus-overdue {margin-left: 8px; color: #b42318; font-weight: 700}
+/* 목록 페이지 버튼 (공통) */
+.nexus-pager {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+}
+

@@ -36,6 +36,14 @@ export default function useAdminProjects() {
     await loadProjects();
   }
 
+  async function updateProjectMembers(id, memberIds) {
+    await adminRequest('/projects/' + id + '/members', {
+      method: 'PUT',
+      body: JSON.stringify({ memberIds }),
+    });
+    await loadProjects();
+  }
+
   async function removeProject(id) {
     await adminRequest('/projects/' + id, { method: 'DELETE' });
     await loadProjects();
@@ -53,6 +61,7 @@ export default function useAdminProjects() {
     resetProjects: loadProjects,
     createProject,
     updateProject,
+    updateProjectMembers,
     removeProject,
     projectError,
   };

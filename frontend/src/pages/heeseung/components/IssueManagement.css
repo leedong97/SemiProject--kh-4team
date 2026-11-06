@@ -1,8 +1,8 @@
 /* =========================================
-   NEXUS ERP - ISSUE MANAGEMENT
-   PC 전용 이슈 관리 디자인
-   실제 JS 클래스명: issue-Management
-   ========================================= */
+NEXUS ERP - ISSUE MANAGEMENT
+PC 전용 이슈 관리 디자인
+실제 JS 클래스명: issue-Management
+========================================= */
 
 /* 1. 전체 화면 */
 
@@ -920,9 +920,11 @@
     .issue-Management {
         padding: 18px 14px 40px;
     }
+
     .issue-Management .issue-stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
     .issue-Management .issue-alert-grid {
         grid-template-columns: 1fr;
     }
@@ -956,8 +958,8 @@
 }
 
 /* ================================================
-   간결한 이슈 관리 화면: 기존 기능 유지, 정보 밀도 축소
-   ================================================ */
+간결한 이슈 관리 화면: 기존 기능 유지, 정보 밀도 축소
+================================================ */
 
 .issue-Management {
     max-width: 1280px;
@@ -1016,7 +1018,7 @@
     border-radius: 11px;
 }
 
-.issue-Management .issue-optional-section > summary {
+.issue-Management .issue-optional-section>summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1028,22 +1030,22 @@
     list-style: none;
 }
 
-.issue-Management .issue-optional-section > summary::-webkit-details-marker {
+.issue-Management .issue-optional-section>summary::-webkit-details-marker {
     display: none;
 }
 
-.issue-Management .issue-optional-section > summary span {
+.issue-Management .issue-optional-section>summary span {
     color: #64748b;
     font-size: 12px;
     font-weight: 400;
 }
 
-.issue-Management .issue-optional-section[open] > summary {
+.issue-Management .issue-optional-section[open]>summary {
     border-bottom: 1px solid #e4e9f0;
 }
 
-.issue-Management .issue-workload-panel > p,
-.issue-Management .issue-workload-panel > .issue-workload-list {
+.issue-Management .issue-workload-panel>p,
+.issue-Management .issue-workload-panel>.issue-workload-list {
     margin: 12px 18px;
 }
 
@@ -1101,9 +1103,11 @@
     .issue-Management {
         padding: 18px 14px 32px;
     }
+
     .issue-Management .issue-stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
     .issue-Management .issue-alert-grid {
         grid-template-columns: 1fr;
     }
@@ -1175,7 +1179,7 @@
     background: #e9eef5;
 }
 
-.issue-Management .issue-workload-meter > span {
+.issue-Management .issue-workload-meter>span {
     display: block;
     height: 100%;
     border-radius: inherit;
@@ -1232,10 +1236,12 @@
         grid-template-columns: 90px 1fr 40px;
         gap: 8px;
     }
+
     .issue-Management .issue-workload-flags {
         grid-column: 1 / -1;
         justify-content: flex-start;
     }
+
     .issue-Management .issue-workload-hint {
         display: none;
     }
@@ -1255,15 +1261,32 @@
     font-weight: 400;
 }
 
-/* 관리자 이슈 화면 제목 설명과 완료 요청 검토 영역 */
-.issue-Management > .section-head > p {
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 1.6;
+/* 이슈 목록의 프로젝트 정보만 2열 카드로 정리 */
+.issue-Management .issue-project-info {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 20px;
+    margin-top: 12px;
+    padding: 16px 18px;
+    border: 1px solid #e5eaf1;
+    border-radius: 12px;
+    background: #f8fafc;
 }
-.issue-Management > .issue-completion {
-    width: 100%;
-    max-width: none;
+
+.issue-Management .issue-project-info>div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
     min-width: 0;
-    margin: 0 0 24px;
+}
+
+.issue-Management .issue-project-info span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.issue-Management .issue-project-info strong {
+    font-size: 14px;
+    color: #1e293b;
+    overflow-wrap: anywhere;
 }
