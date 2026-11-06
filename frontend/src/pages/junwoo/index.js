@@ -1,7 +1,6 @@
 import './junwoo.css';
 import Home from './Home';
 import Todo from './Todo';
-import Todo_set from './Todo_set';
 import Todo_detail from './Todo_detail';
 import Info from './Info';
 import Info_set from './Info_set';
@@ -15,78 +14,77 @@ import { JunwooProvider, useJunwoo } from './JunwooContext';
 // Home, Todo, Info... 화면 코드는 원래 쓰던 그대로입니다.
 
 function HomeRoute() {
-  const { info, todo } = useJunwoo();
-  return <Home info={info} todo={todo} />;
+    const { info, todo } = useJunwoo();
+    return <Home info={info} todo={todo} />;
 }
 function TodoRoute() {
-  const { todo, delTodo, addTodo } = useJunwoo();
-  return <Todo todo={todo} delTodo={delTodo} onAddTodo={addTodo} />;
-}
-function TodoSetRoute() {
-  const { todo, addTodo } = useJunwoo();
-  return <Todo_set todo={todo} onAddTodo={addTodo} />;
+    const { todo } = useJunwoo();
+    return <Todo todo={todo} />;
 }
 function TodoDetailRoute() {
-  const { todo, viewTodo, updateTodo } = useJunwoo();
-  return <Todo_detail todo={todo} onViewTodo={viewTodo} onUpdateTodo={updateTodo} />;
+    const { todo, viewTodo, requestProjectCompletion } = useJunwoo();
+    return <Todo_detail todo={todo} onViewTodo={viewTodo} onRequestCompletion={requestProjectCompletion} />;
 }
 function InfoRoute() {
-  const { info, delInfo, addInfo } = useJunwoo();
-  return <Info info={info} onAddInfo={addInfo} />;
+    const { info, delInfo, addInfo } = useJunwoo();
+    return <Info info={info} onAddInfo={addInfo} />;
 }
 function InfoSetRoute() {
-  const { info, addInfo } = useJunwoo();
-  return <Info_set info={info} onAddInfo={addInfo} />;
+    const { info, addInfo } = useJunwoo();
+    return <Info_set info={info} onAddInfo={addInfo} />;
 }
 function InfoDetailRoute() {
-  const { info, viewInfo } = useJunwoo();
-  return <Info_detail info={info} onViewInfo={viewInfo} />;
+    const { info, viewInfo } = useJunwoo();
+    return <Info_detail info={info} onViewInfo={viewInfo} />;
 }
 
 export const Provider = JunwooProvider;
 
 export const shellRoutes = [
-  { path: '/', element: <HomeRoute /> },
-  { path: '/todo', element: <TodoRoute /> },
-  { path: '/todo/set', element: <TodoSetRoute /> },
-  { path: '/todo/:id', element: <TodoDetailRoute /> },
-  { path: '/info', element: <InfoRoute /> },
-  { path: '/info/set', element: <InfoSetRoute /> },
-  { path: '/info/:id', element: <InfoDetailRoute /> },
-  { path: "/project-requests/:id", element: <ProjectRequestDetail /> },
+    { path: '/', element: <HomeRoute /> },
+    { path: '/todo', element: <TodoRoute /> },
+    { path: '/todo/:id', element: <TodoDetailRoute /> },
+    { path: '/info', element: <InfoRoute /> },
+    { path: '/info/set', element: <InfoSetRoute /> },
+    { path: '/info/:id', element: <InfoDetailRoute /> },
+    { path: "/project-requests/:id", element: <ProjectRequestDetail /> },
 ];
 
 export const standaloneRoutes = [
-  {
-    path: "/community",
-    element: <Community />
-  },
-  {
-    path: "/community/board",
-    element: <Community menu="게시판" />
-  },
-  {
-    path: "/community/board/:boardCode",
-    element: <Community menu="게시판" />
-  },
-  {
-    path: "/community/activity",
-    element: <Community menu="내 활동" activity="내가 작성한 글" />
-  },
-  {
-    path: "/community/activity/comments",
-    element: <Community menu="내 활동" activity="내가 작성한 댓글" />
-  },
-  {
-    path: "/community/post/:postId",
-    element: <Community menu="게시판" screen="detail" />
-  },
-  {
-    path: "/community/write/:boardCode",
-    element: <Community menu="게시판" screen="form" />
-  },
-  {
-    path: "/community/edit/:postId",
-    element: <Community menu="게시판" screen="form" />
-  }
+    {
+        path: "/community",
+        element: <Community />
+    },
+    {
+        path: "/community/board",
+        element: <Community menu="게시판" />
+    },
+    {
+        path: "/community/board/:boardCode",
+        element: <Community menu="게시판" />
+    },
+    {
+        path: "/community/activity",
+        element: <Community menu="내 활동" activity="내가 작성한 글" />
+    },
+    {
+        path: "/community/activity/comments",
+        element: <Community menu="내 활동" activity="내가 작성한 댓글" />
+    },
+    {
+        path: "/community/activity/bookmarks",
+        element: <Community menu="내 활동" activity="저장한 글" />
+    },
+    {
+        path: "/community/post/:postId",
+        element: <Community menu="게시판" screen="detail" />
+    },
+    {
+        path: "/community/write/:boardCode",
+        element: <Community menu="게시판" screen="form" />
+    },
+    {
+        path: "/community/edit/:postId",
+        element: <Community menu="게시판" screen="form" />
+    }
 ];

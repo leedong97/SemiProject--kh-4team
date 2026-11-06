@@ -1,18 +1,51 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import PostForm from "./PostForm";
-import axios from "axios";
+import axios, {
+    encodeAttachments
+} from "../dong/communityClient";
 import { API_BASE } from "../../shared/config";
 import getLoginUser from "../woojin/getLoginUser";
 import CommunityComments from "./CommunityComments";
 import CommunityLike from "./CommunityLike";
+import CommunityBookmark from "./CommunityBookmark";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import BoardBanner from "./BoardBanner";
+import FileAttachment from "../dong/components/FileAttachment";
+import AnonymousToggle from "../dong/components/AnonymousToggle";
+import StoredAttachments from "../dong/components/StoredAttachments";
 
 function Board(props) {
 
     const currentUser = getLoginUser();
 
+    const setPosts = props.setPosts;
+
+    // 해당 게시글의 댓글 수를 목록에도 반영
+    const updateCommentCount = useCallback(function (postId, count) {
+        setPosts(function (previousPosts) {
+            return previousPosts.map(function (post) {
+                if (String(post.id) !== String(postId)) {
+                    return post;
+                }
+
+                // 개수가 같으면 기존 데이터 유지
+                if (Number(post.commentCount) === count) {
+                    return post;
+                }
+
+                return {
+                    ...post,
+                    commentCount: count
+                }
+            })
+        })
+    }, [setPosts]);
+
     // 중복 등록 방지
     const savingRef = useRef(false);
+
+    // 화면에 표시할 저장 상태
+    const [isSaving, setIsSaving] = useState(false);
 
     // 페이지네이션 기능
     const [page, setPage] = useState(1);
@@ -199,7 +232,10 @@ function Board(props) {
             props.setPosts(function (previousPosts) {
                 return previousPosts.map(function (post) {
                     if (String(post.id) === String(updatedPost.id)) {
-                        return updatedPost;
+                        return {
+                            ...post,
+                            ...updatedPost
+                        };
                     }
 
                     return post;
@@ -237,7 +273,13 @@ function Board(props) {
     // title과 content는 PostForm에서 전달
     // ===================================
 
-    async function savePost(title, content) {
+    async function savePost(title, content, options = {}) {
+        const {
+            isAnonymous = false,
+            files = [],
+            removeAttachmentIds = [],
+        } = options;
+
         if (savingRef.current) {
             return;
         }
@@ -260,6 +302,7 @@ function Board(props) {
         }
 
         savingRef.current = true;
+        setIsSaving(true);
 
         try {
             let response;
@@ -301,7 +344,10 @@ function Board(props) {
 
                 return previousPosts.map(function (post) {
                     if (String(post.id) === String(savedPost.id)) {
-                        return savedPost;
+                        return {
+                            ...post,
+                            ...savedPost
+                        };
                     }
 
                     return post;
@@ -329,6 +375,7 @@ function Board(props) {
             alert(message);
         } finally {
             savingRef.current = false;
+            setIsSaving(false);
         }
     }
 
@@ -585,10 +632,24 @@ function Board(props) {
                                             to={"/community/post/" + post.id}
                                         >
                                             {post.title}
+
+                                            {Number(post.commentCount) > 0 && (
+                                                <span aria-label={`댓글 ${post.commentCount}개`}>
+                                                    {" "} [{post.commentCount}]
+                                                </span>
+                                            )}
                                         </Link>
                                     </td>
 
-                                    <td>{authorName}</td>
+                                    <td>
+                                        <span className="board-author">
+                                            <span className="board-author-avatar" aria-hidden="true">
+                                                {authorName.slice(0, 1)}
+                                            </span>
+
+                                            <span>{authorName}</span>
+                                        </span>
+                                    </td>
 
                                     <td>{createdDate}</td>
                                 </tr>
@@ -781,8 +842,9 @@ function Board(props) {
 
         boardContent = (
             <PostForm
-                key={formKey}
+                key={selectedPost.id ?? "new"}
                 post={selectedPost}
+                isSaving={isSaving}
                 onSave={savePost}
                 onCancel={showList}
             />
@@ -807,9 +869,15 @@ function Board(props) {
                     postId={selectedPost.id}
                 />
 
+                <CommunityBookmark
+                    key={"bookmark-" + selectedPost.id}
+                    postId={selectedPost.id}
+                />
+
                 <CommunityComments
                     key={"comments-" + selectedPost.id}
                     postId={selectedPost.id}
+                    onCountChange={updateCommentCount}
                 />
 
                 <div className="community-actions">
@@ -828,19 +896,11 @@ function Board(props) {
     } else {
         // 목록 화면
         boardContent = (
-            <div className="community-panel">
-                <div className="community-board-header">
-                    <h2 className="community-panel-title">
-                        {boardName}
-                    </h2>
-
-                    <Link
-                        to={writeAddress}
-                        className="community-primary-button"
-                    >
-                        글쓰기
-                    </Link>
-                </div>
+            <div className={"community-panel board-list-panel board-theme-" + boardCode}>
+                <BoardBanner
+                    boardName={boardName}
+                    writeAddress={writeAddress}
+                />
 
                 <div className="lounge-search-toolbar">
                     {questionFilterControl}
@@ -879,12 +939,13 @@ function Board(props) {
                 게시판
             </h1>
 
-            <div className="community-tabs">
+            <div className="community-tabs board-pretty-tabs">
                 <button
                     type="button"
                     className={freeClass}
                     onClick={showFreeBoard}
                 >
+                    <span aria-hidden="true">💬 </span>
                     자유게시판
                 </button>
 
@@ -893,6 +954,7 @@ function Board(props) {
                     className={questionClass}
                     onClick={showQuestionBoard}
                 >
+                    <span aria-hidden="true">❔ </span>
                     질문 답변
                 </button>
 
@@ -901,6 +963,7 @@ function Board(props) {
                     className={infoClass}
                     onClick={showInfoBoard}
                 >
+                    <span aria-hidden="true">💡 </span>
                     정보공유
                 </button>
             </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../dong/communityClient";
 import { API_BASE } from "../../shared/config";
 import { Link, useNavigate } from "react-router-dom";
 import CommunityMenu from "./CommunityMenu";
@@ -8,7 +8,6 @@ import Board from "./Board";
 import MyActivity from "./MyActivity";
 import getLoginUser from "../woojin/getLoginUser";
 import "./junwoo.css";
-import "./communityTheme.css"; // ERP 공통 틀과 같은 분위기로 덧입히는 스타일 (junwoo.css 뒤에 와야 해요)
 
 function Community(props) {
     const [posts, setPosts] = useState([]);
@@ -82,10 +81,37 @@ function Community(props) {
                     }
                 }
 
-                // 모든 페이지를 받은 뒤 화면에 반영
-                if (!cancelled) {
-                    setPosts(allPosts);
+                // 게시글 목록에 댓글 수를 합쳐서 화면에 반영
+                if (cancelled) {
+                    return;
                 }
+
+                const countsResponse = await axios.get(
+                    API_BASE + "/api/community-comment-counts"
+                );
+
+                if (cancelled) {
+                    return;
+                }
+
+                const countByPostId = new Map(
+                    countsResponse.data.map(function (item) {
+                        return [
+                            String(item.postId),
+                            Number(item.commentCount),
+                        ];
+                    })
+                );
+
+                const postsWithCounts = allPosts.map(function (post) {
+                    return {
+                        ...post,
+                        commentCount:
+                            countByPostId.get(String(post.id)) ?? 0,
+                    };
+                });
+
+                setPosts(postsWithCounts);
             } catch (error) {
                 console.error("커뮤니티 글 불러오기 실패:", error);
 
@@ -187,14 +213,13 @@ function Community(props) {
                     className="lounge-brand"
                     aria-label="COMMAND LOUNGE 홈"
                 >
-                    <img
-                        className="lounge-brand-logo"
-                        src="/images/command-logo.png"
-                        alt="COMMAND ERP"
-                    />
+                    <span className="lounge-brand-mark">
+                        C
+                    </span>
 
-                    <span className="lounge-brand-sub">
-                        LOUNGE · 사내 커뮤니티
+                    <span className="lounge-brand-text">
+                        COMMAND
+                        <small>LOUNGE · 사내 커뮤니티</small>
                     </span>
                 </Link>
 

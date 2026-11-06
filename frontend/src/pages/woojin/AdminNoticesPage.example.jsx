@@ -7,22 +7,22 @@ import NoticeAdminPanel from "./NoticeAdminPanel";
 import { useJunwoo } from "../junwoo/JunwooContext";
 
 function AdminNoticesPage() {
-  const { info, addInfo, delInfo, pinInfo } = useJunwoo();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const initialEventDate = location.state?.eventDate || "";
+    const { info, addInfo, delInfo, pinInfo } = useJunwoo();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const initialEventDate = location.state?.eventDate || "";
 
-  return (
-    <NoticeAdminPanel
-      info={info}
-      onAddInfo={addInfo}
-      onDeleteInfo={delInfo}
-      onPinInfo={pinInfo}
-      initialEventDate={initialEventDate}
-      onOpenNotice={(id) => navigate(`/info/${id}`)}
-      onAfterAdd={(id) => navigate(`/info/${id}`)}
-    />
-  );
+    return (
+        <NoticeAdminPanel
+            info={info}
+            onAddInfo={addInfo}
+            onDeleteInfo={delInfo}
+            onPinInfo={pinInfo}
+            initialEventDate={initialEventDate}
+            onOpenNotice={(id) => navigate(`/info/${id}`)}
+            onAfterAdd={(id) => navigate(`/info/${id}`)}
+        />
+    );
 }
 
 export default AdminNoticesPage;

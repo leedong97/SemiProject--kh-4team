@@ -11,5 +11,6 @@ export const initialData = {
     ],
     tasks: [],
     evaluations: [],
-    leaves: []
+    leaves: [],
+    logs: []
 };

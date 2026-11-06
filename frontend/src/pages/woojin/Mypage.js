@@ -1,5 +1,5 @@
 import { API_BASE } from '../../shared/config';
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import axios from "axios";
 import getLoginUser from "./getLoginUser";
 import ProfileBanner from "./components/mypageCommon/ProfileBanner";
@@ -73,7 +73,7 @@ const myIssues = [
 const myNotices = [{ id: 1, title: "11월 정기 보안 교육 안내", date: "2026-10-20", pinned: true }];
 
 const WEEK_DAYS = ["일", "월", "화", "수", "목", "금", "토"];
-const TABS = ["일정 관리", "내 업무", "근태·휴가", "내 활동", "내 정보","알림"];
+const TABS = ["일정 관리", "내 업무", "근태·휴가", "내 활동", "내 정보", "알림"];
 // 일정 등록 폼에서 고를 수 있는 유형. "프로젝트"는 관리자 페이지에서만 등록하므로 마이페이지 폼에는 없어요.
 const TYPES = ["개인", "업무", "휴가"];
 // 필터 버튼: "프로젝트"를 누르면 위쪽 프로젝트 막대만 보여요
@@ -170,11 +170,11 @@ function Mypage() {
     useEffect(() => {
         if (user.isDummy) return;
         axios
-            .get(`${API_BASE}/api/my-projects`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/my-projects`, { params: { employeeId: user.id } })
             .then((res) => setProjects(res.data.projects))
             .catch((err) => console.error("프로젝트를 불러오지 못했어요:", err));
         axios
-            .get(`${API_BASE}/api/my-tasks`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/my-tasks`, { params: { employeeId: user.id } })
             .then((res) => setTasks(res.data.tasks))
             .catch((err) => console.error("업무를 불러오지 못했어요:", err));
     }, [user.id, user.isDummy]);
@@ -184,7 +184,7 @@ function Mypage() {
     useEffect(() => {
         if (user.isDummy) return;
         axios
-            .get(`${API_BASE}/api/my-managed-projects`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/my-managed-projects`, { params: { employeeId: user.id } })
             .then((res) => setManagedProjects(res.data.projects))
             .catch((err) => console.error("담당 프로젝트를 불러오지 못했어요:", err));
     }, [user.id, user.isDummy]);
@@ -197,7 +197,7 @@ function Mypage() {
     useEffect(() => {
         if (user.isDummy) return;
         axios
-            .get(`${API_BASE}/api/my-issues`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/my-issues`, { params: { employeeId: user.id } })
             .then((res) => setIssues(res.data.issues))
             .catch((err) => console.error("이슈를 불러오지 못했어요:", err));
     }, [user.id, user.isDummy]);
@@ -207,7 +207,7 @@ function Mypage() {
     useEffect(() => {
         if (user.isDummy) return;
         axios
-            .get(`${API_BASE}/api/my-notices`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/my-notices`, { params: { employeeId: user.id } })
             .then((res) => setNotices(res.data.notices))
             .catch((err) => console.error("공지를 불러오지 못했어요:", err));
     }, [user.id, user.isDummy]);
@@ -221,7 +221,7 @@ function Mypage() {
     useEffect(() => {
         if (user.isDummy) return;
         axios
-            .get(`${API_BASE}/api/my-attendance`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/my-attendance`, { params: { employeeId: user.id } })
             .then((res) => {
                 setWeekHoursData(res.data.weekHours);
                 setLeaveTotalData(res.data.leaveTotal);
@@ -396,13 +396,32 @@ function Mypage() {
     // 로그인한 직원의 휴가 신청 내역을 서버(DB)에서 한 번 가져와요. 일정과 같은 방식이에요.
     // 로그인한 직원이면 DB에서 가져올 때까지 빈 목록, 더미 사용자면 예전 더미 휴가를 그대로 써요
     const [leaves, setLeaves] = useState(user.isDummy ? leaveHistory : []);
-    useEffect(() => {
+    const loadLeaves = useCallback(() => {
         if (user.isDummy) return;
         axios
-            .get(`${API_BASE}/api/leaves`, { params: { employeeId: user.id } })
+            .get(`${API_BASE}/api/mypage/leaves`, { params: { employeeId: user.id } })
             .then((res) => setLeaves(res.data.leaves))
             .catch((err) => console.error("휴가 내역을 불러오지 못했어요:", err));
     }, [user.id, user.isDummy]);
+
+    useEffect(() => {
+        loadLeaves();
+    }, [loadLeaves]);
+
+    // 휴가 신청: 성공하면 { ok: true }, 실패하면 { ok: false, message }를 돌려준다
+    const requestLeave = async (form) => {
+        const token = localStorage.getItem("nexus_auth_token");
+        if (!token) return { ok: false, message: "로그인 정보가 없어요. 다시 로그인해 주세요." };
+        try {
+            await axios.post(`${API_BASE}/api/mypage/leaves`, form, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            loadLeaves(); // 신청 후 내역을 다시 불러온다
+            return { ok: true };
+        } catch (err) {
+            return { ok: false, message: err.response?.data?.message || "신청에 실패했어요." };
+        }
+    };
 
     // 폼이 열리거나 수정 대상이 바뀌면, 폼이 보이는 위치까지 부드럽게 스크롤해요
     useEffect(() => {
@@ -647,6 +666,7 @@ function Mypage() {
                     leaveHistory={leaves}
                     todayKey={todayKey}
                     isDemo={user.isDummy}
+                    onRequestLeave={requestLeave}
                 />
             )}
 

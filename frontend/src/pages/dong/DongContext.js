@@ -5,50 +5,50 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const DongContext = createContext(null);
 
 export function useDong() {
-  return useContext(DongContext);
+    return useContext(DongContext);
 }
 
 export function DongProvider({ children }) {
-  // DB에서 받아온 이슈 목록
-  const [issues, setIssues] = useState([]);
+    // DB에서 받아온 이슈 목록
+    const [issues, setIssues] = useState([]);
 
-  // DB에서 받아온 프로젝트 목록
-  const [projects, setProjects] = useState([]);
+    // DB에서 받아온 프로젝트 목록
+    const [projects, setProjects] = useState([]);
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const [issueResponse, projectResponse] = await Promise.all([
-          fetch(`${API_BASE}/api/dong/issues`),
-          fetch(`${API_BASE}/api/dong/projects`)
-        ]);
+    useEffect(() => {
+        async function loadData() {
+            try {
+                const [issueResponse, projectResponse] = await Promise.all([
+                    fetch(`${API_BASE}/api/dong/issues`),
+                    fetch(`${API_BASE}/api/dong/projects`)
+                ]);
 
-        if (!issueResponse.ok || !projectResponse.ok) {
-          throw new Error("서버 응답 오류");
+                if (!issueResponse.ok || !projectResponse.ok) {
+                    throw new Error("서버 응답 오류");
+                }
+
+                const issueData = await issueResponse.json();
+                const projectData = await projectResponse.json();
+
+                setIssues(issueData);
+                setProjects(projectData);
+            } catch (err) {
+                console.error("이슈 데이터 불러오기 실패:", err);
+            }
         }
 
-        const issueData = await issueResponse.json();
-        const projectData = await projectResponse.json();
+        loadData();
+    }, []);
 
-        setIssues(issueData);
-        setProjects(projectData);
-      } catch (err) {
-        console.error("이슈 데이터 불러오기 실패:", err);
-      }
-    }
+    const value = {
+        projects,
+        issues,
+        setIssues
+    };
 
-    loadData();
-  }, []);
-
-  const value = {
-    projects,
-    issues,
-    setIssues
-  };
-
-  return (
-    <DongContext.Provider value={value}>
-      {children}
-    </DongContext.Provider>
-  );
+    return (
+        <DongContext.Provider value={value}>
+            {children}
+        </DongContext.Provider>
+    );
 }

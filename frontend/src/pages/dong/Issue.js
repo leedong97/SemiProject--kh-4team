@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "../../shared/config";
 
 // 수정: projects, issues, setIssues를 App에서 전달받는다.
 function Issue({ projects, issues, setIssues }) {
@@ -13,6 +14,25 @@ function Issue({ projects, issues, setIssues }) {
     const [issueView, setIssueView] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 10;
+
+    // 메인 이슈 목록에 들어올 때마다 DB의 최신 상태를 다시 불러옵니다.
+    useEffect(() => {
+        let cancelled = false;
+
+        async function refreshIssues() {
+            try {
+                const response = await fetch(`${API_BASE}/api/dong/issues`);
+                if (!response.ok) throw new Error("이슈 목록 조회 실패");
+                const rows = await response.json();
+                if (!cancelled && Array.isArray(rows)) setIssues(rows);
+            } catch (error) {
+                console.error("이슈 상태 새로고침 실패:", error);
+            }
+        }
+
+        refreshIssues();
+        return () => { cancelled = true; };
+    }, [setIssues]);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -40,6 +60,7 @@ function Issue({ projects, issues, setIssues }) {
         const statusMatch =
             issueView === "all" ||
             (issueView === "review" && issue.status === "검토 중") ||
+            (issueView === "progress" && issue.status === "진행 중") ||
             (issueView === "completed" && issue.status === "완료");
 
         return projectMatch && titleMatch && personMatch && statusMatch;
@@ -74,9 +95,14 @@ function Issue({ projects, issues, setIssues }) {
                     </p>
                 </div>
 
-                <button className="issue-reset" onClick={handleIssueRequest}>
-                    이슈 건의
-                </button>
+                <div className="issue-header-actions">
+                    <button className="issue-reset" onClick={handleIssueRequest}>
+                        이슈 건의
+                    </button>
+                    <button className="issue-reset" onClick={() => navigate("/issue/completion-request")}>
+                        이슈 완료 요청
+                    </button>
+                </div>
             </div>
 
             <div className="issue-summary">
@@ -84,7 +110,7 @@ function Issue({ projects, issues, setIssues }) {
                 <span>조회된 이슈 {filteredIssues.length}개</span>
             </div>
 
-           
+
             <section className="issue-filter">
 
                 <label htmlFor="project-select">
@@ -119,35 +145,43 @@ function Issue({ projects, issues, setIssues }) {
 
                 <div className="issue-list-header">
                     <h3>
-                        {{ all: "전체 이슈 목록", review: "검토 중인 이슈", completed: "완료된 이슈" }[issueView]}
+                        {{ all: "전체 이슈 목록", review: "검토 중인 이슈", progress: "진행 중인 이슈", completed: "완료된 이슈" }[issueView]}
                     </h3>
                     <span>{filteredIssues.length}건</span>
                 </div>
                 <div className="issue-view-switch" role="group" aria-label="이슈 목록 구분">
-                <button
-                    type="button"
-                    aria-pressed={issueView === "all"}
-                    onClick={() => setIssueView("all")}
-                >
-                    전체 이슈
-                </button>
+                    <button
+                        type="button"
+                        aria-pressed={issueView === "all"}
+                        onClick={() => setIssueView("all")}
+                    >
+                        전체 이슈
+                    </button>
 
-                <button
-                    type="button"
-                    aria-pressed={issueView === "review"}
-                    onClick={() => setIssueView("review")}
-                >
-                    검토 중
-                </button>
+                    <button
+                        type="button"
+                        aria-pressed={issueView === "review"}
+                        onClick={() => setIssueView("review")}
+                    >
+                        검토 중
+                    </button>
 
-                <button
-                    type="button"
-                    aria-pressed={issueView === "completed"}
-                    onClick={() => setIssueView("completed")}
-                >
-                    완료
-                </button>
-            </div>
+                    <button
+                        type="button"
+                        aria-pressed={issueView === "progress"}
+                        onClick={() => setIssueView("progress")}
+                    >
+                        진행 중
+                    </button>
+
+                    <button
+                        type="button"
+                        aria-pressed={issueView === "completed"}
+                        onClick={() => setIssueView("completed")}
+                    >
+                        완료
+                    </button>
+                </div>
 
                 <table className="issue-table">
                     <thead>

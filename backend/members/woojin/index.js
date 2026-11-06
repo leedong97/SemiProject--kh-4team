@@ -2,12 +2,13 @@
 // 주소 = prefix + 각 파일 안의 주소.  예) '/api/schedules' + '/' => /api/schedules
 // (server.js 는 이 목록을 위에서부터 순서대로 연결해요)
 module.exports = {
-  routes: [
-    { prefix: '/api/health',    router: require('./health') },
-    { prefix: '/api',           router: require('./auth') },       // /api/login, /api/signup
-    { prefix: '/api/schedules', router: require('./schedules') },
-    { prefix: '/api',           router: require('./mypage') },      // /api/leaves, /api/my-...
-    { prefix: '/api/profile',   router: require('./profile') },
-    { prefix: '/api/notifications', router: require('./notifications') },
-  ],
+    routes: [
+        { prefix: '/api/health', router: require('./health') },
+        { prefix: '/api/auth', router: require('./auth') },       // /api/auth/login, /api/auth/signup
+        { prefix: '/api/schedules', router: require('./schedules') },
+        { prefix: '/api/mypage', router: require('./mypage') },      // /api/mypage/leaves, /api/mypage/my-...
+        { prefix: '/api/profile', router: require('./profile') },
+        { prefix: '/api/notifications', router: require('./notifications') },
+        { prefix: '/api/shop/auth', router: require('./shop/auth') },   // 쇼핑몰 고객: /signup, /login, /me
+    ],
 };

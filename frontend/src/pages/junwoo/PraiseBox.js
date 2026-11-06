@@ -1,250 +1,376 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import axios from "../dong/communityClient";
+import { API_BASE } from "../../shared/config";
 import "./PraiseBox.css";
 
 function PraiseBox() {
-
-    // 입력칸에 작성한 내용을 저장
-    const [receiver, setReceiver] = useState("");
-    const [sender, setSender] = useState("");
+    const [receiverId, setReceiverId] = useState("");
     const [message, setMessage] = useState("");
 
-    // 작성칸을 보여줄지 결정
     const [showForm, setShowForm] = useState(false);
 
-    // 등록한 칭찬 목록
     const [praises, setPraises] = useState([]);
+    const [recipients, setRecipients] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
 
-    // 입력 오류 안내
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [retryCount, setRetryCount] = useState(0);
+
+    const [loadError, setLoadError] = useState("");
     const [error, setError] = useState("");
 
-    // 받는 사람 입력
-    function changeReceiver(event) {
-        setReceiver(event.target.value);
-    }
+    const savingRef = useRef(false);
 
-    // 보내는 사람 입력
-    function changeSender(event) {
-        setSender(event.target.value);
-    }
+    // 최초 표시 및 다시 시도할 때 DB 조회
+    useEffect(function () {
+        let cancelled = false;
 
-    // 칭찬 내용 입력
-    function changeMessage(event) {
-        setMessage(event.target.value);
-    }
+        async function loadPraiseBox() {
+            setIsLoading(true);
+            setLoadError("");
 
-    // 작성칸 열기
-    function openForm() {
-        setShowForm(true);
-        setError("");
-    }
+            try {
+                const [
+                    praiseResponse,
+                    recipientResponse,
+                ] = await Promise.all([
+                    axios.get(
+                        API_BASE + "/api/community-praises"
+                    ),
+                    axios.get(
+                        API_BASE + "/api/community-praises/recipients"
+                    ),
+                ]);
 
-    // 작성칸 닫기
-    function closeForm() {
-        setShowForm(false);
-        setError("");
-    }
+                if (cancelled) {
+                    return;
+                }
 
-    // 칭찬 등록
-    function addPraise(event) {
-        // 폼 제출 시 페이지가 새로고침되지 않도록 처리
-        event.preventDefault();
-
-        // 앞 뒤 공백 제거
-        const receiverName = receiver.trim();
-        const senderName = sender.trim();
-        const praiseMessage = message.trim();
-
-        // 빈칸 확인
-        if (receiverName === "") {
-            setError("칭찬받는 동료의 이름을 입력해주세요.")
-            return;
+                setPraises(praiseResponse.data);
+                setRecipients(
+                    recipientResponse.data.recipients
+                );
+                setCurrentUser(
+                    recipientResponse.data.currentUser
+                );
+            } catch (requestError) {
+                if (!cancelled) {
+                    setLoadError(
+                        requestError.response?.data?.message ||
+                        "칭찬함을 불러오지 못했습니다."
+                    );
+                }
+            } finally {
+                if (!cancelled) {
+                    setIsLoading(false);
+                }
+            }
         }
 
-        if (praiseMessage === "") {
-            setError("칭찬 내용을 입력해주세요.")
-            return;
-        }
+        loadPraiseBox();
 
-        if (senderName === "") {
-            setError("보내는 사람의 이름을 입력해주세요.")
-            return;
-        }
-
-        // 오늘 날짜 만들기
-        const today = new Date();
-
-        const year = today.getFullYear();
-        const month = today.getMonth() + 1;
-        const day = today.getDate();
-
-        const dateText = year + "." + month + "." + day;
-
-        // 새로운 칭찬 한 개 만들기
-        const newPraise = {
-            id: Date.now(),
-            receiver: receiverName,
-            sender: senderName,
-            message: praiseMessage,
-            date: dateText
+        return function () {
+            cancelled = true;
         };
+    }, [retryCount]);
 
-        // 최신 칭찬이 앞에 나오도록 목록 맨 앞에 추가
-        setPraises(function (previousPraises) {
-            return [newPraise].concat(previousPraises);
-        });
-
-        // 입력칸 비우기
-        setReceiver("");
-        setSender("");
+    function openForm() {
+        setReceiverId("");
         setMessage("");
         setError("");
+        setShowForm(true);
+    }
 
-        // 작성칸 닫기
+    function closeForm() {
+        if (savingRef.current) {
+            return;
+        }
+
         setShowForm(false);
-
+        setReceiverId("");
+        setMessage("");
+        setError("");
     }
 
-    // 홈에서는 최근 칭찬 3개만 표시
-    const recentPraises = praises.slice(0, 3);
+    async function addPraise(event) {
+        event.preventDefault();
 
-    // 작성칸은 버튼을 눌렀을 때만 표시
-    let formContent = null;
+        if (savingRef.current) {
+            return;
+        }
 
-    if (showForm === true) {
-        formContent = (
-            <form className="praise-form" onSubmit={addPraise}>
-                <div className="praise-form-names">
-                    <label className="praise-field">
-                        <span>칭찬받는 동료</span>
+        const selectedReceiverId = Number(receiverId);
+        const trimmedMessage = message.trim();
 
-                        <input type="text"
-                            placeholder="예 : 김민수"
-                            value={receiver}
-                            onChange={changeReceiver}
-                            maxLength={20}
-                            autoFocus
-                        />
+        if (
+            !Number.isSafeInteger(selectedReceiverId) ||
+            selectedReceiverId < 1
+        ) {
+            setError("칭찬받는 동료를 선택해주세요.");
+            return;
+        }
 
-                    </label>
+        if (
+            trimmedMessage.length < 1 ||
+            trimmedMessage.length > 200
+        ) {
+            setError("칭찬 내용은 1~200자로 입력해주세요.");
+            return;
+        }
 
-                    <label className="praise-field">
-                        <span>보내는 사람</span>
+        savingRef.current = true;
+        setIsSaving(true);
+        setError("");
 
-                        <input type="text"
-                            placeholder="내 이름"
-                            value={sender}
-                            onChange={changeSender}
-                            maxLength={20}
-                        />
+        try {
+            const response = await axios.post(
+                API_BASE + "/api/community-praises",
+                {
+                    receiverId: selectedReceiverId,
+                    message: trimmedMessage,
+                }
+            );
 
-                    </label>
+            const savedPraise = response.data.praise;
 
-                </div>
+            // DB 저장 성공 후 화면에 반영
+            setPraises(function (previousPraises) {
+                return [
+                    savedPraise,
+                    ...previousPraises.filter(function (praise) {
+                        return String(praise.id) !==
+                            String(savedPraise.id);
+                    }),
+                ].slice(0, 3);
+            });
 
-                <label className="praise-field">
-                    <span>칭찬 내용</span>
-
-                    <textarea placeholder="도움을 받았거나 고마웠던 일을 남겨주세요."
-                        value={message}
-                        onChange={changeMessage}
-                        maxLength={200}
-                        rows={3}
-                    />
-                </label>
-
-                <p className="praise-length">
-                    {message.length} / 200자
-                </p>
-
-                <p className="praise-error" role="alert">
-                    {error}
-                </p>
-
-                <div className="praise-form-buttons">
-                    <button type="button"
-                        className="praise-cancel-button"
-                        onClick={closeForm}
-                    >
-                        취소
-                    </button>
-
-                    <button type="submit"
-                        className="praise-submit-button"
-                    >
-                        칭찬 등록
-                    </button>
-                </div>
-            </form>
-        )
-    }
-
-    // 칭찬이 없을 때와 있을 때의 화면 구분
-    let listContent;
-
-    if (praises.length === 0) {
-        listContent = (
-            <div className="praise-empty">
-                <span aria-hidden="true">💌</span>
-                <p>아직 등록된 칭찬이 없어요.</p>
-                <p>동료에게 첫 번째 칭찬을 남겨보세요!</p>
-            </div>
-        );
-    } else {
-        listContent = (
-            <ul className="praise-list">
-                {recentPraises.map(function (praise) {
-                    return (
-                        <li className="praise-card" key={praise.id}>
-                            <h3 className="praise-receiver">
-                                <span aria-hidden="true">👏 </span>
-                                {praise.receiver}님을 칭찬합니다
-                            </h3>
-
-                            <p className="praise-message">
-                                {praise.message}
-                            </p>
-
-                            <div className="praise-card-footer">
-                                <span>From. {praise.sender}</span>
-                                <span>{praise.date}</span>
-                            </div>
-
-                        </li>
-                    )
-                })}
-            </ul>
-        )
+            setReceiverId("");
+            setMessage("");
+            setShowForm(false);
+        } catch (requestError) {
+            setError(
+                requestError.response?.data?.message ||
+                "칭찬 등록에 실패했습니다."
+            );
+        } finally {
+            savingRef.current = false;
+            setIsSaving(false);
+        }
     }
 
     return (
-
-        <section className="praise-box" aria-label="동료 칭찬함">
+        <section
+            className="praise-box"
+            aria-label="동료 칭찬함"
+        >
             <div className="praise-header">
                 <div>
-                    <h2 className="praise-title">🙌 동료 칭찬함</h2>
+                    <h2 className="praise-title">
+                        🙌 동료 칭찬함
+                    </h2>
 
                     <p className="praise-description">
                         동료에게 고마운 마음을 전해보세요.
                     </p>
                 </div>
 
-                <button type="button"
+                <button
+                    type="button"
                     className="praise-open-button"
                     onClick={openForm}
-                    disabled={showForm}
+                    disabled={
+                        showForm ||
+                        isLoading ||
+                        Boolean(loadError) ||
+                        !currentUser
+                    }
                 >
                     칭찬 남기기
                 </button>
             </div>
 
-            {formContent}
+            {isLoading ? (
+                <p role="status">
+                    칭찬함을 불러오는 중입니다.
+                </p>
+            ) : loadError ? (
+                <div className="praise-empty">
+                    <p className="praise-error" role="alert">
+                        {loadError}
+                    </p>
 
-            {listContent}
+                    <button
+                        type="button"
+                        onClick={function () {
+                            setRetryCount(function (previous) {
+                                return previous + 1;
+                            });
+                        }}
+                    >
+                        다시 시도
+                    </button>
+                </div>
+            ) : (
+                <>
+                    {showForm && (
+                        <form
+                            className="praise-form"
+                            onSubmit={addPraise}
+                        >
+                            <div className="praise-form-names">
+                                <label className="praise-field">
+                                    <span>칭찬받는 동료</span>
 
+                                    <select
+                                        value={receiverId}
+                                        onChange={function (event) {
+                                            setReceiverId(
+                                                event.target.value
+                                            );
+                                        }}
+                                        disabled={isSaving}
+                                        required
+                                    >
+                                        <option value="">
+                                            동료를 선택해주세요
+                                        </option>
+
+                                        {recipients.map(function (employee) {
+                                            return (
+                                                <option
+                                                    key={employee.id}
+                                                    value={employee.id}
+                                                >
+                                                    {employee.name}
+                                                    {" · "}
+                                                    {employee.team || "부서 미등록"}
+                                                    {" · "}
+                                                    {employee.employeeCode ||
+                                                        employee.id}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                </label>
+
+                                <label className="praise-field">
+                                    <span>보내는 사람</span>
+
+                                    <input
+                                        type="text"
+                                        value={currentUser?.name || ""}
+                                        readOnly
+                                    />
+                                </label>
+                            </div>
+
+                            {recipients.length === 0 && (
+                                <p className="praise-error">
+                                    선택할 다른 재직 직원이 없습니다.
+                                </p>
+                            )}
+
+                            <label className="praise-field">
+                                <span>칭찬 내용</span>
+
+                                <textarea
+                                    placeholder="도움을 받았거나 고마웠던 일을 남겨주세요."
+                                    value={message}
+                                    onChange={function (event) {
+                                        setMessage(
+                                            event.target.value
+                                        );
+                                    }}
+                                    maxLength={200}
+                                    rows={3}
+                                    disabled={isSaving}
+                                    required
+                                />
+                            </label>
+
+                            <p className="praise-length">
+                                {message.length} / 200자
+                            </p>
+
+                            {error && (
+                                <p
+                                    className="praise-error"
+                                    role="alert"
+                                >
+                                    {error}
+                                </p>
+                            )}
+
+                            <div className="praise-form-buttons">
+                                <button
+                                    type="button"
+                                    className="praise-cancel-button"
+                                    onClick={closeForm}
+                                    disabled={isSaving}
+                                >
+                                    취소
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    className="praise-submit-button"
+                                    disabled={
+                                        isSaving ||
+                                        recipients.length === 0
+                                    }
+                                >
+                                    {isSaving
+                                        ? "저장 중…"
+                                        : "칭찬 등록"}
+                                </button>
+                            </div>
+                        </form>
+                    )}
+
+                    {praises.length === 0 ? (
+                        <div className="praise-empty">
+                            <span aria-hidden="true">💌</span>
+                            <p>아직 등록된 칭찬이 없어요.</p>
+                            <p>
+                                동료에게 첫 번째 칭찬을 남겨보세요!
+                            </p>
+                        </div>
+                    ) : (
+                        <ul className="praise-list">
+                            {praises.map(function (praise) {
+                                return (
+                                    <li
+                                        className="praise-card"
+                                        key={praise.id}
+                                    >
+                                        <h3 className="praise-receiver">
+                                            <span aria-hidden="true">
+                                                👏{" "}
+                                            </span>
+                                            {praise.receiver}님을 칭찬합니다
+                                        </h3>
+
+                                        <p className="praise-message">
+                                            {praise.message}
+                                        </p>
+
+                                        <div className="praise-card-footer">
+                                            <span>
+                                                From. {praise.sender}
+                                            </span>
+
+                                            <span>{praise.date}</span>
+                                        </div>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
+                </>
+            )}
         </section>
-
     );
 }
-
 
 export default PraiseBox;

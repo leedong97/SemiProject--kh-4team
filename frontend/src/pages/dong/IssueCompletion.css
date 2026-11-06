@@ -1,0 +1,27 @@
+.issue-completion { margin: 24px auto; padding: 24px; border: 1px solid #dce9f8; border-radius: 12px; background: #fff; color: #263a56; max-width: 1000px; }
+.issue-completion-heading, .issue-completion-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.issue-completion-form { display: grid; gap: 16px; margin: 24px 0; }
+.issue-completion label { display: grid; gap: 8px; }
+.issue-completion input, .issue-completion select, .issue-completion textarea { box-sizing: border-box; padding: 10px; border: 1px solid #ccd7e3; border-radius: 6px; font: inherit; max-width: 100%; }
+.issue-completion textarea { width: 100%; resize: vertical; }
+.issue-completion button { padding: 10px 16px; border: 1px solid #cfe2f9; border-radius: 6px; background: #edf6ff; color: #226db7; cursor: pointer; }
+.issue-completion button:disabled { opacity: .55; cursor: not-allowed; }
+.issue-completion-item { border-top: 1px solid #dce9f8; padding: 16px 0; }
+.issue-completion-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.issue-completion-error { color: #b42318; }
+.issue-completion-actions { justify-content: flex-start; margin-top: 12px; }
+
+/* 일반 페이지에서 공통 메뉴 아래 콘텐츠 전체 너비를 사용합니다. */
+.team-shell > .issue-completion {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    padding: 30px;
+}
+@media (max-width: 768px) {
+    .team-shell > .issue-completion { padding: 18px; }
+}

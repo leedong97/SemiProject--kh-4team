@@ -1,5 +1,6 @@
 const express = require("express");
 const db = require("../../db");
+const { createNotification } = require("../../notify");
 
 const router = express.Router();
 
@@ -97,7 +98,7 @@ router.post("/", async function (req, res) {
 
     try {
         const [posts] = await db.query(
-            "SELECT id FROM community_post WHERE id = ?",
+            "SELECT id, title, author_id FROM community_post WHERE id = ?",
             [postId]
         );
 
@@ -109,7 +110,7 @@ router.post("/", async function (req, res) {
 
         // 등록된 재직 직원인지 확인
         const [employees] = await db.query(
-            `SELECT employee_id
+            `SELECT employee_id, employee_name
              FROM employees
              WHERE employee_id = ?
                AND employee_status = '재직'`,
@@ -130,6 +131,17 @@ router.post("/", async function (req, res) {
              VALUES (?, ?)`,
             [postId, employeeId]
         );
+
+        // 알림: 글쓴이에게 (본인이 누른 좋아요는 제외)
+        // 이미 누른 상태(ER_DUP_ENTRY)면 위 INSERT 에서 catch 로 넘어가므로 여기까지 오지 않아요.
+        if (String(posts[0].author_id) !== String(employeeId)) {
+            await createNotification(
+                posts[0].author_id,
+                "커뮤니티",
+                employees[0].employee_name + "님이 내 글 \"" + posts[0].title + "\"에 좋아요를 눌렀어요.",
+                "/community/post/" + postId
+            );
+        }
 
         res.status(201).json({
             message: "좋아요를 등록했습니다."

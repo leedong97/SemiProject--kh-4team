@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import MyComments from "./MyComments";
+import MyBookmarks from "./MyBookmarks";
 import { Link } from "react-router-dom";
+import ActivitySummary from "./ActivitySummary";
+import "./MyActivity.css";
 
 function MyActivity(props) {
 
@@ -106,11 +109,14 @@ function MyActivity(props) {
 
     let postsClass = "community-tab-button";
     let commentsClass = "community-tab-button";
+    let bookmarksClass = "community-tab-button";
 
     if (activity === "내가 작성한 글") {
         postsClass += " community-tab-selected";
-    } else {
+    } else if (activity === "내가 작성한 댓글") {
         commentsClass += " community-tab-selected";
+    } else if (activity === "저장한 글") {
+        bookmarksClass += " community-tab-selected";
     }
 
     // ===================================
@@ -186,6 +192,13 @@ function MyActivity(props) {
         activityContent = (
             <MyComments loginUser={loginUser} />
         );
+    } else if (activity === "저장한 글") {
+        activityContent = (
+            <MyBookmarks
+                key={String(loginUser.id)}
+                loginUser={loginUser}
+            />
+        );
     } else if (myPosts.length === 0) {
         activityContent = (
             <p className="community-empty">
@@ -214,7 +227,14 @@ function MyActivity(props) {
                                     <tr key={post.id}>
                                         <td>{number}</td>
 
-                                        <td>{post.boardName}</td>
+                                        <td>
+                                            <span
+                                                className="activity-board-badge"
+                                                data-board={post.boardName}
+                                            >
+                                                {post.boardName}
+                                            </span>
+                                        </td>
 
                                         <td className="community-home-post-title">
                                             <Link
@@ -251,7 +271,7 @@ function MyActivity(props) {
     }
 
     return (
-        <div className="community-activity">
+        <div className="community-activity activity-page">
             <h1 className="community-title">
                 내 활동
             </h1>
@@ -260,25 +280,39 @@ function MyActivity(props) {
                 내가 작성한 이야기를 한곳에서 확인하세요.
             </p>
 
-            <div className="community-tabs">
-                <div className="community-tabs">
-                    <Link
-                        to="/community/activity"
-                        className={postsClass}
-                    >
-                        내가 작성한 글
-                    </Link>
+            <ActivitySummary
+                key={String(loginUser.id)}
+                loginUser={loginUser}
+                myPosts={myPosts}
+            />
 
-                    <Link
-                        to="/community/activity/comments"
-                        className={commentsClass}
-                    >
-                        내가 작성한 댓글
-                    </Link>
-                </div>
+            <div className="community-tabs activity-tabs">
+                <Link
+                    to="/community/activity"
+                    className={postsClass}
+                >
+                    <span aria-hidden="true">✍️ </span>
+                    내가 작성한 글
+                </Link>
+
+                <Link
+                    to="/community/activity/comments"
+                    className={commentsClass}
+                >
+                    <span aria-hidden="true">💬 </span>
+                    내가 작성한 댓글
+                </Link>
+
+                <Link
+                    to="/community/activity/bookmarks"
+                    className={bookmarksClass}
+                >
+                    <span aria-hidden="true">★ </span>
+                    저장한 글
+                </Link>
             </div>
 
-            <div className="community-panel">
+            <div className="community-panel activity-list-panel">
                 <div className="community-board-header">
                     <h2 className="community-panel-title">
                         {activity}

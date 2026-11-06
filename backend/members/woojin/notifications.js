@@ -12,7 +12,6 @@ function toPositiveInt(value) {
     const n = Number(value);
     return Number.isInteger(n) && n > 0 ? n : null;
 }
-
 // GET /api/notifications?employeeId=1  → 이 직원의 알림 목록 (최신순)
 router.get("/", async (req, res) => {
     const employeeId = toPositiveInt(req.query.employeeId);

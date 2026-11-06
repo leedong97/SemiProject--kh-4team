@@ -1,919 +1,513 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { canLeadProject } from "../shared/permissions";
-import { adminRequest, getPendingProjectRequests } from "../adminApi";
+import { adminRequest } from "../adminApi";
 import { matchesProjectSearch } from "../utils/projectFilters";
 import useSortableList from "../utils/useSortableList";
 import { PROJECT_STATUS_OPTIONS, DEFAULT_PROJECT_STATUS } from "../shared/projectConstants";
+import ProjectRequestList from "../components/ProjectRequestList";
+import ProjectRegisterForm from "../components/ProjectRegisterForm";
+import ProjectDetail from "../components/ProjectDetail";
+import { getProgress, isInvalidDateRange } from "../utils/projectHelpers";
 
 // 담당자 ID로 직원 찾기 (문자열/숫자 ID 차이를 한 곳에서 처리)
 const findEmployee = (employees, id) =>
-  employees.find((e) => String(e.id) === String(id));
+    employees.find((e) => String(e.id) === String(id));
 
-// 시작일이 종료일보다 늦은지 확인
-const isInvalidDateRange = (startDate, endDate) =>
-  Boolean(startDate && endDate && startDate > endDate);
+// 목록 표의 정렬 가능한 열 (키, 표시 이름)
+const SORTABLE_COLUMNS = [
+    ["name", "프로젝트명"],
+    ["customer", "고객사"],
+    ["status", "상태"],
+    ["manager", "담당자"],
+    ["endDate", "종료일"],
+    ["progress", "진행률"],
+];
+
 
 function ProjectManagement({
-  projects = [],
-  setProjects,
-  reloadProjects,
-  createProject,
-  updateProject,
-  removeProject,
-  employees = []
+    projects = [],
+    setProjects,
+    createProject,
+    removeProject,
+    employees = []
 }) {
 
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  // 대시보드에서 ?project=번호 로 넘어오면 해당 프로젝트 상세를 엽니다
-  const [searchParams] = useSearchParams();
-  const focusProjectId = searchParams.get("project");
-  const openedProjectRef = useRef(null);
+    // 대시보드에서 ?project=번호 로 넘어오면 해당 프로젝트 상세를 엽니다
+    const [searchParams] = useSearchParams();
+    const focusProjectId = searchParams.get("project");
+    const openedProjectRef = useRef(null);
 
-  // 현재 화면: list(목록), register(등록), detail(상세정보)
-  const [page, setPage] = useState("list");
+    // 현재 화면: list(목록), register(등록), detail(상세정보)
+    const [page, setPage] = useState("list");
 
-  // 프로젝트 검색어
-  const [search, setSearch] = useState("");
 
-  // 상세정보를 볼 프로젝트 ID
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
 
-  // 상세 화면 정보 수정 상태
-  const [editing, setEditing] = useState(false);
-  const [editForm, setEditForm] = useState(null);
-  const [savingEdit, setSavingEdit] = useState(false);
+    // 프로젝트 검색어
+    const [search, setSearch] = useState("");
+    const [overdueOnly, setOverdueOnly] = useState(false);
 
-  // 대기 중인 완료 요청 목록 (requests 테이블)
-  const [pendingRequests, setPendingRequests] = useState([]);
-  const [requestBusy, setRequestBusy] = useState(false);
-  // 상세 내용을 펼쳐 본 요청 ID 목록 (여러 개 동시에 펼칠 수 있음)
-  const [openRequestIds, setOpenRequestIds] = useState([]);
-  const toggleRequestOpen = (id) =>
-    setOpenRequestIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    // 상세정보를 볼 프로젝트 ID
+    const [selectedProjectId, setSelectedProjectId] = useState(null);
+
+    // 대기 중인 완료 요청 목록 (requests 테이블)
+    const [pendingRequests, setPendingRequests] = useState([]);
+    const [requestBusy, setRequestBusy] = useState(false);
+
+    // 신규 프로젝트 입력 데이터
+    const [form, setForm] = useState({
+        customer: "",
+        name: "",
+        startDate: "",
+        endDate: "",
+        budget: "",
+        description: "",
+        managerId: "",
+        memberIds: []
+    });
+
+    // 입력값 변경
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setForm((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    // 팀원 추가 / 제거 (셀렉트로 추가, 칩의 × 로 제거)
+    const addMember = (employeeId) => {
+        setForm((prev) => (
+            prev.memberIds.includes(employeeId)
+                ? prev
+                : { ...prev, memberIds: [...prev.memberIds, employeeId] }
+        ));
+    };
+
+    const removeMember = (employeeId) => {
+        setForm((prev) => ({
+            ...prev,
+            memberIds: prev.memberIds.filter((id) => id !== employeeId)
+        }));
+    };
+
+    // 프로젝트 등록
+    const registerProject = async (e) => {
+        e.preventDefault();
+
+        if (!form.customer.trim() || !form.name.trim() || !form.description.trim()) {
+            alert("고객사, 프로젝트명, 설명을 입력하세요.");
+            return;
+        }
+
+        if (isInvalidDateRange(form.startDate, form.endDate)) {
+            alert("종료 예정일은 시작 예정일 이후여야 합니다.");
+            return;
+        }
+
+        if (
+            form.budget !== "" &&
+            (!Number.isFinite(Number(form.budget)) ||
+                Number(form.budget) < 0)
+        ) {
+            alert("계약 금액을 올바르게 입력하세요.");
+            return;
+        }
+
+        const newProject = {
+            id: Date.now(),
+            customer: form.customer.trim(),
+            name: form.name.trim(),
+            startDate: form.startDate,
+            endDate: form.endDate,
+            budget: Number(form.budget || 0),
+            description: form.description,
+            status: form.managerId ? "진행중" : DEFAULT_PROJECT_STATUS,
+            progress: 0,
+            plannedProgress: 0,
+            managerId: form.managerId ? Number(form.managerId) : null,
+            memberIds: form.memberIds.filter((id) => String(id) !== String(form.managerId))
+        };
+
+        try {
+            await createProject(newProject);
+        } catch (error) {
+            alert('DB 등록 실패: ' + error.message);
+            return;
+        }
+
+        alert("프로젝트가 등록되었습니다.");
+
+        setForm({
+            customer: "",
+            name: "",
+            startDate: "",
+            endDate: "",
+            budget: "",
+            description: "",
+            managerId: "",
+            memberIds: []
+        });
+
+        setPage("list");
+    };
+
+    // 프로젝트 삭제
+    const deleteProject = async (id) => {
+        if (!window.confirm("프로젝트를 삭제하시겠습니까?")) {
+            return;
+        }
+
+        try {
+            await removeProject(id);
+        } catch (error) { alert('삭제 실패: ' + error.message); }
+    };
+
+    // 오늘 기준으로 종료일이 지난 프로젝트인지 확인 (완료된 프로젝트는 제외)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const isOverdue = (project) => {
+        if (!project.endDate || project.status === "완료") return false;
+        const endDate = new Date(`${project.endDate}T00:00:00`);
+        return !Number.isNaN(endDate.getTime()) && endDate < today;
+    };
+
+    // 프로젝트 검색
+    const filteredProjects = projects
+        .filter((project) => matchesProjectSearch(project, search))
+        .filter((project) => !overdueOnly || isOverdue(project));
+    const overdueCount = projects.filter(isOverdue).length;
+
+    // 정렬용 값: 담당자는 화면에 보이는 이름 기준으로 정렬
+    const getSortValue = (project, key) => {
+        if (key === "manager") {
+            if (project.managerId == null) return "미배정";
+            const manager = findEmployee(employees, project.managerId);
+            if (!manager) return `ID: ${project.managerId}`;
+            return manager.name;
+        }
+        return project[key] ?? "";
+    };
+    const { changeSort, sortItems, sortMark } = useSortableList(getSortValue);
+
+    const sortedProjects = sortItems(filteredProjects);
+
+
+
+    // 상세정보 열기
+    const openDetail = (id) => {
+        setSelectedProjectId(id);
+        setPage("detail");
+    };
+
+    // 대시보드에서 넘어온 프로젝트 상세를 한 번만 엽니다
+    useEffect(() => {
+        if (!focusProjectId || openedProjectRef.current === focusProjectId) return;
+        if (!projects.some((p) => String(p.id) === focusProjectId)) return;
+        openedProjectRef.current = focusProjectId;
+        openDetail(Number(focusProjectId));
+    }, [focusProjectId, projects]);
+
+    // 목록으로 돌아가기
+    const closeDetail = () => {
+        setSelectedProjectId(null);
+        setPage("list");
+    };
+
+    // 선택한 프로젝트 찾기
+    const selectedProject = projects.find(
+        (project) => project.id === selectedProjectId
     );
 
-  // 신규 프로젝트 입력 데이터
-  const [form, setForm] = useState({
-    customer: "",
-    name: "",
-    startDate: "",
-    endDate: "",
-    budget: "",
-    description: ""
-  });
+    // 선택한 프로젝트 담당자 찾기
+    const selectedManager = findEmployee(employees, selectedProject?.managerId);
 
-  // 입력값 변경
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  // 프로젝트 등록
-  const registerProject = async (e) => {
-    e.preventDefault();
-
-    if (!form.customer.trim() || !form.name.trim() || !form.description.trim()) {
-      alert("고객사, 프로젝트명, 설명을 입력하세요.");
-      return;
-    }
-
-    if (isInvalidDateRange(form.startDate, form.endDate)) {
-      alert("종료 예정일은 시작 예정일 이후여야 합니다.");
-      return;
-    }
-
-    if (
-      form.budget !== "" &&
-      (!Number.isFinite(Number(form.budget)) ||
-        Number(form.budget) < 0)
-    ) {
-      alert("계약 금액을 올바르게 입력하세요.");
-      return;
-    }
-
-    const newProject = {
-      id: Date.now(),
-      customer: form.customer.trim(),
-      name: form.name.trim(),
-      startDate: form.startDate,
-      endDate: form.endDate,
-      budget: Number(form.budget || 0),
-      description: form.description,
-      status: DEFAULT_PROJECT_STATUS,
-      progress: 0,
-      plannedProgress: 0,
-      managerId: null
+    // 담당자가 있지만 팀장 미만(직급 미달)인지 확인
+    const isUnderRankManager = (project) => {
+        const manager = findEmployee(employees, project.managerId);
+        return Boolean(manager) && !canLeadProject(manager);
     };
 
-    try {
-      await createProject(newProject);
-    } catch (error) {
-      alert('DB 등록 실패: ' + error.message);
-      return;
-    }
+    // 고객사 목록 (등록·수정 때 선택지로 쓴다)
+    const [customers, setCustomers] = useState([]);
+    useEffect(() => {
+        adminRequest("/customers")
+            .then((rows) => setCustomers(Array.isArray(rows) ? rows : []))
+            .catch(() => setCustomers([]));
+    }, []);
 
-    alert("프로젝트가 등록되었습니다. 담당자를 배정할 수 있습니다.");
-
-    setForm({
-      customer: "",
-      name: "",
-      startDate: "",
-      endDate: "",
-      budget: "",
-      description: ""
-    });
-
-    setPage("list");
-  };
-
-  // 프로젝트 삭제
-  const deleteProject = async (id) => {
-    if (!window.confirm("프로젝트를 삭제하시겠습니까?")) {
-      return;
-    }
-
-    try {
-      await removeProject(id);
-    } catch (error) { alert('삭제 실패: ' + error.message); }
-  };
-
-  // 프로젝트 검색
-  const filteredProjects = projects.filter((project) => matchesProjectSearch(project, search));
-
-  // 정렬용 값: 담당자는 화면에 보이는 이름 기준으로 정렬
-  const getSortValue = (project, key) => {
-    if (key === "manager") {
-      if (project.managerId == null) return "미배정";
-      const manager = findEmployee(employees, project.managerId);
-      if (!manager) return `ID: ${project.managerId}`;
-      return manager.name;
-    }
-    return project[key] ?? "";
-  };
-  const { changeSort, sortItems, sortMark } = useSortableList(getSortValue);
-
-  const sortedProjects = sortItems(filteredProjects);
-
-  // 상세정보 열기
-  const openDetail = (id) => {
-    setSelectedProjectId(id);
-    setEditing(false);
-    setEditForm(null);
-    setPage("detail");
-  };
-
-  // 대시보드에서 넘어온 프로젝트 상세를 한 번만 엽니다
-  useEffect(() => {
-    if (!focusProjectId || openedProjectRef.current === focusProjectId) return;
-    if (!projects.some((p) => String(p.id) === focusProjectId)) return;
-    openedProjectRef.current = focusProjectId;
-    openDetail(Number(focusProjectId));
-  }, [focusProjectId, projects]);
-
-  // 목록으로 돌아가기
-  const closeDetail = () => {
-    setSelectedProjectId(null);
-    setPage("list");
-  };
-
-  // 선택한 프로젝트 찾기
-  const selectedProject = projects.find(
-    (project) => project.id === selectedProjectId
-  );
-
-  // 선택한 프로젝트 담당자 찾기
-  const selectedManager = findEmployee(employees, selectedProject?.managerId);
-
-  // 담당자가 있지만 팀장 미만(직급 미달)인지 확인
-  const isUnderRankManager = (project) => {
-    const manager = findEmployee(employees, project.managerId);
-    return Boolean(manager) && !canLeadProject(manager);
-  };
-
-  // 대기 중인 완료 요청 다시 불러오기
-  const loadPendingRequests = async () => {
-    try {
-      const rows = await getPendingProjectRequests();
-      setPendingRequests(Array.isArray(rows) ? rows : []);
-    } catch (err) {
-      setPendingRequests([]);
-    }
-  };
-
-  // 선택한 프로젝트에 대기 중인 요청 찾기
-  const pendingFor = (projectId) =>
-    pendingRequests.find((req) => String(req.projectId) === String(projectId));
-
-  // 완료 요청 승인: 서버에서 프로젝트를 완료로 바꾸고, 화면 상태도 맞춤
-  const approveRequest = async (req) => {
-    const name = req.projectName || req.title;
-    const isRegister = req.type === "등록";
-    const question = isRegister
-      ? `"${name}" 프로젝트를 등록할까요?`
-      : `"${name}" 프로젝트를 완료 처리할까요?`;
-    if (!window.confirm(question)) return;
-    setRequestBusy(true);
-    try {
-      await adminRequest(`/project-requests/${req.id}/approve`, { method: "POST" });
-      if (isRegister) {
-        // 새 프로젝트가 생겼으므로 프로젝트 목록을 서버에서 다시 불러옴
-        if (reloadProjects) await reloadProjects();
-      } else {
-        setProjects((prev) =>
-          prev.map((p) =>
-            String(p.id) === String(req.projectId) ? { ...p, status: "완료", progress: 100 } : p
-          )
-        );
-      }
-      await loadPendingRequests();
-      alert(isRegister ? "프로젝트를 등록했습니다." : "프로젝트를 완료 처리했습니다.");
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setRequestBusy(false);
-    }
-  };
-
-  // 완료 요청 반려: 사유를 입력받아 서버에 저장
-  const rejectRequest = async (req) => {
-    const reason = window.prompt("반려 사유를 입력하세요.");
-    if (!reason || !reason.trim()) return;
-    setRequestBusy(true);
-    try {
-      await adminRequest(`/project-requests/${req.id}/reject`, {
-        method: "POST",
-        body: JSON.stringify({ reason: reason.trim() })
-      });
-      await loadPendingRequests();
-      alert("완료 요청을 반려했습니다.");
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setRequestBusy(false);
-    }
-  };
-
-  // 화면이 열릴 때 대기 요청 목록 불러오기
-  useEffect(() => {
-    loadPendingRequests();
-  }, []);
-
-  // 정보 수정 시작: 현재 값으로 폼을 채움
-  const startEdit = () => {
-    if (!selectedProject) return;
-    setEditForm({
-      name: selectedProject.name || "",
-      customer: selectedProject.customer || "",
-      description: selectedProject.description || "",
-      budget: selectedProject.budget == null ? "" : String(selectedProject.budget),
-      startDate: selectedProject.startDate || "",
-      endDate: selectedProject.endDate || "",
-      status: selectedProject.status || DEFAULT_PROJECT_STATUS,
-      progress: String(getProgress(selectedProject.progress)),
-      plannedProgress: String(getProgress(selectedProject.plannedProgress))
-    });
-    setEditing(true);
-  };
-
-  const cancelEdit = () => {
-    setEditing(false);
-    setEditForm(null);
-  };
-
-  // 폼 입력값 변경
-  const updateEdit = (key) => (e) =>
-    setEditForm((prev) => ({ ...prev, [key]: e.target.value }));
-
-  // 정보 수정 저장: 서버에 보내고 성공하면 화면 상태도 갱신
-  const saveEdit = async () => {
-    if (!selectedProject || !editForm) return;
-    const f = editForm;
-
-    if (!f.name.trim() || !f.customer.trim() || !f.description.trim()) {
-      alert("프로젝트명, 고객사, 설명을 입력하세요.");
-      return;
-    }
-    const progress = Number(f.progress);
-    if (f.progress.trim() === "" || !Number.isInteger(progress) || progress < 0 || progress > 100) {
-      alert("실제 진행률은 0~100 사이의 정수로 입력하세요.");
-      return;
-    }
-    const planned = Number(f.plannedProgress);
-    if (f.plannedProgress.trim() === "" || !Number.isFinite(planned) || planned < 0 || planned > 100) {
-      alert("계획 진행률은 0~100 사이의 숫자로 입력하세요.");
-      return;
-    }
-    if (isInvalidDateRange(f.startDate, f.endDate)) {
-      alert("종료 예정일은 시작 예정일 이후여야 합니다.");
-      return;
-    }
-
-    const body = {
-      name: f.name.trim(),
-      customer: f.customer.trim(),
-      description: f.description.trim(),
-      budget: f.budget === "" ? null : Number(f.budget),
-      startDate: f.startDate || null,
-      endDate: f.endDate || null,
-      status: f.status,
-      progress,
-      plannedProgress: planned
+    // 완료 요청 목록: 상태가 '완료 요청'인 프로젝트를 요청 형태로 바꿔서 보여준다
+    const loadPendingRequests = async () => {
+        try {
+            const rows = await adminRequest("/projects");
+            const list = Array.isArray(rows) ? rows : [];
+            setPendingRequests(
+                list
+                    .filter((p) => p.status === "완료 요청")
+                    .map((p) => ({
+                        id: "status-" + p.id,
+                        type: "완료",
+                        source: "status",
+                        projectId: p.id,
+                        projectName: p.name,
+                        title: p.name,
+                        requesterName: p.customer || "",
+                        requestedAt: ""
+                    }))
+            );
+        } catch (err) {
+            setPendingRequests([]);
+        }
     };
 
-    setSavingEdit(true);
-    try {
-      await adminRequest(`/projects/${selectedProject.id}`, {
-        method: "PATCH",
-        body: JSON.stringify(body)
-      });
-      setProjects((prev) =>
-        prev.map((p) =>
-          String(p.id) === String(selectedProject.id) ? { ...p, ...body } : p
-        )
-      );
-      setEditing(false);
-      setEditForm(null);
-      alert("프로젝트 정보를 저장했습니다.");
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setSavingEdit(false);
-    }
-  };
+    // 선택한 프로젝트에 대기 중인 요청 찾기
+    const pendingFor = (projectId) =>
+        pendingRequests.find((req) => String(req.projectId) === String(projectId));
 
-  // 진행률을 0~100 사이 숫자로 변환
-  const getProgress = (value) => {
-    const number = Number(value);
+    // 완료 요청 승인: 프로젝트 상태를 '완료'로 바꾸고, 화면 상태도 맞춤
+    const approveRequest = async (req) => {
+        const name = req.projectName || req.title;
+        if (!window.confirm(`"${name}" 프로젝트를 완료 처리할까요?`)) return;
+        setRequestBusy(true);
+        try {
+            await adminRequest(`/projects/${req.projectId}`, {
+                method: "PATCH",
+                body: JSON.stringify({ status: "완료", progress: 100 })
+            });
+            setProjects((prev) =>
+                prev.map((p) =>
+                    String(p.id) === String(req.projectId) ? { ...p, status: "완료", progress: 100 } : p
+                )
+            );
+            await loadPendingRequests();
+            alert("프로젝트를 완료 처리했습니다.");
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setRequestBusy(false);
+        }
+    };
 
-    if (!Number.isFinite(number)) {
-      return 0;
-    }
+    // 완료 요청 반려: 상태를 '진행중'으로 되돌린다 (반려 사유는 화면에서 알림으로만 확인)
+    const rejectRequest = async (req, reason) => {
+        setRequestBusy(true);
+        try {
+            await adminRequest(`/projects/${req.projectId}`, {
+                method: "PATCH",
+                body: JSON.stringify({ status: "진행중" })
+            });
+            setProjects((prev) =>
+                prev.map((p) => (String(p.id) === String(req.projectId) ? { ...p, status: "진행중" } : p))
+            );
+            alert(`완료 요청을 반려했습니다. (사유: ${reason})`);
+            await loadPendingRequests();
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setRequestBusy(false);
+        }
+    };
 
-    return Math.max(0, Math.min(100, number));
-  };
+    // 화면이 열릴 때 대기 요청 목록 불러오기
+    useEffect(() => {
+        loadPendingRequests();
+    }, []);
 
-  return (
-    <div className="nexus-project-management">
+    return (
+        <div className="nexus-project-management">
 
-      {/* ============================= */}
-      {/* 1. 프로젝트 목록 화면 */}
-      {/* ============================= */}
+            {/* ============================= */}
+            {/* 1. 프로젝트 목록 화면 */}
+            {/* ============================= */}
 
-      {page === "list" ? (
-        <>
-          <div className="nexus-project-heading">
-            <div>
-              <p>관리자 / 프로젝트 관리</p>
-              <h2>프로젝트 관리</h2>
-            </div>
-
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => setPage("register")}
-            >
-              + 신규 프로젝트 등록
-            </button>
-          </div>
-
-          <div className="card nexus-project-panel">
-
-            <input
-              className="nexus-project-input"
-              placeholder="프로젝트명 또는 고객사 검색"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-
-            {pendingRequests.length > 0 && (
-              <div className="nexus-request-list">
-                <div className="nexus-request-head">
-                  <strong>프로젝트 요청</strong>
-                  <span>대기 {pendingRequests.length}건</span>
-                </div>
-                {pendingRequests.map((req) => {
-                  const isRegister = req.type === "등록";
-                  const isOpen = openRequestIds.includes(req.id);
-                  return (
-                    <div key={req.id} className="nexus-request-row" style={{ display: "block" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-                        <div style={{ flex: 1 }}>
-                          <span className="badge badge-info">
-                            {isRegister ? "등록 요청" : "완료 요청"}
-                          </span>{" "}
-                          <strong>{req.projectName || req.title}</strong>
-                          <small> {req.requesterName || "요청자 미상"} · {req.requestedAt}</small>
+            {page === "list" ? (
+                <>
+                    <div className="nexus-project-heading">
+                        <div>
+                            <p>관리자 / 프로젝트 관리</p>
+                            <h2>프로젝트 관리</h2>
                         </div>
-                        <div className="nexus-detail-request-actions">
-                          <button
+
+                        <button
                             type="button"
-                            className="btn btn-outline btn-sm"
-                            onClick={() => toggleRequestOpen(req.id)}
-                          >
-                            {isOpen ? "접기" : "상세보기"}
-                          </button>
-                          <button type="button" className="btn btn-primary btn-sm" disabled={requestBusy} onClick={() => approveRequest(req)}>
-                            승인
-                          </button>
-                          <button type="button" className="btn btn-outline btn-sm" disabled={requestBusy} onClick={() => rejectRequest(req)}>
-                            반려
-                          </button>
-                        </div>
-                      </div>
-
-                      {isOpen && (
-                        <div className="nexus-request-detail" style={{ marginTop: 8, fontSize: "0.92em" }}>
-                          <p><b>내용</b></p>
-                          <p style={{ whiteSpace: "pre-wrap" }}>{req.content || "-"}</p>
-                          <p><b>기간</b> {req.startDate || "미정"} ~ {req.endDate || "미정"}</p>
-                          <p><b>요청 상태</b> {req.projectStatus || "예정"} · <b>우선순위</b> {req.priority || "보통"}</p>
-                          {req.reason && <p><b>사유</b> {req.reason}</p>}
-                          {!isRegister && req.projectId && (
-                            <button type="button" className="btn btn-outline btn-sm" onClick={() => openDetail(req.projectId)}>
-                              프로젝트 보기
-                            </button>
-                          )}
-                        </div>
-                      )}
+                            className="btn btn-primary"
+                            onClick={() => setPage("register")}
+                        >
+                            + 신규 프로젝트 등록
+                        </button>
                     </div>
-                  );
-                })}
-              </div>
+
+                    <div className="card nexus-project-panel">
+
+                        <input
+                            className="nexus-project-input"
+                            placeholder="프로젝트명 또는 고객사 검색"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                        <button
+                            type="button"
+                            className="btn btn-outline"
+                            aria-pressed={overdueOnly}
+                            onClick={() => setOverdueOnly((current) => !current)}
+                        >
+                            {overdueOnly ? "전체 프로젝트 보기" : `기간 초과만 보기 (${overdueCount})`}
+                        </button>
+
+                        {pendingRequests.length > 0 && (
+                            <ProjectRequestList
+                                requests={pendingRequests}
+                                busy={requestBusy}
+                                onOpenProject={openDetail}
+                                onApprove={approveRequest}
+                                onReject={rejectRequest}
+                            />
+                        )}
+
+                        <div className="nexus-project-table-wrap">
+                            <table className="nexus-project-table">
+
+                                <thead>
+                                    <tr>
+                                        {SORTABLE_COLUMNS.map(([key, label]) => (
+                                            <th key={key} className="nexus-sortable" onClick={() => changeSort(key)}>
+                                                {label}{sortMark(key)}
+                                            </th>
+                                        ))}
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {sortedProjects.map((project) => (
+                                        <tr key={project.id}>
+
+                                            <td>{project.name}</td>
+
+                                            <td>{project.customer || "-"}</td>
+
+                                            <td>
+                                                <span className="badge badge-info">
+                                                    {project.status}
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                {(() => {
+                                                    if (project.managerId == null) return "미배정";
+                                                    const manager = findEmployee(employees, project.managerId);
+                                                    if (!manager) return `ID: ${project.managerId}`;
+                                                    if (!canLeadProject(manager)) return `직급 미달 담당자 (${manager.name})`;
+                                                    return manager.name;
+                                                })()}
+                                            </td>
+
+                                            <td>
+                                                {project.endDate || "미정"}
+                                                {isOverdue(project) && (
+                                                    <span className="nexus-overdue" aria-label="기간 초과">
+                                                        기간 초과
+                                                    </span>
+                                                )}
+                                            </td>
+
+                                            <td>
+                                                {getProgress(project.progress)}%
+                                            </td>
+
+                                            <td>
+                                                <div className="nexus-project-actions">
+
+                                                    {/* 상세정보 버튼 */}
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-primary btn-sm"
+                                                        onClick={() => {
+                                                            setSelectedProjectId(project.id);
+                                                            setPage("detail");
+                                                        }}
+                                                    >
+                                                        상세보기
+                                                    </button>
+
+                                                    {/* 인원 관리 (담당자·팀원 배정) */}
+                                                    {project.status !== "완료" && (
+                                                        <button className="btn btn-outline btn-sm"
+                                                            type="button"
+                                                            onClick={() =>
+                                                                navigate("/admin/members")
+                                                            }
+                                                        >
+                                                            인원 관리
+                                                        </button>
+                                                    )}
+
+                                                    {/* 삭제 */}
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-danger btn-sm"
+                                                        onClick={() =>
+                                                            deleteProject(project.id)
+                                                        }
+                                                    >
+                                                        삭제
+                                                    </button>
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+
+                                    {filteredProjects.length === 0 && (
+                                        <tr>
+                                            <td colSpan="7">
+                                                등록된 프로젝트가 없습니다.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </>
+
+            ) : page === "detail" ? (
+                <ProjectDetail
+                    key={selectedProjectId}
+                    customers={customers}
+                    project={selectedProject}
+                    manager={selectedManager}
+                    pendingRequest={selectedProject ? pendingFor(selectedProject.id) : undefined}
+                    busy={requestBusy}
+                    onApprove={approveRequest}
+                    onClose={closeDetail}
+                    setProjects={setProjects}
+                />
+            ) : (
+
+                /* ============================= */
+                /* 3. 신규 프로젝트 등록 화면 */
+                /* ============================= */
+
+                <ProjectRegisterForm
+                    customers={customers}
+                    form={form}
+                    onChange={handleChange}
+                    onSubmit={registerProject}
+                    onBack={() => setPage("list")}
+                    employees={employees}
+                    onAddMember={addMember}
+                    onRemoveMember={removeMember}
+                />
             )}
 
-            <div className="nexus-project-table-wrap">
-              <table className="nexus-project-table">
-
-                <thead>
-                  <tr>
-                    <th onClick={() => changeSort("name")} style={{ cursor: "pointer" }}>프로젝트명{sortMark("name")}</th>
-                    <th onClick={() => changeSort("customer")} style={{ cursor: "pointer" }}>고객사{sortMark("customer")}</th>
-                    <th onClick={() => changeSort("status")} style={{ cursor: "pointer" }}>상태{sortMark("status")}</th>
-                    <th onClick={() => changeSort("manager")} style={{ cursor: "pointer" }}>담당자{sortMark("manager")}</th>
-                    <th onClick={() => changeSort("endDate")} style={{ cursor: "pointer" }}>종료일{sortMark("endDate")}</th>
-                    <th onClick={() => changeSort("progress")} style={{ cursor: "pointer" }}>진행률{sortMark("progress")}</th>
-                    <th>관리</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {sortedProjects.map((project) => (
-                    <tr key={project.id}>
-
-                      <td>{project.name}</td>
-
-                      <td>{project.customer || "-"}</td>
-
-                      <td>
-                        <span className="badge badge-info">
-                          {project.status}
-                        </span>
-                      </td>
-
-                      <td>
-                        {(() => {
-                          if (project.managerId == null) return "미배정";
-                          const manager = findEmployee(employees, project.managerId);
-                          if (!manager) return `ID: ${project.managerId}`;
-                          if (!canLeadProject(manager)) return `직급 미달 담당자 (${manager.name})`;
-                          return manager.name;
-                        })()}
-                      </td>
-
-                      <td>
-                        {project.endDate || "미정"}
-                      </td>
-
-                      <td>
-                        {getProgress(project.progress)}%
-                      </td>
-
-                      <td>
-                        <div className="nexus-project-actions">
-
-                          {/* 상세정보 버튼 */}
-                          <button
-                            type="button"
-                            className="btn btn-primary btn-sm"
-                            onClick={() => {
-                              setSelectedProjectId(project.id);
-                              setPage("detail");
-                            }}
-                          >
-                            상세보기
-                          </button>
-
-                          {/* 담당자 배정 */}
-                          {(project.status === "예정" || (project.status === "진행중" && isUnderRankManager(project))) && (
-                            <button className="btn btn-outline btn-sm"
-                              type="button"
-                              onClick={() =>
-                                navigate("/admin/assignments")
-                              }
-                            >
-                              담당자 배정
-                            </button>
-                          )}
-
-                          {/* 삭제 */}
-                          <button
-                            type="button"
-                            className="btn btn-danger btn-sm"
-                            onClick={() =>
-                              deleteProject(project.id)
-                            }
-                          >
-                            삭제
-                          </button>
-
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-
-                  {filteredProjects.length === 0 && (
-                    <tr>
-                      <td colSpan="7">
-                        등록된 프로젝트가 없습니다.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-
-              </table>
-            </div>
-          </div>
-        </>
-
-      ) : page === "detail" ? (
-
-        /* ============================= */
-        /* 2. 프로젝트 상세정보 화면 */
-        /* ============================= */
-
-        <>
-          <div className="nexus-project-heading">
-            <div>
-              <p>관리자 / 프로젝트 관리 / 상세정보</p>
-              <h2>프로젝트 상세정보</h2>
-            </div>
-
-            <button className="btn btn-outline"
-              type="button"
-              onClick={closeDetail}
-            >
-              ← 목록으로
-            </button>
-          </div>
-
-          {selectedProject ? (
-            <div className="card nexus-project-panel nexus-detail-panel">
-
-              {(() => {
-                const req = pendingFor(selectedProject.id);
-                if (!req) return null;
-                return (
-                  <div className="nexus-detail-request">
-                    <div>
-                      <strong>완료 요청 대기 중</strong>
-                      <p>
-                        {req.requesterName || "요청자 미상"} · {req.requestedAt}
-                        {req.reason ? ` · ${req.reason}` : ""}
-                      </p>
-                    </div>
-                    <div className="nexus-detail-request-actions">
-                      <button type="button" className="btn btn-primary" disabled={requestBusy} onClick={() => approveRequest(req)}>
-                        완료 승인
-                      </button>
-                      <button type="button" className="btn btn-outline" disabled={requestBusy} onClick={() => rejectRequest(req)}>
-                        반려
-                      </button>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              <div className="nexus-detail-title">
-                <h3>{selectedProject.name}</h3>
-
-                <span className="badge badge-info">
-                  {selectedProject.status}
-                </span>
-              </div>
-
-              <h3 className="nexus-detail-section-title">
-                기본 정보
-              </h3>
-
-              {editing && editForm ? (
-                <div className="nexus-detail-section nexus-detail-edit">
-                  <h3>프로젝트 정보 수정</h3>
-
-                  <div className="nexus-detail-edit-grid">
-                    <label>
-                      프로젝트명
-                      <input value={editForm.name} onChange={updateEdit("name")} />
-                    </label>
-
-                    <label>
-                      고객사 (등록된 이름)
-                      <input value={editForm.customer} onChange={updateEdit("customer")} />
-                    </label>
-
-                    <label>
-                      예산 (원)
-                      <input type="number" min="0" value={editForm.budget} onChange={updateEdit("budget")} />
-                    </label>
-
-                    <label>
-                      상태
-                      <select value={editForm.status} onChange={updateEdit("status")}>
-                        {PROJECT_STATUS_OPTIONS.map((st) => (
-                          <option key={st} value={st}>{st}</option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label>
-                      시작 예정일
-                      <input type="date" value={editForm.startDate} onChange={updateEdit("startDate")} />
-                    </label>
-
-                    <label>
-                      종료 예정일
-                      <input type="date" value={editForm.endDate} onChange={updateEdit("endDate")} />
-                    </label>
-
-                    <label>
-                      실제 진행률 (%)
-                      <input type="number" min="0" max="100" step="1" value={editForm.progress} onChange={updateEdit("progress")} />
-                    </label>
-
-                    <label>
-                      계획 진행률 (%)
-                      <input type="number" min="0" max="100" step="0.01" value={editForm.plannedProgress} onChange={updateEdit("plannedProgress")} />
-                    </label>
-
-                    <label className="nexus-detail-edit-full">
-                      설명
-                      <textarea rows={4} value={editForm.description} onChange={updateEdit("description")} />
-                    </label>
-                  </div>
-
-                  <div className="nexus-detail-edit-actions">
-                    <button type="button" className="btn btn-ghost" disabled={savingEdit} onClick={cancelEdit}>
-                      취소
-                    </button>
-                    <button type="button" className="btn btn-primary" disabled={savingEdit} onClick={saveEdit}>
-                      {savingEdit ? "저장 중..." : "저장"}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="nexus-detail-edit-toggle">
-                  <button type="button" className="btn btn-ghost" onClick={startEdit}>
-                    정보 수정
-                  </button>
-                </div>
-              )}
-
-              <div className="nexus-detail-info">
-
-                <div>
-                  <label>프로젝트 ID</label>
-                  <strong>{selectedProject.id}</strong>
-                </div>
-
-                <div>
-                  <label>고객사</label>
-                  <strong>
-                    {selectedProject.customer || "미입력"}
-                  </strong>
-                </div>
-
-                <div>
-                  <label>시작 예정일</label>
-                  <strong>
-                    {selectedProject.startDate || "미정"}
-                  </strong>
-                </div>
-
-                <div>
-                  <label>종료 예정일</label>
-                  <strong>
-                    {selectedProject.endDate || "미정"}
-                  </strong>
-                </div>
-
-                <div>
-                  <label>예상 계약 금액</label>
-                  <strong>
-                    {selectedProject.budget != null &&
-                      selectedProject.budget !== ""
-                      ? `${Number(
-                        selectedProject.budget
-                      ).toLocaleString()}원`
-                      : "미입력"}
-                  </strong>
-                </div>
-
-                <div>
-                  <label>담당자</label>
-                  <strong>
-                    {selectedProject.managerId == null
-                      ? "미배정"
-                      : selectedManager
-                        ? `${selectedManager.name} (${selectedManager.role})`
-                        : `담당자 ID: ${selectedProject.managerId}`}
-                  </strong>
-                </div>
-
-              </div>
-
-              <div className="nexus-detail-section">
-
-                <h3>프로젝트 진행 현황</h3>
-
-                <div className="nexus-detail-progress-label">
-                  <span>실제 진행률</span>
-                  <strong>
-                    {getProgress(selectedProject.progress)}%
-                  </strong>
-                </div>
-
-                <div className="nexus-detail-track">
-                  <div
-                    className="nexus-detail-fill actual"
-                    style={{
-                      width: `${getProgress(
-                        selectedProject.progress
-                      )}%`
-                    }}
-                  />
-                </div>
-
-<div className="nexus-detail-progress-label">
-                  <span>계획 진행률</span>
-                  <strong>
-                    {getProgress(
-                      selectedProject.plannedProgress
-                    )}%
-                  </strong>
-                </div>
-
-                <div className="nexus-detail-track">
-                  <div
-                    className="nexus-detail-fill planned"
-                    style={{
-                      width: `${getProgress(
-                        selectedProject.plannedProgress
-                      )}%`
-                    }}
-                  />
-                </div>
-
-              </div>
-
-              <div className="nexus-detail-section">
-                <h3>프로젝트 설명</h3>
-
-                <p className="nexus-detail-description">
-                  {selectedProject.description ||
-                    "등록된 프로젝트 설명이 없습니다."}
-                </p>
-              </div>
-
-            </div>
-          ) : (
-            <div className="card nexus-project-panel">
-              <p>프로젝트 정보를 찾을 수 없습니다.</p>
-            </div>
-          )}
-        </>
-
-      ) : (
-
-        /* ============================= */
-        /* 3. 신규 프로젝트 등록 화면 */
-        /* ============================= */
-
-        <>
-          <div className="nexus-project-heading">
-            <div>
-              <p>관리자 / 프로젝트 관리 / 신규 등록</p>
-              <h2>신규 프로젝트 등록</h2>
-            </div>
-
-            <button className="btn btn-outline"
-              type="button"
-              onClick={() => setPage("list")}
-            >
-              ← 목록
-            </button>
-          </div>
-
-          <form onSubmit={registerProject}>
-
-            <div className="card nexus-project-panel">
-
-              <h3>기본 정보</h3>
-
-              <label>고객사 *</label>
-              <input
-                name="customer"
-                className="nexus-project-input"
-                placeholder="예: KB국민은행"
-                value={form.customer}
-                onChange={handleChange}
-                required
-              />
-
-              <label>프로젝트명 *</label>
-              <input
-                name="name"
-                className="nexus-project-input"
-                placeholder="예: 고객정보 통합관리 시스템"
-                value={form.name}
-                onChange={handleChange}
-                required
-              />
-
-              <div className="nexus-project-date-row">
-
-                <div>
-                  <label>시작 예정일</label>
-                  <input
-                    type="date"
-                    name="startDate"
-                    value={form.startDate}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div>
-                  <label>종료 예정일</label>
-                  <input
-                    type="date"
-                    name="endDate"
-                    value={form.endDate}
-                    onChange={handleChange}
-                  />
-                </div>
-
-              </div>
-
-              <label>예상 계약 금액 (원)</label>
-              <input
-                type="number"
-                name="budget"
-                min="0"
-                className="nexus-project-input"
-                placeholder="10000"
-                value={form.budget}
-                onChange={handleChange}
-              />
-
-              <label>프로젝트 설명</label>
-              <textarea
-                name="description"
-                placeholder="구축 목표, 주요 기능 및 범위"
-                value={form.description}
-                onChange={handleChange}
-              />
-
-            </div>
-
-            <div className="nexus-project-footer">
-
-              <button className="btn btn-outline"
-                type="button"
-                onClick={() => setPage("list")}
-              >
-                취소
-              </button>
-
-              <button
-                type="submit"
-                className="btn btn-primary"
-              >
-                담당자 배정 대기로 등록
-              </button>
-
-            </div>
-
-          </form>
-        </>
-      )}
-
-    </div>
-  );
+        </div>
+    );
 }
 
 export default ProjectManagement;
+

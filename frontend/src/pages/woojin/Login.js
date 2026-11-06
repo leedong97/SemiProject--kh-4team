@@ -33,16 +33,11 @@ function Login() {
         }
 
         setErrors({})
-        axios.post(`${API_BASE}/api/login`, values)
+        axios.post(`${API_BASE}/api/auth/login`, values)
             .then((res) => {
-                // 토큰이 없다면 로그인 성공으로 처리하지 않습니다.
-                if (!res.data.token || !res.data.user) {
-                    setErrors({ login: "로그인 인증 정보가 없습니다. 백엔드를 재시작해 주세요." });
-                    return;
-                }
-
-                saveLoginUser(res.data.user);
-                localStorage.setItem("nexus_auth_token", res.data.token);
+                localStorage.setItem('communityToken', res.data.communityToken);
+                if (res.data.authToken) localStorage.setItem('nexus_auth_token', res.data.authToken); // 직원평가 등에서 사용
+                saveLoginUser(res.data.user); // 서버가 준 직원 정보를 저장 (마이페이지에서 꺼내 써요)
                 // 로그인 성공 → 권한에 따라 이동할 화면을 나눈다
                 if (res.data.user.employee_role === "관리자") {
                     navi("/admin"); // 관리자 → 관리자 화면

@@ -8,11 +8,11 @@ const express = require('express');
 const devAdminId = Number(process.env.DEV_ADMIN_ID) || 1;
 const devRouter = express.Router();
 devRouter.use((req, res, next) => {
-  req.adminId = devAdminId;
-  next();
+    req.adminId = devAdminId;
+    next();
 });
 devRouter.use(adminRouter);
 
 module.exports = {
-  routes: [{ prefix: '/api/admin', router: devRouter }],
+    routes: [{ prefix: '/api/admin', router: devRouter }],
 };

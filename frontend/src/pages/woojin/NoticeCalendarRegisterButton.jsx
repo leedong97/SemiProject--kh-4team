@@ -11,21 +11,21 @@ import "./NoticeCalendarRegisterButton.css";
  * 사용 시 라우트 연결 및 관리자 권한 검사가 반드시 필요합니다.
  */
 function NoticeCalendarRegisterButton({ selectedDate, adminNoticePath }) {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  if (!selectedDate || !adminNoticePath) return null;
+    if (!selectedDate || !adminNoticePath) return null;
 
-  return (
-    <button
-      type="button"
-      className="notice-admin-calendar-register-btn"
-      onClick={() => navigate(adminNoticePath, {
-        state: { eventDate: selectedDate }
-      })}
-    >
-      + 선택한 날짜로 공지사항 등록
-    </button>
-  );
+    return (
+        <button
+            type="button"
+            className="notice-admin-calendar-register-btn"
+            onClick={() => navigate(adminNoticePath, {
+                state: { eventDate: selectedDate }
+            })}
+        >
+            + 선택한 날짜로 공지사항 등록
+        </button>
+    );
 }
 
 export default NoticeCalendarRegisterButton;

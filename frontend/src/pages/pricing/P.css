@@ -637,7 +637,7 @@
 }
 
 /* =====================================
-   COMMAND ERP 스타일 — 요금제 페이지
+COMMAND ERP 스타일 — 요금제 페이지
 ===================================== */
 
 .pricing-page {
@@ -676,9 +676,9 @@
 /* 소개 영역 */
 .pricing-page .pricing-hero {
     background: linear-gradient(180deg,
-            #eef6ff 0%,
-            #f8fbff 65%,
-            #fff 100%);
+    #eef6ff 0%,
+    #f8fbff 65%,
+    #fff 100%);
 }
 
 .pricing-page .pricing-hero h1,
