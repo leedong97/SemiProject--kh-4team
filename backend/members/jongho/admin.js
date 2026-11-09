@@ -92,7 +92,7 @@ router.get('/issues', async (req, res) => {
 });
 
 // ===== 커뮤니티 관리 (게시글·댓글 목록과 삭제만 제공) =====
-// 익명 글은 작성자를 '익명'으로만 보여준다 (실제 작성자는 노출하지 않음)
+// 관리자에게는 익명 글도 실제 작성자를 보여준다.
 
 // 게시글 목록
 router.get('/community/posts', async (req, res) => {
@@ -107,10 +107,7 @@ router.get('/community/posts', async (req, res) => {
       ORDER BY p.id DESC
       LIMIT 300
     `);
-    res.json(rows.map((r) => ({
-      ...r,
-      authorName: r.isAnonymous ? '익명' : r.authorName,
-    })));
+    res.json(rows);
   } catch (err) {
     res.status(500).json({ message: '게시글 목록을 불러오지 못했습니다.' });
   }
@@ -134,7 +131,8 @@ router.get('/community/posts/:id', async (req, res) => {
     post.authorName = post.isAnonymous ? '익명' : post.authorName;
 
     const [comments] = await pool.query(`
-      SELECT c.id, c.content, c.is_deleted AS isDeleted, e.employee_name AS authorName,
+      SELECT c.id, c.content, c.is_deleted AS isDeleted, c.is_anonymous AS isAnonymous,
+       e.employee_name AS authorName,
              DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i') AS createdAt
       FROM community_comment c
       LEFT JOIN employees e ON e.employee_id = c.author_id

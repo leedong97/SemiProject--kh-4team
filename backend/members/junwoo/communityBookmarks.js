@@ -214,14 +214,18 @@ router.get("/mine", async function (req, res) {
                 p.title,
                 p.board_name AS boardName,
                 COALESCE(
-                    e.employee_name,
-                    '작성자 미등록'
-                ) AS authorName
+                    CASE
+            WHEN p.is_anonymous = 1
+            THEN CONCAT('익명', COALESCE(a.anonymous_number, ''))
+            ELSE COALESCE(e.employee_name, '작성자 미등록')
+            END AS authorName
              FROM community_bookmark b
              JOIN community_post p
                 ON b.post_id = p.id
              LEFT JOIN employees e
                 ON p.author_id = e.employee_id
+             LEFT JOIN community_anonymous a
+                ON a.post_id = p.id AND a.employee_id = p.author_id
              WHERE b.author_id = ?
              ORDER BY b.created_at DESC, b.id DESC`,
             [String(employeeId)]

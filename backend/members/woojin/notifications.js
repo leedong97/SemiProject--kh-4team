@@ -3,6 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../../db");
+const bus = require("../../notifyBus");
 
 // 한 번에 가져올 최대 알림 개수 (너무 많이 가져오면 느려져요)
 const MAX_NOTIFICATIONS = 50;
@@ -41,6 +42,40 @@ router.get("/", async (req, res) => {
         console.error("알림 조회 오류:", err.code, err.message);
         res.status(500).json({ ok: false, message: "서버 오류가 났어요." });
     }
+});
+
+// GET /api/notifications/stream?employeeId=1  → 실시간 연결(SSE). 연결을 끊지 않고 열어 둔 채로,
+// 이 직원에게 새 알림이 생기는 순간에만 "notification" 신호를 한 줄 보내줘요. (목록 자체는 위 주소로 다시 가져와요)
+router.get("/stream", (req, res) => {
+    const employeeId = toPositiveInt(req.query.employeeId);
+    if (employeeId === null) {
+        return res.status(400).json({ ok: false, message: "employeeId 가 필요해요." });
+    }
+
+    res.writeHead(200, {
+        "Content-Type": "text/event-stream",   // "이건 계속 이어지는 SSE 연결이에요"라는 표시
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+        "X-Accel-Buffering": "no",             // nginx 같은 중간 서버가 내용을 모아 두지 않게
+    });
+    res.write("retry: 5000\n\n"); // 끊기면 브라우저가 5초 뒤 자동으로 다시 연결해요
+
+    // 알림 방송이 올 때, 내 번호일 때만 한 줄 보낸다
+    const onNotification = (targetId) => {
+        if (targetId === employeeId) {
+            res.write("event: notification\ndata: new\n\n");
+        }
+    };
+    bus.on("notification", onNotification);
+
+    // 25초마다 "살아 있어요" 신호(주석 줄). 중간 장비(로드밸런서 등)가 조용한 연결을 끊지 않게 해줘요.
+    const heartbeat = setInterval(() => res.write(": ping\n\n"), 25000);
+
+    // 화면을 닫거나 연결이 끊기면 뒷정리 (안 하면 듣는 귀와 타이머가 계속 쌓여요)
+    req.on("close", () => {
+        clearInterval(heartbeat);
+        bus.off("notification", onNotification);
+    });
 });
 
 // PATCH /api/notifications/read-all  body: { employeeId }  → 내 알림 전부 읽음

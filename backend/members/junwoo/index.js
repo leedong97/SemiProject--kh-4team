@@ -30,6 +30,10 @@ module.exports = {
       router: require("./communityReplyService")
     },
     {
+      prefix: "/api/community-files",
+      router: require("../dong/communityService").files
+    },
+    {
       prefix: "/api/community-likes",
       router: require("./communityLikes")
     },

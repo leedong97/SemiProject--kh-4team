@@ -103,8 +103,9 @@ const DUMMY_NOTIFICATIONS = [
     { id: 3, type: "이슈", message: "이슈 '표 정렬'이 \"완료\"로 바뀌었어요", time: "어제", isRead: true },
 ];
 
-// 새 알림이 왔는지 서버에 묻는 간격 (3초). 웹소켓 없이 "주기적으로 물어보는" 폴링 방식이에요
-const NOTI_POLL_MS = 3000;
+// 알림은 서버가 "새 알림 왔어요"라고 알려주는 SSE 방식이에요. (EventSource)
+// 혹시 연결이 끊긴 사이에 놓친 알림이 있을 수 있어서, 안전망으로 느린 확인(30초)도 같이 해요.
+const NOTI_FALLBACK_MS = 30000;
 
 // 직원 평가를 쓸 수 있는 직급: 희승의 평가 화면(EmployeeEvaluation.js)의 규칙과 똑같이 맞췄어요.
 // (그쪽 규칙이 바뀌면 여기도 같이 바꿔야 해요. 평가 화면은 인사팀도 허용해서 아래에서 같이 확인해요.)
@@ -116,7 +117,7 @@ function Mypage() {
     const today = new Date();
     const todayKey = toKey(today.getFullYear(), today.getMonth(), today.getDate());
 
-    // 알림: 로그인한 직원은 서버에서 3초마다 가져오고, 더미 사용자는 가짜 데이터를 그대로 보여줘요
+    // 알림: 로그인한 직원은 서버가 새 알림을 알려줄 때(SSE) 목록을 가져오고, 더미 사용자는 가짜 데이터를 그대로 보여줘요
     const [notifications, setNotifications] = useState(user.isDummy ? DUMMY_NOTIFICATIONS : []);
     useEffect(() => {
         if (user.isDummy) return;
@@ -129,8 +130,20 @@ function Mypage() {
         };
 
         loadNotifications(); // 화면이 열리자마자 한 번
-        const timerId = setInterval(loadNotifications, NOTI_POLL_MS); // 그다음부터 3초마다
-        return () => clearInterval(timerId); // 화면을 떠나면 타이머를 꺼요 (안 끄면 계속 돌아요)
+
+        // 서버와 실시간 연결을 열어 두고, "notification" 신호가 올 때만 목록을 다시 가져와요
+        const source = new EventSource(`${API_BASE}/api/notifications/stream?employeeId=${user.id}`);
+        source.addEventListener("notification", loadNotifications);
+        // 끊기면 브라우저가 알아서 다시 연결해요. 여기서는 기록만 남겨요.
+        source.onerror = () => console.warn("알림 실시간 연결이 끊겼어요. 자동으로 다시 연결해요.");
+
+        // 안전망: 연결이 끊겼던 사이에 놓친 알림이 있을 수 있어서 30초마다 한 번 더 확인
+        const timerId = setInterval(loadNotifications, NOTI_FALLBACK_MS);
+
+        return () => {
+            source.close();          // 화면을 떠나면 실시간 연결을 닫아요 (안 닫으면 계속 열려 있어요)
+            clearInterval(timerId);  // 타이머도 꺼요
+        };
     }, [user.id, user.isDummy]);
 
     // 알림 하나를 읽음 처리: 화면을 먼저 바꾸고(바로 반응하게) 서버에도 알려요
