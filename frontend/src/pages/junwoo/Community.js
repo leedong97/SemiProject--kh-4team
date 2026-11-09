@@ -246,10 +246,6 @@ function Community(props) {
                 <CommunityMenu menu={menu} />
 
                 <div className="lounge-sidebar-bottom">
-                    <Link to="/" className="lounge-erp-link">
-                        ← 직원 메인으로
-                    </Link>
-
                     <p>동료와 연결되는 공간</p>
                 </div>
             </aside>
@@ -263,28 +259,40 @@ function Community(props) {
                     </div>
 
                     <div className="lounge-user-profile">
-                        <span className="lounge-user-avatar" aria-hidden="true">
-                            {displayName.charAt(0)}
-                        </span>
-
-                        <div className="lounge-user-info">
-                            <strong>{displayName}</strong>
-                            <span>{displayTeam}</span>
-                        </div>
-
                         {!loginUser.isDummy ? (
-                            <button
-                                type="button"
-                                className="lounge-logout-button"
-                                onClick={handleLogout}
-                            >
-                                로그아웃
-                            </button>
+                            <div className="lounge-account-menu">
+                                <button
+                                    type="button"
+                                    className="lounge-account-trigger"
+                                >
+                                    <span className="lounge-user-avatar" aria-hidden="true">
+                                        {displayName.charAt(0)}
+                                    </span>
+
+                                    <span className="lounge-user-info">
+                                        <strong>{displayName}님</strong>
+                                        <span>{displayTeam}</span>
+                                    </span>
+                                </button>
+
+                                <div className="lounge-account-dropdown">
+                                    {loginUser.role === "관리자" && (
+                                        <Link to="/admin">
+                                            관리자 페이지
+                                        </Link>
+                                    )}
+
+                                    <Link to="/">
+                                        직원 페이지
+                                    </Link>
+
+                                    <button type="button" onClick={handleLogout}>
+                                        로그아웃
+                                    </button>
+                                </div>
+                            </div>
                         ) : (
-                            <Link
-                                to="/login"
-                                className="lounge-logout-button"
-                            >
+                            <Link to="/login" className="lounge-logout-button">
                                 로그인
                             </Link>
                         )}

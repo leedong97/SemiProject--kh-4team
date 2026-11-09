@@ -8994,3 +8994,70 @@
   outline: 2px solid #087bdf;
   outline-offset: 3px;
 }
+
+/* 커뮤니티 오른쪽 사용자 메뉴 */
+.community-standalone .lounge-account-menu {
+  position: relative;
+}
+
+.community-standalone .lounge-account-trigger {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.community-standalone .lounge-account-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  min-width: 160px;
+  padding: 8px 0;
+  border: 1px solid #e0e8f5;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+}
+
+.community-standalone .lounge-account-menu:hover .lounge-account-dropdown,
+.community-standalone .lounge-account-menu:focus-within .lounge-account-dropdown {
+  display: block;
+}
+
+.community-standalone .lounge-account-dropdown a,
+.community-standalone .lounge-account-dropdown button {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  color: #385577;
+  font: inherit;
+  font-size: 13px;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.community-standalone .lounge-account-dropdown a:hover,
+.community-standalone .lounge-account-dropdown button:hover {
+  background: #eef6ff;
+  color: #087bdf;
+}
+
+.community-standalone .lounge-account-trigger:focus-visible,
+.community-standalone .lounge-account-dropdown a:focus-visible,
+.community-standalone .lounge-account-dropdown button:focus-visible {
+  outline: 2px solid #087bdf;
+  outline-offset: 2px;
+}

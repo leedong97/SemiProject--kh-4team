@@ -23,7 +23,6 @@ export default function ServiceTabs({ type, onTypeChange }) {
         >
           ② 클라우드·보안몰
         </button>
-        <span className="hint">팀 프로젝트 기획·UI 시연용 데모</span>
       </div>
     </div>
   );

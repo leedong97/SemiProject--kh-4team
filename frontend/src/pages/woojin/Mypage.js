@@ -27,13 +27,6 @@ const dummyProjects = [
     { id: 1, name: "KB국민은행 고객정보 통합관리", role: "백엔드 개발 담당", progress: 65, status: "진행중", start: "2026-10-05", end: "2026-11-27" },
     { id: 2, name: "삼성전자 생산·재고관리 시스템", role: "API 개발 지원", progress: 30, status: "진행중", start: "2026-10-19", end: "2026-12-18" },
 ];
-// dummyTasks 배열에 업무 객체({})들을 담는다
-const dummyTasks = [
-    { id: 1, title: "고객정보 등록 API 개발", status: "진행 중" },
-    { id: 2, title: "고객정보 테이블 설계", status: "완료" },
-    { id: 3, title: "프로젝트 QA 테스트", status: "대기" },
-];
-
 // start ~ end : 시작일 ~ 종료일 (하루짜리 일정은 start 와 end 가 같아요)
 // 휴가·프로젝트나 여러 날짜에 걸친 일정은 달력에 "막대"로 이어져 보여요
 const initialSchedules = [
@@ -80,6 +73,8 @@ const TYPES = ["개인", "업무", "휴가"];
 const FILTERS = ["전체", ...TYPES, "프로젝트"];
 // 일정 종류 → CSS 클래스 이름
 const TYPE_CLASS = { 업무: "work", 개인: "personal", 휴가: "leave", 프로젝트: "project" };
+// 달력 막대를 쌓는 순서 (숫자가 작을수록 위쪽): 프로젝트 → 업무 → 개인 → 휴가
+const TYPE_ORDER = { 프로젝트: 0, 업무: 1, 개인: 2, 휴가: 3 };
 const EMPTY_PW = { current: "", next: "", confirm: "" };
 const makeEmptyForm = (key) => ({ title: "", start: key, end: key, time: "09:00", type: "개인" });
 const MIN_PW_LENGTH = 8; // 비밀번호 최소 길이
@@ -164,19 +159,14 @@ function Mypage() {
     const [schedules, setSchedules] = useState(user.isDummy ? initialSchedules : []);
     const [filter, setFilter] = useState("전체");
 
-    // 내가 참여한 프로젝트와 내 담당 업무: 로그인한 직원이면 DB에서 가져올 때까지 빈 목록, 더미 사용자면 예전 더미를 그대로 써요
+    // 내가 참여한 프로젝트: 로그인한 직원이면 DB에서 가져올 때까지 빈 목록, 더미 사용자면 예전 더미를 그대로 써요
     const [projects, setProjects] = useState(user.isDummy ? dummyProjects : []);
-    const [tasks, setTasks] = useState(user.isDummy ? dummyTasks : []);
     useEffect(() => {
         if (user.isDummy) return;
         axios
             .get(`${API_BASE}/api/mypage/my-projects`, { params: { employeeId: user.id } })
             .then((res) => setProjects(res.data.projects))
             .catch((err) => console.error("프로젝트를 불러오지 못했어요:", err));
-        axios
-            .get(`${API_BASE}/api/mypage/my-tasks`, { params: { employeeId: user.id } })
-            .then((res) => setTasks(res.data.tasks))
-            .catch((err) => console.error("업무를 불러오지 못했어요:", err));
     }, [user.id, user.isDummy]);
 
     // 내가 "담당자"인 프로젝트: 있으면 내 업무 탭에 직원 평가 바로가기가 보여요 (더미 사용자는 없음)
@@ -283,6 +273,12 @@ function Mypage() {
         (s) => s.start.startsWith(thisMonthPrefix) && s.type === "개인"
     ).length;
 
+    // 이번 달 업무 일정: 달력에 등록한 "업무" 일정 중, 이번 달에 하루라도 걸쳐 있는 것의 개수
+    // (시작이 이번 달 끝보다 늦지 않고, 종료가 이번 달 시작보다 빠르지 않으면 "걸쳐 있다"고 봐요. 날짜는 "2026-11-06" 글자라서 그냥 비교해도 돼요)
+    const workCountThisMonth = schedules.filter(
+        (s) => s.type === "업무" && s.start <= `${thisMonthPrefix}-31` && s.end >= `${thisMonthPrefix}-01`
+    ).length;
+
     // 프로젝트는 관리자 페이지에서만 등록하고, 마이페이지는 DB(projects + project_members)에서 읽어 와 보여 주기만 해요.
     // 위쪽 카드, 일정 탭의 막대, "내 업무" 탭이 모두 같은 projects 데이터를 쓰니까 숫자와 목록이 어긋나지 않아요.
     // 막대로 그릴 프로젝트: "완료"가 아니고, 시작일·종료일이 둘 다 있는 것 (날짜가 비어 있으면 막대를 못 그려요)
@@ -301,16 +297,23 @@ function Mypage() {
 
     // 진행 중 프로젝트: 막대에 있는 것 중 상태가 "진행중"인 개수 (DB의 projects.status 글자는 붙여 쓴 "진행중")
     // 업무 상태 "진행 중"은 띄어 쓰니 헷갈리지 않게 주의!
-    const activeProjectCount = projectBars.filter((p) => p.status === "진행중").length;
+    // 기간이 이미 지난 프로젝트(종료일이 오늘보다 이전)는 위쪽 목록처럼 세지 않아요. 달력에는 그대로 남겨요.
+    const activeProjectCount = projectBars.filter((p) => p.status === "진행중" && p.end >= todayKey).length;
 
     // 필터가 "전체"나 "프로젝트"일 때만 막대를 보여 줘요 (개인·업무·휴가만 보고 싶을 땐 숨겨요)
     const visibleProjectBars = filter === "전체" || filter === "프로젝트" ? projectBars : [];
+    // 위쪽 "진행 · 예정 프로젝트" 목록에는 기간이 지난 프로젝트(종료일이 오늘보다 이전)를 보여 주지 않아요. (달력은 지난 달을 넘겨 볼 때를 위해 그대로 둬요)
 
     // 한 주(weekKeys: 7칸의 날짜 문자열, 빈칸은 null)에 그릴 막대들을 계산
+    // 프로젝트 막대도 일정 막대와 같이 한 달력에 섞어서 그려요. (줄 배치 규칙은 아래 주석 참고)
     const getWeekBars = (weekKeys) => {
-        const bars = [];
+        const events = [
+            ...visibleProjectBars.map((p) => ({ ...p, type: "프로젝트" })),
+            ...schedules.filter((s) => !isProject(s) && isVisible(s)), // 하루짜리 일정도 이름으로 보여 줘요
+        ];
 
-        schedules.filter((s) => isPeriod(s) && !isProject(s) && isVisible(s)).forEach((ev) => {
+        const bars = [];
+        events.forEach((ev) => {
             let first = -1; // 이 주에서 막대가 시작하는 칸 번호 (0~6)
             let last = -1; // 막대가 끝나는 칸 번호
             weekKeys.forEach((k, c) => {
@@ -324,20 +327,32 @@ function Mypage() {
                     ev,
                     first,
                     last,
-                    startsHere: weekKeys[first] === ev.start, // 진짜 시작일이면 왼쪽 끝을 둥글게
-                    endsHere: weekKeys[last] === ev.end, // 진짜 종료일이면 오른쪽 끝을 둥글게
+                    startsHere: weekKeys[first] === ev.start, // 진짜 시작일이면 그 칸의 절반부터 채워요
+                    endsHere: weekKeys[last] === ev.end, // 진짜 종료일이면 그 칸의 절반까지만 채워요
                 });
             }
         });
 
-        // 먼저 시작하는 것, 긴 것 순서로 놓고, 겹치지 않는 가장 위쪽 줄(lane)에 배치
-        bars.sort((a, b) => a.first - b.first || b.last - b.first - (a.last - a.first));
-        const laneEnd = []; // laneEnd[줄 번호] = 그 줄에서 마지막으로 쓴 칸 번호
+        // 종류 순서(프로젝트 → 업무 → 개인 → 휴가)로 먼저 놓고, 같은 종류끼리는 먼저 시작하는 것, 긴 것 순서
+        bars.sort(
+            (a, b) =>
+                TYPE_ORDER[a.ev.type] - TYPE_ORDER[b.ev.type] ||
+                a.ev.start.localeCompare(b.ev.start) ||
+                b.last - b.first - (a.last - a.first)
+        );
+
+        // 줄(lane) 배치: 같은 칸을 쓰는 막대끼리는 다른 줄에 놓고,
+        // 더 위 순서인 종류(예: 프로젝트)와 겹치면 반드시 그 막대보다 아래 줄에 놓아요.
+        const placed = [];
         bars.forEach((b) => {
+            const overlapping = placed.filter((p) => p.first <= b.last && b.first <= p.last);
             let lane = 0;
-            while (laneEnd[lane] !== undefined && laneEnd[lane] >= b.first) lane++;
+            overlapping.forEach((p) => {
+                if (TYPE_ORDER[p.ev.type] < TYPE_ORDER[b.ev.type]) lane = Math.max(lane, p.lane + 1);
+            });
+            while (overlapping.some((p) => p.lane === lane)) lane++;
             b.lane = lane;
-            laneEnd[lane] = b.last;
+            placed.push(b);
         });
         return bars;
     };
@@ -511,9 +526,6 @@ function Mypage() {
     };
 
 
-    // 진행 중 업무 개수 (요약 카드에 보여 줘요)
-    const inProgressCount = tasks.filter((t) => t.status === "진행 중").length;
-
     /* ---------- 비밀번호 변경: 입력 검사 후 서버(DB)에 저장해요 ---------- */
     // 비밀번호 입력칸의 글자가 바뀔 때마다 실행될 함수를 만든다. e는 입력창에서 일어난 일(이벤트)을 담은 객체
     const handlePwChange = (e) => {
@@ -582,7 +594,7 @@ function Mypage() {
             {/* ===== 요약 숫자 3개 ===== */}
             <SummaryCards
                 activeProjectCount={activeProjectCount}
-                inProgressCount={inProgressCount}
+                workCountThisMonth={workCountThisMonth}
                 personalCountThisMonth={personalCountThisMonth}
             />
 
@@ -605,7 +617,7 @@ function Mypage() {
 
                     <FilterBar filter={filter} setFilter={setFilter} FILTERS={FILTERS} />
 
-                    <ProjList projectBars={visibleProjectBars} todayKey={todayKey} countDays={countDays} />
+                    <ProjList projectBars={visibleProjectBars.filter((p) => p.end >= todayKey)} todayKey={todayKey} countDays={countDays} />
 
                     <CalGrid
                         WEEK_DAYS={WEEK_DAYS}
@@ -614,6 +626,7 @@ function Mypage() {
                         month={month}
                         getWeekBars={getWeekBars}
                         schedules={schedules}
+                        projectBars={visibleProjectBars}
                         isPeriod={isPeriod}
                         isVisible={isVisible}
                         toKey={toKey}
@@ -621,6 +634,7 @@ function Mypage() {
                         selectedKey={selectedKey}
                         selectDay={selectDay}
                         TYPE_CLASS={TYPE_CLASS}
+                        TYPE_ORDER={TYPE_ORDER}
                         openEditForm={openEditForm}
                     />
 
@@ -655,7 +669,7 @@ function Mypage() {
             )}
 
             {/* ===== 탭 2: 내 업무 ===== */}
-            {tab === "내 업무" && <MyWorkTab projects={allProjects} tasks={tasks} managedProjects={managedProjects} canEvaluate={canEvaluate} />}
+            {tab === "내 업무" && <MyWorkTab projects={allProjects} managedProjects={managedProjects} canEvaluate={canEvaluate} />}
 
             {/* ===== 탭 3: 근태·휴가 ===== */}
             {tab === "근태·휴가" && (

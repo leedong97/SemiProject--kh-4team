@@ -1,4 +1,3 @@
-import NoticeBanner from "../components/NoticeBanner";
 import ProductCard from "../components/ProductCard";
 import { processStages, erpFeatures } from "../data/services";
 
@@ -36,8 +35,8 @@ export default function FlowPage({ type }) {
 
       <div className="section-title" style={{ marginTop: 60 }}>
         <div>
-          <h2>COMMAND ERP 관리자 기능과 연결</h2>
-          <p>데모 기획안: 실제 API 및 DB 연동은 구현되지 않았습니다.</p>
+          <h2>COMMAND ERP 주요 기능</h2>
+          <p>프로젝트부터 이슈 관리까지, 업무에 필요한 기능을 소개합니다.</p>
         </div>
       </div>
 
@@ -46,18 +45,6 @@ export default function FlowPage({ type }) {
           <ProductCard key={feature.name} product={feature} compact />
         ))}
       </div>
-
-      <NoticeBanner
-        title="쇼핑몰 + ERP 통합 서비스"
-        description="고객 요청 → 견적·계약 → 프로젝트 → 이슈 관리 → 완료 및 유지보수"
-        buttonText="데모 버전 체험"
-        onClick={() => {
-          window.location.assign(
-            import.meta.env.VITE_ERP_DEMO_URL ||
-            "http://localhost:3000/preview"
-          );
-        }}
-      />
     </div>
   );
 }

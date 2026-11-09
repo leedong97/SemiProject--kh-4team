@@ -63,6 +63,29 @@ router.post("/leaves", requireAuth, async (req, res) => {
             await conn.rollback();
             return res.status(409).json({ ok: false, message: "겹치는 휴가 신청이 있어요." });
         }
+        // 연차·반차는 "남은 연차"보다 많이 신청할 수 없다.
+        // 남은 연차 = 그 해 총 연차 - (승인 + 대기 중인 연차·반차 일수). 반려는 세지 않는다.
+        // 화면에서도 막지만, 화면은 우회할 수 있어서 서버가 한 번 더 검사한다.
+        if (leave_type === "연차" || leave_type === "반차") {
+            const requestDays = leave_type === "반차" ? 0.5 : (Date.parse(end_date) - Date.parse(start_date)) / 86400000 + 1;
+            const leaveYear = Number(start_date.slice(0, 4));
+            const [balances] = await conn.query(
+                "SELECT total_days FROM leave_balances WHERE employee_id = ? AND balance_year = ?",
+                [employeeId, leaveYear]
+            );
+            const total = Number(balances[0]?.total_days ?? 15);
+            const [usedRows] = await conn.query(
+                "SELECT COALESCE(SUM(CASE WHEN leave_type = '반차' THEN 0.5 ELSE DATEDIFF(end_date, start_date) + 1 END), 0) AS used " +
+                "FROM leave_requests WHERE employee_id = ? AND leave_type IN ('연차', '반차') " +
+                "AND status IN ('승인', '대기') AND YEAR(start_date) = ?",
+                [employeeId, leaveYear]
+            );
+            const remain = total - Number(usedRows[0].used);
+            if (requestDays > remain) {
+                await conn.rollback();
+                return res.status(400).json({ ok: false, message: `남은 연차(${remain}일)보다 많이 신청할 수 없어요. (신청 ${requestDays}일)` });
+            }
+        }
         const [result] = await conn.query(
             "INSERT INTO leave_requests (employee_id, leave_type, start_date, end_date, leave_reason, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, '대기', NOW(), NOW())",
             [employeeId, leave_type, start_date, end_date, leave_reason || null]

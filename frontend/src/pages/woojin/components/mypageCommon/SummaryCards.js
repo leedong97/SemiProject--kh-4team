@@ -1,4 +1,4 @@
-function SummaryCards({ activeProjectCount, inProgressCount, personalCountThisMonth }) {
+function SummaryCards({ activeProjectCount, workCountThisMonth, personalCountThisMonth }) {
     return (
         <section className="mp-stats">
             <div className="mp-stat">
@@ -6,11 +6,8 @@ function SummaryCards({ activeProjectCount, inProgressCount, personalCountThisMo
                 <strong>{activeProjectCount}<small>건</small></strong>
             </div>
             <div className="mp-stat">
-                <span className="mp-stat-label">진행 중 업무</span>
-                <strong>
-                    {inProgressCount}
-                    <small>건</small>
-                </strong>
+                <span className="mp-stat-label">이번 달 업무 일정</span>
+                <strong>{workCountThisMonth}<small>건</small></strong>
             </div>
             <div className="mp-stat">
                 <span className="mp-stat-label">이번 달 개인 일정</span>

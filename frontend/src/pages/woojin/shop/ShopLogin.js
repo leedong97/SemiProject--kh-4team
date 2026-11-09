@@ -1,9 +1,2 @@
-import React from "react";
-function ShopLogin(){
-    return(
-        <div>
+import {API_BASE} from "../../../shared/config";
 
-        </div>
-    )
-}
-export default ShopLogin;

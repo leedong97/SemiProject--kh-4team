@@ -17,10 +17,9 @@ export default function QuotePage({ products, selectedIndex, submitted, onSubmit
         {submitted ? (
           // submitted가 true일 때만 신청 완료 내용을 보여줍니다.
           <div className="success" role="status">
-            <h2>✅ 데모 신청이 완료되었습니다</h2>
+            <h2>입력 확인이 완료되었습니다</h2>
             <p>
-              실제 서버에 제출되거나 저장되지는 않습니다.
-              팀원들에게 신청 완료 화면을 시연할 수 있습니다.
+              온라인 견적 접수 기능을 준비 중입니다.
             </p>
             <button type="button" className="btn ghost" onClick={() => onNavigate("home")}>
               서비스몰 돌아가기
@@ -83,12 +82,10 @@ export default function QuotePage({ products, selectedIndex, submitted, onSubmit
               />
             </div>
 
-            <div className="form-note">
-              ℹ️ 이 화면은 기능 흐름을 체험하기 위한 데모입니다. 입력 내용은 저장·전송되지 않습니다.
-            </div>
-
             <div style={{ marginTop: 24 }}>
-              <button className="btn" type="submit">견적 신청 흐름 체험 →</button>
+              <button className="btn" type="submit">
+                입력 내용 접수 →
+              </button>
             </div>
           </form>
         )}
