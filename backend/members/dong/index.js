@@ -38,23 +38,51 @@ router.get('/issues', async (req, res) => {
         i.issue_priority    AS priority,
         i.issue_status      AS status,
         i.issue_created_at  AS createdAt,
-        e.employee_id       AS reporterId,
-        e.employee_name     AS reporterName,
-        e.employee_grade    AS reporterGrade,
-        e.employee_phone    AS reporterPhone,
-        p.project_title     AS projectName,
-        c.customer_name     AS customerName
-      FROM issues i
-      LEFT JOIN employees e ON i.reporter_id = e.employee_id
-      LEFT JOIN projects  p ON i.project_id  = p.project_id
-      LEFT JOIN customers c ON p.customer_id = c.customer_id
-      ORDER BY i.issue_id
+        e.employee_id        AS reporterId,
+        e.employee_name      AS reporterName,
+        e.employee_grade     AS reporterGrade,
+        e.employee_phone     AS reporterPhone,
+        assignee.employee_name  AS assigneeName,
+        assignee.employee_grade AS assigneeGrade,
+        assignee.employee_phone AS assigneePhone,
+        p.project_title      AS projectName
+        FROM issues i
+        LEFT JOIN employees e ON i.reporter_id = e.employee_id LEFT JOIN employees assignee ON i.assigned_employee_id = assignee.employee_id
+        LEFT JOIN projects  p ON i.project_id  = p.project_id
+        LEFT JOIN customers c ON p.customer_id = c.customer_id
+        ORDER BY i.issue_id
     `);
     res.json(rows);
   } catch (err) {
     console.error('이슈 조회 실패:', err);
     res.status(500).json({ message: '이슈 조회 실패' });
   }
+});
+
+// 이슈 변경 알림을 사용자 화면에 전달
+router.get('/issues/events', (req, res) => {
+  res.set({
+    'Content-Type': 'text/event-stream; charset=utf-8',
+    'Cache-Control': 'no-cache, no-transform',
+    'Connection': 'keep-alive',
+    'X-Accel-Buffering': 'no'
+  });
+  res.flushHeaders();
+
+  if (!req.app.locals.issueEventClients) {
+    req.app.locals.issueEventClients = new Set();
+  }
+  const clients = req.app.locals.issueEventClients;
+  clients.add(res);
+
+  // 처음 연결하거나 재연결했을 때도 최신 상태를 확인
+  res.write('data: changed\n\n');
+  const heartbeat = setInterval(() => res.write(': ping\n\n'), 25000);
+
+  res.on('close', () => {
+    clearInterval(heartbeat);
+    clients.delete(res);
+  });
 });
 
 // POST /api/dong/issues — 이슈 건의 등록

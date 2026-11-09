@@ -82,10 +82,23 @@ function Issue_detail({ projects, issues }) {
 
                 {/* 건의자 연락처 */}
                 <div className="issue-detail-row">
-                    <strong>담당자 연락처</strong>
+                    <strong>건의자 연락처</strong>
                     <span>{issue.reporterPhone || "-"}</span>
                 </div>
+                {/* 담당자 */}
+                <div className="issue-detail-row">
+                    <strong>담당자(직급)</strong>
+                    <span>
+                        {issue.assigneeName || "미배정"}
+                        {issue.assigneeGrade ? ` (${issue.assigneeGrade})` : ""}
+                    </span>
+                </div>
 
+                {/* 담당자 연락처 */}
+                <div className="issue-detail-row">
+                    <strong>담당자 연락처</strong>
+                    <span>{issue.assigneePhone || "-"}</span>
+                </div>
                 {/* 등록일 */}
                 <div className="issue-detail-row">
                     <strong>등록일</strong>

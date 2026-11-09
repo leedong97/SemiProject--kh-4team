@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../../db');
 const { validId } = require('./adminHelpers');
+const { createNotification } = require('../../notify');
 
 const router = express.Router();
 
@@ -37,6 +38,13 @@ async function saveProjectMembers(conn, projectId, managerId, memberIds) {
       'INSERT INTO project_members (project_id, employee_id, role) VALUES ?',
       [ids.map((id) => [projectId, id, id === managerId ? '담당자' : '팀원'])]
     );
+  }
+}
+
+// 프로젝트 알림: 여러 명에게 같은 문장을 보내요 (중복 제거, 실패해도 본 작업엔 영향 없음)
+async function notifyProjectPeople(ids, message) {
+  for (const id of new Set(ids.filter((v) => v != null).map(String))) {
+    await createNotification(id, '프로젝트', message, null);
   }
 }
 
@@ -189,6 +197,11 @@ router.post('/projects', async (req, res) => {
     );
     await saveProjectMembers(connection, result.insertId, managerNo, members);
     await connection.commit();
+
+    // 알림: 담당자와 팀원에게 새 프로젝트 배정을 알려요
+    await notifyProjectPeople([managerNo], '"' + name + '" 프로젝트의 담당자로 배정됐어요.');
+    await notifyProjectPeople(members.filter((id) => id !== managerNo), '"' + name + '" 프로젝트의 팀원으로 배정됐어요.');
+
     res.status(201).json({ id: result.insertId });
   } catch (error) {
     await connection.rollback();
@@ -377,6 +390,26 @@ router.patch('/projects/:id', async (req, res) => {
       );
     }
     await connection.commit();
+
+    // 알림: 상태가 바뀌면 참여자 전체에게, 담당자가 바뀌면 새 담당자와 이전 담당자에게 알려요
+    try {
+      const [info] = await pool.query('SELECT project_title FROM projects WHERE project_id = ?', [req.params.id]);
+      const projectTitle = info[0] ? info[0].project_title : '프로젝트';
+      if (status !== undefined && status !== rows[0].status) {
+        const [people] = await pool.query('SELECT employee_id FROM project_members WHERE project_id = ?', [req.params.id]);
+        await notifyProjectPeople(
+          people.map((p) => p.employee_id),
+          '참여 중인 프로젝트 "' + projectTitle + '"의 상태가 ' + status + '(으)로 변경됐어요.'
+        );
+      }
+      if (managerId !== undefined && String(previousManagerId) !== String(managerId)) {
+        await notifyProjectPeople([managerId], '"' + projectTitle + '" 프로젝트의 담당자로 지정됐어요.');
+        await notifyProjectPeople([previousManagerId], '"' + projectTitle + '" 프로젝트의 담당에서 해제됐어요.');
+      }
+    } catch (notifyError) {
+      console.error('프로젝트 수정 알림 오류:', notifyError.message);
+    }
+
     res.json({ ok: true });
   } catch (error) {
     await connection.rollback();
@@ -415,8 +448,22 @@ router.put('/projects/:id/members', async (req, res) => {
       await connection.rollback();
       return res.status(400).json({ message: '재직 중이 아닌 직원이 포함되어 있습니다.' });
     }
+    const [beforeRows] = await connection.query('SELECT employee_id FROM project_members WHERE project_id = ?', [projectId]);
     await saveProjectMembers(connection, projectId, projects[0].manager_id, memberIds);
     await connection.commit();
+
+    // 알림: 새로 배정된 사람과 빠진 사람에게만 알려요 (그대로인 사람은 제외)
+    try {
+      const beforeIds = beforeRows.map((r) => String(r.employee_id));
+      const afterIds = [...new Set([...(projects[0].manager_id ? [projects[0].manager_id] : []), ...memberIds])].map(String);
+      const [info] = await pool.query('SELECT project_title FROM projects WHERE project_id = ?', [projectId]);
+      const projectTitle = info[0] ? info[0].project_title : '프로젝트';
+      await notifyProjectPeople(afterIds.filter((id) => !beforeIds.includes(id)), '"' + projectTitle + '" 프로젝트의 팀원으로 배정됐어요.');
+      await notifyProjectPeople(beforeIds.filter((id) => !afterIds.includes(id)), '"' + projectTitle + '" 프로젝트의 팀원에서 제외됐어요.');
+    } catch (notifyError) {
+      console.error('팀원 배정 알림 오류:', notifyError.message);
+    }
+
     res.json({ message: '팀원 배정이 저장되었습니다.' });
   } catch (error) {
     await connection.rollback();

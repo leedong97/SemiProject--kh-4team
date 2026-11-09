@@ -233,6 +233,16 @@ router.patch('/issues/:id', async (req, res) => {
         if (!result.affectedRows) return res.status(404).json({ message: '이슈가 없습니다.' });
         // 알림: 상태가 바뀌면 등록자와 담당자에게, 담당자가 바뀌면 새 담당자에게 알려요 (처리한 본인은 제외)
         const before = beforeIssue[0];
+        if (before && values.status !== undefined &&
+            values.status !== before.issue_status) {
+            for (const client of req.app.locals.issueEventClients || []) {
+                try {
+                    client.write('data: changed\n\n');
+                } catch (_) {
+                    // 연결이 끊긴 클라이언트는 SSE 연결의 close 처리에서 제거됩니다.
+                }
+            }
+        }
         if (before) {
             const actorId = String(req.user.employee_id);
             const link = '/issue/' + id;

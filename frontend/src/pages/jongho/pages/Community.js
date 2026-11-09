@@ -101,7 +101,7 @@ function Community() {
                                     <td>{p.id}</td>
                                     <td>{p.boardName}</td>
                                     <td className="boards-title-cell">{p.title}</td>
-                                    <td>{p.authorName}</td>
+                                    <td>{p.authorName}{p.isAnonymous ? '(익명)' : ''}</td>
                                     <td>{p.createdAt}</td>
                                     <td>{p.commentCount}</td>
                                     <td><div className="boards-actions">
@@ -121,7 +121,7 @@ function Community() {
                         <h2>{detail.post.title}</h2>
                         <button type="button" onClick={() => setDetail(null)}>닫기</button>
                     </div>
-                    <p>{detail.post.boardName} · {detail.post.authorName} · {detail.post.createdAt}</p>
+                    <p>{detail.post.boardName} · {detail.post.authorName}{detail.post.isAnonymous ? '(익명)' : ''} · {detail.post.createdAt}</p>
                     <div style={{ whiteSpace: "pre-wrap", margin: "12px 0" }}>{detail.post.content}</div>
                     <button type="button" className="boards-delete" onClick={() => deletePost(detail.post.id)}>
                         게시글 삭제
@@ -132,7 +132,7 @@ function Community() {
                     {detail.comments.map((c) => (
                         <div key={c.id} style={{ display: "flex", justifyContent: "space-between", gap: "12px", padding: "8px 0", borderBottom: "1px solid #edf1f5" }}>
                             <div>
-                                <small>{c.authorName} · {c.createdAt}</small>
+                                <small>{c.authorName}{c.isAnonymous ? '(익명)' : ''} · {c.createdAt}</small>
                                 <div>{c.isDeleted ? "삭제된 댓글입니다." : c.content}</div>
                             </div>
                             {!c.isDeleted && (

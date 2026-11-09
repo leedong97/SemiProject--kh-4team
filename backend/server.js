@@ -45,6 +45,8 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+app.use('/api/community', express.json({ limit: '15mb' }));
+app.use('/api/community-comments', express.json({ limit: '15mb' }));
 app.use(express.json());
 
 // 4) 공통 확인용 주소 (팀원 API 와 겹치지 않는 이름만 사용)

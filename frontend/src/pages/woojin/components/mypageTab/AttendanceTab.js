@@ -16,6 +16,13 @@ function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey
         setLeaveError("");
         const end = leaveType === "반차" ? leaveStart : leaveEnd; // 반차는 하루라서 종료일 = 시작일
         if (!leaveStart || !end || leaveStart > end) return setLeaveError("휴가 기간을 확인해 주세요.");
+        // 연차·반차는 남은 연차보다 많이 신청할 수 없어요 (서버도 한 번 더 검사해요)
+        if (COUNTED_TYPES.includes(leaveType) && leaveStart.startsWith(thisYear)) {
+            const requestDays = leaveType === "반차" ? 0.5 : (Date.parse(end) - Date.parse(leaveStart)) / 86400000 + 1;
+            if (requestDays > remainLeave) {
+                return setLeaveError(`남은 연차(${remainLeave}일)보다 많이 신청할 수 없어요. (신청 ${requestDays}일)`);
+            }
+        }
         const result = await onRequestLeave({
             leave_type: leaveType,
             start_date: leaveStart,
@@ -31,15 +38,20 @@ function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey
     // 하루 평균은 "근무 기록이 있는 날"만으로 나눠요. 아직 안 온 날(목·금)이나 휴가 날(0시간)까지 나누면 평균이 실제보다 낮아져요.
     const workedDays = weekHours.filter((w) => w.hours > 0).length;
     const avgHours = workedDays === 0 ? 0 : totalHours / workedDays; // 0으로 나누면 NaN 이라서 막아 둬요 (가드 절)
-    // 사용한 연차 = 승인된 연차·반차 중 이미 끝난 것만 센다.
-    // (대기·반려, 앞으로 올 휴가는 아직 "쓴 연차"가 아니라서 뺀다. 병가·경조사는 연차에서 차감하지 않는 별도 휴가라서 뺀다.
-    //  날짜는 "2026-10-21" 글자라 글자 비교로도 순서가 맞다)
-    // 종류를 하나씩 빼는 방식(!== "병가")은 새 종류(경조사 등)가 생기면 구멍이 나서, 센다고 정한 종류만 허용한다.
+    // 연차 계산 (올해 신청분만 / 연차·반차만 세요. 병가·경조사는 연차에서 차감하지 않는 별도 휴가예요)
+    //  - 사용     = 승인된 연차·반차 (날짜가 아직 안 왔어도 "승인되면" 바로 사용으로 세요)
+    //  - 대기 중  = 아직 승인 전이지만 "예약"으로 미리 빼요 (안 그러면 승인 전에 계속 신청할 수 있어서 연차보다 많이 쓰게 돼요)
+    //  - 남은 연차 = 총 연차 - 사용 - 대기 중   (반려되면 세지 않아서 자동으로 돌아와요)
+    // 종류를 하나씩 빼는 방식(!== "병가")은 새 종류가 생기면 구멍이 나서, 센다고 정한 종류만 허용한다.
     const COUNTED_TYPES = ["연차", "반차"];
-    const usedLeave = leaveHistory
-        .filter((l) => l.status === "승인" && COUNTED_TYPES.includes(l.type) && l.end <= todayKey)
-        .reduce((sum, l) => sum + l.days, 0);
-    const remainLeave = leaveTotal - usedLeave;
+    const thisYear = todayKey.slice(0, 4); // 날짜가 "2026-11-06" 글자라서 앞 4글자가 연도
+    const sumDays = (status) =>
+        leaveHistory
+            .filter((l) => l.status === status && COUNTED_TYPES.includes(l.type) && l.start.startsWith(thisYear))
+            .reduce((sum, l) => sum + l.days, 0);
+    const usedLeave = sumDays("승인");
+    const pendingLeave = sumDays("대기");
+    const remainLeave = leaveTotal - usedLeave - pendingLeave;
     const sortedLeave = [...leaveHistory].sort((a, b) => b.start.localeCompare(a.start));
 
     return (
@@ -76,7 +88,7 @@ function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey
                     <strong>{leaveTotal}<small>일</small></strong>
                 </div>
                 <div className="mp-leave-card">
-                    <span className="mp-stat-label">사용</span>
+                    <span className="mp-stat-label">사용 (승인)</span>
                     <strong>{usedLeave}<small>일</small></strong>
                 </div>
                 <div className="mp-leave-card remain">
@@ -84,6 +96,9 @@ function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey
                     <strong>{remainLeave}<small>일</small></strong>
                 </div>
             </div>
+            {pendingLeave > 0 && (
+                <p className="mp-note">대기 중인 {pendingLeave}일은 승인 전이어도 남은 연차에서 미리 빼서 보여요. 반려되면 다시 돌아와요.</p>
+            )}
 
             {/* 로그인한 직원만 신청할 수 있어요 (체험 모드는 토큰이 없어서 서버가 거절해요) */}
             {!isDemo && (
@@ -131,7 +146,7 @@ function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey
 
             <p className="mp-note">
                 {isDemo ? "체험 모드: 근무 시간은 예시 숫자예요. " : "근무 시간은 출퇴근 기록(점심 1시간 제외)으로 계산해요. "}
-                연차 사용 일수는 승인되고 이미 끝난 연차·반차만 세요(병가·경조사 제외).
+                연차는 올해 승인된 연차·반차를 사용으로 세고, 승인 대기 중인 것도 미리 빼요(병가·경조사 제외).
             </p>
         </section>
     );
