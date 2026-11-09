@@ -14,6 +14,11 @@ export default function HRManagement({
     const [team, setTeam] = useState("개발팀");
     const [position, setPosition] = useState("");
     const [rank, setRank] = useState("사원");
+    const [employeeCode, setEmployeeCode] = useState("");
+    const [employeeEmail, setEmployeeEmail] = useState("");
+    const [initialPassword, setInitialPassword] = useState("");
+    // 이슈 등록 화면처럼 버튼을 누르면 직원 등록 폼을 펼칩니다.
+    const [showEmployeeRegister, setShowEmployeeRegister] = useState(false);
 
     // 실제 DB 연동: 토큰은 로그인 후 nexus_auth_token에 저장합니다.
     const [dbEmployees, setDbEmployees] = useState([]);
@@ -330,6 +335,11 @@ export default function HRManagement({
 
     // 수정할 직원을 선택하면 현재 값을 입력칸에 채웁니다.
     function startEmployeeEdit(employee) {
+        // 같은 직원의 수정 버튼을 다시 누르면 수정창을 닫습니다.
+        if (editingEmployee && sameId(editingEmployee.id, employee.id)) {
+            setEditingEmployee(null);
+            return;
+        }
         setEditingEmployee(employee);
         setEditTeam(employee.team || employee.department || "");
         setEditRank(employee.rank || "사원");
@@ -461,12 +471,11 @@ export default function HRManagement({
                 return;
             }
         }
-        const employeeCode = window.prompt("신규 사원코드 (예: EMP-051)");
-        if (!employeeCode) return;
-        const employeeEmail = window.prompt("신규 직원 이메일");
-        if (!employeeEmail) return;
-        const initialPassword = window.prompt("초기 비밀번호 (8자 이상)");
-        if (!initialPassword) return;
+        // 등록 화면에서 모든 필수 정보를 한 번에 입력받습니다.
+        if (!employeeCode.trim() || !employeeEmail.trim() || initialPassword.length < 8) {
+            window.alert("사번, 이메일, 초기 비밀번호(8자 이상)를 입력하세요.");
+            return;
+        }
         try {
             await apiRequest("/employees", {
                 method: "POST",
@@ -479,7 +488,11 @@ export default function HRManagement({
             await loadHrData();
             setName("");
             setPosition("");
-            window.alert("직원이 MySQL에 등록되었습니다.");
+            setEmployeeCode("");
+            setEmployeeEmail("");
+            setInitialPassword("");
+            setShowEmployeeRegister(false);
+            window.alert("등록되었습니다");
         } catch (error) {
             window.alert("직원 등록 실패: " + error.message);
         }
@@ -573,6 +586,36 @@ export default function HRManagement({
                     <div><h3>직원 통합 관리</h3><p className="muted">직원 정보, 프로젝트 참여, 업무량을 한 화면에서 확인합니다.</p></div>
                     <span className="hr-total">전체 {employees.length}명</span>
                 </div>
+                {/* 이슈 등록과 동일하게 버튼을 눌러 신규 직원 등록 폼을 펼칩니다. */}
+                <div className="hr-employee-register-toolbar">
+                    <button
+                        type="button"
+                        className="hr-register-toggle"
+                        onClick={() => setShowEmployeeRegister(!showEmployeeRegister)}
+                        aria-expanded={showEmployeeRegister}
+                    >
+                        {showEmployeeRegister ? "등록 취소" : "+ 신규 직원 등록"}
+                    </button>
+                </div>
+                {showEmployeeRegister && (
+                    <form className="panel hr-new-employee-form" onSubmit={addEmployee}>
+                        <h3>신규 직원 등록</h3>
+                        <p className="muted">직원 정보를 한 번에 입력하세요. 입사일은 등록일(한국 시간)로 자동 설정됩니다.</p>
+                        <div className="hr-new-employee-grid">
+                            <label>이름<input placeholder="직원 이름" value={name} onChange={e => setName(e.target.value)} required /></label>
+                            <label>직무<input placeholder="예: 프론트엔드 개발" value={position} onChange={e => setPosition(e.target.value)} /></label>
+                            <label>직급<select value={rank} onChange={e => setRank(e.target.value)}>{["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>)}</select></label>
+                            <label>부서<select value={team} onChange={e => setTeam(e.target.value)}><option>개발팀</option><option>기획팀</option><option>디자인팀</option><option>운영팀</option></select></label>
+                            <label>사번<input placeholder="예: EMP-053" value={employeeCode} onChange={e => setEmployeeCode(e.target.value)} required /></label>
+                            <label>이메일<input type="email" placeholder="example@company.com" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)} required /></label>
+                            <label>초기 비밀번호<input type="password" minLength="8" placeholder="8자 이상" value={initialPassword} onChange={e => setInitialPassword(e.target.value)} required /></label>
+                        </div>
+                        <div className="hr-register-actions">
+                            <button type="submit" disabled={busy || !dbReady}>직원 등록</button>
+                            <button type="button" className="hr-register-cancel" onClick={() => setShowEmployeeRegister(false)}>취소</button>
+                        </div>
+                    </form>
+                )}
                 <div className="hr-filters">
                     <input aria-label="직원 이름 검색" placeholder="직원 이름 검색" value={employeeSearch} onChange={e => setEmployeeSearch(e.target.value)} />
                     <select aria-label="부서 필터" value={departmentFilter} onChange={e => setDepartmentFilter(e.target.value)}>
@@ -621,12 +664,26 @@ export default function HRManagement({
                         </td>
                         <td><div className="hr-inline-actions">
                             <button type="button" className="hr-action-detail" onClick={() => {
-                                setSelectedEmployeeId(String(employee.id));
-                                setDetailTab("summary");
+                                // 같은 직원의 상세 버튼을 다시 누르면 닫습니다.
+                                if (sameId(selectedEmployeeId, employee.id)) {
+                                    setSelectedEmployeeId("");
+                                } else {
+                                    setSelectedEmployeeId(String(employee.id));
+                                    setDetailTab("summary");
+                                }
                             }}>상세</button>
                             {employee.status !== "퇴사" && <><button type="button" className="hr-action-edit" onClick={() => startEmployeeEdit(employee)}>수정</button><button type="button" className="hr-danger-button" onClick={() => retireEmployee(employee)}>퇴사</button></>}
                         </div></td>
                     </tr>
+                    {editingEmployee && sameId(editingEmployee.id, employee.id) && <tr className="hr-expanded-row hr-edit-expanded-row"><td colSpan="7">
+                <form className="hr-edit-form" onSubmit={saveEmployeeEdit}>
+                    <h4>{editingEmployee.name} 직원 정보 수정</h4>
+                    <label>부서<select value={editTeam} onChange={e => setEditTeam(e.target.value)} required>{[...new Set([...departments, editTeam])].filter(Boolean).map(x => <option key={x} value={x}>{x}</option>)}</select></label>
+                    <label>직급<select value={editRank} onChange={e => setEditRank(e.target.value)}>{["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>)}</select></label>
+                    <label>연봉 (원)<input type="number" min="0" value={editSalary} onChange={e => setEditSalary(e.target.value)} placeholder="미등록" /></label>
+                    <button type="submit">저장</button><button type="button" onClick={() => setEditingEmployee(null)}>취소</button>
+                </form>
+                    </td></tr>}
                     {sameId(selectedEmployeeId, employee.id) && <tr className="hr-expanded-row"><td colSpan="7">
                         {renderEmployeeDetail(employee)}
                     </td></tr>}
@@ -638,46 +695,7 @@ export default function HRManagement({
                     {Array.from({ length: employeePageCount }, (_, index) => index + 1).map(page => <button type="button" key={page} className={page === currentEmployeePage ? "active" : ""} onClick={() => setEmployeePage(page)} aria-current={page === currentEmployeePage ? "page" : undefined}>{page}</button>)}
                     <button type="button" disabled={currentEmployeePage === employeePageCount} onClick={() => setEmployeePage(currentEmployeePage + 1)}>다음</button>
                 </div>
-                {editingEmployee && <form className="hr-edit-form" onSubmit={saveEmployeeEdit}>
-                    <h4>{editingEmployee.name} 직원 정보 수정</h4>
-                    <label>부서<select value={editTeam} onChange={e => setEditTeam(e.target.value)} required>{[...new Set([...departments, editTeam])].filter(Boolean).map(x => <option key={x} value={x}>{x}</option>)}</select></label>
-                    <label>직급<select value={editRank} onChange={e => setEditRank(e.target.value)}>{["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>)}</select></label>
-                    <label>연봉 (원)<input type="number" min="0" value={editSalary} onChange={e => setEditSalary(e.target.value)} placeholder="미등록" /></label>
-                    <button type="submit">저장</button><button type="button" onClick={() => setEditingEmployee(null)}>취소</button>
-                </form>}
-
-
-
             </div>
-            {/* 직원 등록 */}
-            <form className="panel form-row" onSubmit={addEmployee}>
-
-                <h3 className="full">
-                    신규 직원 등록
-                </h3>
-
-                <input placeholder="직원 이름" value={name} onChange={e => setName(e.target.value)} required />
-
-                <input placeholder="직무" value={position} onChange={e => setPosition(e.target.value)} />
-
-                <select value={rank} onChange={e => setRank(e.target.value)}>
-
-                    {["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>)}
-
-                </select>
-
-                <select value={team} onChange={e => setTeam(e.target.value)}>
-                    <option>개발팀</option>
-                    <option>기획팀</option>
-                    <option>디자인팀</option>
-                    <option>운영팀</option>
-                </select>
-
-                <button type="submit">
-                    직원 등록
-                </button>
-
-            </form>
         </div>}
 
         {/* 프로젝트/이슈를 중복 등록하지 않고 MySQL 조회 결과만 표시합니다. */}
@@ -779,11 +797,25 @@ export default function HRManagement({
                             <td>{formatEmployeeDate(employee.retirementDate)}</td>
                             <td><span className="hr-employee-status hr-status-retired">퇴사</span></td>
                             <td><button type="button" className="hr-action-detail" onClick={() => {
-                                setSelectedEmployeeId(String(employee.id));
-                                setDetailTab("summary");
+                                // 같은 직원의 상세 버튼을 다시 누르면 닫습니다.
+                                if (sameId(selectedEmployeeId, employee.id)) {
+                                    setSelectedEmployeeId("");
+                                } else {
+                                    setSelectedEmployeeId(String(employee.id));
+                                    setDetailTab("summary");
+                                }
                             }}>상세</button></td>
                         </tr>
-                        {sameId(selectedEmployeeId, employee.id) && <tr className="hr-expanded-row"><td colSpan="7">
+                        {editingEmployee && sameId(editingEmployee.id, employee.id) && <tr className="hr-expanded-row hr-edit-expanded-row"><td colSpan="7">
+                <form className="hr-edit-form" onSubmit={saveEmployeeEdit}>
+                    <h4>{editingEmployee.name} 직원 정보 수정</h4>
+                    <label>부서<select value={editTeam} onChange={e => setEditTeam(e.target.value)} required>{[...new Set([...departments, editTeam])].filter(Boolean).map(x => <option key={x} value={x}>{x}</option>)}</select></label>
+                    <label>직급<select value={editRank} onChange={e => setEditRank(e.target.value)}>{["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>)}</select></label>
+                    <label>연봉 (원)<input type="number" min="0" value={editSalary} onChange={e => setEditSalary(e.target.value)} placeholder="미등록" /></label>
+                    <button type="submit">저장</button><button type="button" onClick={() => setEditingEmployee(null)}>취소</button>
+                </form>
+                    </td></tr>}
+                    {sameId(selectedEmployeeId, employee.id) && <tr className="hr-expanded-row"><td colSpan="7">
                             {renderEmployeeDetail(employee)}
                         </td></tr>}
                     </React.Fragment>)}

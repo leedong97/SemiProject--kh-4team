@@ -556,10 +556,10 @@ export default function IssueManagement({
                 <h3>{overdueIssues}</h3>
             </div>
         </div>
-        {/* 담당자별 업무량: 필요한 경우에만 열어 보는 간단한 목록 */}
+        {/* 건의자별 업무량: 필요한 경우에만 열어 보는 간단한 목록 */}
         <details className="issue-workload-panel panel issue-optional-section">
             <summary>
-                <span className="issue-workload-title">담당자별 업무량</span>
+                <span className="issue-workload-title">건의자별 업무량</span>
                 <span className="issue-workload-hint">프로젝트 참여 직원 기준 · 클릭하여 이슈 필터</span>
             </summary>
             <div className="issue-workload-body">
@@ -666,7 +666,7 @@ export default function IssueManagement({
                     </option>)}
                 </select>
                 <select value={assigneeId} onChange={e => setAssigneeId(e.target.value)}>
-                    <option value="">담당자 미지정</option>
+                    <option value="">건의자 미지정</option>
                     {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>
                         {employee.name || employee.employee_name}
                     </option>)}
@@ -719,8 +719,8 @@ export default function IssueManagement({
                     setAssigneeFilter(e.target.value);
                     setCurrentPage(1);
                 }}>
-                    <option value="전체">전체 담당자</option>
-                    <option value="미지정">담당자 미지정</option>
+                    <option value="전체">전체 건의자</option>
+                    <option value="미지정">건의자 미지정</option>
                     {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>
                         {employee.name || employee.employee_name}
                     </option>)}
@@ -766,7 +766,7 @@ export default function IssueManagement({
                             <div><span>프로젝트명</span><strong>{getProjectInfo(issue).name}</strong></div>
                             <div><span>고객사</span><strong>{getProjectInfo(issue).customer}</strong></div>
                             <div><span>프로젝트 마감일</span><strong>{getProjectInfo(issue).endDate}</strong></div>
-                            <div><span>담당자</span><strong>{employeeName(issue.assigneeId)}</strong></div>
+                            <div><span>건의자</span><strong>{employeeName(issue.assigneeId)}</strong></div>
                         </div>
                     </div>
                 </div>
@@ -794,7 +794,7 @@ export default function IssueManagement({
                     {/* 담당자 및 마감일 수정 */}
                     <div className="form-row">
                         <label>
-                            담당자
+                            건의자
                             <select value={issue.assigneeId || ""} onChange={e => changeAssignee(issue, e.target.value)}>
                                 <option value="">미지정</option>
                                 {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>

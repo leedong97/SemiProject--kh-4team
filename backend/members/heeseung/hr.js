@@ -19,8 +19,8 @@ router.post("/employees", async (req, res) => {
     if (!/^[A-Za-z0-9-]{2,20}$/.test(employee_code || '') || !String(employee_name || '').trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(employee_email || '') || typeof employee_pw !== 'string' || employee_pw.length < 8 || Buffer.byteLength(employee_pw, 'utf8') > 72) return res.status(400).json({ message: "사원코드, 이름, 이메일, 초기 비밀번호(8자 이상)를 확인하세요." });
     try {
         const hash = await bcrypt.hash(employee_pw, 10);
-        const [result] = await pool.query(`INSERT INTO employees (employee_code, employee_name, employee_email, employee_pw, employee_department, employee_grade, employee_position, employee_role, employee_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, '일반 사용자', '재직')`, [employee_code, employee_name.trim(), employee_email.trim(), hash, employee_department || null, employee_grade || '사원', employee_position || null]);
+        const [result] = await pool.query(`INSERT INTO employees (employee_code, employee_name, employee_email, employee_pw, employee_department, employee_grade, employee_position, employee_hire_date, employee_role, employee_status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, DATE(UTC_TIMESTAMP() + INTERVAL 9 HOUR), '일반 사용자', '재직')`, [employee_code, employee_name.trim(), employee_email.trim(), hash, employee_department || null, employee_grade || '사원', employee_position || null]);
         res.status(201).json({ employee_id: result.insertId, message: "직원 등록 완료" });
     } catch (error) { console.error(error); res.status(error.code === 'ER_DUP_ENTRY' ? 409 : 500).json({ message: error.code === 'ER_DUP_ENTRY' ? "중복된 사원코드 또는 이메일입니다." : "직원 등록 실패: 필수 DB 컬럼을 확인하세요." }); }
 });

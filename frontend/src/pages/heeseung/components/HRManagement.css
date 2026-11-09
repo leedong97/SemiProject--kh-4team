@@ -2928,3 +2928,76 @@
         font-size: 27px;
     }
 }
+/* 직원 신규 등록: 이슈 등록처럼 토글 버튼 + 넓은 입력 폼 */
+.hr-management .hr-employee-register-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 16px 0 12px;
+}
+.hr-management .hr-register-toggle {
+    border: 0;
+    border-radius: 9px;
+    background: #6750c8;
+    color: #fff;
+    padding: 11px 20px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.hr-management .hr-new-employee-form {
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid #dce2ee;
+    border-radius: 12px;
+    background: #fff;
+}
+.hr-management .hr-new-employee-form h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+.hr-management .hr-new-employee-form .muted {
+    margin: 0 0 18px;
+}
+.hr-management .hr-new-employee-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 16px;
+}
+.hr-management .hr-new-employee-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+.hr-management .hr-new-employee-grid input,
+.hr-management .hr-new-employee-grid select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    border: 1px solid #dce2ee;
+    border-radius: 9px;
+    background: #fff;
+    padding: 11px 12px;
+    font-size: 14px;
+}
+.hr-management .hr-register-actions {
+    display: flex;
+    gap: 9px;
+    margin-top: 18px;
+}
+.hr-management .hr-register-actions button {
+    border-radius: 9px;
+    padding: 11px 20px;
+    cursor: pointer;
+}
+.hr-management .hr-register-cancel {
+    background: #fff;
+    color: #566074;
+    border: 1px solid #dce2ee;
+}
+@media (max-width: 650px) {
+    .hr-management .hr-new-employee-grid {
+        grid-template-columns: 1fr;
+    }
+}
