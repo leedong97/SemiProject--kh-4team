@@ -36,18 +36,11 @@ export default function EmployeePicker({
         ))}
       </select>
 
-      <div style={{ marginTop: "10px" }}>
+      <div className="nexus-employee-picker-list">
         {selectedEmployees.length === 0 && emptyMessage && <p>{emptyMessage}</p>}
         {lockedEmployee && (
           <span
-            style={{
-              display: "inline-flex",
-              gap: "6px",
-              padding: "4px 10px",
-              border: "1px solid #999",
-              borderRadius: "14px",
-              margin: "0 6px 6px 0"
-            }}
+            className="nexus-employee-chip is-locked"
           >
             {lockedEmployee.name} ({lockedLabel})
           </span>
@@ -55,15 +48,7 @@ export default function EmployeePicker({
         {selectedEmployees.map((employee) => (
           <span
             key={employee.id}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "4px 10px",
-              border: "1px solid #ccc",
-              borderRadius: "14px",
-              margin: "0 6px 6px 0"
-            }}
+            className="nexus-employee-chip"
           >
             {employee.name} ({employee.rank})
             <button type="button" onClick={() => onRemove(employee.id)}>×</button>

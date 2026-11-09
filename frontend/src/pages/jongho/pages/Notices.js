@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useJunwoo } from "../../junwoo/JunwooContext";
 import getLoginUser from "../../woojin/getLoginUser";
+import { adminRequest } from "../adminApi";
 import useSortableList from "../utils/useSortableList";
 import usePagination from "../utils/usePagination";
 import Pager from "../components/Pager";
@@ -29,29 +30,49 @@ function Notices() {
     // 고정 여부 (작성·수정 폼의 체크박스)
     const [pinned, setPinned] = useState(false);
     const [originalPinned, setOriginalPinned] = useState(false);
+    // 행사일 (달력에 표시됨, 비워 두면 없음)
+    const [eventDate, setEventDate] = useState("");
+    // 수정할 때 기존 행사일을 불러왔는지 (못 불러오면 저장을 막아 기존 값이 지워지지 않게 한다)
+    const [eventDateLoaded, setEventDateLoaded] = useState(true);
+    const [eventDateError, setEventDateError] = useState("");
+    // 행사일 조회 요청 번호 (늦게 도착한 옛 응답이 새 공지 폼을 덮지 않도록)
+    const eventDateRequestRef = useRef(0);
+    // 작성 폼 열림 여부 (평소에는 숨기고, '새 공지 작성' 또는 수정을 눌렀을 때만 연다)
+    const [formOpen, setFormOpen] = useState(false);
 
     // 대시보드에서 ?notice=번호 로 넘어오면 해당 공지를 수정 폼에 채움
     const [searchParams] = useSearchParams();
     const focusNoticeId = searchParams.get("notice");
     const openedNoticeRef = useRef(null);
 
+    // 새 공지 작성 폼 열기 (입력 중이던 내용은 비운다)
+    function openNewForm() {
+        resetForm();
+        setFormOpen(true);
+    }
+
     function resetForm() {
+        setFormOpen(false);
         setTitle(""); setContent(""); setEditId(null);
         setPinned(false); setOriginalPinned(false);
+        setEventDate(""); setEventDateLoaded(true); setEventDateError("");
+        eventDateRequestRef.current += 1;
     }
 
     async function handleSubmit(event) {
         event.preventDefault();
         if (!title.trim() || !content.trim()) return alert("제목과 내용을 입력해주세요.");
+        if (editId !== null && !eventDateLoaded) return alert("행사일을 불러온 뒤에 저장할 수 있습니다.");
+        const eventDateValue = eventDate || null;
         setSaving(true);
         try {
             if (editId === null) {
                 // 등록 후 새 공지 번호로 고정을 건다 (체크한 경우에만)
-                const newId = await addInfo(title.trim(), content.trim(), null);
+                const newId = await addInfo(title.trim(), content.trim(), eventDateValue);
                 if (pinned && newId != null) await pinInfo(newId, true);
                 alert("공지사항이 등록되었습니다.");
             } else {
-                await updateInfo(editId, title.trim(), content.trim());
+                await updateInfo(editId, title.trim(), content.trim(), eventDateValue);
                 // 고정 상태가 처음과 달라졌을 때만 바꾼다
                 if (pinned !== originalPinned) await pinInfo(editId, pinned);
                 alert("공지사항이 수정되었습니다.");
@@ -65,9 +86,27 @@ function Notices() {
     }
 
     function handleEdit(item) {
+        setFormOpen(true);
         setEditId(item.id); setTitle(item.title); setContent(item.content);
         setPinned(Boolean(item.isPinned)); setOriginalPinned(Boolean(item.isPinned));
+        loadEventDate(item.id);
         window.scrollTo(0, 0);
+    }
+
+    // 기존 행사일을 서버에서 가져와 폼에 채운다 (실패하면 폼 안에 사유를 보여주고 다시 불러올 수 있다)
+    function loadEventDate(noticeId) {
+        const requestId = eventDateRequestRef.current + 1;
+        eventDateRequestRef.current = requestId;
+        setEventDate(""); setEventDateLoaded(false); setEventDateError("");
+        adminRequest(`/notices/${noticeId}/event-date`)
+            .then((data) => {
+                if (requestId !== eventDateRequestRef.current) return;
+                setEventDate(data.eventDate || ""); setEventDateLoaded(true);
+            })
+            .catch((error) => {
+                if (requestId !== eventDateRequestRef.current) return;
+                setEventDateError(error.message || "행사일을 불러오지 못했습니다.");
+            });
     }
 
     async function handleDelete(id) {
@@ -158,6 +197,15 @@ function Notices() {
                 <div className="boards-count">전체 공지사항<strong>{info.length}건</strong></div>
             </div>
 
+            {!formOpen && (
+                <div className="nexus-notice-form-toggle">
+                    <button type="button" className="btn btn-primary" onClick={openNewForm}>
+                        + 새 공지 작성
+                    </button>
+                </div>
+            )}
+
+            {formOpen && (
             <form className="boards-form" onSubmit={handleSubmit}>
                 <h2>{editId === null ? "새 공지사항 등록" : "공지사항 수정"}</h2>
                 {editId === null && (
@@ -173,17 +221,32 @@ function Notices() {
                     <textarea id="notice-content" rows={6} value={content}
                         onChange={e => setContent(e.target.value)} placeholder="내용 입력" />
                 </div>
+                <div className="boards-field">
+                    <label htmlFor="notice-event-date">행사일 (선택)</label>
+                    <input id="notice-event-date" type="date" value={eventDate}
+                        onChange={e => setEventDate(e.target.value)} />
+                    {editId !== null && !eventDateLoaded && !eventDateError && (
+                        <small>행사일을 불러오는 중...</small>
+                    )}
+                    {eventDateError && (
+                        <small role="alert" className="nexus-notice-event-date-error">
+                            {eventDateError}{" "}
+                            <button type="button" onClick={() => loadEventDate(editId)}>다시 불러오기</button>
+                        </small>
+                    )}
+                </div>
                 <label className="boards-check">
                     <input type="checkbox" checked={pinned}
                         onChange={e => setPinned(e.target.checked)} /> 상단 고정 공지로 {editId === null ? "등록" : "설정"}
                 </label>
                 <div className="boards-form-actions">
-                    {editId !== null && <button type="button" className="boards-btn-cancel" onClick={resetForm}>취소</button>}
+                    <button type="button" className="boards-btn-cancel" onClick={resetForm}>취소</button>
                     <button type="submit" className="boards-btn-primary" disabled={saving}>
                         {saving ? "저장 중..." : editId === null ? "등록하기" : "수정 완료"}
                     </button>
                 </div>
             </form>
+            )}
 
             <div className="boards-list">
                 <div className="boards-list-header">
@@ -191,7 +254,7 @@ function Notices() {
                     <input value={search} onChange={e => setSearch(e.target.value)} placeholder="제목 또는 내용 검색" />
                 </div>
 
-                <div className="boards-filters" style={{ display: "flex", gap: "12px", alignItems: "center", margin: "8px 0" }}>
+                <div className="boards-filters nexus-notice-filters">
                     <label>
                         <input type="checkbox" checked={pinnedOnly}
                             onChange={e => setPinnedOnly(e.target.checked)} /> 고정 공지만
@@ -210,11 +273,11 @@ function Notices() {
                     <table className="boards-table">
                         <thead>
                             <tr>
-                                <th onClick={() => changeSort("id")} style={{ cursor: "pointer" }}>번호{sortMark("id")}</th>
-                                <th onClick={() => changeSort("title")} style={{ cursor: "pointer" }}>제목{sortMark("title")}</th>
-                                <th onClick={() => changeSort("author")} style={{ cursor: "pointer" }}>작성자{sortMark("author")}</th>
-                                <th onClick={() => changeSort("date")} style={{ cursor: "pointer" }}>등록일{sortMark("date")}</th>
-                                <th onClick={() => changeSort("views")} style={{ cursor: "pointer" }}>조회{sortMark("views")}</th>
+                                <th className="is-sortable" onClick={() => changeSort("id")}>번호{sortMark("id")}</th>
+                                <th className="is-sortable" onClick={() => changeSort("title")}>제목{sortMark("title")}</th>
+                                <th className="is-sortable" onClick={() => changeSort("author")}>작성자{sortMark("author")}</th>
+                                <th className="is-sortable" onClick={() => changeSort("date")}>등록일{sortMark("date")}</th>
+                                <th className="is-sortable" onClick={() => changeSort("views")}>조회{sortMark("views")}</th>
                                 <th>관리</th>
                             </tr>
                         </thead>

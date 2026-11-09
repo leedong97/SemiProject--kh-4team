@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import './styles/jongho.css';
 import AdminLayout from './components/AdminLayout';
 import Dashboard from './pages/Dashboard';
@@ -11,14 +11,19 @@ import IssueManagement from '../heeseung/components/IssueManagement';
 import HRManagement from '../heeseung/components/HRManagement';
 import EmployeeEvaluation from '../heeseung/components/EmployeeEvaluation';
 import { JonghoProvider, useJongho } from './JonghoContext';
-import { clearLoginUser } from "../woojin/getLoginUser";
+import getLoginUser, { clearLoginUser } from "../woojin/getLoginUser";
 
 // 종호 담당: 관리자 페이지(/admin/...)
-// 로컬 개발용: 로그인 검사 없이 바로 관리자 화면을 보여줍니다.
-// 프론트에서 로그인 상태를 확인하며, 실제 API 권한은 백엔드에서 다시 검사합니다.
+// 로그인한 관리자만 들어올 수 있고, 아니면 로그인 화면으로 보냅니다.
+// 실제 데이터 권한은 백엔드(/api/admin)에서 토큰으로 다시 검사합니다.
 
 function AdminRoute() {
   const navigate = useNavigate();
+  const me = getLoginUser();
+
+  if (me.isDummy || me.role !== '관리자') {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <AdminLayout
@@ -102,4 +107,3 @@ export const standaloneRoutes = [
     ],
   },
 ];
-

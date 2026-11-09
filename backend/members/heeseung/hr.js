@@ -19,8 +19,8 @@ router.post("/employees", async (req, res) => {
     if (!/^[A-Za-z0-9-]{2,20}$/.test(employee_code || '') || !String(employee_name || '').trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(employee_email || '') || typeof employee_pw !== 'string' || employee_pw.length < 8 || Buffer.byteLength(employee_pw, 'utf8') > 72) return res.status(400).json({ message: "사원코드, 이름, 이메일, 초기 비밀번호(8자 이상)를 확인하세요." });
     try {
         const hash = await bcrypt.hash(employee_pw, 10);
-        const [result] = await pool.query(`INSERT INTO employees (employee_code, employee_name, employee_email, employee_pw, employee_department, employee_grade, employee_position, employee_role, employee_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, '일반 사용자', '재직')`, [employee_code, employee_name.trim(), employee_email.trim(), hash, employee_department || null, employee_grade || '사원', employee_position || null]);
+        const [result] = await pool.query(`INSERT INTO employees (employee_code, employee_name, employee_email, employee_pw, employee_department, employee_grade, employee_position, employee_hire_date, employee_role, employee_status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, DATE(UTC_TIMESTAMP() + INTERVAL 9 HOUR), '일반 사용자', '재직')`, [employee_code, employee_name.trim(), employee_email.trim(), hash, employee_department || null, employee_grade || '사원', employee_position || null]);
         res.status(201).json({ employee_id: result.insertId, message: "직원 등록 완료" });
     } catch (error) { console.error(error); res.status(error.code === 'ER_DUP_ENTRY' ? 409 : 500).json({ message: error.code === 'ER_DUP_ENTRY' ? "중복된 사원코드 또는 이메일입니다." : "직원 등록 실패: 필수 DB 컬럼을 확인하세요." }); }
 });
@@ -132,6 +132,26 @@ router.patch("/leaves/:id", async (req, res) => {
     } catch (error) { console.error(error); res.status(500).json({ message: "휴가 처리 실패" }); }
 });
 // 직원별 업무 현황: 프로젝트/참여 직원/담당 이슈를 MySQL에서 직접 조회합니다.
+// 직원 상세 평가 이력: 실제 MySQL 평가 데이터와 평가자/프로젝트명을 조회합니다.
+router.get("/evaluation-history", async (req, res) => {
+    try {
+        const [rows] = await pool.query(`SELECT n.id, n.employee_id AS employeeId,
+            n.project_id AS projectId, p.project_title AS projectName,
+            e.employee_name AS evaluatorName, n.period, n.total_score AS totalScore,
+            n.project_score AS projectScore, n.issue_score AS issueScore,
+            n.schedule_score AS scheduleScore, n.teamwork_score AS teamworkScore,
+            n.feedback, n.status, n.created_at AS createdAt
+            FROM nexus_evaluations n
+            LEFT JOIN projects p ON p.project_id = n.project_id
+            LEFT JOIN employees e ON e.employee_id = n.evaluator_id
+            ORDER BY n.created_at DESC, n.id DESC`);
+        res.json(rows);
+    } catch (error) {
+        console.error("직원 평가 이력 조회 오류:", error);
+        res.status(500).json({ message: "직원 평가 이력 조회에 실패했습니다." });
+    }
+});
+
 router.get("/work-overview", async (req, res) => {
     try {
         // 배포된 DB마다 이슈 상태/마감일 컬럼명이 다를 수 있어 실제 컬럼을 확인합니다.

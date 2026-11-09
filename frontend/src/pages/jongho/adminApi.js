@@ -1,7 +1,8 @@
 import { API_BASE } from '../../shared/config';
 // 관리자 API는 로그인 시 발급된 토큰을 함께 보냅니다.
 export async function adminRequest(path, options = {}) {
-    const token = sessionStorage.getItem('nexus_token');
+    // 로그인 때 저장된 토큰 (woojin/Login.js 가 nexus_auth_token 에 저장)
+    const token = localStorage.getItem('nexus_auth_token');
     const response = await fetch(`${API_BASE}/api/admin` + path, {
         ...options,
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (token || ''), ...options.headers }

@@ -1,8 +1,10 @@
 /**
  * 공통 헤더 컴포넌트
  * onNavigate: App에서 내려주는 화면 이동 함수(props)
+ * member    : 로그인한 회원 (없으면 null)
+ * onLogout  : 로그아웃 함수
  */
-export default function Header({ onNavigate }) {
+export default function Header({ onNavigate, member, onLogout }) {
   return (
     <header className="top">
       <div className="shell nav">
@@ -30,9 +32,23 @@ export default function Header({ onNavigate }) {
           </button>
         </nav>
 
-        <button type="button" className="cta" onClick={() => onNavigate("quote")}>
-          견적 문의 ↗
-        </button>
+        <div className="nav-actions">
+          <button type="button" className="cta" onClick={() => onNavigate("quote")}>
+            견적 문의 ↗
+          </button>
+          {member ? (
+            <>
+              <span className="nav-user">{member.nickname || member.name}님</span>
+              <button type="button" className="nav-login" onClick={onLogout}>
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <button type="button" className="nav-login" onClick={() => onNavigate("login")}>
+              로그인
+            </button>
+          )}
+        </div>
       </div>
     </header>
   );

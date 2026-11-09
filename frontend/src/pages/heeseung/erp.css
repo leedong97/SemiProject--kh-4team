@@ -1,7 +1,7 @@
 /* 희승 담당 화면(인사·이슈·평가) 스타일. jongho/index.js 의 .merge-erp-module 래퍼 안에서만 적용됩니다. */
 
 .merge-erp-module {
-    font-family: Arial,"Malgun Gothic",sans-serif;
+    font-family: Arial, "Malgun Gothic", sans-serif;
     color: #172338;
 }
 
@@ -18,7 +18,9 @@
     cursor: pointer;
 }
 
-.merge-erp-module input, .merge-erp-module select, .merge-erp-module textarea {
+.merge-erp-module input,
+.merge-erp-module select,
+.merge-erp-module textarea {
     min-width: 0;
     padding: 10px;
     border: 1px solid #d6dfeb;
@@ -34,7 +36,9 @@
     color: #475569;
 }
 
-.merge-erp-module h1, .merge-erp-module h2, .merge-erp-module h3 {
+.merge-erp-module h1,
+.merge-erp-module h2,
+.merge-erp-module h3 {
     margin: 0 0 10px;
 }
 
@@ -46,7 +50,8 @@
     margin: 28px 0 18px;
 }
 
-.merge-erp-module .section-head p, .merge-erp-module .muted {
+.merge-erp-module .section-head p,
+.merge-erp-module .muted {
     color: #718096;
 }
 
@@ -56,7 +61,7 @@
     margin: 14px 0;
     border: 1px solid #e4eaf2;
     border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(15,23,42,.025);
+    box-shadow: 0 3px 12px rgba(15, 23, 42, .025);
 }
 
 .merge-erp-module .form-row {
@@ -66,11 +71,13 @@
     flex-wrap: wrap;
 }
 
-.merge-erp-module .form-row > input, .merge-erp-module .form-row > select, .merge-erp-module .form-row > label {
+.merge-erp-module .form-row>input,
+.merge-erp-module .form-row>select,
+.merge-erp-module .form-row>label {
     flex: 1 1 140px;
 }
 
-.merge-erp-module .form-row > button {
+.merge-erp-module .form-row>button {
     flex-shrink: 0;
 }
 
@@ -78,7 +85,8 @@
     width: 100%;
 }
 
-.merge-erp-module .between, .merge-erp-module .employee-row {
+.merge-erp-module .between,
+.merge-erp-module .employee-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
