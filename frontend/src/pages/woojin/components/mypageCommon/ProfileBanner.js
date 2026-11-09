@@ -10,7 +10,7 @@ function ProfileBanner({ user }) {
                 <Link to="/Issue">이슈관리</Link>
                 <Link to="/Info">공지사항</Link>
                 {/* 커뮤니티: 팀 메뉴바(TeamShell)와 같이 새 탭으로 열어요 */}
-                <Link to="/community" target="_blank" rel="noopener noreferrer">커뮤니티</Link>
+                <Link to="/community">커뮤니티</Link>
                 {/* 관리자 계정만: 관리자 화면(/admin)으로 돌아가는 링크 */}
                 {!user.isDummy && user.role === "관리자" && <Link to="/admin">관리자 페이지</Link>}
                 {/* 이름: 메인·관리자 페이지처럼 오른쪽 위. 마우스를 올리면(또는 클릭하면) 로그아웃이 나와요 */}
