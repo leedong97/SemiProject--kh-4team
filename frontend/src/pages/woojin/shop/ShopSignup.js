@@ -1,6 +1,6 @@
 import React from "react";
-function ShopSignup() {
-    return (
+function ShopSignup(){
+    return(
         <div>
 
         </div>

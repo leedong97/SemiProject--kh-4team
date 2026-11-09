@@ -13,15 +13,15 @@
 
 /* 일반 페이지에서 공통 메뉴 아래 콘텐츠 전체 너비를 사용합니다. */
 .team-shell > .issue-completion {
-    grid-column: 1 / -1;
-    grid-row: auto;
-    box-sizing: border-box;
-    width: 100%;
-    min-width: 0;
-    max-width: none;
-    margin: 0;
-    padding: 30px;
+  grid-column: 1 / -1;
+  grid-row: auto;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  padding: 30px;
 }
 @media (max-width: 768px) {
-    .team-shell > .issue-completion { padding: 18px; }
+  .team-shell > .issue-completion { padding: 18px; }
 }

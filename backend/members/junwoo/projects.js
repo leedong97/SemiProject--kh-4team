@@ -533,10 +533,10 @@ router.delete('/:id', async (req, res) => {
 
 });
 
-router.post("/:id/completion-request", requireAuth, async (req, res) => {
+router.post("/:id/completion-request", requireAuth, async(req, res) => {
     const projectId = Number(req.params.id);
 
-    if (!Number.isSafeInteger(projectId) || projectId <= 0) {
+    if(!Number.isSafeInteger(projectId) || projectId <= 0){
         return res.status(400).json({
             message: "올바른 프로젝트 번호가 아닙니다."
         });
@@ -550,10 +550,10 @@ router.post("/:id/completion-request", requireAuth, async (req, res) => {
             WHERE project_id = ?
                 AND manager_id = ?
                 AND status = "진행중"`,
-            [projectId, req.user.employee_id]
+                [projectId, req.user.employee_id]
         );
 
-        if (result.affectedRows !== 1) {
+        if(result.affectedRows !== 1){
             return res.status(409).json({
                 message:
                     "담당 중인 진행중 프로젝트만 완료 요청할 수 있습니다." +
@@ -581,7 +581,7 @@ router.post("/:id/completion-request", requireAuth, async (req, res) => {
         });
 
     } catch (error) {
-
+     
         console.error("프로젝트 완료 요청 실패:", error);
 
         res.status(500).json({

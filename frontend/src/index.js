@@ -9,11 +9,11 @@ import reportWebVitals from './reportWebVitals';
 // 각자 폴더 안에서는 절대 BrowserRouter 를 또 만들지 마세요! (Router 안에 Router → 에러)
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <React.StrictMode>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
-    </React.StrictMode>
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
 );
 
 reportWebVitals();

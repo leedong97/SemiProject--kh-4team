@@ -132,6 +132,26 @@ router.patch("/leaves/:id", async (req, res) => {
     } catch (error) { console.error(error); res.status(500).json({ message: "휴가 처리 실패" }); }
 });
 // 직원별 업무 현황: 프로젝트/참여 직원/담당 이슈를 MySQL에서 직접 조회합니다.
+// 직원 상세 평가 이력: 실제 MySQL 평가 데이터와 평가자/프로젝트명을 조회합니다.
+router.get("/evaluation-history", async (req, res) => {
+    try {
+        const [rows] = await pool.query(`SELECT n.id, n.employee_id AS employeeId,
+            n.project_id AS projectId, p.project_title AS projectName,
+            e.employee_name AS evaluatorName, n.period, n.total_score AS totalScore,
+            n.project_score AS projectScore, n.issue_score AS issueScore,
+            n.schedule_score AS scheduleScore, n.teamwork_score AS teamworkScore,
+            n.feedback, n.status, n.created_at AS createdAt
+            FROM nexus_evaluations n
+            LEFT JOIN projects p ON p.project_id = n.project_id
+            LEFT JOIN employees e ON e.employee_id = n.evaluator_id
+            ORDER BY n.created_at DESC, n.id DESC`);
+        res.json(rows);
+    } catch (error) {
+        console.error("직원 평가 이력 조회 오류:", error);
+        res.status(500).json({ message: "직원 평가 이력 조회에 실패했습니다." });
+    }
+});
+
 router.get("/work-overview", async (req, res) => {
     try {
         // 배포된 DB마다 이슈 상태/마감일 컬럼명이 다를 수 있어 실제 컬럼을 확인합니다.

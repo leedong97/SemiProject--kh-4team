@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 // managedProjects: 내가 "담당자"인 프로젝트 목록. 하나라도 있으면 맨 위에 직원 평가 바로가기를 보여 줘요.
 // canEvaluate: 평가 권한(책임자급 직급 또는 인사팀)이 있을 때만 "팀원 평가하러 가기"를 보여 줘요.
-function MyWorkTab({ projects, tasks, managedProjects = [], canEvaluate = false }) {
+function MyWorkTab({ projects, managedProjects = [], canEvaluate = false }) {
     return (
         <section className="mp-panel">
             {managedProjects.length > 0 && (
@@ -16,7 +16,7 @@ function MyWorkTab({ projects, tasks, managedProjects = [], canEvaluate = false 
                             </div>
                             {/* 직원 평가 화면(희승 작성, 관리자 화면 안에 있음)으로 이동 */}
                             {canEvaluate && (
-                                <Link to="/admin/evaluations" className="mp-eval-link">
+                                <Link to="/admin/evaluations?from=mypage" className="mp-eval-link">
                                     팀원 평가하러 가기
                                 </Link>
                             )}
@@ -38,17 +38,6 @@ function MyWorkTab({ projects, tasks, managedProjects = [], canEvaluate = false 
                         </div>
                         <span>{p.progress}%</span>
                     </div>
-                </div>
-            ))}
-
-            <h3>내 담당 업무</h3>
-            {tasks.length === 0 && <p className="mp-empty">담당 업무가 없어요.</p>}
-            {tasks.map((t) => (
-                <div key={t.id} className="mp-card mp-task">
-                    <span>{t.title}</span>
-                    <span className={`mp-badge s-${t.status === "진행 중" ? "doing" : t.status === "완료" ? "done" : "wait"}`}>
-                        {t.status}
-                    </span>
                 </div>
             ))}
         </section>

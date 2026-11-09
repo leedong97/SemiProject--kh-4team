@@ -1,37 +1,37 @@
 import { useState } from 'react';
 
 export default function useSortableList(getSortValue) {
-    const [sortKey, setSortKey] = useState(null);
-    const [sortDir, setSortDir] = useState('asc');
+  const [sortKey, setSortKey] = useState(null);
+  const [sortDir, setSortDir] = useState('asc');
 
-    function changeSort(key) {
-        if (sortKey === key) {
-            setSortDir((previous) => (previous === 'asc' ? 'desc' : 'asc'));
-            return;
-        }
-
-        setSortKey(key);
-        setSortDir('asc');
+  function changeSort(key) {
+    if (sortKey === key) {
+      setSortDir((previous) => (previous === 'asc' ? 'desc' : 'asc'));
+      return;
     }
 
-    function sortItems(items) {
-        if (!sortKey) return [...items];
+    setSortKey(key);
+    setSortDir('asc');
+  }
 
-        return [...items].sort((left, right) => {
-            const leftValue = getSortValue(left, sortKey);
-            const rightValue = getSortValue(right, sortKey);
-            const result = typeof leftValue === 'number' && typeof rightValue === 'number'
-                ? leftValue - rightValue
-                : String(leftValue).localeCompare(String(rightValue), 'ko');
+  function sortItems(items) {
+    if (!sortKey) return [...items];
 
-            return sortDir === 'asc' ? result : -result;
-        });
-    }
+    return [...items].sort((left, right) => {
+      const leftValue = getSortValue(left, sortKey);
+      const rightValue = getSortValue(right, sortKey);
+      const result = typeof leftValue === 'number' && typeof rightValue === 'number'
+        ? leftValue - rightValue
+        : String(leftValue).localeCompare(String(rightValue), 'ko');
 
-    function sortMark(key) {
-        if (sortKey !== key) return '';
-        return sortDir === 'asc' ? ' ▲' : ' ▼';
-    }
+      return sortDir === 'asc' ? result : -result;
+    });
+  }
 
-    return { sortKey, sortDir, changeSort, sortItems, sortMark };
+  function sortMark(key) {
+    if (sortKey !== key) return '';
+    return sortDir === 'asc' ? ' ▲' : ' ▼';
+  }
+
+  return { sortKey, sortDir, changeSort, sortItems, sortMark };
 }

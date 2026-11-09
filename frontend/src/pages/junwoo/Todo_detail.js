@@ -1,9 +1,8 @@
 import { API_BASE } from '../../shared/config';
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import getLoginUser from "../woojin/getLoginUser";
 
-function Todo_detail({ todo = [], onViewTodo, onRequestCompletion }) {
+function Todo_detail({ todo = [], onViewTodo }) {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -78,86 +77,7 @@ function Todo_detail({ todo = [], onViewTodo, onRequestCompletion }) {
     const start = (currentPage - 1) * 5;
     const end = start + 5;
 
-    const [completionSaving, setCompletionSaving] = useState(false);
-    const completionBusyRef = useRef(false);
-
-    const loginUser = getLoginUser();
-
-    const isProjectManager =
-        !loginUser.isDummy &&
-        item?.managerId != null &&
-        String(item.managerId) === String(loginUser.id);
-
-    const canRequestCompletion =
-        isProjectManager &&
-        item?.status === "진행중";
-
-    let completionMessage = "";
-
-    if (item?.status === "완료 요청") {
-        completionMessage = "관리자 완료 승인을 기다리고 있습니다.";
-    } else if (item?.status === "완료") {
-        completionMessage = "완료된 프로젝트입니다.";
-    } else if (loginUser.isDummy) {
-        completionMessage = "로그인 후 이용해주세요.";
-    } else if (item?.managerId == null) {
-        completionMessage = "프로젝트 담당자가 배정되지 않았습니다.";
-    } else if (!isProjectManager) {
-        completionMessage = "프로젝트 담당자만 완료 요청할 수 있습니다.";
-    } else if (item?.status !== "진행중") {
-        completionMessage = "진행중인 프로젝트만 완료 요청할 수 있습니다.";
-    } else {
-        completionMessage =
-            "완료 요청을 보내면 관리자가 확인한 뒤 완료 처리합니다.";
-    }
-
-    async function handleRequestCompletion() {
-        if (completionBusyRef.current || !item) return;
-
-        if (!canRequestCompletion) {
-            alert(completionMessage);
-            return;
-        }
-
-        if (!window.confirm(
-            `"${item.title}" 프로젝트의 완료 승인을 요청할까요?`
-        )) {
-            return;
-        }
-
-        const targetId = item.id;
-
-        completionBusyRef.current = true;
-        setCompletionSaving(true);
-
-        try {
-            // DB 저장 및 공통 프로젝트 목록 갱신
-            const data = await onRequestCompletion(targetId);
-
-            // 현재 상세 화면도 갱신
-            setItem(previous => {
-                if (
-                    !previous ||
-                    String(previous.id) !== String(targetId)
-                ) {
-                    return previous;
-                }
-
-                return {
-                    ...previous,
-                    status: data.status
-                };
-            });
-
-            alert("완료 요청이 접수되었습니다.");
-        } catch (error) {
-            alert(error.message || "완료 요청에 실패했습니다.");
-        } finally {
-            completionBusyRef.current = false;
-            setCompletionSaving(false);
-        }
-    }
-
+    // 데이터가 도착하기 전에는 상세 화면을 그리지 않는다.
     if (loading) {
         return (
             <main className="todo-page todo-detail-page">
@@ -166,11 +86,18 @@ function Todo_detail({ todo = [], onViewTodo, onRequestCompletion }) {
         );
     }
 
+    // 조회 실패 또는 데이터가 없는 경우
     if (error || !item) {
         return (
             <main className="todo-page todo-detail-page">
                 <h2>{error || "존재하지 않는 프로젝트입니다."}</h2>
-                <button onClick={() => navigate("/todo")}>목록으로 돌아가기</button>
+
+                <button
+                    type="button"
+                    onClick={() => navigate("/todo")}
+                >
+                    목록으로 돌아가기
+                </button>
             </main>
         );
     }
@@ -248,38 +175,6 @@ function Todo_detail({ todo = [], onViewTodo, onRequestCompletion }) {
                     <p style={{ whiteSpace: "pre-wrap" }}>{item.content}</p>
                 </div>
             </div>
-
-            <section
-                className="todo-completion-panel"
-                aria-labelledby="todo-completion-title"
-            >
-                <div>
-                    <h3 id="todo-completion-title">프로젝트 완료 요청</h3>
-                    <p role="status">{completionMessage}</p>
-                    <p>
-                        로그인 직원 ID: {String(loginUser.id ?? "없음")}
-                        {" / "}
-                        프로젝트 담당자 ID: {String(item.managerId ?? "없음")}
-                        {" / "}
-                        프로젝트 상태: [{item.status}]
-                    </p>
-                </div>
-
-                <button
-                    type="button"
-                    className="todo-completion-button"
-                    onClick={handleRequestCompletion}
-                    disabled={completionSaving || !canRequestCompletion}
-                >
-                    {completionSaving
-                        ? "요청 중..."
-                        : item.status === "완료 요청"
-                            ? "승인 대기 중"
-                            : item.status === "완료"
-                                ? "완료됨"
-                                : "완료 요청"}
-                </button>
-            </section>
 
             {/* 다른 프로젝트 목록 */}
             <div className="detail-other todo-detail-other">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./IssueManagement.css";
 import { erpRequest } from "../erpApi";
+import IssueCompletion from "../../dong/IssueCompletion";
 import { API_BASE } from "../../../shared/config";
 export default function IssueManagement({
     data,
@@ -343,7 +344,7 @@ export default function IssueManagement({
         }
 
         if (issue.status === "진행 중" || issue.status === "진행중") {
-            // '완료' 버튼을 누르면 실제 상태는 '검토 중'으로 저장합니다.
+            // '검토 중으로 변경' 버튼을 누르면 검토 중 상태로 저장합니다.
             changeStatus(issue, "검토 중");
             return;
         }
@@ -365,7 +366,7 @@ export default function IssueManagement({
         }
 
         if (status === "진행 중" || status === "진행중") {
-            return "완료";
+            return "검토 중으로 변경";
         }
 
         if (status === "완료") {
@@ -640,7 +641,11 @@ export default function IssueManagement({
                 </div>
             </div>
         </details>
+        <details className="issue-workload-panel panel issue-optional-section">
+            <summary>이슈 완료 요청 검토</summary>
 
+            <IssueCompletion admin onReviewed={() => loadIssues()} />
+        </details>
         <div className="issue-toolbar">
             <input className="search" placeholder="이슈 제목 검색" value={search} onChange={e => {
                 setSearch(e.target.value);

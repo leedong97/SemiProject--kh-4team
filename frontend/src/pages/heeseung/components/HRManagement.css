@@ -1576,182 +1576,987 @@
 }
 
 /* 통계 분석 전용 UI: 다른 인사 관리 탭에는 영향을 주지 않습니다. */
-.hr-management .hr-analytics { gap: 22px; }
-.hr-management .hr-analytics-heading { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:6px 2px 0; }
-.hr-management .hr-analytics-eyebrow { font-size:11px; letter-spacing:2px; font-weight:800; color:#64748b; }
-.hr-management .hr-analytics-heading h2 { margin:7px 0 6px; font-size:25px; letter-spacing:-.8px; color:#15243b; }
-.hr-management .hr-analytics-heading p { margin:0; color:#7b8798; font-size:13px; }
-.hr-management .hr-analytics-chip { white-space:nowrap; font-size:12px; font-weight:700; color:#47627c; background:#edf4fb; padding:9px 14px; border-radius:999px; border:1px solid #dce9f7; }
-.hr-management .hr-analytics .hr-overview-grid { gap:16px; }
-.hr-management .hr-analytics .hr-overview-card { position:relative; min-height:138px; justify-content:space-between; gap:10px; border:1px solid #e6ecf3; border-radius:16px; padding:22px 23px; box-shadow:0 5px 22px rgba(30,50,80,.035); overflow:hidden; transition:transform .15s,box-shadow .15s; }
-.hr-management .hr-analytics .hr-overview-card:hover { transform:translateY(-2px); box-shadow:0 9px 25px rgba(30,50,80,.07); }
-.hr-management .hr-analytics .hr-overview-card:before { content:''; position:absolute; left:0; top:0; right:0; height:3px; background:#7c91b2; }
-.hr-management .hr-analytics .hr-overview-active:before { background:#10b981; }
-.hr-management .hr-analytics .hr-overview-tasks:before { background:#3b82f6; }
-.hr-management .hr-analytics .hr-overview-leaves:before { background:#f59e0b; }
-.hr-management .hr-analytics .hr-overview-card span { font-size:13px; font-weight:650; color:#68788e; }
-.hr-management .hr-analytics .hr-overview-card strong { font-size:33px; line-height:1.1; font-weight:800; letter-spacing:-1px; color:#182c47; }
-.hr-management .hr-analytics .hr-analytics-panel { padding:26px 28px; border-radius:17px; border:1px solid #e6ecf3; box-shadow:0 5px 24px rgba(30,50,80,.035); background:#fff; }
-.hr-management .hr-analytics .hr-analytics-panel h3 { font-size:17px; color:#1d304b; margin:0 0 8px; letter-spacing:-.3px; }
-.hr-management .hr-analytics .hr-analytics-panel>p.muted { font-size:12px; margin:0 0 22px; color:#8190a2; }
-.hr-management .hr-analytics .employee-row { background:#fbfcfe; border:1px solid #eaf0f6; border-radius:13px; padding:18px 20px; margin:0 0 10px; gap:20px; }
-.hr-management .hr-analytics .employee-row:first-of-type { padding-top:18px; }
-.hr-management .hr-analytics .employee-row:last-child { padding-bottom:18px; margin-bottom:0; border:1px solid #eaf0f6; }
-.hr-management .hr-analytics .hr-employee-info>strong { font-size:15px; }
-.hr-management .hr-analytics .hr-employee-info .muted { font-size:12px; color:#8190a2; }
-.hr-management .hr-analytics .hr-workload { width:min(100%,440px); gap:9px; }
-.hr-management .hr-analytics .hr-count { min-height:75px; background:#fff; border:1px solid #e9eff6; border-radius:11px; }
-.hr-management .hr-analytics .hr-count strong { font-size:23px; color:#345c94; }
-.hr-management .hr-analytics .hr-count span { font-size:11px; color:#71829a; }
-.hr-management .hr-analytics .hr-warning { background:#fffbf2; border-color:#f9ebc8; }
-.hr-management .hr-analytics .hr-warning strong { color:#b7791f; }
-.hr-management .hr-analytics .hr-compare-row { grid-template-columns:110px minmax(0,1fr) 52px; padding:11px 0; margin:0; gap:18px; border-bottom:1px solid #f1f4f8; }
-.hr-management .hr-analytics .hr-compare-row:last-child { border-bottom:0; }
-.hr-management .hr-analytics .hr-compare-row span { font-weight:650; color:#40516b; }
-.hr-management .hr-analytics .hr-compare-row strong { color:#273e5d; font-weight:750; }
-.hr-management .hr-analytics .hr-compare-track { height:10px; background:#edf2f8; border-radius:10px; }
-.hr-management .hr-analytics .hr-compare-fill { background:linear-gradient(90deg,#80a9e8,#4078ca); border-radius:10px; }
-@media(max-width:760px) {
- .hr-management .hr-analytics-heading { align-items:flex-start; flex-direction:column; }
- .hr-management .hr-analytics .hr-analytics-panel { padding:20px 16px; }
- .hr-management .hr-analytics .employee-row { flex-direction:column; align-items:stretch; padding:16px; }
- .hr-management .hr-analytics .hr-workload { width:100%; }
+.hr-management .hr-analytics {
+    gap: 22px;
 }
+
+.hr-management .hr-analytics-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 6px 2px 0;
+}
+
+.hr-management .hr-analytics-eyebrow {
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-weight: 800;
+    color: #64748b;
+}
+
+.hr-management .hr-analytics-heading h2 {
+    margin: 7px 0 6px;
+    font-size: 25px;
+    letter-spacing: -.8px;
+    color: #15243b;
+}
+
+.hr-management .hr-analytics-heading p {
+    margin: 0;
+    color: #7b8798;
+    font-size: 13px;
+}
+
+.hr-management .hr-analytics-chip {
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 700;
+    color: #47627c;
+    background: #edf4fb;
+    padding: 9px 14px;
+    border-radius: 999px;
+    border: 1px solid #dce9f7;
+}
+
+.hr-management .hr-analytics .hr-overview-grid {
+    gap: 16px;
+}
+
+.hr-management .hr-analytics .hr-overview-card {
+    position: relative;
+    min-height: 138px;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1px solid #e6ecf3;
+    border-radius: 16px;
+    padding: 22px 23px;
+    box-shadow: 0 5px 22px rgba(30, 50, 80, .035);
+    overflow: hidden;
+    transition: transform .15s, box-shadow .15s;
+}
+
+.hr-management .hr-analytics .hr-overview-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 25px rgba(30, 50, 80, .07);
+}
+
+.hr-management .hr-analytics .hr-overview-card:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 3px;
+    background: #7c91b2;
+}
+
+.hr-management .hr-analytics .hr-overview-active:before {
+    background: #10b981;
+}
+
+.hr-management .hr-analytics .hr-overview-tasks:before {
+    background: #3b82f6;
+}
+
+.hr-management .hr-analytics .hr-overview-leaves:before {
+    background: #f59e0b;
+}
+
+.hr-management .hr-analytics .hr-overview-card span {
+    font-size: 13px;
+    font-weight: 650;
+    color: #68788e;
+}
+
+.hr-management .hr-analytics .hr-overview-card strong {
+    font-size: 33px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #182c47;
+}
+
+.hr-management .hr-analytics .hr-analytics-panel {
+    padding: 26px 28px;
+    border-radius: 17px;
+    border: 1px solid #e6ecf3;
+    box-shadow: 0 5px 24px rgba(30, 50, 80, .035);
+    background: #fff;
+}
+
+.hr-management .hr-analytics .hr-analytics-panel h3 {
+    font-size: 17px;
+    color: #1d304b;
+    margin: 0 0 8px;
+    letter-spacing: -.3px;
+}
+
+.hr-management .hr-analytics .hr-analytics-panel>p.muted {
+    font-size: 12px;
+    margin: 0 0 22px;
+    color: #8190a2;
+}
+
+.hr-management .hr-analytics .employee-row {
+    background: #fbfcfe;
+    border: 1px solid #eaf0f6;
+    border-radius: 13px;
+    padding: 18px 20px;
+    margin: 0 0 10px;
+    gap: 20px;
+}
+
+.hr-management .hr-analytics .employee-row:first-of-type {
+    padding-top: 18px;
+}
+
+.hr-management .hr-analytics .employee-row:last-child {
+    padding-bottom: 18px;
+    margin-bottom: 0;
+    border: 1px solid #eaf0f6;
+}
+
+.hr-management .hr-analytics .hr-employee-info>strong {
+    font-size: 15px;
+}
+
+.hr-management .hr-analytics .hr-employee-info .muted {
+    font-size: 12px;
+    color: #8190a2;
+}
+
+.hr-management .hr-analytics .hr-workload {
+    width: min(100%, 440px);
+    gap: 9px;
+}
+
+.hr-management .hr-analytics .hr-count {
+    min-height: 75px;
+    background: #fff;
+    border: 1px solid #e9eff6;
+    border-radius: 11px;
+}
+
+.hr-management .hr-analytics .hr-count strong {
+    font-size: 23px;
+    color: #345c94;
+}
+
+.hr-management .hr-analytics .hr-count span {
+    font-size: 11px;
+    color: #71829a;
+}
+
+.hr-management .hr-analytics .hr-warning {
+    background: #fffbf2;
+    border-color: #f9ebc8;
+}
+
+.hr-management .hr-analytics .hr-warning strong {
+    color: #b7791f;
+}
+
+.hr-management .hr-analytics .hr-compare-row {
+    grid-template-columns: 110px minmax(0, 1fr) 52px;
+    padding: 11px 0;
+    margin: 0;
+    gap: 18px;
+    border-bottom: 1px solid #f1f4f8;
+}
+
+.hr-management .hr-analytics .hr-compare-row:last-child {
+    border-bottom: 0;
+}
+
+.hr-management .hr-analytics .hr-compare-row span {
+    font-weight: 650;
+    color: #40516b;
+}
+
+.hr-management .hr-analytics .hr-compare-row strong {
+    color: #273e5d;
+    font-weight: 750;
+}
+
+.hr-management .hr-analytics .hr-compare-track {
+    height: 10px;
+    background: #edf2f8;
+    border-radius: 10px;
+}
+
+.hr-management .hr-analytics .hr-compare-fill {
+    background: linear-gradient(90deg, #80a9e8, #4078ca);
+    border-radius: 10px;
+}
+
+@media(max-width:760px) {
+    .hr-management .hr-analytics-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .hr-management .hr-analytics .hr-analytics-panel {
+        padding: 20px 16px;
+    }
+
+    .hr-management .hr-analytics .employee-row {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+    }
+
+    .hr-management .hr-analytics .hr-workload {
+        width: 100%;
+    }
+}
+
 @media(max-width:480px) {
- .hr-management .hr-analytics .hr-overview-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
- .hr-management .hr-analytics .hr-overview-card { padding:16px; min-height:112px; }
- .hr-management .hr-analytics .hr-overview-card strong { font-size:26px; }
- .hr-management .hr-analytics .hr-workload { grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
- .hr-management .hr-analytics .hr-count { padding:10px 3px; }
- .hr-management .hr-analytics .hr-compare-row { grid-template-columns:65px minmax(0,1fr) 40px; gap:8px; }
+    .hr-management .hr-analytics .hr-overview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .hr-management .hr-analytics .hr-overview-card {
+        padding: 16px;
+        min-height: 112px;
+    }
+
+    .hr-management .hr-analytics .hr-overview-card strong {
+        font-size: 26px;
+    }
+
+    .hr-management .hr-analytics .hr-workload {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 5px;
+    }
+
+    .hr-management .hr-analytics .hr-count {
+        padding: 10px 3px;
+    }
+
+    .hr-management .hr-analytics .hr-compare-row {
+        grid-template-columns: 65px minmax(0, 1fr) 40px;
+        gap: 8px;
+    }
 }
 
 
 /* ===== 통계 분석: 직원별 수치와 업무량 그래프 통합 ===== */
-.hr-management .hr-unified-panel { padding: 26px 28px; }
-.hr-management .hr-unified-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:18px; }
-.hr-management .hr-unified-heading h3 { margin:0 0 7px; }
-.hr-management .hr-unified-heading p { margin:0; font-size:12px; color:#8290a2; }
-.hr-management .hr-unified-count { flex-shrink:0; font-size:12px; font-weight:700; color:#42658e; background:#eef5fc; border-radius:20px; padding:8px 12px; }
-.hr-management .hr-unified-table-wrap { width:100%; overflow-x:auto; }
-.hr-management .hr-unified-table { width:100%; border-collapse:collapse; table-layout:auto; font-size:13px; }
-.hr-management .hr-unified-table th { padding:13px 12px; text-align:center; background:#f6f8fc; color:#64748b; font-size:12px; font-weight:700; white-space:nowrap; border-bottom:1px solid #e5ebf3; }
-.hr-management .hr-unified-table th:first-child { text-align:left; min-width:175px; }
-.hr-management .hr-unified-table th:last-child { min-width:180px; width:30%; }
-.hr-management .hr-unified-table td { padding:15px 12px; border-bottom:1px solid #eef1f5; text-align:center; color:#64748b; }
-.hr-management .hr-unified-table td:first-child { text-align:left; }
-.hr-management .hr-unified-table tbody tr:hover { background:#f9fbff; }
-.hr-management .hr-unified-table tbody tr:last-child td { border-bottom:0; }
-.hr-management .hr-unified-name { display:block; font-size:14px; font-weight:750; color:#263b55; }
-.hr-management .hr-unified-meta { display:block; margin-top:5px; font-size:11px; color:#8a97a8; line-height:1.5; }
-.hr-management .hr-unified-number { font-size:16px; color:#365d91; }
-.hr-management .hr-unified-warning { color:#c07b1c; }
-.hr-management .hr-unified-graph { display:flex; align-items:center; gap:12px; }
-.hr-management .hr-unified-graph .hr-compare-track { flex:1; min-width:75px; height:9px; overflow:hidden; }
-.hr-management .hr-unified-graph>strong { min-width:38px; text-align:right; color:#324b69; white-space:nowrap; }
-.hr-management .hr-unified-empty { padding:18px 0; }
+.hr-management .hr-unified-panel {
+    padding: 26px 28px;
+}
+
+.hr-management .hr-unified-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.hr-management .hr-unified-heading h3 {
+    margin: 0 0 7px;
+}
+
+.hr-management .hr-unified-heading p {
+    margin: 0;
+    font-size: 12px;
+    color: #8290a2;
+}
+
+.hr-management .hr-unified-count {
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #42658e;
+    background: #eef5fc;
+    border-radius: 20px;
+    padding: 8px 12px;
+}
+
+.hr-management .hr-unified-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.hr-management .hr-unified-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    font-size: 13px;
+}
+
+.hr-management .hr-unified-table th {
+    padding: 13px 12px;
+    text-align: center;
+    background: #f6f8fc;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    border-bottom: 1px solid #e5ebf3;
+}
+
+.hr-management .hr-unified-table th:first-child {
+    text-align: left;
+    min-width: 175px;
+}
+
+.hr-management .hr-unified-table th:last-child {
+    min-width: 180px;
+    width: 30%;
+}
+
+.hr-management .hr-unified-table td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #eef1f5;
+    text-align: center;
+    color: #64748b;
+}
+
+.hr-management .hr-unified-table td:first-child {
+    text-align: left;
+}
+
+.hr-management .hr-unified-table tbody tr:hover {
+    background: #f9fbff;
+}
+
+.hr-management .hr-unified-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.hr-management .hr-unified-name {
+    display: block;
+    font-size: 14px;
+    font-weight: 750;
+    color: #263b55;
+}
+
+.hr-management .hr-unified-meta {
+    display: block;
+    margin-top: 5px;
+    font-size: 11px;
+    color: #8a97a8;
+    line-height: 1.5;
+}
+
+.hr-management .hr-unified-number {
+    font-size: 16px;
+    color: #365d91;
+}
+
+.hr-management .hr-unified-warning {
+    color: #c07b1c;
+}
+
+.hr-management .hr-unified-graph {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hr-management .hr-unified-graph .hr-compare-track {
+    flex: 1;
+    min-width: 75px;
+    height: 9px;
+    overflow: hidden;
+}
+
+.hr-management .hr-unified-graph>strong {
+    min-width: 38px;
+    text-align: right;
+    color: #324b69;
+    white-space: nowrap;
+}
+
+.hr-management .hr-unified-empty {
+    padding: 18px 0;
+}
+
 @media (max-width:700px) {
-    .hr-management .hr-unified-panel { padding:18px 14px; }
-    .hr-management .hr-unified-heading { flex-wrap:wrap; }
-    .hr-management .hr-unified-table { min-width:690px; }
+    .hr-management .hr-unified-panel {
+        padding: 18px 14px;
+    }
+
+    .hr-management .hr-unified-heading {
+        flex-wrap: wrap;
+    }
+
+    .hr-management .hr-unified-table {
+        min-width: 690px;
+    }
 }
 
 /* 직원별 프로젝트/이슈 현황 */
-.hr-work-employee { padding: 20px 0; border-top: 1px solid #e5eaf0; }
-.hr-work-employee-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
-.hr-work-employee-heading small { font-weight: 400; color: #64748b; margin-left: 8px; }
-.hr-work-employee-heading > span { color: #475569; font-size: 13px; }
-.hr-work-issues { margin-top: 12px; display: grid; gap: 8px; }
-.hr-work-issue { display: grid; grid-template-columns: 2fr 1.5fr 90px 110px; gap: 12px; align-items: center; padding: 12px 14px; background: #f8fafc; border-radius: 8px; font-size: 13px; }
-.hr-work-issue span { color: #475569; }
-@media (max-width: 700px) { .hr-work-issue { grid-template-columns: 1fr 1fr; } }
+.hr-work-employee {
+    padding: 20px 0;
+    border-top: 1px solid #e5eaf0;
+}
+
+.hr-work-employee-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.hr-work-employee-heading small {
+    font-weight: 400;
+    color: #64748b;
+    margin-left: 8px;
+}
+
+.hr-work-employee-heading>span {
+    color: #475569;
+    font-size: 13px;
+}
+
+.hr-work-issues {
+    margin-top: 12px;
+    display: grid;
+    gap: 8px;
+}
+
+.hr-work-issue {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 90px 110px;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    background: #f8fafc;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.hr-work-issue span {
+    color: #475569;
+}
+
+@media (max-width: 700px) {
+    .hr-work-issue {
+        grid-template-columns: 1fr 1fr;
+    }
+}
 
 
 /* 직원별 업무 현황: 검색형 목록 + 선택 직원 상세 */
-.hr-work-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:22px 0 10px; }
-.hr-work-summary > div { padding:16px; background:#f6f8fc; border:1px solid #e8edf4; border-radius:12px; display:flex; flex-direction:column; gap:8px; }
-.hr-work-summary span { color:#64748b; font-size:12px; }
-.hr-work-summary strong { font-size:24px; color:#172554; }
-.hr-work-hint { font-size:12px; color:#64748b; margin:0 0 20px; }
-.hr-work-filters { display:grid; grid-template-columns:minmax(180px,2fr) repeat(2,minmax(130px,1fr)); gap:12px; margin-bottom:18px; }
-.hr-work-filters label { display:flex; flex-direction:column; gap:7px; font-size:12px; color:#475569; font-weight:600; }
-.hr-work-filters input,.hr-work-filters select { width:100%; min-width:0; box-sizing:border-box; height:40px; padding:0 12px; border:1px solid #dce3ed; border-radius:9px; background:white; color:#1e293b; }
-.hr-work-layout { display:grid; grid-template-columns:minmax(260px,0.85fr) minmax(0,1.6fr); gap:18px; align-items:start; }
-.hr-work-list,.hr-work-detail { min-width:0; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; background:#fff; }
-.hr-work-list-title { display:flex; justify-content:space-between; padding:15px 16px; background:#f8fafc; font-size:14px; font-weight:700; }
-.hr-work-list-title span { font-size:12px; font-weight:400; color:#64748b; }
-.hr-work-person { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 15px; text-align:left; border:0; border-bottom:1px solid #edf2f7; background:#fff; cursor:pointer; color:#1e293b; }
-.hr-work-person:hover,.hr-work-person.selected { background:#eff6ff; }
-.hr-work-person.selected { box-shadow:inset 3px 0 #2563eb; }
-.hr-work-person > span:first-child { display:flex; flex-direction:column; gap:5px; }
-.hr-work-person small { color:#64748b; font-size:12px; }
-.hr-work-person-count { color:#475569; font-size:12px; white-space:nowrap; }
-.hr-work-pages { display:flex; justify-content:center; align-items:center; gap:14px; padding:12px; font-size:12px; }
-.hr-work-pages button { padding:6px 12px; border:1px solid #dce3ed; border-radius:7px; background:white; cursor:pointer; }
-.hr-work-pages button:disabled { opacity:.4; cursor:default; }
-.hr-work-detail { padding:20px; min-height:270px; }
-.hr-work-placeholder { text-align:center; padding:65px 15px; color:#64748b; }
-.hr-work-placeholder strong { color:#334155; }
-.hr-work-placeholder p { font-size:13px; }
-.hr-work-detail-heading { border-bottom:1px solid #e2e8f0; padding-bottom:15px; }
-.hr-work-detail-heading h4 { margin:0 0 8px; font-size:19px; }
-.hr-work-detail-heading h4 small { font-size:12px; font-weight:400; color:#64748b; }
-.hr-work-detail-heading p { margin:0; font-size:12px; color:#64748b; }
-.hr-work-detail h5 { margin:22px 0 12px; font-size:14px; }
-.hr-work-detail h5 small { font-weight:400; color:#64748b; }
-.hr-work-projects { display:flex; flex-wrap:wrap; gap:8px; }
-.hr-work-projects span { padding:7px 10px; border-radius:7px; background:#eef4ff; color:#1d4ed8; font-size:12px; }
-.hr-work-detail-issues { display:grid; gap:9px; }
-.hr-work-detail-issue { border:1px solid #e7edf5; border-radius:9px; padding:12px 14px; }
-.hr-work-issue-main,.hr-work-issue-meta { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.hr-work-issue-main strong { font-size:13px; overflow-wrap:anywhere; }
-.hr-work-issue-meta { margin-top:9px; color:#64748b; font-size:12px; }
-.hr-work-state { flex-shrink:0; background:#dbeafe; color:#1d4ed8; padding:4px 8px; border-radius:20px; font-size:11px; }
-.hr-work-state.done { background:#dcfce7; color:#166534; }
-.hr-work-empty { color:#64748b; font-size:13px; padding:12px; }
-@media(max-width:900px) { .hr-work-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .hr-work-layout { grid-template-columns:1fr; } }
-@media(max-width:600px) { .hr-work-filters { grid-template-columns:1fr; } .hr-work-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .hr-work-issue-meta { flex-wrap:wrap; } }
+.hr-work-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 22px 0 10px;
+}
+
+.hr-work-summary>div {
+    padding: 16px;
+    background: #f6f8fc;
+    border: 1px solid #e8edf4;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hr-work-summary span {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.hr-work-summary strong {
+    font-size: 24px;
+    color: #172554;
+}
+
+.hr-work-hint {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0 0 20px;
+}
+
+.hr-work-filters {
+    display: grid;
+    grid-template-columns: minmax(180px, 2fr) repeat(2, minmax(130px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.hr-work-filters label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    font-size: 12px;
+    color: #475569;
+    font-weight: 600;
+}
+
+.hr-work-filters input,
+.hr-work-filters select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #dce3ed;
+    border-radius: 9px;
+    background: white;
+    color: #1e293b;
+}
+
+.hr-work-layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.6fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.hr-work-list,
+.hr-work-detail {
+    min-width: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.hr-work-list-title {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 16px;
+    background: #f8fafc;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.hr-work-list-title span {
+    font-size: 12px;
+    font-weight: 400;
+    color: #64748b;
+}
+
+.hr-work-person {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 15px;
+    text-align: left;
+    border: 0;
+    border-bottom: 1px solid #edf2f7;
+    background: #fff;
+    cursor: pointer;
+    color: #1e293b;
+}
+
+.hr-work-person:hover,
+.hr-work-person.selected {
+    background: #eff6ff;
+}
+
+.hr-work-person.selected {
+    box-shadow: inset 3px 0 #2563eb;
+}
+
+.hr-work-person>span:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.hr-work-person small {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.hr-work-person-count {
+    color: #475569;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.hr-work-pages {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    font-size: 12px;
+}
+
+.hr-work-pages button {
+    padding: 6px 12px;
+    border: 1px solid #dce3ed;
+    border-radius: 7px;
+    background: white;
+    cursor: pointer;
+}
+
+.hr-work-pages button:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.hr-work-detail {
+    padding: 20px;
+    min-height: 270px;
+}
+
+.hr-work-placeholder {
+    text-align: center;
+    padding: 65px 15px;
+    color: #64748b;
+}
+
+.hr-work-placeholder strong {
+    color: #334155;
+}
+
+.hr-work-placeholder p {
+    font-size: 13px;
+}
+
+.hr-work-detail-heading {
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 15px;
+}
+
+.hr-work-detail-heading h4 {
+    margin: 0 0 8px;
+    font-size: 19px;
+}
+
+.hr-work-detail-heading h4 small {
+    font-size: 12px;
+    font-weight: 400;
+    color: #64748b;
+}
+
+.hr-work-detail-heading p {
+    margin: 0;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.hr-work-detail h5 {
+    margin: 22px 0 12px;
+    font-size: 14px;
+}
+
+.hr-work-detail h5 small {
+    font-weight: 400;
+    color: #64748b;
+}
+
+.hr-work-projects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.hr-work-projects span {
+    padding: 7px 10px;
+    border-radius: 7px;
+    background: #eef4ff;
+    color: #1d4ed8;
+    font-size: 12px;
+}
+
+.hr-work-detail-issues {
+    display: grid;
+    gap: 9px;
+}
+
+.hr-work-detail-issue {
+    border: 1px solid #e7edf5;
+    border-radius: 9px;
+    padding: 12px 14px;
+}
+
+.hr-work-issue-main,
+.hr-work-issue-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.hr-work-issue-main strong {
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.hr-work-issue-meta {
+    margin-top: 9px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.hr-work-state {
+    flex-shrink: 0;
+    background: #dbeafe;
+    color: #1d4ed8;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+}
+
+.hr-work-state.done {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.hr-work-empty {
+    color: #64748b;
+    font-size: 13px;
+    padding: 12px;
+}
+
+@media(max-width:900px) {
+    .hr-work-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hr-work-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width:600px) {
+    .hr-work-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .hr-work-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hr-work-issue-meta {
+        flex-wrap: wrap;
+    }
+}
 
 
 /* ===== 직원별 업무 현황: 의미별 컬러 디자인 ===== */
-.hr-management .hr-work-summary { gap: 14px; margin-top: 24px; }
-.hr-management .hr-work-summary > div { position:relative; overflow:hidden; padding:20px 18px; border-radius:14px; box-shadow:0 4px 14px rgba(30,58,95,.04); }
-.hr-management .hr-work-summary > div::before { content:""; position:absolute; top:0; left:0; right:0; height:4px; }
-.hr-management .hr-work-summary > div:nth-child(1) { background:#f0f6ff; border-color:#cbdffc; }
-.hr-management .hr-work-summary > div:nth-child(1)::before { background:#3b82f6; }
-.hr-management .hr-work-summary > div:nth-child(1) strong { color:#1d4ed8; }
-.hr-management .hr-work-summary > div:nth-child(2) { background:#f2f0ff; border-color:#ddd6fe; }
-.hr-management .hr-work-summary > div:nth-child(2)::before { background:#8b5cf6; }
-.hr-management .hr-work-summary > div:nth-child(2) strong { color:#6d28d9; }
-.hr-management .hr-work-summary > div:nth-child(3) { background:#fff7ed; border-color:#fed7aa; }
-.hr-management .hr-work-summary > div:nth-child(3)::before { background:#f59e0b; }
-.hr-management .hr-work-summary > div:nth-child(3) strong { color:#b45309; }
-.hr-management .hr-work-summary > div:nth-child(4) { background:#f8fafc; border-color:#d9e1eb; }
-.hr-management .hr-work-summary > div:nth-child(4)::before { background:#94a3b8; }
-.hr-management .hr-work-summary > div:nth-child(4) strong { color:#475569; }
-.hr-management .hr-work-hint { padding:10px 13px; border-radius:8px; background:#f8fafc; border-left:3px solid #94a3b8; line-height:1.6; }
-.hr-management .hr-work-filters { padding:17px; border:1px solid #e2e8f0; border-radius:12px; background:#f8fbff; }
-.hr-management .hr-work-filters input:focus,.hr-management .hr-work-filters select:focus { outline:2px solid #93c5fd; outline-offset:1px; border-color:#3b82f6; }
-.hr-management .hr-work-list,.hr-management .hr-work-detail { border-color:#dce6f2; box-shadow:0 5px 20px rgba(30,58,95,.05); }
-.hr-management .hr-work-list-title { background:#eaf2ff; color:#1e40af; border-bottom:1px solid #cbdffc; }
-.hr-management .hr-work-person { transition:background .15s ease; }
-.hr-management .hr-work-person:hover { background:#f0f7ff; }
-.hr-management .hr-work-person.selected { background:#e8f2ff; box-shadow:inset 4px 0 #2563eb; }
-.hr-management .hr-work-person.selected > span:first-child { color:#1d4ed8; font-weight:750; }
-.hr-management .hr-work-person-count { padding:5px 8px; border-radius:7px; background:#f1f5f9; color:#475569; }
-.hr-management .hr-work-person.selected .hr-work-person-count { background:#dbeafe; color:#1d4ed8; }
-.hr-management .hr-work-detail-heading { padding:15px; margin:-20px -20px 18px; background:linear-gradient(110deg,#eff6ff,#fff); border-bottom:1px solid #dbeafe; }
-.hr-management .hr-work-detail-heading h4 { color:#1e40af; }
-.hr-management .hr-work-detail h5 { color:#243b5a; border-left:3px solid #60a5fa; padding-left:10px; }
-.hr-management .hr-work-projects span { background:#e8f1ff; color:#1d4ed8; border:1px solid #bfdbfe; font-weight:650; }
-.hr-management .hr-work-detail-issue { background:#fff; border-color:#dfe8f3; border-left:3px solid #60a5fa; }
-.hr-management .hr-work-detail-issue:has(.hr-work-state.done) { border-left-color:#22c55e; background:#fbfffc; }
-.hr-management .hr-work-state { background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; font-weight:700; }
-.hr-management .hr-work-state.done { background:#dcfce7; color:#166534; border-color:#bbf7d0; }
-.hr-management .hr-work-linked { color:#1d4ed8; font-weight:600; }
-.hr-management .hr-work-unlinked { display:inline-flex; align-items:center; background:#f1f5f9; color:#64748b; padding:4px 8px; border-radius:6px; font-size:11px; }
-.hr-management .hr-work-pages button:not(:disabled):hover { background:#eff6ff; border-color:#93c5fd; color:#1d4ed8; }
-@media(max-width:600px) { .hr-management .hr-work-filters { padding:12px; } .hr-management .hr-work-summary > div { padding:15px 12px; } }
+.hr-management .hr-work-summary {
+    gap: 14px;
+    margin-top: 24px;
+}
+
+.hr-management .hr-work-summary>div {
+    position: relative;
+    overflow: hidden;
+    padding: 20px 18px;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(30, 58, 95, .04);
+}
+
+.hr-management .hr-work-summary>div::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.hr-management .hr-work-summary>div:nth-child(1) {
+    background: #f0f6ff;
+    border-color: #cbdffc;
+}
+
+.hr-management .hr-work-summary>div:nth-child(1)::before {
+    background: #3b82f6;
+}
+
+.hr-management .hr-work-summary>div:nth-child(1) strong {
+    color: #1d4ed8;
+}
+
+.hr-management .hr-work-summary>div:nth-child(2) {
+    background: #f2f0ff;
+    border-color: #ddd6fe;
+}
+
+.hr-management .hr-work-summary>div:nth-child(2)::before {
+    background: #8b5cf6;
+}
+
+.hr-management .hr-work-summary>div:nth-child(2) strong {
+    color: #6d28d9;
+}
+
+.hr-management .hr-work-summary>div:nth-child(3) {
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.hr-management .hr-work-summary>div:nth-child(3)::before {
+    background: #f59e0b;
+}
+
+.hr-management .hr-work-summary>div:nth-child(3) strong {
+    color: #b45309;
+}
+
+.hr-management .hr-work-summary>div:nth-child(4) {
+    background: #f8fafc;
+    border-color: #d9e1eb;
+}
+
+.hr-management .hr-work-summary>div:nth-child(4)::before {
+    background: #94a3b8;
+}
+
+.hr-management .hr-work-summary>div:nth-child(4) strong {
+    color: #475569;
+}
+
+.hr-management .hr-work-hint {
+    padding: 10px 13px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border-left: 3px solid #94a3b8;
+    line-height: 1.6;
+}
+
+.hr-management .hr-work-filters {
+    padding: 17px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fbff;
+}
+
+.hr-management .hr-work-filters input:focus,
+.hr-management .hr-work-filters select:focus {
+    outline: 2px solid #93c5fd;
+    outline-offset: 1px;
+    border-color: #3b82f6;
+}
+
+.hr-management .hr-work-list,
+.hr-management .hr-work-detail {
+    border-color: #dce6f2;
+    box-shadow: 0 5px 20px rgba(30, 58, 95, .05);
+}
+
+.hr-management .hr-work-list-title {
+    background: #eaf2ff;
+    color: #1e40af;
+    border-bottom: 1px solid #cbdffc;
+}
+
+.hr-management .hr-work-person {
+    transition: background .15s ease;
+}
+
+.hr-management .hr-work-person:hover {
+    background: #f0f7ff;
+}
+
+.hr-management .hr-work-person.selected {
+    background: #e8f2ff;
+    box-shadow: inset 4px 0 #2563eb;
+}
+
+.hr-management .hr-work-person.selected>span:first-child {
+    color: #1d4ed8;
+    font-weight: 750;
+}
+
+.hr-management .hr-work-person-count {
+    padding: 5px 8px;
+    border-radius: 7px;
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.hr-management .hr-work-person.selected .hr-work-person-count {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.hr-management .hr-work-detail-heading {
+    padding: 15px;
+    margin: -20px -20px 18px;
+    background: linear-gradient(110deg, #eff6ff, #fff);
+    border-bottom: 1px solid #dbeafe;
+}
+
+.hr-management .hr-work-detail-heading h4 {
+    color: #1e40af;
+}
+
+.hr-management .hr-work-detail h5 {
+    color: #243b5a;
+    border-left: 3px solid #60a5fa;
+    padding-left: 10px;
+}
+
+.hr-management .hr-work-projects span {
+    background: #e8f1ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-weight: 650;
+}
+
+.hr-management .hr-work-detail-issue {
+    background: #fff;
+    border-color: #dfe8f3;
+    border-left: 3px solid #60a5fa;
+}
+
+.hr-management .hr-work-detail-issue:has(.hr-work-state.done) {
+    border-left-color: #22c55e;
+    background: #fbfffc;
+}
+
+.hr-management .hr-work-state {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-weight: 700;
+}
+
+.hr-management .hr-work-state.done {
+    background: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+.hr-management .hr-work-linked {
+    color: #1d4ed8;
+    font-weight: 600;
+}
+
+.hr-management .hr-work-unlinked {
+    display: inline-flex;
+    align-items: center;
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+}
+
+.hr-management .hr-work-pages button:not(:disabled):hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+@media(max-width:600px) {
+    .hr-management .hr-work-filters {
+        padding: 12px;
+    }
+
+    .hr-management .hr-work-summary>div {
+        padding: 15px 12px;
+    }
+}
 
 
 /* ====================================================
@@ -1775,35 +2580,41 @@
     box-shadow: none;
     transform: none;
 }
+
 .hr-management .hr-work-list button.hr-work-person:hover {
     background: #f4f8ff;
     color: #1e293b;
     box-shadow: none;
     transform: none;
 }
+
 .hr-management .hr-work-list button.hr-work-person.selected,
 .hr-management .hr-work-list button.hr-work-person.selected:hover {
     background: #eaf2ff;
     color: #1e40af;
     box-shadow: inset 4px 0 #2563eb;
 }
-.hr-management .hr-work-list .hr-work-person > span:first-child {
+
+.hr-management .hr-work-list .hr-work-person>span:first-child {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     min-width: 0;
     gap: 4px;
 }
+
 .hr-management .hr-work-list .hr-work-person strong {
     font-size: 14px;
     font-weight: 750;
     color: #172338;
 }
+
 .hr-management .hr-work-list .hr-work-person small {
     font-size: 12px;
     font-weight: 500;
     color: #64748b;
 }
+
 .hr-management .hr-work-list .hr-work-person-count {
     flex-shrink: 0;
     background: #f1f5f9;
@@ -1811,10 +2622,12 @@
     font-size: 12px;
     font-weight: 650;
 }
+
 .hr-management .hr-work-list .hr-work-person.selected .hr-work-person-count {
     background: #dbeafe;
     color: #1d4ed8;
 }
+
 .hr-management .hr-work-pages button {
     min-height: 34px;
     padding: 6px 14px;
@@ -1825,20 +2638,24 @@
     box-shadow: none;
     font-size: 12px;
 }
+
 .hr-management .hr-work-pages button:not(:disabled):hover {
     background: #eff6ff;
     color: #1d4ed8;
     border-color: #93c5fd;
     box-shadow: none;
 }
+
 .hr-management .hr-work-pages button:disabled {
     background: #f8fafc;
     color: #94a3b8;
     opacity: 1;
 }
+
 .hr-management .hr-work-detail {
     min-height: 340px;
 }
+
 @media (max-width: 600px) {
     .hr-management .hr-work-list button.hr-work-person {
         padding: 12px;
@@ -1846,8 +2663,268 @@
 }
 
 /* 마감일은 업무 상태와 별개: 완료 전 기한 초과만 빨간색 표시 */
-.hr-management .hr-work-issue-badges { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:6px; }
-.hr-management .hr-work-overdue { display:inline-flex; align-items:center; padding:5px 9px; background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; border-radius:20px; font-size:11px; font-weight:750; white-space:nowrap; }
-.hr-management .hr-work-detail-issue:has(.hr-work-overdue) { border-left:3px solid #ef4444; background:#fffafa; }
-.hr-management .hr-work-overdue-count { display:block; font-size:11px; font-weight:700; color:#b91c1c; }
-@media (max-width:600px) { .hr-management .hr-work-issue-main { align-items:flex-start; } .hr-management .hr-work-issue-badges { justify-content:flex-end; } }
+.hr-management .hr-work-issue-badges {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.hr-management .hr-work-overdue {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 9px;
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.hr-management .hr-work-detail-issue:has(.hr-work-overdue) {
+    border-left: 3px solid #ef4444;
+    background: #fffafa;
+}
+
+.hr-management .hr-work-overdue-count {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #b91c1c;
+}
+
+@media (max-width:600px) {
+    .hr-management .hr-work-issue-main {
+        align-items: flex-start;
+    }
+
+    .hr-management .hr-work-issue-badges {
+        justify-content: flex-end;
+    }
+}
+
+/* 직원 상세는 선택한 직원의 바로 아래에 표시합니다. */
+.hr-expanded-row>td {
+    padding: 16px !important;
+    background: #f7f9fc;
+}
+
+.hr-expanded-row .hr-employee-detail {
+    margin: 0;
+    width: 100%;
+}
+
+.hr-work-pages button.active {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+}
+
+/* 직원 상세 평가이력: 인사정보와 동일한 카드형 정보 배치 */
+.hr-evaluation-history {
+    display: grid;
+    gap: 16px;
+    margin-top: 14px;
+}
+
+.hr-evaluation-card {
+    padding: 18px;
+    border: 1px solid #e1e7ef;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.hr-evaluation-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.hr-evaluation-heading span {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+.hr-evaluation-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.hr-evaluation-fields>div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.hr-evaluation-fields span {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.hr-evaluation-fields strong {
+    color: #1e293b;
+    overflow-wrap: anywhere;
+}
+
+.hr-leave-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 14px 0;
+}
+
+.hr-leave-filters input {
+    min-width: 220px;
+    flex: 1;
+}
+
+.hr-leave-type {
+    display: inline-block;
+    margin-right: 8px;
+    font-weight: 700;
+}
+
+.hr-leave-pages {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+.hr-leave-pages button.active {
+    background: #2563eb;
+    color: white;
+}
+
+@media(max-width: 640px) {
+    .hr-evaluation-fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 직원 상세 > 평가 이력: 평가자, 4개 항목, 종합 점수 */
+.hr-evaluation-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.hr-evaluation-meta>div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.hr-evaluation-meta span,
+.hr-evaluation-score-item span {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.hr-evaluation-meta strong {
+    font-size: 15px;
+    color: #0f172a;
+    overflow-wrap: anywhere;
+}
+
+.hr-evaluation-scores {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.hr-evaluation-score-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 17px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    text-align: center;
+}
+
+.hr-evaluation-score-item strong {
+    font-size: 21px;
+    font-weight: 800;
+    color: #334155;
+}
+
+.hr-evaluation-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 14px;
+    padding: 20px 22px;
+    border-radius: 12px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+}
+
+.hr-evaluation-total>div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.hr-evaluation-total span {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1e40af;
+}
+
+.hr-evaluation-total small {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.hr-evaluation-total>strong {
+    font-size: 34px;
+    line-height: 1;
+    font-weight: 900;
+    color: #1d4ed8;
+    white-space: nowrap;
+}
+
+.hr-evaluation-total em {
+    font-size: 14px;
+    font-weight: 600;
+    font-style: normal;
+    color: #64748b;
+}
+
+@media (max-width: 700px) {
+    .hr-evaluation-scores {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 440px) {
+    .hr-evaluation-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .hr-evaluation-total {
+        padding: 16px;
+    }
+
+    .hr-evaluation-total>strong {
+        font-size: 27px;
+    }
+}
