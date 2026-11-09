@@ -2,6 +2,7 @@
 const express = require("express");
 const pool = require("../../db");
 const { requireAuth } = require("../../middleware/session");
+const { createNotification } = require("../../notify");
 const router = express.Router();
 router.use(requireAuth);
 
@@ -109,24 +110,45 @@ router.put("/:id", async (req, res) => {
 });
 router.patch("/:id/status", async (req, res) => {
     const id = validId(req.params.id), status = req.body && req.body.status;
-    if (!id || !["승인 요청", "승인", "반려"].includes(status)) return res.status(400).json({ message: "처리 상태 오류" });
+    // 기존 MySQL ENUM의 '승인' 값을 최종 확정 상태로 사용합니다.
+    // 따라서 DB 테이블을 변경하지 않아도 평가 이력에 즉시 반영됩니다.
+    if (!id || status !== "승인") return res.status(400).json({ message: "평가 확정만 가능합니다." });
     try {
         const item = await getEvaluation(id);
         if (!item) return res.status(404).json({ message: "평가 없음" });
-        if (status === "승인 요청") {
-            if (item.evaluator_id !== req.user.employee_id || !["초안", "반려"].includes(item.status) || !(await isPm(item.project_id, req.user.employee_id))) return res.status(403).json({ message: "작성 PM만 제출할 수 있습니다." });
-        } else if (req.user.employee_role !== "관리자" || item.evaluator_id === req.user.employee_id || item.employee_id === req.user.employee_id || item.status !== "승인 요청") {
-            return res.status(403).json({ message: "작성자·대상자를 제외한 관리자만 승인/반려할 수 있습니다." });
+        if (item.evaluator_id !== req.user.employee_id ||
+            !["초안", "반려", "승인 요청"].includes(item.status) ||
+            !(await isPm(item.project_id, req.user.employee_id)) ||
+            !(await isMember(item.project_id, item.employee_id))) {
+            return res.status(403).json({ message: "해당 프로젝트의 평가 작성 PM만 평가를 확정할 수 있습니다." });
         }
-        const reason = String(req.body.reason || "").trim();
-        if (status === "반려" && !reason) return res.status(400).json({ message: "반려 사유를 입력하세요." });
         const conn = await pool.getConnection();
         try {
             await conn.beginTransaction();
-            await conn.query("UPDATE nexus_evaluations SET status=?, reject_reason=? WHERE id=?", [status, status === "반려" ? reason : null, id]);
-            await addHistory(conn, id, req.user.employee_id, status, reason);
-            await conn.commit(); res.json({ message: "처리 완료" });
-        } catch (error) { await conn.rollback(); errorResponse(res, error); } finally { conn.release(); }
+            // 동시에 두 번 확정되는 일을 방지합니다.
+            const [result] = await conn.query(
+                "UPDATE nexus_evaluations SET status='승인', reject_reason=NULL WHERE id=? AND status IN ('초안', '반려', '승인 요청')",
+                [id]
+            );
+            if (result.affectedRows !== 1) {
+                await conn.rollback();
+                return res.status(409).json({ message: "이미 처리된 평가입니다. 새로고침해 주세요." });
+            }
+            await addHistory(conn, id, req.user.employee_id, "평가 확정", "PM이 평가를 최종 확정했습니다.");
+            await conn.commit();
+            res.json({ message: "평가가 확정되었습니다.", status: "승인" });
+            // 확정 후 직원에게 알립니다. 알림 오류는 확정 결과에 영향을 주지 않습니다.
+            try {
+                await createNotification(item.employee_id, "평가", "인사평가 결과가 확정됐어요.", null);
+            } catch (notificationError) {
+                console.error("평가 확정 알림 오류:", notificationError);
+            }
+        } catch (error) {
+            await conn.rollback();
+            errorResponse(res, error);
+        } finally {
+            conn.release();
+        }
     } catch (error) { errorResponse(res, error); }
 });
 router.post("/:id/appeal", async (req, res) => {
@@ -141,6 +163,7 @@ router.post("/:id/appeal", async (req, res) => {
             await conn.query("UPDATE nexus_evaluations SET appeal_reason=?, appeal_status='접수' WHERE id=?", [reason, id]);
             await addHistory(conn, id, req.user.employee_id, "이의신청", reason);
             await conn.commit(); res.json({ message: "신청 완료" });
+            await createNotificationForManagers("평가", "인사평가 이의신청이 접수됐어요.", null, [item.evaluator_id, item.employee_id]);
         } catch (error) { await conn.rollback(); errorResponse(res, error); } finally { conn.release(); }
     } catch (error) { errorResponse(res, error); }
 });
@@ -156,6 +179,7 @@ router.patch("/:id/appeal", async (req, res) => {
             await conn.query("UPDATE nexus_evaluations SET appeal_status=? WHERE id=?", [result, id]);
             await addHistory(conn, id, req.user.employee_id, "이의신청 " + result, String(req.body.comment || ""));
             await conn.commit(); res.json({ message: "처리 완료" });
+            await createNotification(item.employee_id, "평가", "신청한 인사평가 이의신청이 " + result + "됐어요.", null);
         } catch (error) { await conn.rollback(); errorResponse(res, error); } finally { conn.release(); }
     } catch (error) { errorResponse(res, error); }
 });

@@ -6,6 +6,7 @@ const express = require("express");
 // 마지막에 module.exports 로 내보내면 woojin/index.js 가 받아서 주소 앞부분(/api/...)을 붙여 준다.
 const router = express.Router();
 const pool = require("../../db");
+const { requireAuth } = require("../../middleware/session");
 
 // ===== 휴가 이력 조회 =====
 // GET 방식으로 /api/leaves 요청이 오면 한 직원의 휴가 신청 목록을 돌려준다. (주소의 ?employeeId=1을 req.query로 읽는다)
@@ -35,6 +36,68 @@ router.get("/leaves", async (req, res) => {
     } catch (err) {
         console.error("휴가 조회 오류:", err.code, err.message);
         res.status(500).json({ ok: false, message: "서버 오류가 났어요." });
+    }
+});
+
+// ===== 휴가 신청 (본인 것만) =====
+const LEAVE_TYPES = ["연차", "반차", "병가", "경조사"];
+router.post("/leaves", requireAuth, async (req, res) => {
+    const employeeId = req.user.employee_id;   // 로그인한 사람. 화면이 보낸 값은 쓰지 않는다
+    const { leave_type, start_date, end_date, leave_reason } = req.body || {};
+    const dateOk = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d || "");
+    if (!LEAVE_TYPES.includes(leave_type) || !dateOk(start_date) || !dateOk(end_date) || start_date > end_date) {
+        return res.status(400).json({ ok: false, message: "휴가 입력값을 확인하세요." });
+    }
+    if (leave_type === "반차" && start_date !== end_date) {
+        return res.status(400).json({ ok: false, message: "반차는 하루만 신청할 수 있어요." });
+    }
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        await conn.beginTransaction();
+        const [overlaps] = await conn.query(
+            "SELECT leave_id FROM leave_requests WHERE employee_id = ? AND status <> '반려' AND start_date <= ? AND end_date >= ? LIMIT 1",
+            [employeeId, end_date, start_date]
+        );
+        if (overlaps.length) {
+            await conn.rollback();
+            return res.status(409).json({ ok: false, message: "겹치는 휴가 신청이 있어요." });
+        }
+        // 연차·반차는 "남은 연차"보다 많이 신청할 수 없다.
+        // 남은 연차 = 그 해 총 연차 - (승인 + 대기 중인 연차·반차 일수). 반려는 세지 않는다.
+        // 화면에서도 막지만, 화면은 우회할 수 있어서 서버가 한 번 더 검사한다.
+        if (leave_type === "연차" || leave_type === "반차") {
+            const requestDays = leave_type === "반차" ? 0.5 : (Date.parse(end_date) - Date.parse(start_date)) / 86400000 + 1;
+            const leaveYear = Number(start_date.slice(0, 4));
+            const [balances] = await conn.query(
+                "SELECT total_days FROM leave_balances WHERE employee_id = ? AND balance_year = ?",
+                [employeeId, leaveYear]
+            );
+            const total = Number(balances[0]?.total_days ?? 15);
+            const [usedRows] = await conn.query(
+                "SELECT COALESCE(SUM(CASE WHEN leave_type = '반차' THEN 0.5 ELSE DATEDIFF(end_date, start_date) + 1 END), 0) AS used " +
+                "FROM leave_requests WHERE employee_id = ? AND leave_type IN ('연차', '반차') " +
+                "AND status IN ('승인', '대기') AND YEAR(start_date) = ?",
+                [employeeId, leaveYear]
+            );
+            const remain = total - Number(usedRows[0].used);
+            if (requestDays > remain) {
+                await conn.rollback();
+                return res.status(400).json({ ok: false, message: `남은 연차(${remain}일)보다 많이 신청할 수 없어요. (신청 ${requestDays}일)` });
+            }
+        }
+        const [result] = await conn.query(
+            "INSERT INTO leave_requests (employee_id, leave_type, start_date, end_date, leave_reason, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, '대기', NOW(), NOW())",
+            [employeeId, leave_type, start_date, end_date, leave_reason || null]
+        );
+        await conn.commit();
+        res.status(201).json({ ok: true, leave_id: result.insertId, status: "대기" });
+    } catch (err) {
+        if (conn) await conn.rollback();
+        console.error("휴가 신청 오류:", err.code, err.message);
+        res.status(500).json({ ok: false, message: "서버 오류가 났어요." });
+    } finally {
+        if (conn) conn.release();
     }
 });
 

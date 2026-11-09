@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./IssueManagement.css";
 import { erpRequest } from "../erpApi";
+import IssueCompletion from "../../dong/IssueCompletion";
 import { API_BASE } from "../../../shared/config";
 export default function IssueManagement({
     data,
@@ -15,9 +16,6 @@ export default function IssueManagement({
     };
     const loginUserName = loginUser.name || loginUser.employee_name || "임시 사용자";
 
-    // 실제 급여 정보가 아닌 예시 시간당 인건비
-    const hourlyCost = 20000;
-
     // 1. 이슈 등록 입력값
     const [title, setTitle] = useState("");
     const [assigneeId, setAssigneeId] = useState("");
@@ -25,6 +23,9 @@ export default function IssueManagement({
     const [priority, setPriority] = useState("보통");
     const [search, setSearch] = useState("");
     const [comments, setComments] = useState({});
+    const [savedComments, setSavedComments] = useState({});
+    const [commentLoading, setCommentLoading] = useState({});
+    const [commentBusy, setCommentBusy] = useState({});
     const [projectId, setProjectId] = useState("");
     const [description, setDescription] = useState("");
     const [reproduction, setReproduction] = useState("");
@@ -32,20 +33,6 @@ export default function IssueManagement({
     // 2. 화면 표시 상태
     const [showRegister, setShowRegister] = useState(false);
     const [expandedIssueId, setExpandedIssueId] = useState(null);
-    const [dbWorkLogs, setDbWorkLogs] = useState({});
-    useEffect(function () {
-        if (!expandedIssueId) return;
-        erpRequest('/issues/' + expandedIssueId + '/work-logs').then(function (result) {
-            setDbWorkLogs(function (old) {
-                return {
-                    ...old,
-                    [expandedIssueId]: result.workLogs || []
-                };
-            });
-        }).catch(function (error) {
-            console.warn('작업 기록 조회 실패:', error.message);
-        });
-    }, [expandedIssueId]);
 
     // 3. 검색 필터
     const [statusFilter, setStatusFilter] = useState("전체");
@@ -57,15 +44,67 @@ export default function IssueManagement({
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
-    // 5. 작업 시간 및 검증 입력
-    const [workDescriptions, setWorkDescriptions] = useState({});
-    const [workMinutes, setWorkMinutes] = useState({});
-    const [verificationComments, setVerificationComments] = useState({});
+    // 5. 이슈 처리 상태는 DB에서 조회한 값을 사용합니다.
 
     // 6. 부모 컴포넌트에서 받은 데이터
-    const issues = data?.issues || [];
+    // DB 조회가 성공하면 DB 목록만 표시합니다. 실패 시에는 오류를 보여줍니다.
+    const [dbIssues, setDbIssues] = useState([]);
+    const [issuesLoading, setIssuesLoading] = useState(true);
+    const [issuesError, setIssuesError] = useState("");
+    const issues = dbIssues;
     const employees = data?.employees || [];
     const projects = data?.projects || [];
+    // DB 프로젝트 목록과 이슈별 프로젝트/고객사 정보를 조회합니다.
+    const [dbProjects, setDbProjects] = useState([]);
+
+
+    // 이슈 목록은 DB가 유일한 기준입니다. 저장 후에도 다시 조회합니다.
+    async function loadIssues() {
+        try {
+            const rows = await erpRequest('/issues');
+            if (!Array.isArray(rows)) throw new Error('이슈 API 응답이 배열이 아닙니다.');
+            setDbIssues(rows.map(function (item) {
+                return {
+                    ...item,
+                    id: Number(item.id),
+                    number: Number(item.id),
+                    projectId: item.projectId == null ? null : Number(item.projectId),
+                    assigneeId: item.assigneeId == null ? null : Number(item.assigneeId),
+                    due: item.due || '',
+                    comments: [], history: [], workLogs: []
+                };
+            }));
+            setIssuesError('');
+        } catch (error) {
+            setIssuesError(error.message);
+        } finally {
+            setIssuesLoading(false);
+        }
+    }
+
+    useEffect(function () {
+        loadIssues();
+        erpRequest('/projects').then(function (rows) {
+            setDbProjects(Array.isArray(rows) ? rows : []);
+        }).catch(function (error) {
+            setIssuesError('프로젝트 목록 조회 실패: ' + error.message);
+        });
+    }, []);
+
+    function getProjectInfo(issue) {
+        const savedIssue = issue;
+        const id = savedIssue.projectId || issue.projectId || issue.project_id;
+        const project = dbProjects.find(function (p) {
+            return String(p.project_id) === String(id);
+        }) || projects.find(function (p) {
+            return String(p.id ?? p.project_id) === String(id);
+        });
+        return {
+            name: savedIssue.projectName || project?.project_title || project?.title || '프로젝트 미지정',
+            customer: savedIssue.customerName || project?.customer_name || project?.customerName || '고객사 미지정',
+            endDate: savedIssue.projectEndDate || project?.end_date || '미지정'
+        };
+    }
     const projectMembers = data?.projectMembers || data?.project_members || [];
 
     // DB에서 프로젝트 참여자 목록을 직접 불러옵니다.
@@ -134,67 +173,44 @@ export default function IssueManagement({
     // 9. 직원 이름 조회
 
     function employeeName(id) {
-        const employee = employees.find(e => String(e.id) === String(id));
+        const employee = employees.find(e => String(e.id ?? e.employee_id) === String(id));
         return employee?.name || employee?.employee_name || "미지정";
     }
 
     // 10. 프로젝트 이름 조회
 
     function projectName(id) {
-        const project = projects.find(p => String(p.id) === String(id));
+        const project = (dbProjects.length ? dbProjects : projects).find(p => String(p.id ?? p.project_id) === String(id));
         return project?.title || project?.name || project?.project_title || "프로젝트 미지정";
     }
 
     // 11. 새로운 이슈 등록
 
-    function addIssue(event) {
+    async function addIssue(event) {
         event.preventDefault();
         if (!title.trim()) {
             alert("이슈 제목을 입력하세요.");
             return;
         }
-        // 기존 이슈를 하나씩 확인하여 다음 번호를 구한다.
-        let maxNumber = 0;
-        for (let i = 0; i < issues.length; i++) {
-            let issueNumber = Number(issues[i].number);
-
-            // 예전 데이터에 번호가 없으면 숫자 ID를 확인한다.
-            if (!issueNumber) {
-                const oldId = Number(issues[i].id);
-                if (oldId < 100000) {
-                    issueNumber = oldId;
-                }
-            }
-            if (issueNumber > maxNumber) {
-                maxNumber = issueNumber;
-            }
+        if (!Number(projectId)) {
+            alert('프로젝트를 선택하세요.');
+            return;
         }
-        const nextNumber = maxNumber + 1;
-        const issue = {
-            id: createId(),
-            number: nextNumber,
-            title: title.trim(),
-            assigneeId: Number(assigneeId) || null,
-            due,
-            priority,
-            status: "접수",
-            projectId: Number(projectId) || null,
-            description: description.trim(),
-            reproduction: reproduction.trim(),
-            comments: [],
-            history: [],
-            workLogs: [],
-            createdAt: new Date().toLocaleString("ko-KR"),
-            resolvedAt: null,
-            deletedAt: null,
-            deletedBy: null,
-            deletedById: null
-        };
-        // 부모 컴포넌트의 데이터 변경 함수 호출
-        changeData("이슈 등록: " + issue.title, old => ({
-            ...old,
-            issues: [issue, ...(old.issues || [])]
-        }));
+        try {
+            const saved = await erpRequest('/issues', 'POST', {
+                title: title.trim(),
+                description: description.trim(),
+                projectId: Number(projectId),
+                assigneeId: assigneeId ? Number(assigneeId) : null,
+                due: due || null,
+                priority: priority
+            });
+            await loadIssues();
+            setExpandedIssueId(Number(saved.id));
+        } catch (error) {
+            window.alert('이슈 DB 등록 실패: ' + error.message);
+            return;
+        }
         // 등록 후 입력창 초기화
         setTitle("");
         setAssigneeId("");
@@ -205,7 +221,7 @@ export default function IssueManagement({
         setReproduction("");
         setShowRegister(false);
         setCurrentPage(1);
-        setExpandedIssueId(issue.id);
+
         setSearch("");
         setStatusFilter("전체");
         setPriorityFilter("전체");
@@ -215,27 +231,22 @@ export default function IssueManagement({
 
     // 12. 이슈 수정 및 변경 이력 기록
 
-    function updateIssue(id, patch, description) {
-        changeData(description, old => ({
-            ...old,
-            issues: (old.issues || []).map(issue => {
-                if (issue.id !== id) {
-                    return issue;
-                }
-                const history = [...(issue.history || []), {
-                    id: createId(),
-                    at: new Date().toLocaleString("ko-KR"),
-                    text: description,
-                    userId: loginUser.id,
-                    userName: loginUserName
-                }];
-                return {
-                    ...issue,
-                    ...patch,
-                    history
-                };
-            })
-        }));
+    async function updateIssue(id, patch, description) {
+        // 실제 issues 테이블에 존재하는 필드만 수정 요청합니다.
+        const dbPatch = {};
+        ['title', 'description', 'priority', 'status', 'assigneeId', 'due', 'projectId'].forEach(function (key) {
+            if (patch[key] !== undefined) dbPatch[key] = patch[key];
+        });
+        if (Object.keys(dbPatch).length === 0) {
+            window.alert('이 변경사항은 DB 저장 기능이 아직 연결되지 않았습니다.');
+            return;
+        }
+        try {
+            await erpRequest('/issues/' + id, 'PATCH', dbPatch);
+            await loadIssues();
+        } catch (error) {
+            window.alert('이슈 DB 수정 실패: ' + error.message);
+        }
     }
 
     // 13. 담당자 변경
@@ -250,118 +261,118 @@ export default function IssueManagement({
         }, `${issue.title}: 담당자 ` + `${employeeName(issue.assigneeId)} → ` + `${employeeName(nextId)}`);
     }
 
-    // 14. 요청사항 댓글 등록
+    // 14. 요청사항 코멘트는 MySQL에 저장하고 이슈별로 다시 불러옵니다.
+    async function loadIssueComments(issueId) {
+        setCommentLoading(old => ({ ...old, [issueId]: true }));
+        try {
+            const rows = await erpRequest('/issues/' + issueId + '/comments');
+            setSavedComments(old => ({ ...old, [issueId]: rows }));
+        } catch (error) {
+            window.alert('코멘트 조회 실패: ' + error.message);
+        } finally {
+            setCommentLoading(old => ({ ...old, [issueId]: false }));
+        }
+    }
 
-    function addComment(issue) {
-        const message = (comments[issue.id] || "").trim();
-        if (!message) {
+    function toggleIssueDetails(issueId) {
+        if (expandedIssueId === issueId) {
+            setExpandedIssueId(null);
+        } else {
+            setExpandedIssueId(issueId);
+            loadIssueComments(issueId);
+        }
+    }
+
+    async function addComment(issue) {
+        const message = (comments[issue.id] || '').trim();
+        if (!message || commentBusy[issue.id]) return;
+        if (message.length > 2000) {
+            window.alert('코멘트는 2000자 이하로 입력하세요.');
             return;
         }
-        const comment = {
-            id: createId(),
-            content: message,
-            author: loginUserName,
-            authorId: loginUser.id,
-            createdAt: new Date().toLocaleString("ko-KR")
-        };
-        updateIssue(issue.id, {
-            comments: [...(issue.comments || []), comment]
-        }, `${issue.title}: 요청사항 등록`);
-        setComments(old => ({
-            ...old,
-            [issue.id]: ""
-        }));
+        setCommentBusy(old => ({ ...old, [issue.id]: true }));
+        try {
+            await erpRequest('/issues/' + issue.id + '/comments', 'POST', { content: message });
+            setComments(old => ({ ...old, [issue.id]: '' }));
+            await loadIssueComments(issue.id);
+        } catch (error) {
+            window.alert('코멘트 등록 실패: ' + error.message);
+        } finally {
+            setCommentBusy(old => ({ ...old, [issue.id]: false }));
+        }
     }
 
     // 15. 이슈 상태 변경
-
+    // 기존 PATCH API를 사용하여 MySQL에 상태를 저장합니다.
     function changeStatus(issue, newStatus) {
         if (issue.status === newStatus) {
             return;
         }
-        if (newStatus === "완료") {
-            alert("검증 완료 버튼을 이용하세요.");
-            return;
-        }
-        if (newStatus === "재오픈") {
-            alert("재오픈 버튼을 이용하세요.");
-            return;
-        }
+
         if (issue.status === "완료") {
             alert("완료된 이슈는 먼저 재오픈하세요.");
             return;
         }
+
         updateIssue(issue.id, {
             status: newStatus
         }, `${issue.title}: 상태 ${issue.status} → ${newStatus}`);
     }
 
-    // 16. 검증 완료
-
-    function verifyIssue(issue) {
-        if (issue.status !== "검토 중") {
-            alert("검토 중인 이슈만 검증할 수 있습니다.");
-            return;
-        }
-        const comment = (verificationComments[issue.id] || "").trim();
-        updateIssue(issue.id, {
-            status: "완료",
-            resolvedAt: new Date().toLocaleString("ko-KR")
-        }, `${issue.title}: 검증 완료` + (comment ? " - " + comment : ""));
-        setVerificationComments(old => ({
-            ...old,
-            [issue.id]: ""
-        }));
-    }
-
-    // 17. 완료된 이슈 재오픈
-
+    // 16. 완료된 이슈 재오픈 (기존 기능 유지)
     function reopenIssue(issue) {
         if (issue.status !== "완료") {
             alert("완료된 이슈만 재오픈할 수 있습니다.");
             return;
         }
+
         updateIssue(issue.id, {
-            status: "재오픈",
-            resolvedAt: null
+            status: "재오픈"
         }, `${issue.title}: 이슈 재오픈`);
     }
 
-    // 18. 다음 작업 단계로 이동
-
+    // 17. 이슈 상태에 맞게 다음 단계로 이동
     function nextStatus(issue) {
         if (issue.status === "접수" || issue.status === "재오픈") {
             changeStatus(issue, "진행 중");
             return;
         }
-        if (issue.status === "진행 중") {
+
+        if (issue.status === "검토 중" || issue.status === "검토중") {
+            changeStatus(issue, "진행 중");
+            return;
+        }
+
+        if (issue.status === "진행 중" || issue.status === "진행중") {
+            // '검토 중으로 변경' 버튼을 누르면 검토 중 상태로 저장합니다.
             changeStatus(issue, "검토 중");
             return;
         }
-        if (issue.status === "검토 중") {
-            verifyIssue(issue);
-            return;
-        }
+
         if (issue.status === "완료") {
             reopenIssue(issue);
         }
     }
 
-    // 19. 다음 작업 버튼 이름
-
+    // 18. 현재 상태에 따라 버튼 문구를 변경
     function nextStatusLabel(status) {
-        if (status === "접수" || status === "재오픈") {
-            return "진행 시작";
+        if (
+            status === "접수" ||
+            status === "재오픈" ||
+            status === "검토 중" ||
+            status === "검토중"
+        ) {
+            return "진행 중으로 변경";
         }
-        if (status === "진행 중") {
-            return "검토 요청";
+
+        if (status === "진행 중" || status === "진행중") {
+            return "검토 중으로 변경";
         }
-        if (status === "검토 중") {
-            return "검증 완료";
-        }
+
         if (status === "완료") {
             return "재오픈";
         }
+
         return "상태 변경";
     }
 
@@ -389,64 +400,6 @@ export default function IssueManagement({
         return "";
     }
 
-    // 21. 작업 시간 등록
-
-    async function addWorkLog(issue) {
-        const workDescription = (workDescriptions[issue.id] || "").trim();
-        const minutes = Number(workMinutes[issue.id]);
-        if (!workDescription) {
-            alert("작업 내용을 입력하세요.");
-            return;
-        }
-        if (!Number.isInteger(minutes) || minutes <= 0) {
-            alert("작업 시간을 1분 이상의 정수로 입력하세요.");
-            return;
-        }
-        const workLog = {
-            id: createId(),
-            description: workDescription,
-            minutes,
-            employeeName: loginUserName,
-            employeeId: loginUser.id,
-            createdAt: new Date().toLocaleString("ko-KR")
-        };
-        try {
-            const saved = await erpRequest('/issues/' + issue.id + '/work-logs', 'POST', {
-                description: workDescription,
-                minutes: minutes
-            });
-            workLog.id = saved.id;
-        } catch (error) {
-            window.alert('MySQL 작업시간 저장 실패: ' + error.message);
-            return;
-        }
-        setDbWorkLogs(function (old) {
-            return {
-                ...old,
-                [issue.id]: [workLog, ...(old[issue.id] || [])]
-            };
-        });
-        updateIssue(issue.id, {
-            workLogs: [...(issue.workLogs || []), workLog]
-        }, `${issue.title}: 작업 시간 ${minutes}분 등록`);
-        setWorkDescriptions(old => ({
-            ...old,
-            [issue.id]: ""
-        }));
-        setWorkMinutes(old => ({
-            ...old,
-            [issue.id]: ""
-        }));
-    }
-
-    // 22. 작업 시간 빠른 선택
-
-    function selectWorkMinutes(issueId, minutes) {
-        setWorkMinutes(old => ({
-            ...old,
-            [issueId]: String(minutes)
-        }));
-    }
 
     // 23. 삭제 대신 휴지통으로 이동한다.
     function deleteIssue(issue) {
@@ -495,7 +448,7 @@ export default function IssueManagement({
         const dueDate = new Date(issue.due + "T00:00:00");
         return dueDate >= todayDate && dueDate <= threeDaysLater;
     });
-   
+
     // 프로젝트 참여 직원 기준으로 업무량을 계산합니다.
     // 프로젝트 관리자가 직접 담당하는 프로젝트도 참여 프로젝트로 인정합니다.
     // DB에서 조회한 참여자 목록을 우선 사용합니다.
@@ -662,7 +615,9 @@ export default function IssueManagement({
                         }}>
                             {issue.title}
                         </button>
-                        <span>{employeeName(issue.assigneeId)}</span>
+                        <strong>
+                            {issue.assigneeName || employeeName(issue.assigneeId)}
+                        </strong>
                     </div>)}
                 </div>
                 <div className="issue-alert-panel">
@@ -686,7 +641,11 @@ export default function IssueManagement({
                 </div>
             </div>
         </details>
+        <details className="issue-workload-panel panel issue-optional-section">
+            <summary>이슈 완료 요청 검토</summary>
 
+            <IssueCompletion admin onReviewed={() => loadIssues()} />
+        </details>
         <div className="issue-toolbar">
             <input className="search" placeholder="이슈 제목 검색" value={search} onChange={e => {
                 setSearch(e.target.value);
@@ -701,14 +660,14 @@ export default function IssueManagement({
             <div className="form-row">
                 <input placeholder="이슈 제목" value={title} onChange={e => setTitle(e.target.value)} required />
                 <select value={projectId} onChange={e => setProjectId(e.target.value)}>
-                    <option value="">프로젝트 미지정</option>
-                    {projects.map(project => <option key={project.id} value={project.id}>
-                        {project.title || project.name || project.project_title}
+                    <option value="">프로젝트를 선택하세요</option>
+                    {(dbProjects.length ? dbProjects : projects).map(project => <option key={project.project_id || project.id} value={project.project_id || project.id}>
+                        {project.project_title || project.title || project.name}
                     </option>)}
                 </select>
                 <select value={assigneeId} onChange={e => setAssigneeId(e.target.value)}>
                     <option value="">담당자 미지정</option>
-                    {employees.map(employee => <option key={employee.id} value={employee.id}>
+                    {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>
                         {employee.name || employee.employee_name}
                     </option>)}
                 </select>
@@ -742,7 +701,7 @@ export default function IssueManagement({
                 }}>
                     <option value="전체">전체 프로젝트</option>
                     <option value="미지정">프로젝트 미지정</option>
-                    {projects.map(project => <option key={project.id} value={project.id}>
+                    {(dbProjects.length ? dbProjects : projects).map(project => <option key={project.project_id || project.id} value={project.project_id || project.id}>
                         {project.title || project.name || project.project_title}
                     </option>)}
                 </select>
@@ -762,27 +721,24 @@ export default function IssueManagement({
                 }}>
                     <option value="전체">전체 담당자</option>
                     <option value="미지정">담당자 미지정</option>
-                    {employees.map(employee => <option key={employee.id} value={employee.id}>
+                    {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>
                         {employee.name || employee.employee_name}
                     </option>)}
                 </select>
             </div>
             <p>검색 결과: {filtered.length}개</p>
         </div>
-        {paginatedIssues.length === 0 && <div className="panel">
+        {issuesLoading && <div className="panel"><p>DB에서 이슈를 불러오는 중입니다.</p></div>}
+        {issuesError && <div className="panel"><p className="error">DB 연결 오류: {issuesError}</p><button type="button" onClick={loadIssues}>다시 조회</button></div>}
+        {!issuesLoading && !issuesError && paginatedIssues.length === 0 && <div className="panel">
             <p>표시할 이슈가 없습니다.</p>
         </div>}
-        {paginatedIssues.map(issue => {
+        {!issuesError && paginatedIssues.map(issue => {
             const isExpanded = expandedIssueId === issue.id;
-            const issueComments = issue.comments || [];
+            const issueComments = savedComments[issue.id] || [];
             const issueHistory = issue.history || [];
-            const workLogs = dbWorkLogs[issue.id] || issue.workLogs || [];
-            // 이슈별 누적 작업 시간
-            const totalWorkMinutes = workLogs.reduce((sum, log) => sum + Number(log.minutes || 0), 0);
-            // 기록된 작업 시간에 예시 시간당 단가를 곱한다.
-            const estimatedCost = Math.round(totalWorkMinutes / 60 * hourlyCost);
             return <article className="panel issue-list-item" key={issue.id}>
-                <div className={"issue-list-header issue-border-" + issue.priority} onClick={() => setExpandedIssueId(isExpanded ? null : issue.id)}>
+                <div className={"issue-list-header issue-border-" + issue.priority} onClick={() => toggleIssueDetails(issue.id)}>
                     <div className="issue-list-title">
                         {/* 이슈 번호 및 제목 */}
                         <h3>
@@ -805,14 +761,13 @@ export default function IssueManagement({
                                 ⚠ 기한 초과
                             </span>}
                         </div>
-                        {/* 프로젝트, 담당자, 마감일 */}
-                        <p className="issue-meta">
-                            {projectName(issue.projectId)}
-                            {" · "}
-                            {employeeName(issue.assigneeId)}
-                            {" · "}
-                            마감 {issue.due || "미지정"}
-                        </p>
+                        {/* 프로젝트 정보만 카드형으로 변경하고 나머지 이슈 UI는 유지합니다. */}
+                        <div className="issue-project-info">
+                            <div><span>프로젝트명</span><strong>{getProjectInfo(issue).name}</strong></div>
+                            <div><span>고객사</span><strong>{getProjectInfo(issue).customer}</strong></div>
+                            <div><span>프로젝트 마감일</span><strong>{getProjectInfo(issue).endDate}</strong></div>
+                            <div><span>담당자</span><strong>{employeeName(issue.assigneeId)}</strong></div>
+                        </div>
                     </div>
                 </div>
                 {isExpanded && <div className="issue-expanded-content">
@@ -842,7 +797,7 @@ export default function IssueManagement({
                             담당자
                             <select value={issue.assigneeId || ""} onChange={e => changeAssignee(issue, e.target.value)}>
                                 <option value="">미지정</option>
-                                {employees.map(employee => <option key={employee.id} value={employee.id}>
+                                {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>
                                     {employee.name || employee.employee_name}
                                 </option>)}
                             </select>
@@ -858,61 +813,32 @@ export default function IssueManagement({
                     {issue.due && issue.status !== "완료" && issue.due < getToday() && <p className="error">
                         마감일이 지났습니다.
                     </p>}
+                    {/* 이슈 처리: 상태에 따라 버튼 하나만 표시 */}
                     <div className="issue-status-section">
                         <h4>이슈 처리</h4>
                         <p>
                             현재 상태:{" "}
                             <strong>{issue.status}</strong>
                         </p>
-                        {issue.status === "검토 중" && <input placeholder="검증 결과 또는 확인 내용" value={verificationComments[issue.id] || ""} onChange={e => setVerificationComments(old => ({
-                            ...old,
-                            [issue.id]: e.target.value
-                        }))} />}
-                        <button type="button" onClick={() => nextStatus(issue)}>
+
+                        <button
+                            type="button"
+                            onClick={() => nextStatus(issue)}
+                            disabled={
+                                ![
+                                    "접수", "재오픈", "검토 중", "검토중",
+                                    "진행 중", "진행중", "완료"
+                                ].includes(issue.status)
+                            }
+                        >
                             {nextStatusLabel(issue.status)}
                         </button>
-                        {issue.resolvedAt && <p className="issue-meta">
-                            완료일: {issue.resolvedAt}
-                        </p>}
-                    </div>
-                    <div className="issue-work-section">
-                        <h4>작업 시간 기록</h4>
-                        <input placeholder="작업 내용" value={workDescriptions[issue.id] || ""} onChange={e => setWorkDescriptions(old => ({
-                            ...old,
-                            [issue.id]: e.target.value
-                        }))} />
-                        {/* 빠른 시간 선택 */}
-                        <div className="issue-time-buttons">
-                            {[15, 30, 60, 120].map(minutes => <button type="button" key={minutes} className={Number(workMinutes[issue.id]) === minutes ? "active" : "secondary"} onClick={() => selectWorkMinutes(issue.id, minutes)}>
-                                {minutes < 60 ? `${minutes}분` : `${minutes / 60}시간`}
-                            </button>)}
-                        </div>
-                        <div className="form-row">
-                            <input type="number" min="1" step="1" placeholder="작업 시간(분)" value={workMinutes[issue.id] || ""} onChange={e => setWorkMinutes(old => ({
-                                ...old,
-                                [issue.id]: e.target.value
-                            }))} />
-                            <button type="button" className="secondary" onClick={() => addWorkLog(issue)}>
-                                작업 등록
-                            </button>
-                        </div>
-                        <p>
-                            총 작업 시간:{" "}
-                            {Math.floor(totalWorkMinutes / 60)}시간
-                            {" "}
-                            {totalWorkMinutes % 60}분
-                        </p>
-                        <p>
-                            예상 인건비 (시간당 20,000원): {estimatedCost.toLocaleString("ko-KR")}원
-                        </p>
-                        {/* 기존 작업 기록 */}
-                        {workLogs.map(log => <p key={log.id} className="history">
-                            {log.createdAt}
-                            {" · "}
-                            {log.description}
-                            {" · "}
-                            {log.minutes}분
-                        </p>)}
+
+                        {issue.resolvedAt && (
+                            <p className="issue-meta">
+                                완료일: {issue.resolvedAt}
+                            </p>
+                        )}
                     </div>
                     <div className="issue-comment-section">
                         <h4>요청사항 코멘트</h4>
@@ -921,13 +847,15 @@ export default function IssueManagement({
                                 ...old,
                                 [issue.id]: e.target.value
                             }))} />
-                            <button type="button" className="secondary" onClick={() => addComment(issue)}>
-                                요청사항 등록
+                            <button type="button" className="secondary" disabled={commentBusy[issue.id] || !String(comments[issue.id] || '').trim()} onClick={() => addComment(issue)}>
+                                {commentBusy[issue.id] ? '등록 중...' : '요청사항 등록'}
                             </button>
                         </div>
-                        {/* 등록된 댓글 */}
-                        {issueComments.map((comment, index) => <p key={comment.id || index} className="history">
-                            {typeof comment === "string" ? comment : `${comment.createdAt} · ${comment.author}: ${comment.content}`}
+                        {/* DB에 저장된 코멘트만 표시합니다. 새로고침 후에도 유지됩니다. */}
+                        {commentLoading[issue.id] && <p className="history">코멘트를 불러오는 중...</p>}
+                        {!commentLoading[issue.id] && issueComments.length === 0 && <p className="history">등록된 요청사항 코멘트가 없습니다.</p>}
+                        {issueComments.map(comment => <p key={comment.id} className="history">
+                            {comment.createdAt} · {comment.author}: {comment.content}
                         </p>)}
                     </div>
                     <details>

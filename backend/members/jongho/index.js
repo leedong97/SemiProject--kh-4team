@@ -1,18 +1,24 @@
 // 종호 폴더: 관리자 API (/api/admin/...)
 // 프론트(종호 담당 /admin/...)가 쓰는 주소를 그대로 유지합니다.
-// 로컬 개발용: 로그인 검사와 감사 로그를 쓰지 않습니다. 외부에 공개하는 환경에서는 쓰지 마세요.
+// 모든 관리자 API는 로그인(토큰 검사)과 관리자 권한 검사를 거칩니다. (middleware/session.js)
 const adminRouter = require('./admin');
 const express = require('express');
+const { requireAuth, requireManager } = require('../../middleware/session');
 
-// 로그인이 없으므로, 등록자(created_by) 같은 값에 쓸 기본 직원 번호를 넣습니다. (.env의 DEV_ADMIN_ID, 없으면 1)
-const devAdminId = Number(process.env.DEV_ADMIN_ID) || 1;
-const devRouter = express.Router();
-devRouter.use((req, res, next) => {
-  req.adminId = devAdminId;
+const adminGuardRouter = express.Router();
+
+// 1) 로그인한 직원인지 확인 (Authorization: Bearer 토큰)
+// 2) 관리자 계정인지 확인
+adminGuardRouter.use(requireAuth, requireManager);
+
+// 등록자(created_by) 등에 쓰는 번호는 고정값이 아니라 로그인한 관리자 번호
+adminGuardRouter.use((req, res, next) => {
+  req.adminId = req.user.employee_id;
   next();
 });
-devRouter.use(adminRouter);
+
+adminGuardRouter.use(adminRouter);
 
 module.exports = {
-  routes: [{ prefix: '/api/admin', router: devRouter }],
+  routes: [{ prefix: '/api/admin', router: adminGuardRouter }],
 };

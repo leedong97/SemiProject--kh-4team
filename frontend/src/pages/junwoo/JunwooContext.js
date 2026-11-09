@@ -1,5 +1,6 @@
 import { API_BASE } from '../../shared/config';
 import { createContext, useCallback, useContext, useState, useEffect } from 'react';
+import { useLocation } from "react-router-dom";
 import getLoginUser from "../woojin/getLoginUser";
 
 // 준우 페이지(대시보드·공지사항·프로젝트)가 같이 쓰는 데이터 상자
@@ -11,40 +12,86 @@ export function useJunwoo() {
 
 export function JunwooProvider({ children }) {
 
+  const { pathname } = useLocation();
 
+
+  // 여러 페이지가 공유하느 목록을 저장한다.
+  // setInfo 또는 setTodo가 실행되면 이 데이터를 사용하는 화면도 갱신된다.
   const [info, setInfo] = useState([]);
   const [todo, setTodo] = useState([]);
 
-  /* MySQL 프로젝트 전체 조회 */
+  /* 프로젝트 목록 자동 갱신 */
   useEffect(() => {
+    // 화면 이동 후 이전 요청의 응답이 도착해도 상태를 갱신하지 않도록 표시한다
+    let disposed = false;
+
+    // 진행 중인 요청을 취소할 때 사용할 객체를 보관한다.
+    let controller = null;
 
     const loadProjects = async () => {
+      // 이전 조회가 아직 끝나지 않았다면 취소한다.
+      // 이전 응답이 늦게 도착해 더 최신 데이터를 덮어쓰는 상황을 줄인다.
+      controller?.abort();
+      controller = new AbortController();
 
       try {
-
         const response = await fetch(
-          `${API_BASE}/api/projects`
+          `${API_BASE}/api/projects`,
+          {
+            signal: controller.signal,
+            cache: "no-store"
+          }
         );
 
         if (!response.ok) {
-          throw new Error('프로젝트 조회 실패');
+          throw new Error("프로젝트 조회 실패");
         }
 
         const data = await response.json();
 
-        setTodo(data);
-
+        if (!disposed) {
+          setTodo(data);
+        }
       } catch (error) {
-
-        console.error('프로젝트 불러오기 오류:', error);
-
+        if (error.name !== "AbortError") {
+          console.error("프로젝트 불러오기 오류:", error);
+        }
       }
-
     };
 
+    // 화면에 들어오거나 주소가 바뀌면 최신 목록 조회
     loadProjects();
 
-  }, []);
+    // 다른 창에서 돌아왔을 때 최신 목록 조회
+    const handleFocus = () => {
+      loadProjects();
+    };
+
+    window.addEventListener("focus", handleFocus);
+
+    // 메인·프로젝트 목록에서는 5초마다 갱신
+    const timer =
+      pathname === "/" || pathname === "/todo"
+        ? window.setInterval(() => {
+          if (document.visibilityState === "visible") {
+            loadProjects();
+          }
+        }, 5000)
+        : null;
+
+    // 주소가 변경되거나 Provider가 사라질 때 이전 작업을 정리한다.
+    // 요청, 이벤트 리스너, 타이머가 중복으로 남지 않도록 한다.
+    return () => {
+      disposed = true;
+      controller?.abort();
+
+      window.removeEventListener("focus", handleFocus);
+
+      if (timer !== null) {
+        window.clearInterval(timer);
+      }
+    };
+  }, [pathname]);
 
   /* MySQL 공지사항 전체 조회 */
   useEffect(() => {
@@ -241,7 +288,8 @@ export function JunwooProvider({ children }) {
 
 
 
-  /* 프로젝트 등록 요청 */
+  // 프로젝트를 바로 생성하지 않고 관리자에게 등록 요청을 보낸다.
+  // 승인 전이므로 todo 목록에는 추가하지 않고 요청 번호만 반환한다.
   const addTodo = async (
     title,
     content,
@@ -458,10 +506,10 @@ export function JunwooProvider({ children }) {
   }, []);
 
   // 완료 요청 저장 후 공통 프로젝트 목록에도 반영
-  const requestProjectCompletion = async (projectId) => {
+  const requestProjectCompletion = async (projectId, resolution) => {
     const token = localStorage.getItem("nexus_auth_token");
 
-    if(!token){
+    if (!token) {
       throw new Error("로그아웃 후 다시 로그인해주세요.")
     }
 
@@ -470,29 +518,33 @@ export function JunwooProvider({ children }) {
       {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify({ resolution })
       }
     );
 
     const data = await response.json();
 
-    if(!response.ok){
+    if (!response.ok) {
       throw new Error(data.message || "완료 요청을 저장하지 못했습니다.");
     }
 
     setTodo(previous =>
-        previous.map(project =>
-            String(project.id) === String(data.projectId)
-              ? {...project, status: data.status}
-              : project
-        )
+      previous.map(project =>
+        String(project.id) === String(data.projectId)
+          ? { ...project, status: data.status }
+          : project
+      )
     );
 
     return data;
 
   };
 
+  // 하위 화면에 공개할 데이터와 함수를 모은다.
+  // useJunwoo()를 호출하면 이 객체에 담긴 값을 꺼낼 수 있다.
   const value = {
     info, todo,
     addInfo, delInfo, updateInfo, pinInfo,

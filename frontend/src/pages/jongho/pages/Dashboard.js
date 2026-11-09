@@ -165,10 +165,9 @@ export default function Dashboard({ projects = [], data }) {
                         projects.slice(0, 6).map(project => (
 
                             <div
-                                className="merge-project"
+                                className="merge-project is-clickable"
                                 key={project.id}
                                 onClick={() => navigate(`/admin/projects?project=${project.id}`)}
-                                style={{ cursor: "pointer" }}
                             >
                                 {/* 프로젝트 이름, 상태, 담당자 */}
                                 <div>
@@ -184,19 +183,7 @@ export default function Dashboard({ projects = [], data }) {
                                 {/* 프로젝트 진행률 표시 막대 */}
                                 <div className="merge-bar">
 
-                                    <div
-                                        style={{
-                                            // 진행률을 0~100 사이로 제한
-                                            // 숫자가 아니면 0으로 처리
-                                            width: `${Math.max(
-                                                0,
-                                                Math.min(
-                                                    100,
-                                                    Number(project.progress) || 0
-                                                )
-                                            )}%`
-                                        }}
-                                    />
+                                    <div className="merge-bar-fill" style={{ "--progress-width": `${Math.max(0, Math.min(100, Number(project.progress) || 0))}%` }} />
                                 </div>
 
                                 {/* 프로젝트 진행률을 숫자로 표시 */}
@@ -293,7 +280,7 @@ export default function Dashboard({ projects = [], data }) {
                                     <tr
                                         key={issue.id}
                                         onClick={() => navigate(`/admin/issues?issue=${issue.id}`)}
-                                        style={{ cursor: "pointer" }}
+                                        className="nexus-dashboard-issue-row is-clickable"
                                     >
                                         <td>
                                             {issue.title}

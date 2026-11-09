@@ -57,25 +57,6 @@ router.get('/issues', async (req, res) => {
   }
 });
 
-// 새 이슈가 등록되면 관리자(재직 중인 관리자 권한 직원) 모두에게 알림을 남긴다.
-// 알림 저장이 실패해도 이슈 등록 응답은 그대로 성공으로 보낸다. (createNotification 내부에서 에러를 처리)
-async function notifyAdminsOfIssue(issue) {
-  try {
-    const [admins] = await db.query(
-      "SELECT employee_id FROM employees WHERE employee_role = '관리자' AND employee_status = '재직'"
-    );
-    const title = Array.from(String(issue.title || '')).slice(0, 80).join('');
-    const message =
-      '[' + (issue.projectName || '프로젝트') + '] 새 이슈 (' + (issue.status || '상태 미정') + '): ' + title +
-      ' (건의자: ' + (issue.reporterName || '미상') + ')';
-    for (const admin of admins) {
-      await createNotification(admin.employee_id, '이슈', message, '/admin/issues');
-    }
-  } catch (err) {
-    console.error('관리자 이슈 알림 실패:', err.code, err.message);
-  }
-}
-
 // POST /api/dong/issues — 이슈 건의 등록
 router.post('/issues', async (req, res) => {
   const body = req.body ?? {};
@@ -222,8 +203,24 @@ router.post('/issues', async (req, res) => {
 
     await connection.commit();
 
-    // 커밋 이후에 관리자 알림 저장 (트랜잭션 밖이라 알림 실패가 이슈 등록을 되돌리지 않음)
-    await notifyAdminsOfIssue(rows[0]);
+    // 알림: 프로젝트 담당자(PM)에게 새 이슈 건의를 알려요 (담당자가 없거나 본인이면 건너뜀)
+    try {
+      const [owner] = await db.query(
+        'SELECT manager_id FROM projects WHERE project_id = ?',
+        [projectId]
+      );
+      const managerId = owner[0] && owner[0].manager_id;
+      if (managerId && String(managerId) !== String(employees[0].employee_id)) {
+        await createNotification(
+          managerId,
+          '이슈',
+          employees[0].employee_name + '님이 새 이슈 "' + title + '"를 건의했어요.',
+          '/issue/' + result.insertId
+        );
+      }
+    } catch (notifyError) {
+      console.error('이슈 건의 알림 오류:', notifyError.message);
+    }
 
     return res.status(201).json(rows[0]);
   } catch (err) {
@@ -242,6 +239,7 @@ router.post('/issues', async (req, res) => {
     }
   }
 });
+router.use(require('./issueCompletion'));
 module.exports = {
   routes: [{ prefix: '/api/dong', router }],
 };

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import getLoginUser from "../woojin/getLoginUser";
 import "./ProjectList.css";
 
 const STATUS_TABS = [
@@ -13,7 +14,8 @@ const STATUS_TABS = [
 
 const PAGE_SIZE = 10;
 
-function Todo({ todo = [], onRequestCompletion }) {
+function Todo({ todo = [] }) {
+
     const [selectedProject, setSelectedProject] = useState("");
     const [search, setSearch] = useState("");
     const [searchManager, setSearchManager] = useState("");
@@ -98,13 +100,19 @@ function Todo({ todo = [], onRequestCompletion }) {
                     <p>사내 프로젝트를 조회하고 진행 상태를 확인할 수 있습니다.</p>
                 </div>
 
-                <button
-                    type="button"
-                    className="jpl-reset"
-                    onClick={resetFilters}
-                >
-                    검색 리셋
-                </button>
+                <div className="jpl-header-actions">
+                    <button
+                        type="button"
+                        className="jpl-reset"
+                        onClick={resetFilters}
+                    >
+                        검색 리셋
+                    </button>
+
+                    <Link to="/todo/completion" className="jpl-reset">
+                        프로젝트 완료 요청
+                    </Link>
+                </div>
             </header>
 
             <div className="jpl-summary" aria-live="polite">

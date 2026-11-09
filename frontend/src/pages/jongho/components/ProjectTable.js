@@ -19,8 +19,6 @@ export default function ProjectTable({
   employees = [],
   isEmpty,
   isOverdue,
-  onSort,
-  sortMark,
   onOpenProject,
   onManageMembers,
   onDeleteProject
@@ -32,9 +30,7 @@ export default function ProjectTable({
           <tr>
             <th>번호</th>
             {SORTABLE_COLUMNS.map(([key, label]) => (
-              <th key={key} className="nexus-sortable" onClick={() => onSort(key)}>
-                {label}{sortMark(key)}
-              </th>
+              <th key={key}>{label}</th>
             ))}
             <th>관리</th>
           </tr>

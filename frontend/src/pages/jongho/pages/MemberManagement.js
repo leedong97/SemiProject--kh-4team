@@ -4,11 +4,22 @@ import { findEmployee } from "../shared/employees";
 import { canLeadProject } from "../shared/permissions";
 import EmployeePicker from "../components/EmployeePicker";
 import { matchesProjectSearch } from "../utils/projectFilters";
-import useSortableList from "../utils/useSortableList";
 import usePagination from "../utils/usePagination";
 import Pager from "../components/Pager";
+import SearchSortBar from "../components/SearchSortBar";
+import { compareText, compareNumber, descending, sortByOption } from "../utils/listSort";
 
 const MEMBER_PAGE_SIZE = 10;
+
+// 정렬 선택지 (희승 님 인사관리 화면의 정렬 드롭다운과 같은 방식)
+const SORT_OPTIONS = [
+    { value: "default", label: "기본순" },
+    { value: "name", label: "프로젝트명순" },
+    { value: "status", label: "진행 상태순" },
+    { value: "manager", label: "담당자순" },
+    { value: "members", label: "팀원 많은순" },
+    { value: "assigned", label: "배정 상태순" },
+];
 
 // 인원 관리: 프로젝트별 담당자(팀장 이상 1명)와 팀원을 배정합니다.
 function MemberManagement({
@@ -20,6 +31,8 @@ function MemberManagement({
 
     // 검색어
     const [search, setSearch] = useState("");
+    // 정렬 선택 (드롭다운)
+    const [sortOption, setSortOption] = useState("default");
     // 팀원 편집 중인 프로젝트와 임시 선택 목록
     const [editingId, setEditingId] = useState(null);
     const [draftMemberIds, setDraftMemberIds] = useState([]);
@@ -48,17 +61,24 @@ function MemberManagement({
         if (key === "members") return (project.memberIds || []).length;
         return project[key] ?? "";
     };
-    const { sortKey, changeSort, sortItems, sortMark } = useSortableList(getSortValue);
 
     // 화면에 보일 프로젝트 목록 (필터 후 정렬)
     const filteredProjects = projects
         .filter((project) => !["승인 대기", "반려"].includes(project.status))
         .filter((project) => matchesProjectSearch(project, search));
-    const sortedProjects = sortItems(filteredProjects);
+    // 선택한 항목 기준 정렬 (기본순은 원래 등록 순서 그대로)
+    const sortRules = {
+        name: (a, b) => compareText(getSortValue(a, "name"), getSortValue(b, "name")),
+        status: (a, b) => compareText(getSortValue(a, "status"), getSortValue(b, "status")),
+        manager: (a, b) => compareText(getSortValue(a, "manager"), getSortValue(b, "manager")),
+        members: descending((a, b) => compareNumber(getSortValue(a, "members"), getSortValue(b, "members"))),
+        assigned: (a, b) => compareText(getSortValue(a, "assigned"), getSortValue(b, "assigned")),
+    };
+    const sortedProjects = sortByOption(filteredProjects, sortOption, sortRules);
 
     // 한 페이지 10개씩 (검색이나 정렬이 바뀌면 1페이지로)
     const { pageItems: pagedProjects, currentPage, totalPages, total, goPrev, goNext } =
-        usePagination(sortedProjects, MEMBER_PAGE_SIZE, [search, sortKey]);
+        usePagination(sortedProjects, MEMBER_PAGE_SIZE, [search, sortOption]);
     const pageOffset = (currentPage - 1) * MEMBER_PAGE_SIZE;
 
     // 프로젝트 담당자 배정
@@ -140,12 +160,14 @@ function MemberManagement({
             </p>
 
             <div className="card">
-                <input
-                    className="nexus-project-input"
+                <SearchSortBar
+                    searchId="member-search"
                     placeholder="프로젝트명 또는 고객사 검색"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    style={{ marginBottom: "16px" }}
+                    search={search}
+                    onSearchChange={setSearch}
+                    selects={[
+                        { id: "member-sort", label: "정렬 기준", value: sortOption, onChange: setSortOption, options: SORT_OPTIONS },
+                    ]}
                 />
                 <div className="nexus-assignment-table-wrap">
 
@@ -154,11 +176,11 @@ function MemberManagement({
                         <thead>
                             <tr>
                                 <th>번호</th>
-                                <th onClick={() => changeSort("name")} style={{ cursor: "pointer" }}>프로젝트명{sortMark("name")}</th>
-                                <th onClick={() => changeSort("status")} style={{ cursor: "pointer" }}>진행 상태{sortMark("status")}</th>
-                                <th onClick={() => changeSort("manager")} style={{ cursor: "pointer" }}>담당자{sortMark("manager")}</th>
-                                <th onClick={() => changeSort("members")} style={{ cursor: "pointer" }}>팀원{sortMark("members")}</th>
-                                <th onClick={() => changeSort("assigned")} style={{ cursor: "pointer" }}>배정 상태{sortMark("assigned")}</th>
+                                <th>프로젝트명</th>
+                                <th>진행 상태</th>
+                                <th>담당자</th>
+                                <th>팀원</th>
+                                <th>배정 상태</th>
                             </tr>
                         </thead>
 
@@ -252,7 +274,7 @@ function MemberManagement({
                                                                 </>
                                                             );
                                                         })()}
-                                                        <div style={{ marginTop: "12px", display: "flex", gap: "8px" }}>
+                                                        <div className="nexus-member-editor-actions">
                                                             <button className="btn btn-primary btn-sm"
                                                                 type="button"
                                                                 disabled={saving}

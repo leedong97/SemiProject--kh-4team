@@ -784,3 +784,14 @@
   border-color: #a7cff7;
   background: #edf6ff;
 }
+/* 이슈 요청 버튼을 오른쪽 끝에 함께 배치합니다. */
+.team-shell .issue-header { flex-wrap: wrap; }
+.team-shell .issue-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.team-shell .issue-header-actions .issue-reset { white-space: nowrap; }

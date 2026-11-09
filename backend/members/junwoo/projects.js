@@ -3,6 +3,7 @@
 const express = require('express');
 const db = require('../../db');
 const { requireAuth } = require("../../middleware/session");
+const { createNotificationForManagers } = require("../../notify");
 
 const router = express.Router();
 
@@ -558,6 +559,19 @@ router.post("/:id/completion-request", requireAuth, async(req, res) => {
                     "담당 중인 진행중 프로젝트만 완료 요청할 수 있습니다." +
                     "이미 요청되었거나 상태가 변경됐는지 확인해주세요."
             });
+        }
+
+        // 알림: 관리자에게 프로젝트 완료 요청을 알려요 (요청한 본인이 관리자면 제외)
+        try {
+            const [info] = await db.query("SELECT project_title FROM projects WHERE project_id = ?", [projectId]);
+            await createNotificationForManagers(
+                "프로젝트",
+                '프로젝트 "' + (info[0] ? info[0].project_title : projectId) + '"의 완료 요청이 들어왔어요.',
+                null,
+                [req.user.employee_id]
+            );
+        } catch (notifyError) {
+            console.error("완료 요청 알림 오류:", notifyError.message);
         }
 
         res.json({
