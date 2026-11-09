@@ -20,10 +20,6 @@ module.exports = {
       router: require("./projectEvents").router
     },
     {
-      prefix: "/api/project-requests",
-      router: require("./projectRequests")
-    },
-    {
       // 현재 게시글 API는 junwoo/community.js가 아니라
       // dong/communityService에서 내보낸 posts Router에 연결되어 있다.
       prefix: "/api/community",

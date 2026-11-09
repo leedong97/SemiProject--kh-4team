@@ -1,12 +1,20 @@
 const express = require("express");
 const db = require("../../db");
 
+const {
+    session,
+    requireUser
+} = require("../dong/communitySession");
+
 const router = express.Router();
+
+// 아래 모든 요청은 로그인한 직원만 처리
+router.use(session, requireUser);
 
 // 특정 게시글을 내가 북마크했는지 조회
 router.get("/", async function (req, res) {
     const postId = Number(req.query.postId);
-    const employeeId = Number(req.query.employeeId);
+    const employeeId = Number(req.communityUser.id);
 
     // 게시글 번호 검사
     if (!Number.isSafeInteger(postId) || postId < 1) {
@@ -64,7 +72,7 @@ router.post("/", async function (req, res) {
     const body = req.body || {};
 
     const postId = Number(body.postId);
-    const employeeId = Number(body.employeeId);
+    const employeeId = Number(req.communityUser.id);
 
     // 게시글·직원 번호 검사
     if (
@@ -151,7 +159,7 @@ router.delete("/", async function (req, res) {
     const body = req.body || {};
 
     const postId = Number(body.postId);
-    const employeeId = Number(body.employeeId);
+    const employeeId = Number(req.communityUser.id);
 
     if (
         !Number.isSafeInteger(postId) ||
@@ -189,7 +197,7 @@ router.delete("/", async function (req, res) {
 
 // 내가 북마크한 게시글 목록
 router.get("/mine", async function (req, res) {
-    const employeeId = Number(req.query.employeeId);
+    const employeeId = Number(req.communityUser.id);
 
     if (!Number.isSafeInteger(employeeId) || employeeId < 1) {
         return res.status(400).json({

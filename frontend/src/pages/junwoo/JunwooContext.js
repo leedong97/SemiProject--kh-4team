@@ -7,6 +7,20 @@ import { connectProjectEvents } from "./projectEventsClient";
 // 준우 페이지(대시보드·공지사항·프로젝트)가 같이 쓰는 데이터 상자
 const JunwooContext = createContext(null);
 
+// 요청할 때마다 현재 로그인 토큰을 가져온다.
+function getAuthHeaders() {
+  const token = localStorage.getItem("nexus_auth_token");
+
+  if (!token) {
+    throw new Error("로그인이 필요합니다. 다시 로그인해주세요.");
+  }
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
+  };
+}
+
 export function useJunwoo() {
   return useContext(JunwooContext);
 }
@@ -169,9 +183,7 @@ export function JunwooProvider({ children }) {
       `${API_BASE}/api/notices`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           title,
           content,
@@ -213,7 +225,8 @@ export function JunwooProvider({ children }) {
     const response = await fetch(
       `${API_BASE}/api/notices/${id}`,
       {
-        method: 'DELETE'
+        method: "DELETE",
+        headers: getAuthHeaders()
       }
     );
 
@@ -236,9 +249,7 @@ export function JunwooProvider({ children }) {
       `${API_BASE}/api/notices/${id}`,
       {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           title,
           content,
@@ -288,9 +299,7 @@ export function JunwooProvider({ children }) {
       `${API_BASE}/api/notices/${id}/pin`,
       {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           isPinned
         })
@@ -312,170 +321,6 @@ export function JunwooProvider({ children }) {
 
     return data;
   };
-
-
-
-  // 프로젝트를 바로 생성하지 않고 관리자에게 등록 요청을 보낸다.
-  // 승인 전이므로 todo 목록에는 추가하지 않고 요청 번호만 반환한다.
-  const addTodo = async (
-    title,
-    content,
-    startDate,
-    endDate,
-    status,
-    priority
-  ) => {
-
-    // 로그인한 직원 정보
-    const user = getLoginUser();
-
-    if (user.isDummy || !user.id) {
-      throw new Error(
-        "로그인 후 프로젝트 등록을 요청해주세요."
-      );
-    }
-
-    const created_by = Number(user.id);
-
-
-    // 프로젝트 등록 요청 API
-    const response = await fetch(
-      `${API_BASE}/api/project-requests`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          title,
-          content,
-          created_by,
-          startDate,
-          endDate,
-          status,
-          priority
-        })
-      }
-    );
-
-
-    const data = await response.json();
-
-
-    if (!response.ok) {
-      throw new Error(
-        data.message || "프로젝트 등록 요청 실패"
-      );
-    }
-
-
-    // 아직 승인 전이므로 React 프로젝트 목록에 추가하지 않음
-
-    // 요청 번호 반환
-    return data.requestId;
-  };
-
-
-
-
-  /* 프로젝트 삭제 */
-  const delTodo = async (id) => {
-
-    const response = await fetch(
-      `${API_BASE}/api/projects/${id}`,
-      {
-        method: 'DELETE'
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || '프로젝트 삭제 실패');
-    }
-
-    // MySQL 삭제 성공 후 React 화면에서도 제거
-    setTodo(prev =>
-      prev.filter(item => item.id !== id)
-    );
-
-    return data;
-  };
-
-
-
-
-  /* 프로젝트 수정 */
-  const updateTodo = async (
-    id,
-    title,
-    content,
-    status,
-    priority,
-    progress,
-    startDate,
-    endDate
-  ) => {
-
-    const response = await fetch(
-      `${API_BASE}/api/projects/${id}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          title,
-          content,
-          status,
-          priority,
-          progress,
-          startDate,
-          endDate
-        })
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || '프로젝트 수정 실패');
-    }
-
-
-    /* React 화면에도 수정 내용 반영 */
-
-    setTodo(prev =>
-      prev.map(item =>
-        item.id === id
-          ? {
-            ...item,
-            title,
-            content,
-            status: status ?? item.status,
-            priority: priority ?? item.priority,
-            progress: progress ?? item.progress,
-            startDate: startDate === undefined
-              ? item.startDate
-              : startDate?.replace(/-/g, ".") ?? null,
-            endDate: endDate === undefined
-              ? item.endDate
-              : endDate?.replace(/-/g, ".") ?? null,
-            sortAt: Date.now() / 1000
-          }
-          : item
-      ).sort((a, b) =>
-        (Number(b.sortAt ?? 0) - Number(a.sortAt ?? 0)) ||
-        (b.id - a.id)
-      )
-    );
-
-
-
-    return data;
-  };
-
-
 
   /* 공지사항 조회수 증가 */
   const viewInfo = useCallback(async (id) => {
@@ -574,9 +419,11 @@ export function JunwooProvider({ children }) {
   // useJunwoo()를 호출하면 이 객체에 담긴 값을 꺼낼 수 있다.
   const value = {
     info, todo,
+    // 관리자 공지사항 화면에서 사용
     addInfo, delInfo, updateInfo, pinInfo,
-    addTodo, delTodo, updateTodo,
+    // 공지사항, 프로젝트 상세 조회수
     viewInfo, viewTodo,
+    // 직원 프로젝트 완료 요청
     requestProjectCompletion
   };
 

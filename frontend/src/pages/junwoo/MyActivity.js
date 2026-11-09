@@ -135,7 +135,7 @@ function MyActivity(props) {
         postsClass += " community-tab-selected";
     } else if (activity === "내가 작성한 댓글") {
         commentsClass += " community-tab-selected";
-    } else if (activity === "저장한 글") {
+    } else if (activity === "북마크한 글") {
         bookmarksClass += " community-tab-selected";
     } else if (activity === "해결 완료한 질문") {
         resolvedClass += " community-tab-selected";
@@ -214,7 +214,7 @@ function MyActivity(props) {
         activityContent = (
             <MyComments loginUser={loginUser} />
         );
-    } else if (activity === "저장한 글") {
+    } else if (activity === "북마크한 글") {
         activityContent = (
             <MyBookmarks
                 key={String(loginUser.id)}
