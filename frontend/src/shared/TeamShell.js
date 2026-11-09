@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import getLoginUser from '../pages/woojin/getLoginUser';
+import getLoginUser, { clearLoginUser } from '../pages/woojin/getLoginUser';
 import { API_BASE } from './config';
 import './shell.css';
 
@@ -96,7 +96,7 @@ function TeamShell() {
           {isAdmin && (
             <h4><Link to="/admin" style={{ display: "block", color: "inherit", textDecoration: "none" }}>관리자 페이지</Link></h4>
           )}
-          <h4><Link to="/login" style={{ display: "block", color: "inherit", textDecoration: "none" }}>로그아웃</Link></h4>
+          <h4><Link to="/login" onClick={clearLoginUser} style={{ display: "block", color: "inherit", textDecoration: "none" }}>로그아웃</Link></h4>
         </div>
       </div>
 

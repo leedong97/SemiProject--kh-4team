@@ -10,8 +10,9 @@ const router = express.Router();
 const NAME_MAX = 50;
 const PW_MIN = 8;
 const PW_MAX_BYTES = 72; // bcrypt 는 앞 72바이트만 사용
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_PATTERN = /^[0-9-]{9,13}$/;
+const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+const PHONE_PATTERN = /^01[016789]-\d{3,4}-\d{4}$/; // 휴대폰: 010-1234-5678
+const PHONE_RULE_TEXT = "전화번호는 010-1234-5678 형식으로 입력해 주세요.";
 const NICKNAME_PATTERN = /^[가-힣A-Za-z0-9_]{2,12}$/; // 2~12자, 한글·영문·숫자·밑줄만
 const NICKNAME_RULE_TEXT = "닉네임은 2~12자, 한글·영문·숫자·_ 만 쓸 수 있어요.";
 const GOOGLE_ISSUERS = ["accounts.google.com", "https://accounts.google.com"];
@@ -20,6 +21,15 @@ const GOOGLE_ISSUERS = ["accounts.google.com", "https://accounts.google.com"];
 const DUMMY_HASH = bcrypt.hashSync("dummy-password-for-timing", 10);
 
 function str(v) { return typeof v === "string" ? v : ""; }
+
+// 전화번호를 하나의 모양(010-1234-5678)으로 맞춘다. 01012345678 로 와도 같은 번호로 취급해야 중복을 잡을 수 있어요.
+function normalizePhone(raw) {
+    const text = String(raw || "").trim();
+    const digits = text.replace(/\D/g, "");
+    if (digits.length === 11) return digits.slice(0, 3) + "-" + digits.slice(3, 7) + "-" + digits.slice(7);
+    if (digits.length === 10) return digits.slice(0, 3) + "-" + digits.slice(3, 6) + "-" + digits.slice(6);
+    return text;
+}
 
 // DB 행 -> 화면에 돌려줄 회원 정보 (비밀번호 해시 같은 건 절대 넣지 않는다)
 function memberView(row) {
@@ -31,9 +41,13 @@ function nicknameProblem(nickname) {
     return NICKNAME_PATTERN.test(nickname) ? "" : NICKNAME_RULE_TEXT;
 }
 
-// UNIQUE 위반(ER_DUP_ENTRY)이 어떤 칸 때문인지 구분한다 (닉네임인지 이메일인지)
+// UNIQUE 위반(ER_DUP_ENTRY)이 어떤 칸(키) 때문인지 구분한다 (닉네임 / 이메일 / 전화번호)
+// 에러 문구 안의 "값"이 아니라 "for key '...'" 의 키 이름만 보고 판단해요. (값에 nickname 같은 글자가 들어 있어도 안 속아요)
 function isDuplicate(err, keyword) {
-    return err && err.code === "ER_DUP_ENTRY" && String(err.sqlMessage || err.message || "").toLowerCase().includes(keyword);
+    if (!err || err.code !== "ER_DUP_ENTRY") return false;
+    const message = String(err.sqlMessage || err.message || "");
+    const match = message.match(/for key '([^']*)'/i);
+    return (match ? match[1] : message).toLowerCase().includes(keyword);
 }
 
 // nickname 컬럼이 아직 없는 DB (sql/06_shop_nickname.sql 을 안 돌린 경우)
@@ -68,18 +82,34 @@ router.get("/nickname-check", async (req, res) => {
     }
 });
 
+// ---------------------------------------------------------------------
+//  전화번호 확인  GET /api/shop/auth/phone-check?phone=...
+//  형식이 맞는지 + 이미 쓰는 번호인지 알려줘요. (최종 보증은 DB 의 UNIQUE 키)
+// ---------------------------------------------------------------------
+router.get("/phone-check", async (req, res) => {
+    const phone = normalizePhone(str(req.query.phone));
+    if (!PHONE_PATTERN.test(phone)) return res.json({ ok: true, available: false, message: PHONE_RULE_TEXT });
+    try {
+        const [rows] = await pool.query("SELECT 1 FROM shop_members WHERE phone = ? LIMIT 1", [phone]);
+        if (rows.length > 0) return res.json({ ok: true, available: false, message: "이미 사용 중인 전화번호예요." });
+        res.json({ ok: true, available: true, message: "사용할 수 있는 전화번호예요." });
+    } catch (err) {
+        sendServerError(res, "전화번호 확인 오류:", err);
+    }
+});
+
 router.post("/signup", async (req, res) => {
     const body = req.body || {};
     const name = str(body.name).trim();
     const email = str(body.email).trim().toLowerCase();
-    const phone = str(body.phone).trim();
+    const phone = normalizePhone(str(body.phone));
     const nickname = str(body.nickname).trim();
     const password = str(body.password);
 
     if (!name || name.length > NAME_MAX) return res.status(400).json({ ok: false, message: `이름은 1~${NAME_MAX}자로 입력해 주세요.` });
     if (!EMAIL_PATTERN.test(email) || email.length > 200) return res.status(400).json({ ok: false, message: "이메일 형식이 올바르지 않아요." });
     if (nicknameProblem(nickname)) return res.status(400).json({ ok: false, message: NICKNAME_RULE_TEXT });
-    if (phone && !PHONE_PATTERN.test(phone)) return res.status(400).json({ ok: false, message: "전화번호는 숫자와 - 만 사용해 주세요." });
+    if (phone && !PHONE_PATTERN.test(phone)) return res.status(400).json({ ok: false, message: PHONE_RULE_TEXT });
     if (password.length < PW_MIN) return res.status(400).json({ ok: false, message: `비밀번호는 ${PW_MIN}자 이상이어야 해요.` });
     if (Buffer.byteLength(password, "utf8") > PW_MAX_BYTES) return res.status(400).json({ ok: false, message: "비밀번호가 너무 길어요." });
 
@@ -93,7 +123,8 @@ router.post("/signup", async (req, res) => {
     } catch (err) {
         // 중복 확인 버튼을 누른 뒤 그 사이에 같은 닉네임을 다른 사람이 가져갈 수도 있어서, DB 가 한 번 더 막아 줘요
         if (isDuplicate(err, "nickname")) return res.status(409).json({ ok: false, message: "이미 사용 중인 닉네임이에요." });
-        if (err.code === "ER_DUP_ENTRY") return res.status(409).json({ ok: false, message: "이미 가입된 이메일이에요." });
+        if (isDuplicate(err, "phone")) return res.status(409).json({ ok: false, message: "이미 사용 중인 전화번호예요." });
+        if (isDuplicate(err, "email")) return res.status(409).json({ ok: false, message: "이미 가입된 이메일이에요." });
         sendServerError(res, "쇼핑몰 가입 오류:", err);
     }
 });

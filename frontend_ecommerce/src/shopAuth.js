@@ -53,3 +53,18 @@ export async function callApi(path, { method = "GET", body, auth = false } = {})
 
 export const NICKNAME_RULE = "2~12자, 한글·영문·숫자·_ 만 가능해요.";
 export const NICKNAME_PATTERN = /^[가-힣A-Za-z0-9_]{2,12}$/;
+
+// 이메일 형식 검사 (화면과 서버가 같은 규칙을 써요). 예: name@example.com
+export const EMAIL_RULE = "이메일 형식으로 입력해 주세요. 예: name@example.com";
+export const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+
+// 전화번호: 숫자만 쳐도 010-1234-5678 모양으로 맞춰 줘요 (최대 11자리)
+export const PHONE_RULE = "전화번호는 010-1234-5678 형식으로 입력해 주세요.";
+export const PHONE_PATTERN = /^01[016789]-\d{3,4}-\d{4}$/;
+export function formatPhone(value) {
+  const d = String(value || "").replace(/\D/g, "").slice(0, 11);
+  if (d.length < 4) return d;
+  if (d.length < 8) return d.slice(0, 3) + "-" + d.slice(3);
+  if (d.length === 11) return d.slice(0, 3) + "-" + d.slice(3, 7) + "-" + d.slice(7);
+  return d.slice(0, 3) + "-" + d.slice(3, 6) + "-" + d.slice(6);
+}
