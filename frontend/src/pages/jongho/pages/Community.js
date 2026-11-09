@@ -232,8 +232,8 @@ function Community() {
                                                             </h2>
                                                             <button type="button" onClick={() => setDetail(null)}>닫기</button>
                                                         </div>
+                                                        <p>{detail.post.boardName} · {detail.post.authorName}{detail.post.isAnonymous ? '(익명)' : ''} · {detail.post.createdAt}</p>
                                                         <p>
-                                                            {detail.post.boardName} · {detail.post.authorName}{detail.post.isAnonymous ? '(익명)' : ''} · {detail.post.createdAt}
                                                             {detail.isArchived && <> · 삭제일 {detail.post.deletedAt}</>}
                                                         </p>
                                                         <div className="nexus-community-post-content">{detail.post.content}</div>
