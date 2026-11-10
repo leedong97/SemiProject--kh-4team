@@ -7,6 +7,11 @@ import HomePage from "./pages/HomePage";
 import DetailPage from "./pages/DetailPage";
 import QuotePage from "./pages/QuotePage";
 import FlowPage from "./pages/FlowPage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import NicknamePage from "./pages/NicknamePage";
+import { getSavedMember, saveSession, saveMember, clearSession } from "./shopAuth";
+import "./styles/auth.css";
 
 /**
  * App: 전체 데모의 상태를 한 곳에서 관리하는 부모 컴포넌트입니다.
@@ -24,6 +29,8 @@ export default function App() {
   const [page, setPage] = useState("home");
   const [selected, setSelected] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  // 로그인한 회원 (새로고침해도 localStorage 에서 복원). 없으면 null
+  const [member, setMember] = useState(() => getSavedMember());
 
   // 선택된 서비스 유형에 해당하는 상품 데이터입니다.
   const category = serviceData[type];
@@ -39,7 +46,7 @@ export default function App() {
       if (detailMatch) {
         setPage("detail");
         setSelected(Number(detailMatch[1]));
-      } else if (["home", "quote", "flow"].includes(hash)) {
+      } else if (["home", "quote", "flow", "login", "signup", "nickname"].includes(hash)) {
         setPage(hash);
       } else {
         setPage("home");
@@ -67,6 +74,25 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // 로그인/구글 로그인 성공 처리: 닉네임이 없으면 닉네임 설정 화면으로
+  const handleLoggedIn = (data) => {
+    saveSession(data.shopToken, data.member);
+    setMember(data.member);
+    navigate(data.needsNickname ? "nickname" : "home");
+  };
+
+  const handleNicknameSaved = (updatedMember) => {
+    saveMember(updatedMember);
+    setMember(updatedMember);
+    navigate("home");
+  };
+
+  const handleLogout = () => {
+    clearSession();
+    setMember(null);
+    navigate("home");
+  };
+
   const changeType = (nextType) => {
     // 유형을 변경하면 첫 상품을 기본값으로 하고 홈으로 돌아갑니다.
     setType(nextType);
@@ -84,7 +110,7 @@ export default function App() {
   return (
     <>
       {/* 공통 레이아웃: 페이지가 바뀌어도 헤더, 탭, 푸터는 그대로 표시됩니다. */}
-      <Header onNavigate={navigate} />
+      <Header onNavigate={navigate} member={member} onLogout={handleLogout} />
       <ServiceTabs type={type} onTypeChange={changeType} />
 
       <main className="page" id="app">
@@ -105,6 +131,11 @@ export default function App() {
           />
         )}
         {page === "flow" && <FlowPage type={type} />}
+        {page === "login" && <LoginPage onLoggedIn={handleLoggedIn} onNavigate={navigate} />}
+        {page === "signup" && <SignupPage onSignedUp={() => navigate("login")} onNavigate={navigate} />}
+        {page === "nickname" && (member
+          ? <NicknamePage member={member} onSaved={handleNicknameSaved} onNavigate={navigate} />
+          : <LoginPage onLoggedIn={handleLoggedIn} onNavigate={navigate} />)}
       </main>
 
       <Footer />

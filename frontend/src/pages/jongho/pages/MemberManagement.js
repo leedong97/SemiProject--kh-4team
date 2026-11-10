@@ -5,7 +5,7 @@ import { canLeadProject } from "../shared/permissions";
 import EmployeePicker from "../components/EmployeePicker";
 import { matchesProjectSearch } from "../utils/projectFilters";
 import usePagination from "../utils/usePagination";
-import Pager from "../components/Pager";
+import NumberedPager from "../components/NumberedPager";
 import SearchSortBar from "../components/SearchSortBar";
 import { compareText, compareNumber, descending, sortByOption } from "../utils/listSort";
 
@@ -77,7 +77,7 @@ function MemberManagement({
     const sortedProjects = sortByOption(filteredProjects, sortOption, sortRules);
 
     // 한 페이지 10개씩 (검색이나 정렬이 바뀌면 1페이지로)
-    const { pageItems: pagedProjects, currentPage, totalPages, total, goPrev, goNext } =
+    const { pageItems: pagedProjects, currentPage, totalPages, total, goTo } =
         usePagination(sortedProjects, MEMBER_PAGE_SIZE, [search, sortOption]);
     const pageOffset = (currentPage - 1) * MEMBER_PAGE_SIZE;
 
@@ -301,8 +301,7 @@ function MemberManagement({
 
                 </div>
 
-                <Pager currentPage={currentPage} totalPages={totalPages} total={total}
-                    onPrev={goPrev} onNext={goNext} />
+                <NumberedPager currentPage={currentPage} totalPages={totalPages} total={total} pageSize={MEMBER_PAGE_SIZE} onPage={goTo} />
 
             </div>
 

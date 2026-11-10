@@ -173,7 +173,7 @@ router.get('/community/posts', async (req, res) => {
     const live = rows.map((r) => ({
       ...r,
       isArchived: false,
-      authorName: r.isAnonymous ? '익명' : r.authorName,
+      authorName: r.authorName,
     }));
     const dead = archived.map((r) => ({
       id: `archive-${r.id}`,
@@ -209,17 +209,23 @@ router.get('/community/posts/:id', async (req, res) => {
     `, [postId]);
     if (!posts.length) return res.status(404).json({ message: '게시글을 찾을 수 없습니다.' });
     const post = posts[0];
-    post.authorName = post.isAnonymous ? '익명' : post.authorName;
     post.isDeleted = false;
 
     const [comments] = await pool.query(`
-      SELECT c.id, c.parent_id AS parentId, c.content, c.is_deleted AS isDeleted, e.employee_name AS authorName,
-             DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i') AS createdAt
+      SELECT
+          c.id,
+          c.parent_id AS parentId,
+          c.content,
+          c.is_deleted AS isDeleted,
+          c.is_anonymous AS isAnonymous,
+          e.employee_name AS authorName,
+          DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i') AS createdAt
       FROM community_comment c
       LEFT JOIN employees e ON e.employee_id = c.author_id
       WHERE c.post_id = ?
       ORDER BY c.id
-    `, [postId]);
+  `, [postId]);
+
     res.json({
       isArchived: false,
       post,
@@ -293,13 +299,19 @@ router.delete('/community/posts/:id', async (req, res) => {
     const post = posts[0];
 
     const [comments] = await conn.query(`
-      SELECT c.id, c.parent_id AS parentId, c.content, c.is_deleted AS isDeleted, e.employee_name AS authorName,
-             DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i') AS createdAt
+      SELECT
+          c.id,
+          c.parent_id AS parentId,
+          c.content,
+          c.is_deleted AS isDeleted,
+          c.is_anonymous AS isAnonymous,
+          e.employee_name AS authorName,
+          DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i') AS createdAt
       FROM community_comment c
       LEFT JOIN employees e ON e.employee_id = c.author_id
       WHERE c.post_id = ?
       ORDER BY c.id
-    `, [postId]);
+  `, [postId]);
 
     await conn.query(`
       INSERT INTO community_post_archive
@@ -310,7 +322,7 @@ router.delete('/community/posts/:id', async (req, res) => {
       post.boardName,
       post.title,
       post.content,
-      post.isAnonymous ? '익명' : post.authorName,
+      post.authorName,
       post.isAnonymous ? 1 : 0,
       post.createdAt,
       JSON.stringify(comments),
@@ -324,7 +336,7 @@ router.delete('/community/posts/:id', async (req, res) => {
     res.json({ message: '게시글을 삭제했습니다.' });
   } catch (err) {
     console.error('[커뮤니티 게시글 삭제 실패]', err);
-    if (conn) await conn.rollback().catch(() => {});
+    if (conn) await conn.rollback().catch(() => { });
     res.status(500).json({ message: `게시글 삭제에 실패했습니다. (${err.code || err.message})` });
   } finally {
     if (conn) conn.release();

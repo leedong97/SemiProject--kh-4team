@@ -1,5 +1,6 @@
 // 공용 알림 저장 함수 (알림 저장이 실패해도 호출한 쪽 기능은 멈추지 않게 try-catch 로 감쌌어요)
 const pool = require("./db");
+const bus = require("./notifyBus"); // 알림이 저장되면 실시간 연결(SSE)에 알려주는 방송국
 
 async function createNotification(employeeId, type, message, link) {
     const id = Number(employeeId);
@@ -13,6 +14,7 @@ async function createNotification(employeeId, type, message, link) {
              VALUES (?, ?, ?, ?)`,
             [id, type, message, link || null]
         );
+        bus.emit("notification", id); // "id 번 직원에게 새 알림!" 방송 (듣는 사람이 없으면 아무 일도 안 일어나요)
     } catch (err) {
         console.error("알림 저장 오류:", err.code, err.message);
     }

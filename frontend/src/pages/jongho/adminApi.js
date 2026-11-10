@@ -17,3 +17,16 @@ export function getPendingProjectRequests(type) {
     if (type) query.set('type', type);
     return adminRequest('/project-requests?' + query.toString());
 }
+
+// 견적 요청 목록 (전체, 최신순). 상태 필터는 화면에서 한다.
+export function getQuoteRequests() {
+    return adminRequest('/quote-requests');
+}
+
+// 견적 상태 변경 (접수 / 검토중 / 처리완료)
+export function updateQuoteStatus(quoteId, status) {
+    return adminRequest('/quote-requests/' + quoteId + '/status', {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+    });
+}

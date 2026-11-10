@@ -22,5 +22,6 @@ export default function usePagination(items, pageSize, resetKeys = []) {
     total: items.length,
     goPrev: () => setPage(currentPage - 1),
     goNext: () => setPage(currentPage + 1),
+    goTo: (pageNumber) => setPage(Math.min(Math.max(1, pageNumber), totalPages)),
   };
 }

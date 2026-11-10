@@ -17,21 +17,57 @@ router.get('/schedules', requireAuth, async (req, res) => {
 
         // 현재 코드는 직원별 참여 여부로 제한하지 않고
         // 시작일이 있는 프로젝트의 일정을 조회한다
+        // 로그인한 직원의 일정 시작일과 종료일 조회
+        // 하루짜리 일정은 한 번만 표시한다.
         const [scheduleRows] = await db.query(`
-            SELECT
-                schedule_title AS title,
-                DATE_FORMAT(
-                    schedule_start_date,
-                    '%Y-%m-%d'
-                ) AS date,
-                COALESCE(
-                    TIME_FORMAT(schedule_time, '%H:%i'),
-                    ''
-                ) AS time,
-                schedule_type AS type
-            FROM schedules
-            WHERE employee_id = ?
-        `, [employeeId]);
+    SELECT
+        CASE
+            WHEN schedule_end_date IS NULL
+                OR schedule_start_date = schedule_end_date
+            THEN schedule_title
+            ELSE CONCAT('[시작] ', schedule_title)
+        END AS title,
+
+        DATE_FORMAT(
+            schedule_start_date,
+            '%Y-%m-%d'
+        ) AS date,
+
+        COALESCE(
+            TIME_FORMAT(schedule_time, '%H:%i'),
+            ''
+        ) AS time,
+
+        schedule_type AS type
+
+    FROM schedules
+
+    WHERE employee_id = ?
+      AND schedule_start_date IS NOT NULL
+
+    UNION ALL
+
+    SELECT
+        CONCAT('[종료] ', schedule_title) AS title,
+
+        DATE_FORMAT(
+            schedule_end_date,
+            '%Y-%m-%d'
+        ) AS date,
+
+        '' AS time,
+
+        schedule_type AS type
+
+    FROM schedules
+
+    WHERE employee_id = ?
+      AND schedule_end_date IS NOT NULL
+      AND (
+          schedule_start_date IS NULL
+          OR schedule_end_date > schedule_start_date
+      )
+`, [employeeId, employeeId]);
 
 
         /* 2. 프로젝트 시작일 */

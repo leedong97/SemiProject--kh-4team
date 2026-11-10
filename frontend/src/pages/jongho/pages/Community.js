@@ -209,7 +209,7 @@ function Community() {
                                                 {p.isArchived && <span className="nexus-deleted-badge">삭제됨</span>}
                                                 {p.title}
                                             </td>
-                                            <td>{p.authorName}</td>
+                                            <td>{p.authorName}{p.isAnonymous ? '(익명)' : ''}</td>
                                             <td>{p.createdAt}</td>
                                             <td>{p.commentCount}</td>
                                             <td><div className="boards-actions">
@@ -232,8 +232,8 @@ function Community() {
                                                             </h2>
                                                             <button type="button" onClick={() => setDetail(null)}>닫기</button>
                                                         </div>
+                                                        <p>{detail.post.boardName} · {detail.post.authorName}{detail.post.isAnonymous ? '(익명)' : ''} · {detail.post.createdAt}</p>
                                                         <p>
-                                                            {detail.post.boardName} · {detail.post.authorName} · {detail.post.createdAt}
                                                             {detail.isArchived && <> · 삭제일 {detail.post.deletedAt}</>}
                                                         </p>
                                                         <div className="nexus-community-post-content">{detail.post.content}</div>
@@ -248,7 +248,7 @@ function Community() {
                                                         {arrangeComments(detail.comments).map((c) => (
                                                             <div key={c.id} className={`nexus-community-comment${c.depth === 1 ? " is-reply nexus-reply-row" : ""}`}>
                                                                 <div className="nexus-community-comment-content">
-                                                                    <small>{c.depth === 1 && <span className="nexus-reply-mark">↳ 대댓글 · </span>}{c.authorName} · {c.createdAt}</small>
+                                                                    <small>{c.depth === 1 && <span className="nexus-reply-mark">↳ 대댓글 · </span>}{c.authorName}{c.isAnonymous ? '(익명)' : ''} · {c.createdAt}</small>
                                                                     {c.isDeleted && <div><span className="nexus-deleted-badge">삭제된 댓글입니다.</span></div>}
                                                                     <div className={c.isDeleted ? "nexus-deleted-content" : ""}>{c.content}</div>
                                                                 </div>

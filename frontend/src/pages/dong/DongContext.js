@@ -39,7 +39,26 @@ export function DongProvider({ children }) {
 
     loadData();
   }, []);
+  useEffect(() => {
+    let active = true;
+    const events = new EventSource(`${API_BASE}/api/dong/issues/events`);
 
+    events.onmessage = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/dong/issues`);
+        if (!response.ok) throw new Error('서버 응답 오류');
+        const latestIssues = await response.json();
+        if (active) setIssues(latestIssues);
+      } catch (err) {
+        console.error('이슈 상태 갱신 실패:', err);
+      }
+    };
+
+    return () => {
+      active = false;
+      events.close();
+    };
+  }, []);
   const value = {
     projects,
     issues,
