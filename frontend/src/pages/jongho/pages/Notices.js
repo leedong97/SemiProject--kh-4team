@@ -5,7 +5,7 @@ import getLoginUser from "../../woojin/getLoginUser";
 import { adminRequest } from "../adminApi";
 import useSortableList from "../utils/useSortableList";
 import usePagination from "../utils/usePagination";
-import Pager from "../components/Pager";
+import NumberedPager from "../components/NumberedPager";
 
 const PAGE_SIZE = 10;
 
@@ -171,10 +171,10 @@ function Notices() {
                 String(item.content || "").toLowerCase().includes(keyword)
             );
 
-        // 정렬을 고르지 않았으면 최신순(번호 큰 것부터)
+        // 정렬을 고르지 않았으면 등록 순서(오래된 순, 번호 작은 것부터)
         const ordered = sortKey
             ? sortItems(matched)
-            : [...matched].sort((a, b) => Number(b.id) - Number(a.id));
+            : [...matched].sort((a, b) => Number(a.id) - Number(b.id));
 
         // 고정 공지는 정렬과 상관없이 항상 위
         return [
@@ -183,8 +183,14 @@ function Notices() {
         ];
     }, [info, search, pinnedOnly, period, sortKey, sortItems]);
 
-    const { pageItems, currentPage, totalPages, total, goPrev, goNext } =
-        usePagination(filteredInfo, PAGE_SIZE, [search, pinnedOnly, period, sortKey]);
+    // 번호는 화면 순서대로 1부터 이어서 매긴다 (위에서 아래로 1, 2, 3 ...)
+    const numbered = useMemo(
+        () => filteredInfo.map((item, index) => ({ ...item, displayNo: index + 1 })),
+        [filteredInfo]
+    );
+
+    const { pageItems, currentPage, totalPages, total, goTo } =
+        usePagination(numbered, PAGE_SIZE, [search, pinnedOnly, period, sortKey]);
 
     return (
         <div className="admin-boards">
@@ -286,7 +292,7 @@ function Notices() {
                                 <tr><td colSpan="6" className="boards-empty">등록된 공지사항이 없습니다.</td></tr>
                             ) : pageItems.map(item => (
                                 <tr key={item.id}>
-                                    <td>{item.id}</td>
+                                    <td>{item.displayNo}</td>
                                     <td className="boards-title-cell">
                                         {Boolean(item.isPinned) && <span className="boards-important">고정</span>}
                                         {item.title}
@@ -307,8 +313,7 @@ function Notices() {
                     </table>
                 </div>
 
-                <Pager currentPage={currentPage} totalPages={totalPages} total={total}
-                    onPrev={goPrev} onNext={goNext} />
+                <NumberedPager currentPage={currentPage} totalPages={totalPages} total={total} pageSize={PAGE_SIZE} onPage={goTo} />
             </div>
         </div>
     );

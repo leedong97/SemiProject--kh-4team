@@ -3,9 +3,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { adminRequest } from "../adminApi";
 import { matchesProjectSearch } from "../utils/projectFilters";
 import usePagination from "../utils/usePagination";
-import Pager from "../components/Pager";
+import NumberedPager from "../components/NumberedPager";
 import { DEFAULT_PROJECT_STATUS, PROJECT_STATUS } from "../shared/projectConstants";
 import ProjectRequestList from "../components/ProjectRequestList";
+import QuoteRequestList from "../components/QuoteRequestList";
+import { getQuoteRequests, updateQuoteStatus } from "../adminApi";
 import ProjectRegisterForm from "../components/ProjectRegisterForm";
 import ProjectDetail from "../components/ProjectDetail";
 import ProjectTable from "../components/ProjectTable";
@@ -57,6 +59,103 @@ function ProjectManagement({
   // 대기 중인 완료 요청 목록 (requests 테이블)
   const [pendingRequests, setPendingRequests] = useState([]);
   const [requestBusy, setRequestBusy] = useState(false);
+  // 목록 구분 탭: 프로젝트 / 완료 요청 / 견적 요청
+  const [listTab, setListTab] = useState("projects");
+  // 견적 요청 (쇼핑 고객이 보낸 것)
+  const [quotes, setQuotes] = useState([]);
+  const [quoteStatus, setQuoteStatus] = useState("all");
+  const [quoteBusy, setQuoteBusy] = useState(false);
+  // 탭별 검색어
+  const [requestSearch, setRequestSearch] = useState("");
+  const [quoteSearch, setQuoteSearch] = useState("");
+
+  const keywordOf = (text) => String(text || "").toLowerCase();
+  const matchKeyword = (keyword, fields) => {
+    const word = keyword.trim().toLowerCase();
+    return !word || fields.some((field) => keywordOf(field).includes(word));
+  };
+
+  // 탭별 정렬 선택
+  const [requestSort, setRequestSort] = useState("latest");
+  const [quoteSort, setQuoteSort] = useState("company");
+
+  const REQUEST_SORT_OPTIONS = [
+    { value: "latest", label: "요청일 최신순" },
+    { value: "oldest", label: "요청일 오래된순" },
+    { value: "project", label: "프로젝트명순" },
+    { value: "requester", label: "요청자순" },
+  ];
+  const QUOTE_SORT_OPTIONS = [
+    { value: "company", label: "기업명순" },
+    { value: "applicant", label: "신청자 이름순" },
+    { value: "latest", label: "최신순" },
+    { value: "status", label: "상태순" },
+  ];
+  const QUOTE_STATUS_RANK = { "접수": 0, "검토중": 1, "처리완료": 2 };
+
+  const REQUEST_SORT_RULES = {
+    latest: descending((a, b) => compareDate(a.requestedAt, b.requestedAt)),
+    oldest: (a, b) => compareDate(a.requestedAt, b.requestedAt),
+    project: (a, b) => compareText(a.projectName, b.projectName),
+    requester: (a, b) => compareText(a.requesterName, b.requesterName),
+  };
+  const QUOTE_SORT_RULES = {
+    company: (a, b) => compareText(a.company, b.company) || Number(a.id) - Number(b.id),
+    applicant: (a, b) => compareText(a.applicantName, b.applicantName) || Number(a.id) - Number(b.id),
+    latest: descending((a, b) => Number(a.id) - Number(b.id)),
+    status: (a, b) =>
+      (QUOTE_STATUS_RANK[a.status] ?? 9) - (QUOTE_STATUS_RANK[b.status] ?? 9) || Number(a.id) - Number(b.id),
+  };
+
+  // 완료 요청: 프로젝트명, 요청 제목, 요청자, 사유로 검색 → 선택한 정렬
+  const visibleRequests = sortByOption(
+    pendingRequests.filter((req) =>
+      matchKeyword(requestSearch, [req.projectName, req.title, req.requesterName, req.reason])
+    ),
+    requestSort,
+    REQUEST_SORT_RULES
+  );
+
+  // 견적 요청: 기업명, 서비스, 이메일, 요구사항으로 검색 → 상태 필터 → 선택한 정렬
+  const visibleQuotes = sortByOption(
+    quotes
+      .filter((q) => matchKeyword(quoteSearch, [q.company, q.service, q.email, q.requirements]))
+      .filter((q) => quoteStatus === "all" || q.status === quoteStatus),
+    quoteSort,
+    QUOTE_SORT_RULES
+  );
+
+  const loadQuotes = async () => {
+    try {
+      setQuotes(await getQuoteRequests());
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const changeQuoteStatus = async (quoteId, status) => {
+    setQuoteBusy(true);
+    try {
+      await updateQuoteStatus(quoteId, status);
+      await loadQuotes();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setQuoteBusy(false);
+    }
+  };
+
+  // 견적은 30초마다 자동으로 다시 불러온다 (헤더 알림과 같은 주기)
+  useEffect(() => {
+    loadQuotes();
+    const timer = setInterval(loadQuotes, 30000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // 견적 탭을 열 때도 바로 다시 불러온다
+  useEffect(() => {
+    if (listTab === "quotes") loadQuotes();
+  }, [listTab]);
 
   // 신규 프로젝트 입력 데이터
   const [form, setForm] = useState({
@@ -206,7 +305,7 @@ function ProjectManagement({
   const sortedProjects = sortByOption(filteredProjects, sortOption, sortRules);
 
   // 페이지 나누기 (한 페이지 15개, 검색·필터·정렬이 바뀌면 1페이지로)
-  const { pageItems: pagedProjects, currentPage, totalPages, total, goPrev, goNext } =
+  const { pageItems: pagedProjects, currentPage, totalPages, total, goTo } =
     usePagination(sortedProjects, PROJECT_PAGE_SIZE, [search, overdueOnly, sortOption]);
 
 
@@ -348,6 +447,18 @@ function ProjectManagement({
             </button>
           </div>
 
+          <FilterChips
+            label="목록 구분"
+            value={listTab}
+            onChange={setListTab}
+            options={[
+              { value: "projects", label: "프로젝트" },
+              { value: "requests", label: `완료 요청 (${pendingRequests.length})` },
+              { value: "quotes", label: `견적 요청 (${quotes.filter((q) => q.status === "접수").length})` },
+            ]}
+          />
+
+          {listTab === "projects" && (
           <div className="card nexus-project-panel">
 
             <SearchSortBar
@@ -369,16 +480,6 @@ function ProjectManagement({
               ]}
             />
 
-            {pendingRequests.length > 0 && (
-              <ProjectRequestList
-                requests={pendingRequests}
-                busy={requestBusy}
-                onOpenProject={openDetail}
-                onApprove={approveRequest}
-                onReject={rejectRequest}
-              />
-            )}
-
             <ProjectTable
               startIndex={(currentPage - 1) * PROJECT_PAGE_SIZE}
               projects={pagedProjects}
@@ -390,9 +491,66 @@ function ProjectManagement({
               onDeleteProject={deleteProject}
             />
 
-            <Pager currentPage={currentPage} totalPages={totalPages} total={total}
-              onPrev={goPrev} onNext={goNext} />
+            <NumberedPager currentPage={currentPage} totalPages={totalPages} total={total} pageSize={PROJECT_PAGE_SIZE} onPage={goTo} />
           </div>
+          )}
+
+          {listTab === "requests" && (
+            <>
+              <SearchSortBar
+                searchId="request-search"
+                placeholder="프로젝트명·요청 제목·요청자 검색"
+                search={requestSearch}
+                onSearchChange={setRequestSearch}
+                selects={[
+                  { id: "request-sort", label: "정렬 기준", value: requestSort, onChange: setRequestSort, options: REQUEST_SORT_OPTIONS },
+                ]}
+              />
+              {visibleRequests.length > 0 ? (
+                <ProjectRequestList
+                  requests={visibleRequests}
+                  busy={requestBusy}
+                  onOpenProject={openDetail}
+                  onApprove={approveRequest}
+                  onReject={rejectRequest}
+                />
+              ) : (
+                <div className="card nexus-project-panel">
+                  <p>{pendingRequests.length > 0 ? "검색 결과가 없습니다." : "대기 중인 완료 요청이 없습니다."}</p>
+                </div>
+              )}
+            </>
+          )}
+
+          {listTab === "quotes" && (
+            <>
+              <SearchSortBar
+                searchId="quote-search"
+                placeholder="기업명·서비스·이메일·요구사항 검색"
+                search={quoteSearch}
+                onSearchChange={setQuoteSearch}
+                selects={[
+                  { id: "quote-sort", label: "정렬 기준", value: quoteSort, onChange: setQuoteSort, options: QUOTE_SORT_OPTIONS },
+                ]}
+              />
+              <FilterChips
+                label="견적 상태"
+                value={quoteStatus}
+                onChange={setQuoteStatus}
+                options={[
+                  { value: "all", label: "전체" },
+                  { value: "접수", label: "접수" },
+                  { value: "검토중", label: "검토중" },
+                  { value: "처리완료", label: "처리완료" },
+                ]}
+              />
+              <QuoteRequestList
+                quotes={visibleQuotes}
+                busy={quoteBusy}
+                onChangeStatus={changeQuoteStatus}
+              />
+            </>
+          )}
         </>
 
       ) : page === "detail" ? (
