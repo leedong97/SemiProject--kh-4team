@@ -39,10 +39,10 @@ router.post('/quotes', requireShopAuth, async (req, res) => {
 
   try {
     const [result] = await db.execute(
-   `INSERT INTO shop_quote_requests
-  (member_id, service_name, company_name, contact_email, budget, requirements)
- VALUES (?, ?, ?, ?, ?, ?)`,
-[req.member.member_id, service, company, email, budget, requirements]
+        `INSERT INTO shop_quote_requests
+        (member_id, service_name, company_name, contact_email, budget, requirements)
+        VALUES (?, ?, ?, ?, ?, ?)`,
+        [req.member.member_id, service, company, email, budget, requirements]
     );
 
     return res.status(201).json({

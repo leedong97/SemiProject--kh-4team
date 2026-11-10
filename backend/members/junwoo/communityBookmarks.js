@@ -215,7 +215,7 @@ router.get("/mine", async function (req, res) {
                 p.board_name AS boardName,
                 CASE
                     WHEN p.is_anonymous = 1
-                    THEN CONCAT('익명', COALESCE(a.anonymous_number, ''))
+                    THEN '익명'
                     ELSE COALESCE(e.employee_name, '작성자 미등록')
                 END AS authorName
              FROM community_bookmark b
