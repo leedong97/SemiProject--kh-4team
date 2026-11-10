@@ -1,6 +1,7 @@
 
 import { Navigate, useRoutes, useLocation } from 'react-router-dom';
 import TeamShell from './shared/TeamShell';
+import PricingPage from './pages/pricing/PricingPage';
 
 // 기존 팀원 페이지
 import * as woojin from './pages/woojin';
@@ -9,12 +10,6 @@ import * as dong from './pages/dong';
 import * as junwoo from './pages/junwoo';
 import * as jongho from './pages/jongho';
 
-// 고객용 데모 페이지
-import { previewRoutes } from './pages/preview';
-
-// 이커머스 맛보기
-import PricingPage from "./pages/pricing/PricingPage";
-
 const members = [woojin, heeseung, dong, junwoo, jongho];
 
 function App() {
@@ -22,11 +17,6 @@ function App() {
   const location = useLocation();
 
   const element = useRoutes([
-
-
-
-    // 1. 고객 확인용 데모 화면
-    ...previewRoutes,
 
     // 이커머스 요금제 페이지
     {
@@ -51,17 +41,8 @@ function App() {
 
   ]);
 
-  // 고객용 데모는 DB Provider 없이 실행
+  // 요금제 화면은 ERP 데이터 Provider 없이 표시
   if (
-    location.pathname === '/preview' ||
-    location.pathname.startsWith('/preview/')
-  ) {
-    return element;
-  }
-
-  if (
-    location.pathname === '/preview' ||
-    location.pathname.startsWith('/preview/') ||
     location.pathname === '/pricing' ||
     location.pathname.startsWith('/pricing/')
   ) {

@@ -18,7 +18,7 @@ export default function Workload() {
         />
         <div className="card nexus-workload-list">{employees.map(e => <div className="nexus-workload-row" key={e.id}>
             <div className="nexus-workload-name"><strong>{e.name}</strong><small>{e.team || '미지정'} · {e.rank || '직급 미정'}</small></div>
-            <div className="nexus-workload-chart"><div className="nexus-workload-track"><div style={{width: (e.projects + e.issues) / max * 100 + '%'}} /></div><small>프로젝트 {e.projects}건 / 이슈 {e.issues}건</small></div>
+            <div className="nexus-workload-chart"><div className="nexus-workload-track"><div className="nexus-workload-fill" style={{ "--workload-width": `${(e.projects + e.issues) / max * 100}%` }} /></div><small>프로젝트 {e.projects}건 / 이슈 {e.issues}건</small></div>
             <strong>{e.projects + e.issues}건</strong>
         </div>)}{!employees.length && <p>직원 데이터가 없습니다.</p>}</div>
     </div>;

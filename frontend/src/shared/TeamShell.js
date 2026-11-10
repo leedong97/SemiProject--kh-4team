@@ -28,7 +28,7 @@ function TeamShell() {
       axios
         .get(`${API_BASE}/api/notifications`, { params: { employeeId: user.id } })
         .then((res) => setUnreadCount(res.data.unreadCount || 0))
-        .catch(() => {}); // 실패해도 화면은 그대로 (다음 3초 뒤에 다시 시도)
+        .catch(() => { }); // 실패해도 화면은 그대로 (다음 3초 뒤에 다시 시도)
     };
 
     load();
@@ -72,11 +72,7 @@ function TeamShell() {
 
       <div className={'community-menu' + (on('/community') ? ' active' : '')}>
         <h3>
-          <Link
-            to="/community"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link to="/community">
             커뮤니티
           </Link>
         </h3>

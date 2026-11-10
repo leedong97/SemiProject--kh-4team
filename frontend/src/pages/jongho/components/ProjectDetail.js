@@ -3,6 +3,39 @@ import { adminRequest } from "../adminApi";
 import { PROJECT_STATUS_OPTIONS, DEFAULT_PROJECT_STATUS } from "../shared/projectConstants";
 import { getProgress, isInvalidDateRange } from "../utils/projectHelpers";
 
+// 진행률 입력: 스크롤바(슬라이더)와 숫자 입력칸이 같은 값을 보여준다
+function ProgressField({ label, value, step, onChange }) {
+  const number = Number(value);
+  const sliderValue = value === "" || !Number.isFinite(number) ? 0 : Math.min(100, Math.max(0, number));
+
+  return (
+    <div className="nexus-progress-field">
+      <span className="nexus-progress-label">{label}</span>
+      <div className="nexus-progress-control">
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step={step}
+          value={sliderValue}
+          aria-label={`${label} 스크롤바`}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        <input
+          type="number"
+          min="0"
+          max="100"
+          step={step}
+          value={value}
+          aria-label={`${label} 숫자`}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        <span className="nexus-progress-unit">%</span>
+      </div>
+    </div>
+  );
+}
+
 // 프로젝트 상세정보 화면: 기본 정보 보기, 정보 수정, 완료 요청 승인
 function ProjectDetail({ project, manager, pendingRequest, busy, onApprove, onClose, setProjects, customers = [] }) {
   const selectedProject = project;
@@ -127,7 +160,7 @@ function ProjectDetail({ project, manager, pendingRequest, busy, onApprove, onCl
         <strong>{getProgress(value)}%</strong>
       </div>
       <div className="nexus-detail-track">
-        <div className={`nexus-detail-fill ${kind}`} style={{ width: `${getProgress(value)}%` }} />
+        <div className={`nexus-detail-fill ${kind}`} style={{ "--progress-width": `${getProgress(value)}%` }} />
       </div>
     </>
   );
@@ -237,15 +270,19 @@ function ProjectDetail({ project, manager, pendingRequest, busy, onApprove, onCl
                   <input type="date" value={editForm.endDate} onChange={updateEdit("endDate")} />
                 </label>
 
-                <label>
-                  실제 진행률 (%)
-                  <input type="number" min="0" max="100" step="1" value={editForm.progress} onChange={updateEdit("progress")} />
-                </label>
+                <ProgressField
+                  label="실제 진행률"
+                  value={editForm.progress}
+                  step="1"
+                  onChange={(value) => setEditForm((prev) => ({ ...prev, progress: value }))}
+                />
 
-                <label>
-                  계획 진행률 (%)
-                  <input type="number" min="0" max="100" step="0.01" value={editForm.plannedProgress} onChange={updateEdit("plannedProgress")} />
-                </label>
+                <ProgressField
+                  label="계획 진행률"
+                  value={editForm.plannedProgress}
+                  step="0.01"
+                  onChange={(value) => setEditForm((prev) => ({ ...prev, plannedProgress: value }))}
+                />
 
                 <label className="nexus-detail-edit-full">
                   설명
@@ -264,7 +301,7 @@ function ProjectDetail({ project, manager, pendingRequest, busy, onApprove, onCl
             </div>
           ) : (
             <div className="nexus-detail-edit-toggle">
-              <button type="button" className="btn btn-ghost" onClick={startEdit}>
+              <button type="button" className="nexus-detail-edit-btn" onClick={startEdit}>
                 정보 수정
               </button>
             </div>

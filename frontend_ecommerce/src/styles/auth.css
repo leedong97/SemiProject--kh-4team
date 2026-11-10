@@ -1,0 +1,34 @@
+/* 로그인 / 회원가입 / 닉네임 화면 + 헤더 로그인 버튼 (shop-auth-* / nav-* 접두사) */
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.nav-user { font-size: 14px; font-weight: 600; white-space: nowrap; }
+.nav-login {
+  border: 1px solid currentColor; background: transparent; color: inherit;
+  border-radius: 999px; padding: 8px 16px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.nav-login:hover { opacity: 0.75; }
+
+.shop-auth-card { max-width: 440px; margin: 24px auto 64px; }
+.shop-auth-card h1 { margin-bottom: 6px; }
+.shop-auth-form { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+/* 기존 .form-wrap 의 2열 규칙과 무관하게 1열로 쓰이도록 */
+.shop-auth-form .field { margin: 0; width: 100%; }
+.shop-auth-form .field input { width: 100%; box-sizing: border-box; }
+.shop-auth-submit { width: 100%; }
+.shop-auth-nick-row { display: flex; gap: 8px; }
+.shop-auth-nick-row input { flex: 1; min-width: 0; }
+.shop-auth-check { white-space: nowrap; padding-left: 14px; padding-right: 14px; }
+.shop-auth-hint { margin: 6px 0 0; font-size: 13px; opacity: 0.7; }
+.shop-auth-ok { color: #1a8a4a; opacity: 1; }
+.shop-auth-bad, .shop-auth-error { color: #d23b3b; opacity: 1; }
+.shop-auth-error { margin: 0; font-size: 14px; }
+.shop-auth-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 16px; font-size: 13px; opacity: 0.6; }
+.shop-auth-divider::before, .shop-auth-divider::after { content: ""; flex: 1; border-top: 1px solid currentColor; opacity: 0.3; }
+.shop-auth-google { display: flex; justify-content: center; min-height: 44px; }
+.shop-auth-switch { margin-top: 24px; text-align: center; font-size: 14px; }
+.shop-auth-link { border: 0; background: none; color: inherit; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; padding: 0; }
+
+@media (max-width: 640px) {
+  .nav-actions { gap: 6px; }
+  .nav-login { padding: 6px 10px; font-size: 13px; }
+  .nav-user { display: none; }
+}

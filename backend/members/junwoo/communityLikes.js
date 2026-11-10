@@ -2,7 +2,15 @@ const express = require("express");
 const db = require("../../db");
 const { createNotification } = require("../../notify");
 
+const {
+    session,
+    requireUser
+} = require("../dong/communitySession");
+
 const router = express.Router();
+
+// 아래 모든 요청은 로그인한 직원만 처리
+router.use(session, requireUser);
 
 // ===================================
 // 좋아요 개수 + 내가 눌렀는지 조회
@@ -11,21 +19,7 @@ const router = express.Router();
 router.get("/", async function (req, res) {
     const postId = Number(req.query.postId);
 
-    // 로그인 정보가 없으면 0으로 조회
-    let employeeId = 0;
-
-    if (req.query.employeeId !== undefined) {
-        employeeId = Number(req.query.employeeId);
-
-        if (
-            !Number.isSafeInteger(employeeId) ||
-            employeeId < 1
-        ) {
-            return res.status(400).json({
-                message: "직원 정보를 확인해주세요."
-            });
-        }
-    }
+    const employeeId = Number(req.communityUser.id);
 
     if (!Number.isSafeInteger(postId) || postId < 1) {
         return res.status(400).json({
@@ -83,7 +77,7 @@ router.get("/", async function (req, res) {
 
 router.post("/", async function (req, res) {
     const postId = Number(req.body.postId);
-    const employeeId = Number(req.body.employeeId);
+    const employeeId = Number(req.communityUser.id);
 
     if (
         !Number.isSafeInteger(postId) ||
@@ -175,7 +169,7 @@ router.post("/", async function (req, res) {
 
 router.delete("/", async function (req, res) {
     const postId = Number(req.body.postId);
-    const employeeId = Number(req.body.employeeId);
+    const employeeId = Number(req.communityUser.id);
 
     if (
         !Number.isSafeInteger(postId) ||

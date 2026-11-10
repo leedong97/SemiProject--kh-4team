@@ -31,7 +31,7 @@ async function requireShopAuth(req, res, next) {
         if (!Number.isInteger(data.id) || !Number.isFinite(data.exp) || data.exp < Date.now()) {
             return res.status(401).json({ message: "로그인이 만료되었습니다." });
         }
-        const [rows] = await pool.query("SELECT member_id, member_name, email, phone FROM shop_members WHERE member_id = ?", [data.id]);
+        const [rows] = await pool.query("SELECT member_id, member_name, nickname, email, phone FROM shop_members WHERE member_id = ?", [data.id]);
         if (!rows[0]) return res.status(403).json({ message: "사용할 수 없는 계정입니다." });
         req.member = rows[0];
         next();

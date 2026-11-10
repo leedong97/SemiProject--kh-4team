@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { adminRequest } from "../adminApi";
 import { matchesProjectSearch } from "../utils/projectFilters";
-import useSortableList from "../utils/useSortableList";
 import usePagination from "../utils/usePagination";
 import Pager from "../components/Pager";
 import { DEFAULT_PROJECT_STATUS, PROJECT_STATUS } from "../shared/projectConstants";
@@ -10,10 +9,24 @@ import ProjectRequestList from "../components/ProjectRequestList";
 import ProjectRegisterForm from "../components/ProjectRegisterForm";
 import ProjectDetail from "../components/ProjectDetail";
 import ProjectTable from "../components/ProjectTable";
+import FilterChips from "../components/FilterChips";
+import SearchSortBar from "../components/SearchSortBar";
 import { isInvalidDateRange } from "../utils/projectHelpers";
 import { findEmployee } from "../shared/employees";
+import { compareText, compareNumber, compareDate, descending, sortByOption } from "../utils/listSort";
 
 const PROJECT_PAGE_SIZE = 10;
+
+// 정렬 선택지 (인원 관리 화면과 같은 드롭다운 방식)
+const SORT_OPTIONS = [
+  { value: "default", label: "기본순" },
+  { value: "name", label: "프로젝트명순" },
+  { value: "customer", label: "고객사순" },
+  { value: "status", label: "상태순" },
+  { value: "manager", label: "담당자순" },
+  { value: "endDate", label: "종료일 빠른순" },
+  { value: "progress", label: "진행률 높은순" },
+];
 function ProjectManagement({
   projects = [],
   setProjects,
@@ -35,6 +48,8 @@ function ProjectManagement({
   // 프로젝트 검색어
   const [search, setSearch] = useState("");
   const [overdueOnly, setOverdueOnly] = useState(false);
+  // 정렬 선택 (드롭다운)
+  const [sortOption, setSortOption] = useState("default");
 
   // 상세정보를 볼 프로젝트 ID
   const [selectedProjectId, setSelectedProjectId] = useState(null);
@@ -178,13 +193,21 @@ function ProjectManagement({
     }
     return project[key] ?? "";
   };
-  const { sortKey, changeSort, sortItems, sortMark } = useSortableList(getSortValue);
-
-  const sortedProjects = sortItems(filteredProjects);
+  // 선택한 항목 기준 정렬 (기본순은 원래 목록 순서 그대로)
+  const sortRules = {
+    name: (a, b) => compareText(getSortValue(a, "name"), getSortValue(b, "name")),
+    customer: (a, b) => compareText(getSortValue(a, "customer"), getSortValue(b, "customer")),
+    status: (a, b) => compareText(getSortValue(a, "status"), getSortValue(b, "status")),
+    manager: (a, b) => compareText(getSortValue(a, "manager"), getSortValue(b, "manager")),
+    // 종료일이 없는 프로젝트는 맨 뒤로
+    endDate: (a, b) => compareDate(a.endDate, b.endDate),
+    progress: descending((a, b) => compareNumber(a.progress, b.progress)),
+  };
+  const sortedProjects = sortByOption(filteredProjects, sortOption, sortRules);
 
   // 페이지 나누기 (한 페이지 15개, 검색·필터·정렬이 바뀌면 1페이지로)
   const { pageItems: pagedProjects, currentPage, totalPages, total, goPrev, goNext } =
-    usePagination(sortedProjects, PROJECT_PAGE_SIZE, [search, overdueOnly, sortKey]);
+    usePagination(sortedProjects, PROJECT_PAGE_SIZE, [search, overdueOnly, sortOption]);
 
 
 
@@ -327,20 +350,24 @@ function ProjectManagement({
 
           <div className="card nexus-project-panel">
 
-            <input
-              className="nexus-project-input"
+            <SearchSortBar
+              searchId="project-search"
               placeholder="프로젝트명 또는 고객사 검색"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              search={search}
+              onSearchChange={setSearch}
+              selects={[
+                { id: "project-sort", label: "정렬 기준", value: sortOption, onChange: setSortOption, options: SORT_OPTIONS },
+              ]}
             />
-            <button
-              type="button"
-              className="btn btn-outline"
-              aria-pressed={overdueOnly}
-              onClick={() => setOverdueOnly((current) => !current)}
-            >
-              {overdueOnly ? "전체 프로젝트 보기" : `기간 초과만 보기 (${overdueCount})`}
-            </button>
+            <FilterChips
+              label="기간 필터"
+              value={overdueOnly}
+              onChange={setOverdueOnly}
+              options={[
+                { value: false, label: "전체" },
+                { value: true, label: `기간 초과 (${overdueCount})` },
+              ]}
+            />
 
             {pendingRequests.length > 0 && (
               <ProjectRequestList
@@ -358,8 +385,6 @@ function ProjectManagement({
               employees={employees}
               isEmpty={filteredProjects.length === 0}
               isOverdue={isOverdue}
-              onSort={changeSort}
-              sortMark={sortMark}
               onOpenProject={openDetail}
               onManageMembers={() => navigate("/admin/members")}
               onDeleteProject={deleteProject}
@@ -405,4 +430,3 @@ function ProjectManagement({
 }
 
 export default ProjectManagement;
-
