@@ -136,17 +136,6 @@ function AdminLayout({ onLogout }) {
           </div>
 
           <div className="nexus-admin-user">
-            <span className="badge badge-outline"
-              role="button"
-              tabIndex={0}
-              style={{ cursor: "pointer" }}
-              title="일반 페이지로 이동"
-              onClick={() => navigate("/")}
-              onKeyDown={(e) => { if (e.key === "Enter") navigate("/"); }}
-            >
-              일반 페이지로 이동
-            </span>
-
             <div className="admin-alert-wrap">
               <button
                 type="button"
@@ -210,13 +199,32 @@ function AdminLayout({ onLogout }) {
               )}
             </div>
 
-            {!me.isDummy && me.name && (
-              <span className="nexus-admin-user-name">{me.name} 님</span>
-            )}
+            {/* 이름에 마우스를 올리면 서브메뉴(일반 페이지 이동 / 로그아웃)가 열린다 */}
+            <div className="nexus-admin-user-menu">
+              <button type="button" className="nexus-admin-user-name">
+                {me.isDummy || !me.name ? "관리자" : me.name} 님
+                <span className="nexus-admin-user-caret" aria-hidden="true">▾</span>
+              </button>
 
-            <button className="btn btn-outline" type="button" onClick={onLogout}>
-              로그아웃
-            </button>
+              <div className="nexus-admin-user-sub">
+                <div className="nexus-admin-user-sub-box">
+                  <button
+                    type="button"
+                    className="nexus-admin-user-sub-item"
+                    onClick={() => navigate("/")}
+                  >
+                    일반 페이지로 이동
+                  </button>
+                  <button
+                    type="button"
+                    className="nexus-admin-user-sub-item"
+                    onClick={onLogout}
+                  >
+                    로그아웃
+                  </button>
+                </div>
+              </div>
+            </div>
 
           </div>
 
@@ -252,5 +260,3 @@ function AdminLayout({ onLogout }) {
 }
 
 export default AdminLayout;
-
-

@@ -94,9 +94,62 @@ router.get('/issues', async (req, res) => {
 // ===== 커뮤니티 관리 (게시글·댓글 목록과 삭제만 제공) =====
 // 익명 글은 작성자를 '익명'으로만 보여준다 (실제 작성자는 노출하지 않음)
 
-// 게시글 목록
+// 공지 한 건의 행사일 (공지 수정 폼에 기존 행사일을 채우기 위해)
+router.get('/notices/:id/event-date', async (req, res) => {
+  const noticeId = Number(req.params.id);
+  if (!validId(noticeId)) return res.status(400).json({ message: '잘못된 공지 번호입니다.' });
+  try {
+    const [rows] = await pool.query(
+      "SELECT DATE_FORMAT(event_date, '%Y-%m-%d') AS eventDate FROM notices WHERE notice_id = ?",
+      [noticeId]
+    );
+    if (!rows.length) return res.status(404).json({ message: '공지사항을 찾을 수 없습니다.' });
+    res.json({ eventDate: rows[0].eventDate || null });
+  } catch (err) {
+    console.error('[공지 행사일 조회 실패]', err);
+    res.status(500).json({ message: `행사일을 불러오지 못했습니다. (${err.code || err.message})` });
+  }
+});
+
+// ===== 커뮤니티 게시글 보관 =====
+// 관리자가 지운 게시글은 원본을 지우기 전에 스냅샷(게시글 + 댓글 전체)으로 보관해서
+// 커뮤니티 관리 화면에서 계속 확인할 수 있게 한다. 일반 커뮤니티 화면에서는 보이지 않는다.
+let archiveTableReady = null;
+function ensureArchiveTable() {
+  if (!archiveTableReady) {
+    archiveTableReady = pool.query(`
+      CREATE TABLE IF NOT EXISTS community_post_archive (
+        id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        post_id BIGINT UNSIGNED NOT NULL,
+        board_name VARCHAR(100) NULL,
+        title VARCHAR(500) NOT NULL,
+        content MEDIUMTEXT NULL,
+        author_name VARCHAR(100) NULL,
+        is_anonymous TINYINT(1) NOT NULL DEFAULT 0,
+        created_at VARCHAR(20) NULL,
+        deleted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        comments_json MEDIUMTEXT NULL
+      )`).catch((err) => {
+      archiveTableReady = null;
+      throw err;
+    });
+  }
+  return archiveTableReady;
+}
+
+function parseComments(json) {
+  try {
+    const list = JSON.parse(json || '[]');
+    return Array.isArray(list) ? list : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+// 게시글 목록 (살아 있는 글 + 관리자가 지운 글)
 router.get('/community/posts', async (req, res) => {
   try {
+    await ensureArchiveTable();
     const [rows] = await pool.query(`
       SELECT p.id, p.board_name AS boardName, p.title, p.is_anonymous AS isAnonymous,
              e.employee_name AS authorName,
@@ -107,16 +160,41 @@ router.get('/community/posts', async (req, res) => {
       ORDER BY p.id DESC
       LIMIT 300
     `);
-    res.json(rows.map((r) => ({
+    const [archived] = await pool.query(`
+      SELECT id, board_name AS boardName, title, is_anonymous AS isAnonymous,
+             author_name AS authorName, created_at AS createdAt,
+             DATE_FORMAT(deleted_at, '%Y-%m-%d %H:%i') AS deletedAt,
+             comments_json AS commentsJson
+      FROM community_post_archive
+      ORDER BY id DESC
+      LIMIT 300
+    `);
+
+    const live = rows.map((r) => ({
       ...r,
-      authorName: r.isAnonymous ? '익명' : r.authorName,
-    })));
+      isArchived: false,
+      authorName: r.authorName,
+    }));
+    const dead = archived.map((r) => ({
+      id: `archive-${r.id}`,
+      archiveId: r.id,
+      isArchived: true,
+      boardName: r.boardName,
+      title: r.title,
+      isAnonymous: !!r.isAnonymous,
+      authorName: r.authorName,
+      createdAt: r.createdAt,
+      deletedAt: r.deletedAt,
+      commentCount: parseComments(r.commentsJson).filter((c) => !c.isDeleted).length,
+    }));
+
+    res.json([...live, ...dead].sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || ''))));
   } catch (err) {
     res.status(500).json({ message: '게시글 목록을 불러오지 못했습니다.' });
   }
 });
 
-// 게시글 한 건 + 댓글
+// 살아 있는 게시글 한 건 + 댓글 (삭제된 댓글도 원래 내용을 함께 보낸다)
 router.get('/community/posts/:id', async (req, res) => {
   const postId = Number(req.params.id);
   if (!validId(postId)) return res.status(400).json({ message: '잘못된 게시글 번호입니다.' });
@@ -131,42 +209,147 @@ router.get('/community/posts/:id', async (req, res) => {
     `, [postId]);
     if (!posts.length) return res.status(404).json({ message: '게시글을 찾을 수 없습니다.' });
     const post = posts[0];
-    post.authorName = post.isAnonymous ? '익명' : post.authorName;
+    post.isDeleted = false;
 
     const [comments] = await pool.query(`
-      SELECT c.id, c.content, c.is_deleted AS isDeleted, e.employee_name AS authorName,
-             DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i') AS createdAt
+      SELECT
+          c.id,
+          c.parent_id AS parentId,
+          c.content,
+          c.is_deleted AS isDeleted,
+          c.is_anonymous AS isAnonymous,
+          e.employee_name AS authorName,
+          DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i') AS createdAt
       FROM community_comment c
       LEFT JOIN employees e ON e.employee_id = c.author_id
       WHERE c.post_id = ?
       ORDER BY c.id
-    `, [postId]);
-    res.json({ post, comments: comments.map((c) => ({ ...c, content: c.isDeleted ? '' : c.content })) });
+  `, [postId]);
+
+    res.json({
+      isArchived: false,
+      post,
+      comments: comments.map((c) => ({ ...c, isDeleted: !!c.isDeleted, parentId: c.parentId ?? null })),
+    });
   } catch (err) {
     res.status(500).json({ message: '게시글을 불러오지 못했습니다.' });
   }
 });
 
-// 게시글 삭제 (준우 쪽과 같이 실제로 지운다)
-router.delete('/community/posts/:id', async (req, res) => {
-  const postId = Number(req.params.id);
-  if (!validId(postId)) return res.status(400).json({ message: '잘못된 게시글 번호입니다.' });
+// 관리자가 지운 게시글 한 건 (보관본)
+router.get('/community/archive/:id', async (req, res) => {
+  const archiveId = Number(req.params.id);
+  if (!validId(archiveId)) return res.status(400).json({ message: '잘못된 게시글 번호입니다.' });
   try {
-    const [result] = await pool.query('DELETE FROM community_post WHERE id = ?', [postId]);
-    if (result.affectedRows === 0) return res.status(404).json({ message: '삭제할 게시글이 없습니다.' });
-    res.json({ message: '게시글을 삭제했습니다.' });
+    await ensureArchiveTable();
+    const [rows] = await pool.query(`
+      SELECT id, post_id AS postId, board_name AS boardName, title, content,
+             author_name AS authorName, is_anonymous AS isAnonymous, created_at AS createdAt,
+             DATE_FORMAT(deleted_at, '%Y-%m-%d %H:%i') AS deletedAt,
+             comments_json AS commentsJson
+      FROM community_post_archive
+      WHERE id = ?
+    `, [archiveId]);
+    if (!rows.length) return res.status(404).json({ message: '보관된 게시글을 찾을 수 없습니다.' });
+    const row = rows[0];
+    res.json({
+      isArchived: true,
+      post: {
+        id: row.id,
+        postId: row.postId,
+        boardName: row.boardName,
+        title: row.title,
+        content: row.content,
+        authorName: row.authorName,
+        isAnonymous: !!row.isAnonymous,
+        createdAt: row.createdAt,
+        deletedAt: row.deletedAt,
+        isDeleted: true,
+      },
+      comments: parseComments(row.commentsJson).map((c) => ({ ...c, isDeleted: !!c.isDeleted })),
+    });
   } catch (err) {
-    res.status(500).json({ message: '게시글 삭제에 실패했습니다.' });
+    res.status(500).json({ message: '보관된 게시글을 불러오지 못했습니다.' });
   }
 });
 
-// 댓글 삭제 (준우 쪽과 같이 내용을 비우고 삭제 표시)
+// 게시글 삭제: 원본을 지우기 전에 게시글과 댓글 전체를 보관본으로 남긴다 (한 트랜잭션)
+router.delete('/community/posts/:id', async (req, res) => {
+  const postId = Number(req.params.id);
+  if (!validId(postId)) return res.status(400).json({ message: '잘못된 게시글 번호입니다.' });
+  let conn;
+  try {
+    await ensureArchiveTable();
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
+
+    const [posts] = await conn.query(`
+      SELECT p.id, p.board_name AS boardName, p.title, p.content, p.is_anonymous AS isAnonymous,
+             e.employee_name AS authorName,
+             DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i') AS createdAt
+      FROM community_post p
+      LEFT JOIN employees e ON e.employee_id = p.author_id
+      WHERE p.id = ?
+      FOR UPDATE
+    `, [postId]);
+    if (!posts.length) {
+      await conn.rollback();
+      return res.status(404).json({ message: '삭제할 게시글이 없습니다.' });
+    }
+    const post = posts[0];
+
+    const [comments] = await conn.query(`
+      SELECT
+          c.id,
+          c.parent_id AS parentId,
+          c.content,
+          c.is_deleted AS isDeleted,
+          c.is_anonymous AS isAnonymous,
+          e.employee_name AS authorName,
+          DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i') AS createdAt
+      FROM community_comment c
+      LEFT JOIN employees e ON e.employee_id = c.author_id
+      WHERE c.post_id = ?
+      ORDER BY c.id
+  `, [postId]);
+
+    await conn.query(`
+      INSERT INTO community_post_archive
+        (post_id, board_name, title, content, author_name, is_anonymous, created_at, comments_json)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      post.id,
+      post.boardName,
+      post.title,
+      post.content,
+      post.authorName,
+      post.isAnonymous ? 1 : 0,
+      post.createdAt,
+      JSON.stringify(comments),
+    ]);
+
+    // 댓글끼리 연결된 외래키(parent_id)는 ON DELETE RESTRICT라서, 대댓글을 먼저 지우고 원댓글을 지운다
+    await conn.query('DELETE FROM community_comment WHERE post_id = ? AND parent_id IS NOT NULL', [postId]);
+    await conn.query('DELETE FROM community_comment WHERE post_id = ?', [postId]);
+    await conn.query('DELETE FROM community_post WHERE id = ?', [postId]);
+    await conn.commit();
+    res.json({ message: '게시글을 삭제했습니다.' });
+  } catch (err) {
+    console.error('[커뮤니티 게시글 삭제 실패]', err);
+    if (conn) await conn.rollback().catch(() => { });
+    res.status(500).json({ message: `게시글 삭제에 실패했습니다. (${err.code || err.message})` });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// 댓글 삭제: 내용은 지우지 않고 삭제 표시만 한다 (일반 화면은 '삭제된 댓글입니다.'로 보이고, 관리 화면에서는 원래 내용을 볼 수 있다)
 router.delete('/community/comments/:id', async (req, res) => {
   const commentId = Number(req.params.id);
   if (!validId(commentId)) return res.status(400).json({ message: '잘못된 댓글 번호입니다.' });
   try {
     const [result] = await pool.query(
-      "UPDATE community_comment SET content = '', is_deleted = 1 WHERE id = ? AND is_deleted = 0",
+      'UPDATE community_comment SET is_deleted = 1 WHERE id = ? AND is_deleted = 0',
       [commentId]
     );
     if (result.affectedRows === 0) return res.status(404).json({ message: '삭제할 댓글이 없거나 이미 삭제되었습니다.' });

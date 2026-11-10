@@ -66,7 +66,11 @@ async function present(c,rows,userId,kind) {
     const deleted=!!row.isDeleted;
     return {...row, isOwner, isAnonymous, anonymousNumber:isAnonymous?alias?.anonymous_number:null,
       authorId:deleted||isAnonymous&&!isOwner?null:row.authorId,
-      authorName:deleted?'삭제된 댓글':isAnonymous?'익명'+(alias?.anonymous_number||''):row.authorName,
+      authorName: deleted
+      ? '삭제된 댓글'
+      : isAnonymous
+        ? (kind === 'post' ? '익명' : '익명' + (alias?.anonymous_number || ''))
+        : row.authorName,
       content:deleted?'삭제된 댓글입니다.':row.content,
       attachments:deleted?[]:attached.filter(f=>String(f.post_id)===String(postId)&&(kind==='post'?f.comment_id===null:String(f.comment_id)===String(row.id))).map(({post_id,comment_id,...f})=>f)
     };

@@ -3,6 +3,11 @@
 const express = require('express');
 const db = require('../../db');
 
+const {
+    requireAuth,
+    requireManager
+} = require("../../middleware/session");
+
 const router = express.Router();
 
 router.get('/', async (req, res) => {
@@ -17,7 +22,8 @@ router.get('/', async (req, res) => {
                 COALESCE(e.employee_name, '알 수 없음') AS author,
                 DATE_FORMAT(n.created_at, '%Y.%m.%d') AS date,
                 n.views,
-                n.is_pinned AS isPinned
+                n.is_pinned AS isPinned,
+                DATE_FORMAT(n.event_date, '%Y-%m-%d') AS eventDate
             FROM notices n
             LEFT JOIN employees e
                 ON n.employee_id = e.employee_id
@@ -38,12 +44,17 @@ router.get('/', async (req, res) => {
 
 });
 
+// 공지사항 등록
+router.post('/', requireAuth, requireManager, async (req, res) => {
 
+    const {
+        title,
+        content,
+        eventDate = null
+    } = req.body || {};
 
-/* 공지사항 등록 */
-router.post('/', async (req, res) => {
-
-    const { title, content, employee_id, eventDate = null } = req.body;
+    // 작성자는 서버에서 인증한 직원으로 지정
+    const employee_id = Number(req.user.employee_id);
 
     // 제목과 내용 공백 검사
     if (
@@ -144,7 +155,8 @@ router.get('/:id', async (req, res) => {
                 DATE_FORMAT(n.created_at, '%Y.%m.%d') AS date,
                 DATE_FORMAT(n.updated_at, '%Y.%m.%d %H:%i') AS updatedAt,
                 n.views,
-                n.is_pinned AS isPinned
+                n.is_pinned AS isPinned,
+                DATE_FORMAT(n.event_date, '%Y-%m-%d') AS eventDate
             FROM notices n
             LEFT JOIN employees e
                 ON n.employee_id = e.employee_id
@@ -223,8 +235,8 @@ router.patch('/:id/views', async (req, res) => {
 });
 
 
-/* 공지사항 삭제 */
-router.delete('/:id', async (req, res) => {
+// 공지사항 삭제
+router.delete('/:id', requireAuth, requireManager, async (req, res) => {
 
     const id = Number(req.params.id);
 
@@ -263,9 +275,8 @@ router.delete('/:id', async (req, res) => {
 
 });
 
-
-/* 공지사항 수정 */
-router.put('/:id', async (req, res) => {
+// 공지사항 수정
+router.put('/:id', requireAuth, requireManager, async (req, res) => {
 
     const id = Number(req.params.id);
     const { title, content, eventDate } = req.body;
@@ -364,9 +375,8 @@ router.put('/:id', async (req, res) => {
 
 });
 
-
-/* 공지사항 상단 고정 설정 */
-router.patch('/:id/pin', async (req, res) => {
+// 공지사항 상단 고정
+router.patch('/:id/pin', requireAuth, requireManager, async (req, res) => {
 
     const id = Number(req.params.id);
     const { isPinned } = req.body;

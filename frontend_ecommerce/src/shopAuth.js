@@ -1,37 +1,56 @@
-// 쇼핑몰 고객 인증 도우미: 서버 주소, 서버 호출(fetch), 로그인 정보 저장(localStorage)
+// 쇼핑몰 고객 인증 도우미: 서버 주소, 서버 호출(fetch), 로그인 정보 저장(sessionStorage)
 export const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3333";
 
 const TOKEN_KEY = "shop_token_key";
 const MEMBER_KEY = "shop_member_key";
 
+// 로그인 정보를 sessionStorage 에 보관해요.
+// 왜 sessionStorage? 새로고침(F5)이나 페이지 이동에는 남지만, 탭/창을 닫으면 사라져서
+// 다시 열면 로그인을 새로 해야 해요. (localStorage 는 창을 닫아도 계속 남아요)
+
+// 예전 방식(localStorage)으로 남아 있던 로그인 정보 정리
+function removeLegacy() {
+  try {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(MEMBER_KEY);
+  } catch (e) { /* 무시 */ }
+}
+
 export function saveSession(shopToken, member) {
   try {
-    localStorage.setItem(TOKEN_KEY, shopToken);
-    localStorage.setItem(MEMBER_KEY, JSON.stringify(member));
+    sessionStorage.setItem(TOKEN_KEY, shopToken);
+    sessionStorage.setItem(MEMBER_KEY, JSON.stringify(member));
   } catch (e) { /* 저장소가 막혀 있어도 화면은 동작해야 함 */ }
+  removeLegacy();
 }
 
 export function saveMember(member) {
-  try { localStorage.setItem(MEMBER_KEY, JSON.stringify(member)); } catch (e) { /* 무시 */ }
+  try { sessionStorage.setItem(MEMBER_KEY, JSON.stringify(member)); } catch (e) { /* 무시 */ }
 }
 
 export function getToken() {
-  try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; }
+  try { return sessionStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; }
 }
 
 export function getSavedMember() {
   try {
-    const raw = localStorage.getItem(MEMBER_KEY);
+    const raw = sessionStorage.getItem(MEMBER_KEY);
     return getToken() && raw ? JSON.parse(raw) : null;
   } catch (e) { return null; }
 }
 
 export function clearSession() {
   try {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(MEMBER_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(MEMBER_KEY);
   } catch (e) { /* 무시 */ }
+  removeLegacy();
 }
+
+// 페이지가 처음 열릴 때 한 번 실행: 이 탭에 로그인 정보가 없으면 예전 localStorage 로그인도 지운다
+try {
+  if (!sessionStorage.getItem(TOKEN_KEY)) removeLegacy();
+} catch (e) { /* 무시 */ }
 
 // 서버 호출 공통 함수. 항상 { status, data } 를 돌려주고, 서버가 꺼져 있으면 친절한 메시지를 준다.
 export async function callApi(path, { method = "GET", body, auth = false } = {}) {

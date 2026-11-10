@@ -468,6 +468,18 @@ function CommunityComments(props) {
 
     function renderCommentBody(comment, isReply) {
         const isDeleted = Number(comment.isDeleted) === 1;
+        const targetComment =
+            comment.parentId == null
+                ? null
+                : comments.find(
+                    item => String(item.id) === String(comment.parentId)
+                );
+
+        const targetName = !targetComment
+            ? "대상 댓글 없음"
+            : Number(targetComment.isDeleted) === 1
+                ? "삭제된 댓글"
+                : targetComment.authorName || "작성자 정보 없음";
 
         const isEditing =
             !isDeleted &&
@@ -480,7 +492,7 @@ function CommunityComments(props) {
             String(comment.authorId) === String(loginUser.id);
 
         const isReplyOpen =
-            !isReply &&
+            !isDeleted &&
             replyParentId !== null &&
             String(replyParentId) === String(comment.id);
 
@@ -490,6 +502,18 @@ function CommunityComments(props) {
                 <div className="community-comment-header">
                     <strong>
                         {isDeleted ? "삭제된 댓글" : comment.authorName}
+
+                        {!isDeleted && comment.parentId != null && (
+                            <span
+                                style={{
+                                    marginLeft: "8px",
+                                    color: "#087bdf",
+                                    fontWeight: 500
+                                }}
+                            >
+                                → @{targetName}
+                            </span>
+                        )}
                     </strong>
 
                     {canDelete && (
@@ -586,7 +610,7 @@ function CommunityComments(props) {
                         {formatDate(comment.createdAt)}
                     </span>
 
-                    {!isReply && isLoggedIn && (
+                    {!isDeleted && !isEditing && isLoggedIn && (
                         <button type="button"
                             className="community-reply-button"
                             disabled={isSaving}
@@ -609,7 +633,7 @@ function CommunityComments(props) {
                         onSubmit={saveReComment}
                     >
                         <label htmlFor={"reply-content-" + comment.id}>
-                            답글 작성
+                            @{comment.authorName}님에게 답글 작성
                         </label>
 
                         <textarea id={"reply-content-" + comment.id}
@@ -663,27 +687,70 @@ function CommunityComments(props) {
     // 삭제되지 않은 답글만 묶기
     // ===================================
 
+    // 모든 댓글을 번호로 찾을 수 있도록 저장
+    const commentById = new Map(
+        comments.map(comment => [String(comment.id), comment])
+    );
+
+    // 여러 단계의 답글이 속한 최초 원댓글 찾기
+    function findRootCommentId(comment) {
+        let current = comment;
+        const visited = new Set();
+
+        while (current.parentId != null) {
+            const currentKey = String(current.id);
+
+            if (visited.has(currentKey)) {
+                return null;
+            }
+
+            visited.add(currentKey);
+
+            const parent = commentById.get(String(current.parentId));
+
+            if (!parent) {
+                return null;
+            }
+
+            current = parent;
+        }
+
+        return String(current.id);
+    }
+
+    // 화면에서는 같은 원댓글 아래에 답글을 모아서 표시
+    // 직접 답변한 대상의 번호(parentId)는 변경하지 않는다.
     const repliesByParent = new Map();
 
     comments.forEach(function (comment) {
-        // 일반 댓글은 제외
-        if (comment.parentId == null) {
+        if (
+            comment.parentId == null ||
+            Number(comment.isDeleted) === 1
+        ) {
             return;
         }
 
-        // 삭제된 답글은 화면에 표시하지 않음
-        if (Number(comment.isDeleted) === 1) {
+        const rootId = findRootCommentId(comment);
+
+        if (rootId === null) {
             return;
         }
 
-        const parentKey = String(comment.parentId);
-
-        if (!repliesByParent.has(parentKey)) {
-            repliesByParent.set(parentKey, []);
+        if (!repliesByParent.has(rootId)) {
+            repliesByParent.set(rootId, []);
         }
 
-        repliesByParent.get(parentKey).push(comment);
+        repliesByParent.get(rootId).push(comment);
+    });
 
+    // 원댓글 아래의 답글은 작성순으로 표시
+    repliesByParent.forEach(function (replies) {
+        replies.sort(function (a, b) {
+            return (
+                new Date(a.createdAt).getTime() -
+                new Date(b.createdAt).getTime()
+            ) || Number(a.id) - Number(b.id);
+        });
     });
 
     // ===================================

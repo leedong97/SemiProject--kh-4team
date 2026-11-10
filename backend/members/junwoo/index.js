@@ -16,8 +16,8 @@ module.exports = {
       router: require("./projects")
     },
     {
-      prefix: "/api/project-requests",
-      router: require("./projectRequests")
+      prefix: "/api/project-events",
+      router: require("./projectEvents").router
     },
     {
       // 현재 게시글 API는 junwoo/community.js가 아니라
@@ -27,7 +27,11 @@ module.exports = {
     },
     {
       prefix: "/api/community-comments",
-      router: require("../dong/communityService").comments
+      router: require("./communityReplyService")
+    },
+    {
+      prefix: "/api/community-files",
+      router: require("../dong/communityService").files
     },
     {
       prefix: "/api/community-likes",

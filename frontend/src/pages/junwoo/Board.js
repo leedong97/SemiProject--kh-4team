@@ -315,7 +315,9 @@ function Board(props) {
                         boardName: boardName,
                         title: title,
                         content: content,
-                        authorId: loginUser.id
+                        authorId: loginUser.id,
+                        isAnonymous: isAnonymous,
+                        files: await encodeAttachments(files)
                     }
                 );
             } else {
@@ -325,7 +327,10 @@ function Board(props) {
                     {
                         title: title,
                         content: content,
-                        authorId: loginUser.id
+                        authorId: loginUser.id,
+                        isAnonymous: isAnonymous,
+                        files: await encodeAttachments(files),
+                        removeAttachmentIds: removeAttachmentIds
                     }
                 );
             }

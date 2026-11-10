@@ -3,11 +3,9 @@ import Home from './Home';
 import Todo from './Todo';
 import Todo_detail from './Todo_detail';
 import Info from './Info';
-import Info_set from './Info_set';
 import Info_detail from './Info_detail';
 import Community from './Community';
 import ProjectCompletion from "./ProjectCompletion";
-import ProjectRequestDetail from "./ProjectRequestDetail";
 import { JunwooProvider, useJunwoo } from './JunwooContext';
 
 // 준우 담당: 대시보드(메인) / 업무·프로젝트(todo) / 공지사항(info)
@@ -29,12 +27,8 @@ function TodoDetailRoute() {
   return <Todo_detail todo={todo} onViewTodo={viewTodo} />
 }
 function InfoRoute() {
-  const { info, delInfo, addInfo } = useJunwoo();
-  return <Info info={info} onAddInfo={addInfo} />;
-}
-function InfoSetRoute() {
-  const { info, addInfo } = useJunwoo();
-  return <Info_set info={info} onAddInfo={addInfo} />;
+  const { info } = useJunwoo();
+  return <Info info={info} />;
 }
 function InfoDetailRoute() {
   const { info, viewInfo } = useJunwoo();
@@ -48,13 +42,13 @@ export const Provider = JunwooProvider;
 // ERP 공통 메뉴(TeamShell) 안에서 보여줄 페이지와 주소
 export const shellRoutes = [
   { path: '/', element: <HomeRoute /> },
+  // 프로젝트 목록, 상세, 완료 요청 유지
   { path: '/todo', element: <TodoRoute /> },
   { path: '/todo/completion', element: <ProjectCompletion /> },
   { path: '/todo/:id', element: <TodoDetailRoute /> },
+  // 공지사항 목록, 상세 유지
   { path: '/info', element: <InfoRoute /> },
-  { path: '/info/set', element: <InfoSetRoute /> },
   { path: '/info/:id', element: <InfoDetailRoute /> },
-  { path: "/project-requests/:id", element: <ProjectRequestDetail /> },
 ];
 
 // TeamShell 밖에서 별도 화면으로 보여줄 커뮤니티 페이지와 주소
@@ -82,7 +76,11 @@ export const standaloneRoutes = [
   },
   {
     path: "/community/activity/bookmarks",
-    element: <Community menu="내 활동" activity="저장한 글" />
+    element: <Community menu="내 활동" activity="북마크한 글" />
+  },
+  {
+    path: "/community/activity/resolved",
+    element: <Community menu="내 활동" activity="해결 완료한 질문" />
   },
   {
     path: "/community/post/:postId",

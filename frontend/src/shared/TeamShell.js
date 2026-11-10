@@ -72,11 +72,7 @@ function TeamShell() {
 
       <div className={'community-menu' + (on('/community') ? ' active' : '')}>
         <h3>
-          <Link
-            to="/community"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link to="/community">
             커뮤니티
           </Link>
         </h3>

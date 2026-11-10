@@ -216,27 +216,34 @@ router.post("/google", async (req, res) => {
         await conn.beginTransaction();
 
         let memberId = null;
-        // 1) 이미 구글로 연결된 회원인가
+        // 1) 이미 구글로 연결된 회원인가 (shop_members.google_sub 에 구글 sub 가 저장돼 있는지)
         const [linked] = await conn.query(
-            "SELECT member_id FROM social_accounts WHERE provider = 'google' AND provider_user_id = ?", [info.sub]);
+            "SELECT member_id FROM shop_members WHERE google_sub = ?", [info.sub]);
         if (linked[0]) {
             memberId = linked[0].member_id;
         } else {
-            // 2) 같은 이메일의 일반 회원이 있으면 그 계정에 구글을 연결
+            // 2) 같은 이메일의 일반 회원이 있으면 그 계정에 구글을 연결 (google_sub 칸을 채움)
             if (email) {
-                const [sameEmail] = await conn.query("SELECT member_id FROM shop_members WHERE email = ?", [email]);
-                if (sameEmail[0]) memberId = sameEmail[0].member_id;
+                const [sameEmail] = await conn.query(
+                    "SELECT member_id, google_sub FROM shop_members WHERE email = ?", [email]);
+                if (sameEmail[0]) {
+                    // 이미 다른 구글 계정이 연결된 회원이면 덮어쓰지 않고 막는다
+                    if (sameEmail[0].google_sub) {
+                        await conn.rollback();
+                        return res.status(409).json({ ok: false, message: "이미 다른 구글 계정이 연결된 회원이에요." });
+                    }
+                    memberId = sameEmail[0].member_id;
+                    await conn.query(
+                        "UPDATE shop_members SET google_sub = ? WHERE member_id = ?", [info.sub, memberId]);
+                }
             }
             // 3) 없으면 새 회원 만들기 (소셜 전용이라 비밀번호는 NULL, 닉네임은 다음 단계에서 받는다)
             if (memberId === null) {
                 const [created] = await conn.query(
-                    "INSERT INTO shop_members (member_name, email, password_hash, phone) VALUES (?, ?, NULL, NULL)",
-                    [name, email]);
+                    "INSERT INTO shop_members (member_name, email, password_hash, phone, google_sub) VALUES (?, ?, NULL, NULL, ?)",
+                    [name, email, info.sub]);
                 memberId = created.insertId;
             }
-            await conn.query(
-                "INSERT INTO social_accounts (member_id, provider, provider_user_id) VALUES (?, 'google', ?)",
-                [memberId, info.sub]);
         }
 
         const [rows] = await conn.query(

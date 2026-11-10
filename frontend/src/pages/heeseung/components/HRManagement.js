@@ -14,6 +14,11 @@ export default function HRManagement({
     const [team, setTeam] = useState("개발팀");
     const [position, setPosition] = useState("");
     const [rank, setRank] = useState("사원");
+    const [employeeCode, setEmployeeCode] = useState("");
+    const [employeeEmail, setEmployeeEmail] = useState("");
+    const [initialPassword, setInitialPassword] = useState("");
+    // 이슈 등록 화면처럼 버튼을 누르면 직원 등록 폼을 펼칩니다.
+    const [showEmployeeRegister, setShowEmployeeRegister] = useState(false);
 
     // 실제 DB 연동: 토큰은 로그인 후 nexus_auth_token에 저장합니다.
     const [dbEmployees, setDbEmployees] = useState([]);
@@ -26,6 +31,14 @@ export default function HRManagement({
     const [workStatus, setWorkStatus] = useState("전체");
     const [workSelectedId, setWorkSelectedId] = useState(null);
     const [workPage, setWorkPage] = useState(1);
+    const [employeePage, setEmployeePage] = useState(1);
+    const [retiredSearch, setRetiredSearch] = useState("");
+    const [retiredPage, setRetiredPage] = useState(1);
+    // 휴가 종류 및 직원 이름 검색, 10건 단위 페이지
+    const [leaveSearch, setLeaveSearch] = useState("");
+    const [leaveType, setLeaveType] = useState("전체");
+    const [leavePage, setLeavePage] = useState(1);
+    const [dbEvaluations, setDbEvaluations] = useState([]);
     const [dbLoading, setDbLoading] = useState(true);
     const [dbError, setDbError] = useState("");
     const [dbReady, setDbReady] = useState(false);
@@ -55,13 +68,15 @@ export default function HRManagement({
     const loadHrData = useCallback(async () => {
         try {
             setDbLoading(true);
-            const [employeeRows, leaveRows, retiredRows, workRows] = await Promise.all([
+            const [employeeRows, leaveRows, retiredRows, workRows, evaluationRows] = await Promise.all([
                 apiRequest("/employees"),
                 apiRequest("/leaves"),
                 apiRequest("/retired"),
-                apiRequest("/work-overview")
+                apiRequest("/work-overview"),
+                apiRequest("/evaluation-history")
             ]);
             setDbWork(workRows);
+            setDbEvaluations(evaluationRows);
             setDbEmployees(employeeRows.map(employee => ({
                 id: employee.employee_id,
                 name: employee.employee_name,
@@ -139,7 +154,8 @@ export default function HRManagement({
     }
 
     // 상위 컴포넌트에서 받은 데이터
-    const employees = dbReady ? [...dbEmployees, ...dbRetired] : [];
+    const employees = dbReady ? dbEmployees : [];
+    const retiredEmployees = dbReady ? dbRetired : [];
     // 프로젝트와 이슈는 MySQL에서 조회한 최신 자료만 사용합니다.
     const issues = dbWork.issues;
     const leaves = dbReady ? dbLeaves : [];
@@ -148,14 +164,13 @@ export default function HRManagement({
     const [employeeSearch, setEmployeeSearch] = useState("");
     const [departmentFilter, setDepartmentFilter] = useState("전체");
     const [employeeSort, setEmployeeSort] = useState("name");
-    const [showRetired, setShowRetired] = useState(false);
     const [editingEmployee, setEditingEmployee] = useState(null);
     const [editTeam, setEditTeam] = useState("");
     const [editRank, setEditRank] = useState("");
     const [editSalary, setEditSalary] = useState("");
     const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
     const [detailTab, setDetailTab] = useState("summary");
-    const evaluations = data?.evaluations || [];
+    const evaluations = dbReady ? dbEvaluations : [];
     const projects = dbWork.projects;
     const projectMembers = dbWork.members;
     const employeeChangeHistory = data?.employeeChangeHistory || [];
@@ -183,7 +198,7 @@ export default function HRManagement({
         const keyword = employeeSearch.trim().toLowerCase();
         const nameMatch = String(employee.name || "").toLowerCase().includes(keyword);
         const teamMatch = departmentFilter === "전체" || (employee.team || employee.department || "미지정") === departmentFilter;
-        return nameMatch && teamMatch && (showRetired || employee.status !== "퇴사");
+        return nameMatch && teamMatch && employee.status !== "퇴사";
     }).sort((a, b) => {
         if (employeeSort === "salaryDesc") return Number(b.salary || 0) - Number(a.salary || 0);
         if (employeeSort === "hireDesc") return String(b.hireDate || "").localeCompare(String(a.hireDate || ""));
@@ -191,8 +206,140 @@ export default function HRManagement({
         return String(a.name || "").localeCompare(String(b.name || ""), "ko");
     });
 
+    // 검색/정렬 후 10명씩 표시하며, 필터 변경 시 첫 페이지로 돌아갑니다.
+    const employeePageCount = Math.max(1, Math.ceil(filteredEmployees.length / 10));
+    const currentEmployeePage = Math.min(employeePage, employeePageCount);
+    const shownEmployees = filteredEmployees.slice((currentEmployeePage - 1) * 10, currentEmployeePage * 10);
+    useEffect(() => {
+        setEmployeePage(1);
+    }, [employeeSearch, departmentFilter, employeeSort]);
+
+    // 퇴사자 목록은 DB에서 조회한 퇴사 직원만 사용합니다.
+    const filteredRetired = retiredEmployees.filter(employee => {
+        const keyword = retiredSearch.trim().toLowerCase();
+        return String(employee.name || "").toLowerCase().includes(keyword) ||
+            String(employee.team || "").toLowerCase().includes(keyword) ||
+            String(employee.id || "").includes(keyword);
+    });
+    const retiredPageCount = Math.max(1, Math.ceil(filteredRetired.length / 10));
+    const currentRetiredPage = Math.min(retiredPage, retiredPageCount);
+    const shownRetired = filteredRetired.slice((currentRetiredPage - 1) * 10, currentRetiredPage * 10);
+    useEffect(() => {
+        setRetiredPage(1);
+    }, [retiredSearch]);
+
+    // 선택한 직원 바로 아래 행에 상세 정보를 펼칩니다.
+    function renderEmployeeDetail(employee) {
+                    const employeeProjects = getEmployeeProjects(employee);
+                    const employeeIssues = issues.filter(issue => sameId(issue.assigneeId ?? issue.assignee_id ?? issue.assigned_employee_id, employee.id));
+                    const overdueTasks = employeeIssues.filter(issue => !isIssueComplete(issue) && issue.due && String(issue.due).slice(0, 10) < getToday());
+                    const completedIssues = employeeIssues.filter(issue => ["완료", "해결", "종료", "closed", "resolved"].includes(String(issue.status || "").toLowerCase()));
+                    const employeeEvaluations = evaluations.filter(item => sameId(item.employeeId ?? item.employee_id ?? item.targetEmployeeId, employee.id));
+                    const sortedEvaluations = [...employeeEvaluations].sort((first, second) => String(second.period || second.createdAt || second.created_at || "").localeCompare(String(first.period || first.createdAt || first.created_at || "")));
+                    const latestEvaluation = sortedEvaluations[0];
+                    
+                    const employeeHistory = employeeChangeHistory.filter(item => sameId(item.employeeId, employee.id));
+                    return <section className="hr-employee-detail" key={employee.id} aria-label={employee.name + " 직원 상세 정보"}>
+                        <div className="hr-detail-header">
+                            <div className="hr-detail-profile">
+                                <div className="hr-detail-avatar" aria-hidden="true">{String(employee.name || "직원").slice(0, 1)}</div>
+                                <div>
+                                    <span className="hr-detail-kicker">EMPLOYEE PROFILE</span>
+                                    <h4>{employee.name} <span>{employee.rank || employee.position || "직급 미등록"}</span></h4>
+                                    <p>{employee.team || employee.department || "부서 미등록"} · {employee.status || "재직"}</p>
+                                </div>
+                            </div>
+                            <button type="button" className="hr-detail-close" onClick={() => setSelectedEmployeeId("")}>상세 닫기</button>
+                        </div>
+
+                        <div className="hr-detail-tabs" role="tablist" aria-label="직원 상세 메뉴">
+                            {[["summary", "통합 정보"], ["personnel", "인사 정보"], ["projects", "프로젝트 참여"], ["work", "업무/이슈"], ["evaluation", "평가 이력"]].map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={detailTab === id} className={detailTab === id ? "active" : ""} onClick={() => setDetailTab(id)}>
+                                {label}
+                            </button>)}
+                        </div>
+
+                        {employeeHistory.length > 0 && <details className="hr-history-panel">
+                            <summary>인사 정보 변경 이력 ({employeeHistory.length}건)</summary>
+                            <ul>{employeeHistory.slice().reverse().map(item => <li key={item.id}>{new Date(item.changedAt).toLocaleString("ko-KR")} · {item.action}</li>)}</ul>
+                        </details>}
+                        {detailTab === "summary" && <div className="hr-detail-content" role="tabpanel">
+                            <div className="hr-stat-grid">
+                                <div>참여 프로젝트<strong>{employeeProjects.length}개</strong></div>
+                                <div>담당 이슈<strong>{employeeIssues.length}건</strong></div>
+                                <div>완료 이슈<strong>{completedIssues.length}건</strong></div>
+                                <div>기한 초과 업무<strong>{overdueTasks.length}건</strong></div>
+                            </div>
+                            <div className="hr-detail-summary-grid">
+                                <div className="hr-detail-info-card">
+                                    <h5>최근 직원 평가</h5>
+                                    {latestEvaluation ? <>
+                                        <strong>{latestEvaluation.totalScore ?? latestEvaluation.score ?? "점수 미등록"}{latestEvaluation.totalScore != null || latestEvaluation.score != null ? "점" : ""}</strong>
+                                        <p>{latestEvaluation.period || latestEvaluation.createdAt || "기간 미등록"} · {latestEvaluation.status || "상태 미등록"}</p>
+                                    </> : <p className="hr-detail-empty">등록된 평가가 없습니다.</p>}
+                                </div>
+                                <div className="hr-detail-info-card">
+                                    <h5>업무 진행 현황</h5>
+                                    <strong>{employeeIssues.filter(issue => !isIssueComplete(issue)).length}건 진행 중</strong>
+                                    <p>담당 이슈 {employeeIssues.length}건 · 평가 이력 {employeeEvaluations.length}건</p>
+                                </div>
+                            </div>
+                        </div>}
+
+                        {detailTab === "personnel" && <div className="hr-detail-content hr-detail-fields" role="tabpanel">
+                            {[["이름", employee.name], ["부서", employee.team || employee.department], ["직급", employee.rank || employee.position], ["입사일", formatEmployeeDate(employee.hireDate || employee.hire_date)], ["재직 상태", employee.status || "재직"], ["퇴사일", employee.retirementDate]].map(([label, value]) => <div key={label}><span>{label}</span><strong>{value || "미등록"}</strong></div>)}
+                        </div>}
+
+                        {detailTab === "projects" && <div className="hr-detail-content" role="tabpanel">
+                            <h5>참여 프로젝트 <span>{employeeProjects.length}개</span></h5>
+                            {employeeProjects.length === 0 ? <p className="hr-detail-empty">등록된 프로젝트 참여 정보가 없습니다.</p> : <ul className="hr-detail-records">
+                                {employeeProjects.map((project, index) => <li key={project.id || project.project_id || index}>
+                                    <strong>{project.name || project.project_title || project.title || "프로젝트"}</strong>
+                                    <span>{project.status || "상태 미등록"}</span>
+                                </li>)}
+                            </ul>}
+                        </div>}
+
+                        {detailTab === "work" && <div className="hr-detail-content" role="tabpanel">
+                            <h5>담당 이슈 <span>{employeeIssues.length}건</span></h5>
+                            {employeeIssues.length === 0 ? <p className="hr-detail-empty">담당 이슈가 없습니다.</p> : <ul className="hr-detail-records">
+                                {employeeIssues.map((issue, index) => <li key={issue.id || issue.issue_id || index}><strong>{issue.title || issue.issue_title || "이슈"}</strong><span>{issue.status || "미등록"}</span></li>)}
+                            </ul>}
+                        </div>}
+
+                        {detailTab === "evaluation" && <div className="hr-detail-content" role="tabpanel">
+                            <h5>평가 이력 <span>{sortedEvaluations.length}건</span></h5>
+                            {sortedEvaluations.length === 0 ? <p className="hr-detail-empty">평가 기록이 없습니다.</p> : <div className="hr-evaluation-history">
+                                {sortedEvaluations.map((item, index) => <article className="hr-evaluation-card" key={item.id || index}>
+                                    <div className="hr-evaluation-heading"><strong>{item.period || item.createdAt || "평가 기간 미등록"}</strong><span>{item.status === "승인" ? "평가 확정" : (item.status || "상태 미등록")}</span></div>
+                                    {/* 평가자와 프로젝트를 먼저 보여줍니다. */}
+                                    <div className="hr-evaluation-meta">
+                                        <div><span>평가자</span><strong>{item.evaluatorName || "미등록"}</strong></div>
+                                        <div><span>프로젝트</span><strong>{item.projectName || item.projectId || "미등록"}</strong></div>
+                                    </div>
+                                    {/* 세부 평가 항목은 4칸으로 구분하여 표시합니다. */}
+                                    <div className="hr-evaluation-scores">
+                                        {[["프로젝트 성과", item.projectScore], ["이슈 처리", item.issueScore], ["일정 준수", item.scheduleScore], ["협업", item.teamworkScore]].map(([label, value]) => <div key={label} className="hr-evaluation-score-item"><span>{label}</span><strong>{value != null ? value + "점" : "미등록"}</strong></div>)}
+                                    </div>
+                                    {/* 종합 점수는 가장 아래에 크게 강조합니다. */}
+                                    <div className="hr-evaluation-total">
+                                        <div><span>종합 점수</span><small>최종 평가 결과</small></div>
+                                        <strong>{(item.totalScore ?? item.score) != null ? (item.totalScore ?? item.score) : "-"}<em> / 100점</em></strong>
+                                    </div>
+                                </article>)}
+                            </div>}
+                        </div>}
+
+                    </section>;
+
+    }
+
     // 수정할 직원을 선택하면 현재 값을 입력칸에 채웁니다.
     function startEmployeeEdit(employee) {
+        // 같은 직원의 수정 버튼을 다시 누르면 수정창을 닫습니다.
+        if (editingEmployee && sameId(editingEmployee.id, employee.id)) {
+            setEditingEmployee(null);
+            return;
+        }
         setEditingEmployee(employee);
         setEditTeam(employee.team || employee.department || "");
         setEditRank(employee.rank || "사원");
@@ -241,7 +388,10 @@ export default function HRManagement({
             setBusy(true);
             await apiRequest("/employees/" + employee.id + "/retire", { method: "PATCH" });
             await loadHrData();
-            window.alert("퇴사자 정보로 이동했습니다.");
+            setSelectedEmployeeId("");
+            setActiveTab("retired");
+            setRetiredPage(1);
+            window.alert("퇴사 처리가 완료되었습니다. 퇴사자 관리에서 확인하세요.");
         } catch (error) {
             window.alert(error.message);
         } finally {
@@ -321,12 +471,11 @@ export default function HRManagement({
                 return;
             }
         }
-        const employeeCode = window.prompt("신규 사원코드 (예: EMP-051)");
-        if (!employeeCode) return;
-        const employeeEmail = window.prompt("신규 직원 이메일");
-        if (!employeeEmail) return;
-        const initialPassword = window.prompt("초기 비밀번호 (8자 이상)");
-        if (!initialPassword) return;
+        // 등록 화면에서 모든 필수 정보를 한 번에 입력받습니다.
+        if (!employeeCode.trim() || !employeeEmail.trim() || initialPassword.length < 8) {
+            window.alert("사번, 이메일, 초기 비밀번호(8자 이상)를 입력하세요.");
+            return;
+        }
         try {
             await apiRequest("/employees", {
                 method: "POST",
@@ -339,7 +488,11 @@ export default function HRManagement({
             await loadHrData();
             setName("");
             setPosition("");
-            window.alert("직원이 MySQL에 등록되었습니다.");
+            setEmployeeCode("");
+            setEmployeeEmail("");
+            setInitialPassword("");
+            setShowEmployeeRegister(false);
+            window.alert("등록되었습니다");
         } catch (error) {
             window.alert("직원 등록 실패: " + error.message);
         }
@@ -366,6 +519,15 @@ export default function HRManagement({
 
     // 승인/반려된 기록은 DB에 보관하고, 승인 대기 목록에서만 숨깁니다.
     const pendingLeaves = leaves.filter(leave => leave.status === "대기");
+    const leaveTypes = [...new Set(pendingLeaves.map(leave => leave.type).filter(Boolean))];
+    const filteredLeaves = pendingLeaves.filter(leave => {
+        const employee = employees.find(e => String(e.id) === String(leave.employeeId));
+        const keyword = leaveSearch.trim().toLowerCase();
+        const text = ((employee?.name || "") + " " + (employee?.id || "") + " " + (leave.type || "")).toLowerCase();
+        return (leaveType === "전체" || leave.type === leaveType) && text.includes(keyword);
+    });
+    const leavePageCount = Math.max(1, Math.ceil(filteredLeaves.length / 10));
+    const visibleLeaves = filteredLeaves.slice((Math.min(leavePage, leavePageCount) - 1) * 10, Math.min(leavePage, leavePageCount) * 10);
 
     // 화면 출력
     return <section className="hr-management">
@@ -406,6 +568,9 @@ export default function HRManagement({
                 id: "leaves",
                 label: "휴가 관리"
             }, {
+                id: "retired",
+                label: "퇴사자 관리"
+            }, {
                 id: "analytics",
                 label: "통계 분석"
             }].map(tab => <button key={tab.id} type="button" className={activeTab === tab.id ? "hr-tab active" : "hr-tab"} aria-current={activeTab === tab.id ? "page" : undefined} onClick={() => setActiveTab(tab.id)}>
@@ -419,8 +584,38 @@ export default function HRManagement({
             <div className="panel hr-enhanced">
                 <div className="hr-enhanced-heading">
                     <div><h3>직원 통합 관리</h3><p className="muted">직원 정보, 프로젝트 참여, 업무량을 한 화면에서 확인합니다.</p></div>
-                    <span className="hr-total">전체 {employees.length}명 · 재직 {employees.filter(x => x.status !== "퇴사").length}명</span>
+                    <span className="hr-total">전체 {employees.length}명</span>
                 </div>
+                {/* 이슈 등록과 동일하게 버튼을 눌러 신규 직원 등록 폼을 펼칩니다. */}
+                <div className="hr-employee-register-toolbar">
+                    <button
+                        type="button"
+                        className="hr-register-toggle"
+                        onClick={() => setShowEmployeeRegister(!showEmployeeRegister)}
+                        aria-expanded={showEmployeeRegister}
+                    >
+                        {showEmployeeRegister ? "등록 취소" : "+ 신규 직원 등록"}
+                    </button>
+                </div>
+                {showEmployeeRegister && (
+                    <form className="panel hr-new-employee-form" onSubmit={addEmployee}>
+                        <h3>신규 직원 등록</h3>
+                        <p className="muted">직원 정보를 한 번에 입력하세요. 입사일은 등록일(한국 시간)로 자동 설정됩니다.</p>
+                        <div className="hr-new-employee-grid">
+                            <label>이름<input placeholder="직원 이름" value={name} onChange={e => setName(e.target.value)} required /></label>
+                            <label>직무<input placeholder="예: 프론트엔드 개발" value={position} onChange={e => setPosition(e.target.value)} /></label>
+                            <label>직급<select value={rank} onChange={e => setRank(e.target.value)}>{["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>)}</select></label>
+                            <label>부서<select value={team} onChange={e => setTeam(e.target.value)}><option>개발팀</option><option>기획팀</option><option>디자인팀</option><option>운영팀</option></select></label>
+                            <label>사번<input placeholder="예: EMP-053" value={employeeCode} onChange={e => setEmployeeCode(e.target.value)} required /></label>
+                            <label>이메일<input type="email" placeholder="example@company.com" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)} required /></label>
+                            <label>초기 비밀번호<input type="password" minLength="8" placeholder="8자 이상" value={initialPassword} onChange={e => setInitialPassword(e.target.value)} required /></label>
+                        </div>
+                        <div className="hr-register-actions">
+                            <button type="submit" disabled={busy || !dbReady}>직원 등록</button>
+                            <button type="button" className="hr-register-cancel" onClick={() => setShowEmployeeRegister(false)}>취소</button>
+                        </div>
+                    </form>
+                )}
                 <div className="hr-filters">
                     <input aria-label="직원 이름 검색" placeholder="직원 이름 검색" value={employeeSearch} onChange={e => setEmployeeSearch(e.target.value)} />
                     <select aria-label="부서 필터" value={departmentFilter} onChange={e => setDepartmentFilter(e.target.value)}>
@@ -433,11 +628,10 @@ export default function HRManagement({
                         <option value="hireDesc">입사일 최신순</option>
                         <option value="salaryDesc">연봉 높은순</option>
                     </select>
-                    <label className="hr-retired-toggle"><input type="checkbox" checked={showRetired} onChange={e => setShowRetired(e.target.checked)} /> 퇴사자 포함</label>
                 </div>
                 <div className="hr-table-wrap"><table className="hr-staff-table">
                     <thead><tr><th>이름</th><th>부서</th><th>직급</th><th>연봉</th><th>입사일</th><th>상태</th><th>관리</th></tr></thead>
-                    <tbody>{filteredEmployees.map(employee => <tr key={employee.id}>
+                    <tbody>{shownEmployees.map(employee => <React.Fragment key={employee.id}><tr>
                         <td>{employee.name}</td><td>{employee.team || employee.department || "-"}</td>
                         <td>{employee.rank || "-"}</td>
                         <td>{employee.salary == null ? "미등록" : Number(employee.salary).toLocaleString("ko-KR") + "원"}</td>
@@ -470,151 +664,38 @@ export default function HRManagement({
                         </td>
                         <td><div className="hr-inline-actions">
                             <button type="button" className="hr-action-detail" onClick={() => {
-                                setSelectedEmployeeId(String(employee.id));
-                                setDetailTab("summary");
+                                // 같은 직원의 상세 버튼을 다시 누르면 닫습니다.
+                                if (sameId(selectedEmployeeId, employee.id)) {
+                                    setSelectedEmployeeId("");
+                                } else {
+                                    setSelectedEmployeeId(String(employee.id));
+                                    setDetailTab("summary");
+                                }
                             }}>상세</button>
                             {employee.status !== "퇴사" && <><button type="button" className="hr-action-edit" onClick={() => startEmployeeEdit(employee)}>수정</button><button type="button" className="hr-danger-button" onClick={() => retireEmployee(employee)}>퇴사</button></>}
                         </div></td>
-                    </tr>)}
-                        {filteredEmployees.length === 0 && <tr><td colSpan="7">조건에 맞는 직원이 없습니다.</td></tr>}
-                    </tbody></table></div>
-                {editingEmployee && <form className="hr-edit-form" onSubmit={saveEmployeeEdit}>
+                    </tr>
+                    {editingEmployee && sameId(editingEmployee.id, employee.id) && <tr className="hr-expanded-row hr-edit-expanded-row"><td colSpan="7">
+                <form className="hr-edit-form" onSubmit={saveEmployeeEdit}>
                     <h4>{editingEmployee.name} 직원 정보 수정</h4>
-                    <label>부서<input value={editTeam} onChange={e => setEditTeam(e.target.value)} required /></label>
+                    <label>부서<select value={editTeam} onChange={e => setEditTeam(e.target.value)} required>{[...new Set([...departments, editTeam])].filter(Boolean).map(x => <option key={x} value={x}>{x}</option>)}</select></label>
                     <label>직급<select value={editRank} onChange={e => setEditRank(e.target.value)}>{["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>)}</select></label>
                     <label>연봉 (원)<input type="number" min="0" value={editSalary} onChange={e => setEditSalary(e.target.value)} placeholder="미등록" /></label>
                     <button type="submit">저장</button><button type="button" onClick={() => setEditingEmployee(null)}>취소</button>
-                </form>}
-                {/* 직원 상세: 기존 목록은 유지하고 선택한 직원의 연결 데이터를 표시합니다. */}
-                {selectedEmployeeId !== "" && employees.filter(employee => sameId(employee.id, selectedEmployeeId)).map(employee => {
-                    const employeeProjects = getEmployeeProjects(employee);
-                    const employeeIssues = issues.filter(issue => sameId(issue.assigneeId ?? issue.assignee_id, employee.id));
-                    const overdueTasks = employeeIssues.filter(issue => !isIssueComplete(issue) && issue.due && String(issue.due).slice(0, 10) < getToday());
-                    const completedIssues = employeeIssues.filter(issue => ["완료", "해결", "종료", "closed", "resolved"].includes(String(issue.status || "").toLowerCase()));
-                    const employeeEvaluations = evaluations.filter(item => sameId(item.employeeId ?? item.employee_id ?? item.targetEmployeeId, employee.id));
-                    const sortedEvaluations = [...employeeEvaluations].sort((first, second) => String(second.period || second.createdAt || second.created_at || "").localeCompare(String(first.period || first.createdAt || first.created_at || "")));
-                    const latestEvaluation = sortedEvaluations[0];
-                    const appealEvaluations = employeeEvaluations.filter(item => item.appeal || item.appealStatus);
-                    const employeeHistory = employeeChangeHistory.filter(item => sameId(item.employeeId, employee.id));
-                    return <section className="hr-employee-detail" key={employee.id} aria-label={employee.name + " 직원 상세 정보"}>
-                        <div className="hr-detail-header">
-                            <div className="hr-detail-profile">
-                                <div className="hr-detail-avatar" aria-hidden="true">{String(employee.name || "직원").slice(0, 1)}</div>
-                                <div>
-                                    <span className="hr-detail-kicker">EMPLOYEE PROFILE</span>
-                                    <h4>{employee.name} <span>{employee.rank || employee.position || "직급 미등록"}</span></h4>
-                                    <p>{employee.team || employee.department || "부서 미등록"} · {employee.status || "재직"}</p>
-                                </div>
-                            </div>
-                            <button type="button" className="hr-detail-close" onClick={() => setSelectedEmployeeId("")}>상세 닫기</button>
-                        </div>
-
-                        <div className="hr-detail-tabs" role="tablist" aria-label="직원 상세 메뉴">
-                            {[["summary", "통합 정보"], ["personnel", "인사 정보"], ["projects", "프로젝트 참여"], ["work", "업무/이슈"], ["evaluation", "평가 이력"], ["appeals", "이의신청"]].map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={detailTab === id} className={detailTab === id ? "active" : ""} onClick={() => setDetailTab(id)}>
-                                {label}
-                            </button>)}
-                        </div>
-
-                        {employeeHistory.length > 0 && <details className="hr-history-panel">
-                            <summary>인사 정보 변경 이력 ({employeeHistory.length}건)</summary>
-                            <ul>{employeeHistory.slice().reverse().map(item => <li key={item.id}>{new Date(item.changedAt).toLocaleString("ko-KR")} · {item.action}</li>)}</ul>
-                        </details>}
-                        {detailTab === "summary" && <div className="hr-detail-content" role="tabpanel">
-                            <div className="hr-stat-grid">
-                                <div>참여 프로젝트<strong>{employeeProjects.length}개</strong></div>
-                                <div>담당 이슈<strong>{employeeIssues.length}건</strong></div>
-                                <div>완료 이슈<strong>{completedIssues.length}건</strong></div>
-                                <div>기한 초과 업무<strong>{overdueTasks.length}건</strong></div>
-                            </div>
-                            <div className="hr-detail-summary-grid">
-                                <div className="hr-detail-info-card">
-                                    <h5>최근 직원 평가</h5>
-                                    {latestEvaluation ? <>
-                                        <strong>{latestEvaluation.totalScore ?? latestEvaluation.score ?? "점수 미등록"}{latestEvaluation.totalScore != null || latestEvaluation.score != null ? "점" : ""}</strong>
-                                        <p>{latestEvaluation.period || latestEvaluation.createdAt || "기간 미등록"} · {latestEvaluation.status || "상태 미등록"}</p>
-                                    </> : <p className="hr-detail-empty">등록된 평가가 없습니다.</p>}
-                                </div>
-                                <div className="hr-detail-info-card">
-                                    <h5>업무 진행 현황</h5>
-                                    <strong>{employeeIssues.filter(issue => !isIssueComplete(issue)).length}건 진행 중</strong>
-                                    <p>담당 이슈 {employeeIssues.length}건 · 평가 이력 {employeeEvaluations.length}건</p>
-                                </div>
-                            </div>
-                        </div>}
-
-                        {detailTab === "personnel" && <div className="hr-detail-content hr-detail-fields" role="tabpanel">
-                            {[["이름", employee.name], ["부서", employee.team || employee.department], ["직급", employee.rank || employee.position], ["입사일", formatEmployeeDate(employee.hireDate || employee.hire_date)], ["재직 상태", employee.status || "재직"], ["퇴사일", employee.retirementDate]].map(([label, value]) => <div key={label}><span>{label}</span><strong>{value || "미등록"}</strong></div>)}
-                        </div>}
-
-                        {detailTab === "projects" && <div className="hr-detail-content" role="tabpanel">
-                            <h5>참여 프로젝트 <span>{employeeProjects.length}개</span></h5>
-                            {employeeProjects.length === 0 ? <p className="hr-detail-empty">등록된 프로젝트 참여 정보가 없습니다.</p> : <ul className="hr-detail-records">
-                                {employeeProjects.map((project, index) => <li key={project.id || project.project_id || index}>
-                                    <strong>{project.name || project.project_title || project.title || "프로젝트"}</strong>
-                                    <span>{project.status || "상태 미등록"}</span>
-                                </li>)}
-                            </ul>}
-                        </div>}
-
-                        {detailTab === "work" && <div className="hr-detail-content" role="tabpanel">
-                            <h5>담당 이슈 <span>{employeeIssues.length}건</span></h5>
-                            {employeeIssues.length === 0 ? <p className="hr-detail-empty">담당 이슈가 없습니다.</p> : <ul className="hr-detail-records">
-                                {employeeIssues.map((issue, index) => <li key={issue.id || issue.issue_id || index}><strong>{issue.title || issue.issue_title || "이슈"}</strong><span>{issue.status || "미등록"}</span></li>)}
-                            </ul>}
-                        </div>}
-
-                        {detailTab === "evaluation" && <div className="hr-detail-content" role="tabpanel">
-                            <h5>평가 이력 <span>{sortedEvaluations.length}건</span></h5>
-                            {sortedEvaluations.length === 0 ? <p className="hr-detail-empty">평가 기록이 없습니다.</p> : <ul className="hr-detail-records">
-                                {sortedEvaluations.map((item, index) => <li key={item.id || index}>
-                                    <strong>{item.period || item.createdAt || "평가 기간 미등록"}</strong>
-                                    <span>{item.totalScore ?? item.score ?? "점수 미등록"} · {item.status || "상태 미등록"}</span>
-                                </li>)}
-                            </ul>}
-                        </div>}
-
-                        {detailTab === "appeals" && <div className="hr-detail-content" role="tabpanel">
-                            <h5>평가 이의신청 <span>{appealEvaluations.length}건</span></h5>
-                            {appealEvaluations.length === 0 ? <p className="hr-detail-empty">이의신청 기록이 없습니다.</p> : <ul className="hr-detail-records">
-                                {appealEvaluations.map((item, index) => <li key={item.id || index}>
-                                    <strong>{item.period || "평가 기간 미등록"}</strong>
-                                    <span>{item.appealStatus || item.appeal?.status || "이의신청"}</span>
-                                </li>)}
-                            </ul>}
-                        </div>}
-                    </section>;
-                })}
-
+                </form>
+                    </td></tr>}
+                    {sameId(selectedEmployeeId, employee.id) && <tr className="hr-expanded-row"><td colSpan="7">
+                        {renderEmployeeDetail(employee)}
+                    </td></tr>}
+                    </React.Fragment>)}
+                        {filteredEmployees.length === 0 && <tr><td colSpan="7">조건에 맞는 직원이 없습니다.</td></tr>}
+                    </tbody></table></div>
+                <div className="hr-work-pages" aria-label="직원 목록 페이지">
+                    <button type="button" disabled={currentEmployeePage === 1} onClick={() => setEmployeePage(currentEmployeePage - 1)}>이전</button>
+                    {Array.from({ length: employeePageCount }, (_, index) => index + 1).map(page => <button type="button" key={page} className={page === currentEmployeePage ? "active" : ""} onClick={() => setEmployeePage(page)} aria-current={page === currentEmployeePage ? "page" : undefined}>{page}</button>)}
+                    <button type="button" disabled={currentEmployeePage === employeePageCount} onClick={() => setEmployeePage(currentEmployeePage + 1)}>다음</button>
+                </div>
             </div>
-            {/* 직원 등록 */}
-            <form className="panel form-row" onSubmit={addEmployee}>
-
-                <h3 className="full">
-                    신규 직원 등록
-                </h3>
-
-                <input placeholder="직원 이름" value={name} onChange={e => setName(e.target.value)} required />
-
-                <input placeholder="직무" value={position} onChange={e => setPosition(e.target.value)} />
-
-                <select value={rank} onChange={e => setRank(e.target.value)}>
-
-                    {["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>)}
-
-                </select>
-
-                <select value={team} onChange={e => setTeam(e.target.value)}>
-                    <option>개발팀</option>
-                    <option>기획팀</option>
-                    <option>디자인팀</option>
-                    <option>운영팀</option>
-                </select>
-
-                <button type="submit">
-                    직원 등록
-                </button>
-
-            </form>
         </div>}
 
         {/* 프로젝트/이슈를 중복 등록하지 않고 MySQL 조회 결과만 표시합니다. */}
@@ -695,18 +776,82 @@ export default function HRManagement({
             </div>
         </div>}
 
+        {/* 퇴사자 관리: 일반 직원 목록과 분리하여 퇴사자만 보여줍니다. */}
+        {activeTab === "retired" && <div className="hr-tab-content">
+            <div className="panel hr-enhanced">
+                <div className="hr-enhanced-heading">
+                    <div><h3>퇴사자 관리</h3><p className="muted">퇴사 직원의 인사 정보와 과거 평가·업무 이력을 조회합니다.</p></div>
+                    <span className="hr-total">퇴사자 {retiredEmployees.length}명</span>
+                </div>
+                <div className="hr-filters">
+                    <input aria-label="퇴사자 검색" placeholder="이름, 사번 또는 부서 검색" value={retiredSearch} onChange={e => setRetiredSearch(e.target.value)} />
+                </div>
+                <div className="hr-table-wrap"><table className="hr-staff-table">
+                    <thead><tr><th>이름</th><th>부서</th><th>직급</th><th>입사일</th><th>퇴사일</th><th>상태</th><th>관리</th></tr></thead>
+                    <tbody>{shownRetired.map(employee => <React.Fragment key={employee.id}>
+                        <tr>
+                            <td>{employee.name}</td>
+                            <td>{employee.team || "-"}</td>
+                            <td>{employee.rank || "-"}</td>
+                            <td>{formatEmployeeDate(employee.hireDate)}</td>
+                            <td>{formatEmployeeDate(employee.retirementDate)}</td>
+                            <td><span className="hr-employee-status hr-status-retired">퇴사</span></td>
+                            <td><button type="button" className="hr-action-detail" onClick={() => {
+                                // 같은 직원의 상세 버튼을 다시 누르면 닫습니다.
+                                if (sameId(selectedEmployeeId, employee.id)) {
+                                    setSelectedEmployeeId("");
+                                } else {
+                                    setSelectedEmployeeId(String(employee.id));
+                                    setDetailTab("summary");
+                                }
+                            }}>상세</button></td>
+                        </tr>
+                        {editingEmployee && sameId(editingEmployee.id, employee.id) && <tr className="hr-expanded-row hr-edit-expanded-row"><td colSpan="7">
+                <form className="hr-edit-form" onSubmit={saveEmployeeEdit}>
+                    <h4>{editingEmployee.name} 직원 정보 수정</h4>
+                    <label>부서<select value={editTeam} onChange={e => setEditTeam(e.target.value)} required>{[...new Set([...departments, editTeam])].filter(Boolean).map(x => <option key={x} value={x}>{x}</option>)}</select></label>
+                    <label>직급<select value={editRank} onChange={e => setEditRank(e.target.value)}>{["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>)}</select></label>
+                    <label>연봉 (원)<input type="number" min="0" value={editSalary} onChange={e => setEditSalary(e.target.value)} placeholder="미등록" /></label>
+                    <button type="submit">저장</button><button type="button" onClick={() => setEditingEmployee(null)}>취소</button>
+                </form>
+                    </td></tr>}
+                    {sameId(selectedEmployeeId, employee.id) && <tr className="hr-expanded-row"><td colSpan="7">
+                            {renderEmployeeDetail(employee)}
+                        </td></tr>}
+                    </React.Fragment>)}
+                    {filteredRetired.length === 0 && <tr><td colSpan="7">등록된 퇴사자가 없습니다.</td></tr>}
+                    </tbody>
+                </table></div>
+                <div className="hr-work-pages" aria-label="퇴사자 목록 페이지">
+                    <button type="button" disabled={currentRetiredPage === 1} onClick={() => setRetiredPage(currentRetiredPage - 1)}>이전</button>
+                    {Array.from({ length: retiredPageCount }, (_, index) => index + 1).map(page =>
+                        <button type="button" key={page} className={page === currentRetiredPage ? "active" : ""} onClick={() => setRetiredPage(page)}>{page}</button>
+                    )}
+                    <button type="button" disabled={currentRetiredPage === retiredPageCount} onClick={() => setRetiredPage(currentRetiredPage + 1)}>다음</button>
+                </div>
+            </div>
+        </div>}
+
         {/* 휴가 관리: 승인/반려 */}
         {activeTab === "leaves" && <div className="hr-tab-content">
             {/* 휴가 승인 목록 */}
             <div className="panel">
 
                 <h3>휴가 승인 목록</h3>
+                <div className="hr-leave-filters">
+                    <input aria-label="휴가 직원 검색" placeholder="직원 이름·사번·휴가 종류 검색" value={leaveSearch} onChange={event => { setLeaveSearch(event.target.value); setLeavePage(1); }} />
+                    <select aria-label="휴가 종류" value={leaveType} onChange={event => { setLeaveType(event.target.value); setLeavePage(1); }}>
+                        <option value="전체">전체 종류</option>
+                        {leaveTypes.map(type => <option key={type} value={type}>{type}</option>)}
+                    </select>
+                    <span>검색 결과 {filteredLeaves.length}건</span>
+                </div>
 
                 {pendingLeaves.length === 0 && <p className="muted">
                     승인 대기 중인 휴가가 없습니다.
                 </p>}
 
-                {pendingLeaves.map(leave => {
+                {visibleLeaves.map(leave => {
                     const employee = employees.find(e => e.id === leave.employeeId);
                     return <div className="employee-row" key={leave.id}>
 
@@ -722,6 +867,7 @@ export default function HRManagement({
                                 {leave.endDate || leave.date}
                             </p>
 
+                            <span className="hr-leave-type">{leave.type || "휴가"}</span>
                             <span className={"hr-leave-status " + (leave.status === "승인" ? "approved" : leave.status === "반려" ? "rejected" : "pending")}>
                                 {leave.status}
                             </span>
@@ -742,6 +888,12 @@ export default function HRManagement({
 
                     </div>;
                 })}
+                {filteredLeaves.length === 0 && pendingLeaves.length > 0 && <p className="muted">검색 조건에 맞는 휴가 신청이 없습니다.</p>}
+                {leavePageCount > 1 && <div className="hr-leave-pages">
+                    <button type="button" disabled={leavePage <= 1} onClick={() => setLeavePage(page => page - 1)}>이전</button>
+                    {Array.from({ length: leavePageCount }, (_, index) => <button type="button" key={index} className={Math.min(leavePage, leavePageCount) === index + 1 ? "active" : "secondary"} onClick={() => setLeavePage(index + 1)}>{index + 1}</button>)}
+                    <button type="button" disabled={leavePage >= leavePageCount} onClick={() => setLeavePage(page => page + 1)}>다음</button>
+                </div>}
 
             </div>
         </div>}

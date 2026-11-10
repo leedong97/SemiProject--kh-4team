@@ -10,12 +10,25 @@ function Info({ info = [] }) {
     const [search, setSearch] = useState("");
     const [pages, setPages] = useState(1);
 
-    // 공지사항 제목 검색 + 최신순 정렬
+    // 제목 검색 후 상단 고정 공지 우선, 같은 그룹에서는 최신순
     const filteredInfo = [...info]
         .filter(item =>
-            item.title.toLowerCase().includes(search.trim().toLowerCase())
+            String(item.title ?? "")
+                .toLowerCase()
+                .includes(search.trim().toLowerCase())
         )
-        .sort((a, b) => b.id - a.id);
+        .sort((a, b) => {
+            const aPinned = Number(a.isPinned) === 1;
+            const bPinned = Number(b.isPinned) === 1;
+
+            // 고정 공지를 일반 공지보다 먼저 표시
+            if (aPinned !== bPinned) {
+                return aPinned ? -1 : 1;
+            }
+
+            // 고정 여부가 같으면 최신 공지부터 표시
+            return Number(b.id) - Number(a.id);
+        });
 
     // 페이지네이션 (10개씩)
     const totalPages = Math.ceil(filteredInfo.length / 10);
@@ -104,7 +117,20 @@ function Info({ info = [] }) {
 
                                 <tr key={item.id}>
 
-                                    <td>{start + index + 1}</td>
+                                    <td>
+                                        {Number(item.isPinned) === 1 ? (
+                                            <strong
+                                                style={{
+                                                    color: "#d32f2f",
+                                                    whiteSpace: "nowrap"
+                                                }}
+                                            >
+                                                [중요]
+                                            </strong>
+                                        ) : (
+                                            start + index + 1
+                                        )}
+                                    </td>
 
                                     <td>
                                         <button
