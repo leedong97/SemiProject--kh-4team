@@ -174,6 +174,14 @@ router.post('/issues', async (req, res) => {
         if (assigneeId != null && String(assigneeId) !== String(req.user.employee_id)) {
             await createNotification(assigneeId, '이슈', '새 이슈 "' + title.trim() + '"의 담당자로 지정됐어요.', '/issue/' + result.insertId);
         }
+        // 새 이슈 등록 후 연결된 사용자 화면의 목록 갱신
+        for (const client of req.app.locals.issueEventClients || []) {
+            try {
+                client.write('data: changed\n\n');
+            } catch (_) {
+                // 끊어진 연결은 SSE close 처리에서 제거됩니다.
+            }
+        }
         res.status(201).json({ id: result.insertId, message: '이슈 등록 완료' });
     } catch (error) {
         console.error('이슈 DB 등록 오류:', error);

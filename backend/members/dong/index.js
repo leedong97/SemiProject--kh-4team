@@ -267,7 +267,9 @@ router.post('/issues', async (req, res) => {
     }
   }
 });
+router.use(require('./quote'));
 router.use(require('./issueCompletion'));
 module.exports = {
   routes: [{ prefix: '/api/dong', router }],
+  
 };

@@ -12,7 +12,7 @@ const fs = require('fs');
 // 1) 가장 먼저 .env 읽기 (db.js 가 이 값을 쓰기 때문에 반드시 맨 위!)
 const envPath = path.join(__dirname, '..', '.env');
 if (fs.existsSync(envPath)) {
-  require('dotenv').config({ path: envPath });
+  require('dotenv').config({ path: envPath, override: true });
 } else {
   console.warn('[설정 안내] ' + envPath + ' 파일이 없어요. .env.example 을 복사해 .env 로 만들고 DB 정보를 채워주세요.');
   require('dotenv').config(); // 혹시 다른 위치에 있는 경우를 위한 기본 동작

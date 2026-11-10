@@ -1,14 +1,23 @@
 import { API_BASE } from '../../shared/config';
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
-import { saveLoginUser } from "./getLoginUser";
+import getLoginUser, { saveLoginUser } from "./getLoginUser";
 
 function Login() {
 
     const navi = useNavigate()
     //로그인이 끝나면 다른 화면으로 이동할 때 사용한다.
+
+    // 이미 로그인한 사람이 /login 으로 들어오면(뒤로가기 등) 로그인 화면을 보여 주지 않고 바로 내 화면으로 보낸다.
+    // replace: true -> 지금 주소(/login)를 기록에서 "바꿔치기"해서, 뒤로가기를 눌러도 /login 으로 돌아오지 않는다.
+    useEffect(() => {
+        const user = getLoginUser();
+        if (!user.isDummy) {
+            navi(user.role === "관리자" ? "/admin" : "/", { replace: true });
+        }
+    }, [navi]);
 
     const [values, setValues] = useState({
         email: '',
@@ -40,9 +49,9 @@ function Login() {
                 saveLoginUser(res.data.user); // 서버가 준 직원 정보를 저장 (마이페이지에서 꺼내 써요)
                 // 로그인 성공 → 권한에 따라 이동할 화면을 나눈다
                 if (res.data.user.employee_role === "관리자") {
-                    navi("/admin"); // 관리자 → 관리자 화면
+                    navi("/admin", { replace: true }); // 관리자 → 관리자 화면 (replace: 뒤로가기로 /login 에 안 돌아오게)
                 } else {
-                    navi("/"); // 일반 사용자 → 대시보드(메인)
+                    navi("/", { replace: true }); // 일반 사용자 → 대시보드(메인)
                 }
             })
             .catch((err) => {
