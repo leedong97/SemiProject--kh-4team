@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { adminRequest } from './adminApi';
 
 export default function useAdminProjects() {
@@ -7,18 +7,17 @@ export default function useAdminProjects() {
 
   async function loadProjects() {
     try {
-      const rows = await adminRequest('/projects');
-      setProjectsState(Array.isArray(rows) ? rows : []);
+      const data = await adminRequest('/projects');
+      const rows = Array.isArray(data) ? data : [];
+      setProjectsState(rows);
       setProjectError('');
+      return rows;
     } catch (error) {
       setProjectError(error.message);
       console.error('프로젝트 조회 오류:', error);
+      return [];
     }
   }
-
-  useEffect(() => {
-    loadProjects();
-  }, []);
 
   async function createProject(project) {
     await adminRequest('/projects', {

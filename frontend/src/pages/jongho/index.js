@@ -1,5 +1,6 @@
 import { Navigate, useNavigate } from 'react-router-dom';
 import './styles/jongho.css';
+import './styles/admin-unified.css';
 import AdminLayout from './components/AdminLayout';
 import Dashboard from './pages/Dashboard';
 import ProjectManagement from './pages/ProjectManagement';

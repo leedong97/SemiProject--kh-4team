@@ -2,6 +2,7 @@ import { useState } from "react";
 import { adminRequest } from "../adminApi";
 import { PROJECT_STATUS_OPTIONS, DEFAULT_PROJECT_STATUS } from "../shared/projectConstants";
 import { getProgress, isInvalidDateRange } from "../utils/projectHelpers";
+import CustomerPicker from "./CustomerPicker";
 
 // 진행률 입력: 스크롤바(슬라이더)와 숫자 입력칸이 같은 값을 보여준다
 function ProgressField({ label, value, step, onChange }) {
@@ -234,16 +235,13 @@ function ProjectDetail({ project, manager, pendingRequest, busy, onApprove, onCl
 
                 <label>
                   고객사
-                  <select value={editForm.customer} onChange={updateEdit("customer")}>
-                    <option value="">고객사를 선택하세요</option>
-                    {/* 현재 고객사가 목록에 없더라도 기존 값은 보여준다 */}
-                    {editForm.customer && !customers.some((c) => c.name === editForm.customer) && (
-                      <option value={editForm.customer}>{editForm.customer}</option>
-                    )}
-                    {customers.map((c) => (
-                      <option key={c.id} value={c.name}>{c.name}</option>
-                    ))}
-                  </select>
+                  <CustomerPicker
+                    id="project-customer-edit"
+                    value={editForm.customer}
+                    customers={customers}
+                    onChange={(value) => setEditForm((prev) => ({ ...prev, customer: value }))}
+                    placeholder="고객사를 검색하거나 직접 입력하세요"
+                  />
                 </label>
 
                 <label>

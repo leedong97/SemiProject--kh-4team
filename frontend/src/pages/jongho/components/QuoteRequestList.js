@@ -11,7 +11,7 @@ function formatPhone(phone) {
   return match ? `${match[1]}-${match[2]}-${match[3]}` : phone;
 }
 
-export default function QuoteRequestList({ quotes, busy, onChangeStatus }) {
+export default function QuoteRequestList({ quotes, busy, onChangeStatus, onCreateProject }) {
   const [openIds, setOpenIds] = useState([]);
 
   const toggle = (id) =>
@@ -86,7 +86,22 @@ export default function QuoteRequestList({ quotes, busy, onChangeStatus }) {
                 {open && (
                   <tr className="boards-detail-row">
                     <td colSpan="10">
-                      <div className="nexus-quote-requirements">{q.requirements}</div>
+                      <div className="nexus-quote-detail">
+                        <div className="nexus-quote-requirements">{q.requirements}</div>
+                        <div className="nexus-quote-contact">
+                          <span>신청자: {q.applicantName || "-"}</span>
+                          <span>이메일: {q.email || "-"}</span>
+                          <span>전화번호: {formatPhone(q.phone)}</span>
+                          <span>예산 범위: {q.budget || "-"}</span>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-primary btn-sm"
+                          onClick={() => onCreateProject(q)}
+                        >
+                          이 견적으로 프로젝트 등록
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )}

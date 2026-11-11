@@ -185,7 +185,14 @@ function Notices() {
 
     // 번호는 화면 순서대로 1부터 이어서 매긴다 (위에서 아래로 1, 2, 3 ...)
     const numbered = useMemo(
-        () => filteredInfo.map((item, index) => ({ ...item, displayNo: index + 1 })),
+        () => {
+            // 고정 공지는 번호 대신 '고정', 나머지는 고정 공지를 빼고 1부터 센다
+            let no = 0;
+            return filteredInfo.map((item) => ({
+                ...item,
+                displayNo: item.isPinned ? "고정" : ++no,
+            }));
+        },
         [filteredInfo]
     );
 

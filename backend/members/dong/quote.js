@@ -1,6 +1,8 @@
 const express = require('express');
 const db = require('../../db');
 const { requireShopAuth } = require('../../middleware/shopSession');
+const { createNotificationForManagers } = require('../../notify');
+const quoteBus = require('../../notifyBus');
 const router = express.Router();
 
 const budgets = [
@@ -44,6 +46,14 @@ router.post('/quotes', requireShopAuth, async (req, res) => {
         VALUES (?, ?, ?, ?, ?, ?)`,
         [req.member.member_id, service, company, email, budget, requirements]
     );
+
+    const notificationLink = `/admin/projects?quoteId=${result.insertId}`;
+    await createNotificationForManagers(
+      '견적 요청',
+      `${company}의 ${service} 견적 문의가 접수되었습니다.`,
+      notificationLink
+    );
+    quoteBus.emit('quote-changed');
 
     return res.status(201).json({
       id: result.insertId,
