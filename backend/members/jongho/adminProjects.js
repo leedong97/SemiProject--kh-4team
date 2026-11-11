@@ -495,4 +495,64 @@ router.delete('/projects/:id', async (req, res) => {
 });
 
 
+// ===== 견적 요청 (쇼핑 고객이 보낸 프로젝트 견적, shop_quote_requests) =====
+// 읽기와 상태 변경만 한다. 저장 쪽(dong/quote.js)은 건드리지 않는다.
+const QUOTE_STATUSES = ['접수', '검토중', '처리완료'];
+
+// 견적 목록 (?status= 로 상태별 조회, 없으면 전체, 최신순 300건)
+router.get('/quote-requests', async (req, res) => {
+  const status = req.query.status;
+  if (status && !QUOTE_STATUSES.includes(status)) {
+    return res.status(400).json({ message: '잘못된 상태 값입니다.' });
+  }
+  try {
+    const [rows] = await pool.query(
+      `SELECT qr.quote_id AS id,
+              qr.member_id AS memberId,
+              qr.service_name AS service,
+              qr.company_name AS company,
+              sm.member_name AS applicantName,
+              qr.contact_email AS email,
+              sm.phone AS phone,
+              qr.budget,
+              qr.requirements,
+              qr.status,
+              DATE_FORMAT(qr.created_at, '%Y-%m-%d %H:%i') AS createdAt
+       FROM shop_quote_requests qr
+       LEFT JOIN shop_members sm ON sm.member_id = qr.member_id
+       ${status ? 'WHERE qr.status = ?' : ''}
+       ORDER BY qr.quote_id DESC
+       LIMIT 300`,
+      status ? [status] : []
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('[견적 목록 조회 실패]', err.code || err.message);
+    res.status(500).json({ message: '견적 목록을 불러오지 못했습니다.' });
+  }
+});
+
+// 견적 상태 변경 (접수 → 검토중 → 처리완료)
+router.patch('/quote-requests/:id/status', async (req, res) => {
+  const quoteId = Number(req.params.id);
+  const status = (req.body || {}).status;
+  if (!validId(quoteId)) return res.status(400).json({ message: '잘못된 견적 번호입니다.' });
+  if (!QUOTE_STATUSES.includes(status)) {
+    return res.status(400).json({ message: '잘못된 상태 값입니다.' });
+  }
+  try {
+    const [result] = await pool.query(
+      'UPDATE shop_quote_requests SET status = ? WHERE quote_id = ?',
+      [status, quoteId]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: '견적을 찾을 수 없습니다.' });
+    }
+    res.json({ message: '견적 상태를 바꿨습니다.' });
+  } catch (err) {
+    console.error('[견적 상태 변경 실패]', err.code || err.message);
+    res.status(500).json({ message: '견적 상태 변경에 실패했습니다.' });
+  }
+});
+
 module.exports = router;

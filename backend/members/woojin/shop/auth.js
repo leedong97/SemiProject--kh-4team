@@ -262,20 +262,35 @@ router.post("/google", async (req, res) => {
 });
 
 // ---------------------------------------------------------------------
-//  닉네임 설정  PATCH /api/shop/auth/nickname   body: { nickname }   (로그인 토큰 필요)
+//  닉네임 설정  PATCH /api/shop/auth/nickname   body: { nickname, name?, phone? }   (로그인 토큰 필요)
 //  구글로 처음 들어온 회원 / 닉네임이 없는 옛 회원이 닉네임을 정할 때 써요
+//  이름(name)은 구글이 알려 준 이름으로 미리 채워 두고 고칠 수 있어요. 일반 가입처럼 비울 수 없고 1~NAME_MAX자예요.
+//  전화번호(phone)는 일반 가입처럼 "선택"이에요. 구글 로그인은 전화번호를 못 받아 와서 이 화면에서 같이 받아요.
+//   - 비워서 보내면 전화번호는 건드리지 않아요 (옛 회원이 이미 가진 번호가 지워지면 안 되니까요)
+//   - 값이 있으면 일반 가입과 같은 규칙(형식 + 중복 불가)으로 검사해요
 // ---------------------------------------------------------------------
 router.patch("/nickname", requireShopAuth, async (req, res) => {
-    const nickname = str((req.body || {}).nickname).trim();
+    const body = req.body || {};
+    const nickname = str(body.nickname).trim();
+    const name = str(body.name).trim(); // 안 보내면 빈 글자 -> 이름은 그대로 둔다
+    const phone = normalizePhone(str(body.phone));
     const problem = nicknameProblem(nickname);
     if (problem) return res.status(400).json({ ok: false, message: problem });
+    if (name.length > NAME_MAX) return res.status(400).json({ ok: false, message: `이름은 1~${NAME_MAX}자로 입력해 주세요.` });
+    if (phone && !PHONE_PATTERN.test(phone)) return res.status(400).json({ ok: false, message: PHONE_RULE_TEXT });
     try {
-        await pool.query("UPDATE shop_members SET nickname = ? WHERE member_id = ?", [nickname, req.member.member_id]);
+        // 닉네임과 전화번호를 한 문장으로 저장해서, 하나만 저장되고 하나는 실패하는 일이 없게 한다
+        // COALESCE(?, 기존값): 새 값이 NULL(비어 있음)이면 기존 값을 그대로 둔다
+        await pool.query(
+            "UPDATE shop_members SET nickname = ?, member_name = COALESCE(?, member_name), phone = COALESCE(?, phone) WHERE member_id = ?",
+            [nickname, name || null, phone || null, req.member.member_id]
+        );
         const [rows] = await pool.query(
             "SELECT member_id, member_name, nickname, email, phone FROM shop_members WHERE member_id = ?", [req.member.member_id]);
         res.json({ ok: true, member: memberView(rows[0]) });
     } catch (err) {
         if (isDuplicate(err, "nickname")) return res.status(409).json({ ok: false, message: "이미 사용 중인 닉네임이에요." });
+        if (isDuplicate(err, "phone")) return res.status(409).json({ ok: false, message: "이미 사용 중인 전화번호예요." });
         sendServerError(res, "닉네임 저장 오류:", err);
     }
 });

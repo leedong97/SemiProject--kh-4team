@@ -8,6 +8,50 @@ const router = express.Router();
 const pool = require("../../db");
 const { requireAuth } = require("../../middleware/session");
 
+// ===== 연차 일수 계산 규칙 (한 곳에서만 정의해서 목록·검사·합계가 같은 결과를 내게 한다) =====
+// 토·일은 연차로 세지 않는다. (공휴일 테이블은 아직 없어서 공휴일은 평일로 센다)
+// "2026-11-09" 글자를 UTC 기준으로 하루씩 넘기며 요일을 본다. (new Date("...")는 UTC 자정이라 getUTCDay()를 써야 시간대로 안 밀린다)
+function countWorkdays(start, end, type) {
+    if (type === "반차") return 0.5;
+    let days = 0;
+    for (let t = Date.parse(start); t <= Date.parse(end); t += 86400000) {
+        const dow = new Date(t).getUTCDay(); // 0=일, 6=토
+        if (dow !== 0 && dow !== 6) days += 1;
+    }
+    return days;
+}
+
+// ===== 연차 이월 계산 =====
+// 총 연차(그 해) = 그 해 기본 연차 + 작년까지 쓰고 남은 연차(전부 이월, 상한 없음)
+// 작년 남은 연차 = 작년 기본 + 재작년에서 넘어온 연차 - 작년에 쓴 연차(승인+대기)  <- 해마다 앞 해에서 이어 계산해요
+// db 는 pool 이든 conn 이든 .query 만 있으면 돼요.
+// 기록이 시작되는 해는 leave_balances 에 줄이 처음 생긴 해예요. 그 이전엔 넘어올 연차가 없다고 봐요.
+// 줄이 빠진 해는 기본 15일로 계산해요 (기존 규칙과 같아요).
+async function getLeaveTotal(db, employeeId, year) {
+    const [balRows] = await db.query(
+        "SELECT balance_year AS y, total_days FROM leave_balances WHERE employee_id = ? AND balance_year <= ? ORDER BY balance_year",
+        [employeeId, year]
+    );
+    const baseByYear = new Map(balRows.map((r) => [Number(r.y), Number(r.total_days)]));
+    const base = baseByYear.get(year) ?? 15;
+    if (balRows.length === 0 || Number(balRows[0].y) >= year) return { base, carry: 0, total: base };
+
+    const [usedRows] = await db.query(
+        "SELECT YEAR(start_date) AS y, leave_type AS `type`, DATE_FORMAT(start_date, '%Y-%m-%d') AS `start`, DATE_FORMAT(end_date, '%Y-%m-%d') AS `end` " +
+        "FROM leave_requests WHERE employee_id = ? AND leave_type IN ('연차', '반차') AND status IN ('승인', '대기') AND YEAR(start_date) < ?",
+        [employeeId, year]
+    );
+    const usedByYear = new Map();
+    for (const r of usedRows) usedByYear.set(Number(r.y), (usedByYear.get(Number(r.y)) || 0) + countWorkdays(r.start, r.end, r.type));
+
+    let carry = 0;
+    for (let y = Number(balRows[0].y); y < year; y++) {
+        const total = (baseByYear.get(y) ?? 15) + carry;
+        carry = Math.max(0, total - (usedByYear.get(y) || 0)); // 마이너스로 넘어가지 않게 0 아래로는 안 내려가요
+    }
+    return { base, carry, total: base + carry };
+}
+
 // ===== 휴가 이력 조회 =====
 // GET 방식으로 /api/leaves 요청이 오면 한 직원의 휴가 신청 목록을 돌려준다. (주소의 ?employeeId=1을 req.query로 읽는다)
 router.get("/leaves", async (req, res) => {
@@ -24,15 +68,14 @@ router.get("/leaves", async (req, res) => {
             "SELECT leave_id AS id, " +
             "DATE_FORMAT(start_date, '%Y-%m-%d') AS `start`, " +
             "DATE_FORMAT(end_date, '%Y-%m-%d') AS `end`, " +
-            "leave_type AS `type`, status, " +
-            "CASE WHEN leave_type = '반차' THEN 0.5 ELSE DATEDIFF(end_date, start_date) + 1 END AS days " +
+            "leave_type AS `type`, status " +
             "FROM leave_requests WHERE employee_id = ? " +
             "ORDER BY start_date DESC",
             [employeeId]
         );
-        // days는 소수(DECIMAL)라서 mysql2가 글자("0.5")로 돌려준다. 화면에서 더하기를 하려면 숫자여야 해서 Number()로 바꾼다.
-        // ...r: 그 줄의 모든 칸을 복사하고, days만 숫자로 덮어쓴다.
-        res.json({ ok: true, leaves: rows.map((r) => ({ ...r, days: Number(r.days) })) });
+        // days는 DB가 아니라 countWorkdays로 계산한다 (주말 제외 규칙을 JS 한 곳에 두기 위해).
+        // 병가·경조사도 days는 채워 주지만 화면에서는 연차·반차만 합산한다.
+        res.json({ ok: true, leaves: rows.map((r) => ({ ...r, days: countWorkdays(r.start, r.end, r.type) })) });
     } catch (err) {
         console.error("휴가 조회 오류:", err.code, err.message);
         res.status(500).json({ ok: false, message: "서버 오류가 났어요." });
@@ -67,20 +110,27 @@ router.post("/leaves", requireAuth, async (req, res) => {
         // 남은 연차 = 그 해 총 연차 - (승인 + 대기 중인 연차·반차 일수). 반려는 세지 않는다.
         // 화면에서도 막지만, 화면은 우회할 수 있어서 서버가 한 번 더 검사한다.
         if (leave_type === "연차" || leave_type === "반차") {
-            const requestDays = leave_type === "반차" ? 0.5 : (Date.parse(end_date) - Date.parse(start_date)) / 86400000 + 1;
+            if (start_date.slice(0, 4) !== end_date.slice(0, 4)) {
+                await conn.rollback();
+                return res.status(400).json({ ok: false, message: "연차는 해가 바뀌는 기간을 한 번에 신청할 수 없어요. 연도별로 나눠 신청해 주세요." });
+            }
+            const requestDays = countWorkdays(start_date, end_date, leave_type);
+            if (requestDays === 0) {
+                await conn.rollback();
+                return res.status(400).json({ ok: false, message: "토·일만 선택하셨어요. 평일이 포함된 기간을 골라 주세요." });
+            }
             const leaveYear = Number(start_date.slice(0, 4));
-            const [balances] = await conn.query(
-                "SELECT total_days FROM leave_balances WHERE employee_id = ? AND balance_year = ?",
-                [employeeId, leaveYear]
-            );
-            const total = Number(balances[0]?.total_days ?? 15);
+            // 그 해 총 연차 = 기본 연차 + 작년에서 넘어온 연차
+            const { total } = await getLeaveTotal(conn, employeeId, leaveYear);
+            // 이미 쓴/대기 중인 신청의 시작·종료일을 가져와서 같은 규칙(countWorkdays)으로 더한다
             const [usedRows] = await conn.query(
-                "SELECT COALESCE(SUM(CASE WHEN leave_type = '반차' THEN 0.5 ELSE DATEDIFF(end_date, start_date) + 1 END), 0) AS used " +
+                "SELECT leave_type AS `type`, DATE_FORMAT(start_date, '%Y-%m-%d') AS `start`, DATE_FORMAT(end_date, '%Y-%m-%d') AS `end` " +
                 "FROM leave_requests WHERE employee_id = ? AND leave_type IN ('연차', '반차') " +
                 "AND status IN ('승인', '대기') AND YEAR(start_date) = ?",
                 [employeeId, leaveYear]
             );
-            const remain = total - Number(usedRows[0].used);
+            const used = usedRows.reduce((sum, r) => sum + countWorkdays(r.start, r.end, r.type), 0);
+            const remain = total - used;
             if (requestDays > remain) {
                 await conn.rollback();
                 return res.status(400).json({ ok: false, message: `남은 연차(${remain}일)보다 많이 신청할 수 없어요. (신청 ${requestDays}일)` });
@@ -93,7 +143,8 @@ router.post("/leaves", requireAuth, async (req, res) => {
         await conn.commit();
         res.status(201).json({ ok: true, leave_id: result.insertId, status: "대기" });
     } catch (err) {
-        if (conn) await conn.rollback();
+        // rollback 자체가 실패(연결 끊김 등)해도 원래 에러 로그와 500 응답은 나가야 해서 한 번 더 감싼다
+        try { if (conn) await conn.rollback(); } catch (rbErr) { console.error("롤백 실패:", rbErr.message); }
         console.error("휴가 신청 오류:", err.code, err.message);
         res.status(500).json({ ok: false, message: "서버 오류가 났어요." });
     } finally {
@@ -263,16 +314,11 @@ router.get("/my-attendance", async (req, res) => {
             return { day, hours: found ? Number(found.hours) : 0 };
         });
 
-        // 올해 총 연차. 아직 안 넣은 직원은 기본 15일로 (?? : 값이 null/undefined 일 때만 오른쪽 값을 쓴다)
-        const [balances] = await pool.query(
-            "SELECT total_days FROM leave_balances WHERE employee_id = ? AND balance_year = YEAR(CURDATE())",
-            [employeeId]
-        );
-        //첫 번째 행이 있으면 그 행의 total_days를 꺼내고, 첫 번째 행이 없으면 undefined로 멈춘다.
-        //  undefined면 15를 쓰고, 마지막에 숫자로 바꿔 leaveTotal에 담는다.
-        const leaveTotal = Number(balances[0]?.total_days ?? 15);
+        // 올해 총 연차 = 올해 기본(줄이 없으면 15일) + 작년에서 넘어온 연차(이월)
+        const thisYear = new Date().getFullYear();
+        const { total: leaveTotal, carry: leaveCarry } = await getLeaveTotal(pool, employeeId, thisYear);
 
-        res.json({ ok: true, weekHours, leaveTotal });
+        res.json({ ok: true, weekHours, leaveTotal, leaveCarry });
     } catch (err) {
         console.error("근태 조회 오류:", err.code, err.message);
         res.status(500).json({ ok: false, message: "서버 오류가 났어요." });

@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 
 export default function PricingHero() {
     return (
@@ -25,9 +24,6 @@ export default function PricingHero() {
                         요금제 살펴보기
                     </a>
 
-                    <Link to="/preview" className="pricing-demo-button">
-                        데모 체험하기 →
-                    </Link>
                 </div>
             </div>
         </section>
