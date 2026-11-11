@@ -79,13 +79,14 @@ function Todo({ todo = [] }) {
         setPage(previous => Math.min(previous, totalPages));
     }, [totalPages]);
 
-    function resetFilters() {
-        setSelectedProject("");
-        setSearch("");
-        setSearchManager("");
-        setStatus("전체");
-        setPage(1);
-    }
+    // 검색 리셋 버튼 주석
+    // function resetFilters() {
+    //     setSelectedProject("");
+    //     setSearch("");
+    //     setSearchManager("");
+    //     setStatus("전체");
+    //     setPage(1);
+    // }
 
     const listTitle =
         status === "전체"
@@ -101,13 +102,14 @@ function Todo({ todo = [] }) {
                 </div>
 
                 <div className="jpl-header-actions">
-                    <button
+                    {/* 검색 리셋 버튼 주석 */}
+                    {/* <button
                         type="button"
                         className="jpl-reset"
                         onClick={resetFilters}
                     >
                         검색 리셋
-                    </button>
+                    </button> */}
 
                     <Link to="/todo/completion" className="jpl-reset">
                         프로젝트 완료 요청

@@ -868,7 +868,7 @@ function Board(props) {
                 <p className="community-post-content">
                     {selectedPost.content}
                 </p>
-
+                <StoredAttachments files={selectedPost.attachments || []} />
                 <CommunityLike
                     key={"like-" + selectedPost.id}
                     postId={selectedPost.id}
