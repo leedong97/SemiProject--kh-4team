@@ -10,8 +10,9 @@ const router = express.Router();
 const NAME_MAX = 50;
 const PW_MIN = 8;
 const PW_MAX_BYTES = 72; // bcrypt 는 앞 72바이트만 사용
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_PATTERN = /^[0-9-]{9,13}$/;
+const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+const PHONE_PATTERN = /^01[016789]-\d{3,4}-\d{4}$/; // 휴대폰: 010-1234-5678
+const PHONE_RULE_TEXT = "전화번호는 010-1234-5678 형식으로 입력해 주세요.";
 const NICKNAME_PATTERN = /^[가-힣A-Za-z0-9_]{2,12}$/; // 2~12자, 한글·영문·숫자·밑줄만
 const NICKNAME_RULE_TEXT = "닉네임은 2~12자, 한글·영문·숫자·_ 만 쓸 수 있어요.";
 const GOOGLE_ISSUERS = ["accounts.google.com", "https://accounts.google.com"];
@@ -20,6 +21,15 @@ const GOOGLE_ISSUERS = ["accounts.google.com", "https://accounts.google.com"];
 const DUMMY_HASH = bcrypt.hashSync("dummy-password-for-timing", 10);
 
 function str(v) { return typeof v === "string" ? v : ""; }
+
+// 전화번호를 하나의 모양(010-1234-5678)으로 맞춘다. 01012345678 로 와도 같은 번호로 취급해야 중복을 잡을 수 있어요.
+function normalizePhone(raw) {
+    const text = String(raw || "").trim();
+    const digits = text.replace(/\D/g, "");
+    if (digits.length === 11) return digits.slice(0, 3) + "-" + digits.slice(3, 7) + "-" + digits.slice(7);
+    if (digits.length === 10) return digits.slice(0, 3) + "-" + digits.slice(3, 6) + "-" + digits.slice(6);
+    return text;
+}
 
 // DB 행 -> 화면에 돌려줄 회원 정보 (비밀번호 해시 같은 건 절대 넣지 않는다)
 function memberView(row) {
@@ -31,9 +41,13 @@ function nicknameProblem(nickname) {
     return NICKNAME_PATTERN.test(nickname) ? "" : NICKNAME_RULE_TEXT;
 }
 
-// UNIQUE 위반(ER_DUP_ENTRY)이 어떤 칸 때문인지 구분한다 (닉네임인지 이메일인지)
+// UNIQUE 위반(ER_DUP_ENTRY)이 어떤 칸(키) 때문인지 구분한다 (닉네임 / 이메일 / 전화번호)
+// 에러 문구 안의 "값"이 아니라 "for key '...'" 의 키 이름만 보고 판단해요. (값에 nickname 같은 글자가 들어 있어도 안 속아요)
 function isDuplicate(err, keyword) {
-    return err && err.code === "ER_DUP_ENTRY" && String(err.sqlMessage || err.message || "").toLowerCase().includes(keyword);
+    if (!err || err.code !== "ER_DUP_ENTRY") return false;
+    const message = String(err.sqlMessage || err.message || "");
+    const match = message.match(/for key '([^']*)'/i);
+    return (match ? match[1] : message).toLowerCase().includes(keyword);
 }
 
 // nickname 컬럼이 아직 없는 DB (sql/06_shop_nickname.sql 을 안 돌린 경우)
@@ -68,18 +82,34 @@ router.get("/nickname-check", async (req, res) => {
     }
 });
 
+// ---------------------------------------------------------------------
+//  전화번호 확인  GET /api/shop/auth/phone-check?phone=...
+//  형식이 맞는지 + 이미 쓰는 번호인지 알려줘요. (최종 보증은 DB 의 UNIQUE 키)
+// ---------------------------------------------------------------------
+router.get("/phone-check", async (req, res) => {
+    const phone = normalizePhone(str(req.query.phone));
+    if (!PHONE_PATTERN.test(phone)) return res.json({ ok: true, available: false, message: PHONE_RULE_TEXT });
+    try {
+        const [rows] = await pool.query("SELECT 1 FROM shop_members WHERE phone = ? LIMIT 1", [phone]);
+        if (rows.length > 0) return res.json({ ok: true, available: false, message: "이미 사용 중인 전화번호예요." });
+        res.json({ ok: true, available: true, message: "사용할 수 있는 전화번호예요." });
+    } catch (err) {
+        sendServerError(res, "전화번호 확인 오류:", err);
+    }
+});
+
 router.post("/signup", async (req, res) => {
     const body = req.body || {};
     const name = str(body.name).trim();
     const email = str(body.email).trim().toLowerCase();
-    const phone = str(body.phone).trim();
+    const phone = normalizePhone(str(body.phone));
     const nickname = str(body.nickname).trim();
     const password = str(body.password);
 
     if (!name || name.length > NAME_MAX) return res.status(400).json({ ok: false, message: `이름은 1~${NAME_MAX}자로 입력해 주세요.` });
     if (!EMAIL_PATTERN.test(email) || email.length > 200) return res.status(400).json({ ok: false, message: "이메일 형식이 올바르지 않아요." });
     if (nicknameProblem(nickname)) return res.status(400).json({ ok: false, message: NICKNAME_RULE_TEXT });
-    if (phone && !PHONE_PATTERN.test(phone)) return res.status(400).json({ ok: false, message: "전화번호는 숫자와 - 만 사용해 주세요." });
+    if (phone && !PHONE_PATTERN.test(phone)) return res.status(400).json({ ok: false, message: PHONE_RULE_TEXT });
     if (password.length < PW_MIN) return res.status(400).json({ ok: false, message: `비밀번호는 ${PW_MIN}자 이상이어야 해요.` });
     if (Buffer.byteLength(password, "utf8") > PW_MAX_BYTES) return res.status(400).json({ ok: false, message: "비밀번호가 너무 길어요." });
 
@@ -93,7 +123,8 @@ router.post("/signup", async (req, res) => {
     } catch (err) {
         // 중복 확인 버튼을 누른 뒤 그 사이에 같은 닉네임을 다른 사람이 가져갈 수도 있어서, DB 가 한 번 더 막아 줘요
         if (isDuplicate(err, "nickname")) return res.status(409).json({ ok: false, message: "이미 사용 중인 닉네임이에요." });
-        if (err.code === "ER_DUP_ENTRY") return res.status(409).json({ ok: false, message: "이미 가입된 이메일이에요." });
+        if (isDuplicate(err, "phone")) return res.status(409).json({ ok: false, message: "이미 사용 중인 전화번호예요." });
+        if (isDuplicate(err, "email")) return res.status(409).json({ ok: false, message: "이미 가입된 이메일이에요." });
         sendServerError(res, "쇼핑몰 가입 오류:", err);
     }
 });
@@ -185,27 +216,34 @@ router.post("/google", async (req, res) => {
         await conn.beginTransaction();
 
         let memberId = null;
-        // 1) 이미 구글로 연결된 회원인가
+        // 1) 이미 구글로 연결된 회원인가 (shop_members.google_sub 에 구글 sub 가 저장돼 있는지)
         const [linked] = await conn.query(
-            "SELECT member_id FROM social_accounts WHERE provider = 'google' AND provider_user_id = ?", [info.sub]);
+            "SELECT member_id FROM shop_members WHERE google_sub = ?", [info.sub]);
         if (linked[0]) {
             memberId = linked[0].member_id;
         } else {
-            // 2) 같은 이메일의 일반 회원이 있으면 그 계정에 구글을 연결
+            // 2) 같은 이메일의 일반 회원이 있으면 그 계정에 구글을 연결 (google_sub 칸을 채움)
             if (email) {
-                const [sameEmail] = await conn.query("SELECT member_id FROM shop_members WHERE email = ?", [email]);
-                if (sameEmail[0]) memberId = sameEmail[0].member_id;
+                const [sameEmail] = await conn.query(
+                    "SELECT member_id, google_sub FROM shop_members WHERE email = ?", [email]);
+                if (sameEmail[0]) {
+                    // 이미 다른 구글 계정이 연결된 회원이면 덮어쓰지 않고 막는다
+                    if (sameEmail[0].google_sub) {
+                        await conn.rollback();
+                        return res.status(409).json({ ok: false, message: "이미 다른 구글 계정이 연결된 회원이에요." });
+                    }
+                    memberId = sameEmail[0].member_id;
+                    await conn.query(
+                        "UPDATE shop_members SET google_sub = ? WHERE member_id = ?", [info.sub, memberId]);
+                }
             }
             // 3) 없으면 새 회원 만들기 (소셜 전용이라 비밀번호는 NULL, 닉네임은 다음 단계에서 받는다)
             if (memberId === null) {
                 const [created] = await conn.query(
-                    "INSERT INTO shop_members (member_name, email, password_hash, phone) VALUES (?, ?, NULL, NULL)",
-                    [name, email]);
+                    "INSERT INTO shop_members (member_name, email, password_hash, phone, google_sub) VALUES (?, ?, NULL, NULL, ?)",
+                    [name, email, info.sub]);
                 memberId = created.insertId;
             }
-            await conn.query(
-                "INSERT INTO social_accounts (member_id, provider, provider_user_id) VALUES (?, 'google', ?)",
-                [memberId, info.sub]);
         }
 
         const [rows] = await conn.query(
@@ -224,20 +262,35 @@ router.post("/google", async (req, res) => {
 });
 
 // ---------------------------------------------------------------------
-//  닉네임 설정  PATCH /api/shop/auth/nickname   body: { nickname }   (로그인 토큰 필요)
+//  닉네임 설정  PATCH /api/shop/auth/nickname   body: { nickname, name?, phone? }   (로그인 토큰 필요)
 //  구글로 처음 들어온 회원 / 닉네임이 없는 옛 회원이 닉네임을 정할 때 써요
+//  이름(name)은 구글이 알려 준 이름으로 미리 채워 두고 고칠 수 있어요. 일반 가입처럼 비울 수 없고 1~NAME_MAX자예요.
+//  전화번호(phone)는 일반 가입처럼 "선택"이에요. 구글 로그인은 전화번호를 못 받아 와서 이 화면에서 같이 받아요.
+//   - 비워서 보내면 전화번호는 건드리지 않아요 (옛 회원이 이미 가진 번호가 지워지면 안 되니까요)
+//   - 값이 있으면 일반 가입과 같은 규칙(형식 + 중복 불가)으로 검사해요
 // ---------------------------------------------------------------------
 router.patch("/nickname", requireShopAuth, async (req, res) => {
-    const nickname = str((req.body || {}).nickname).trim();
+    const body = req.body || {};
+    const nickname = str(body.nickname).trim();
+    const name = str(body.name).trim(); // 안 보내면 빈 글자 -> 이름은 그대로 둔다
+    const phone = normalizePhone(str(body.phone));
     const problem = nicknameProblem(nickname);
     if (problem) return res.status(400).json({ ok: false, message: problem });
+    if (name.length > NAME_MAX) return res.status(400).json({ ok: false, message: `이름은 1~${NAME_MAX}자로 입력해 주세요.` });
+    if (phone && !PHONE_PATTERN.test(phone)) return res.status(400).json({ ok: false, message: PHONE_RULE_TEXT });
     try {
-        await pool.query("UPDATE shop_members SET nickname = ? WHERE member_id = ?", [nickname, req.member.member_id]);
+        // 닉네임과 전화번호를 한 문장으로 저장해서, 하나만 저장되고 하나는 실패하는 일이 없게 한다
+        // COALESCE(?, 기존값): 새 값이 NULL(비어 있음)이면 기존 값을 그대로 둔다
+        await pool.query(
+            "UPDATE shop_members SET nickname = ?, member_name = COALESCE(?, member_name), phone = COALESCE(?, phone) WHERE member_id = ?",
+            [nickname, name || null, phone || null, req.member.member_id]
+        );
         const [rows] = await pool.query(
             "SELECT member_id, member_name, nickname, email, phone FROM shop_members WHERE member_id = ?", [req.member.member_id]);
         res.json({ ok: true, member: memberView(rows[0]) });
     } catch (err) {
         if (isDuplicate(err, "nickname")) return res.status(409).json({ ok: false, message: "이미 사용 중인 닉네임이에요." });
+        if (isDuplicate(err, "phone")) return res.status(409).json({ ok: false, message: "이미 사용 중인 전화번호예요." });
         sendServerError(res, "닉네임 저장 오류:", err);
     }
 });

@@ -5,32 +5,28 @@ import { initialData } from './initialData';
 export default function useAdminData() {
   const [data, setData] = useState(initialData);
 
-  useEffect(() => {
-    let cancelled = false;
+  // 서버에서 직원·평가·이슈를 다시 불러온다 (앱이 켜질 때와 관리자 화면에 들어올 때 호출)
+  async function reloadData() {
+    const collections = ['employees', 'evaluations', 'issues'];
 
-    async function loadFromServer() {
-      const collections = ['employees', 'evaluations', 'issues'];
+    for (const collection of collections) {
+      try {
+        const rows = await adminRequest('/' + collection);
+        if (Array.isArray(rows)) {
+          const items = collection === 'issues'
+            ? rows.map((issue) => ({ comments: [], history: [], ...issue }))
+            : rows;
 
-      for (const collection of collections) {
-        try {
-          const rows = await adminRequest('/' + collection);
-          if (!cancelled && Array.isArray(rows)) {
-            const items = collection === 'issues'
-              ? rows.map((issue) => ({ comments: [], history: [], ...issue }))
-              : rows;
-
-            setData((previous) => ({ ...previous, [collection]: items }));
-          }
-        } catch (error) {
-          console.error(collection + ' 목록 오류:', error.message);
+          setData((previous) => ({ ...previous, [collection]: items }));
         }
+      } catch (error) {
+        console.error(collection + ' 목록 오류:', error.message);
       }
     }
+  }
 
-    loadFromServer();
-    return () => {
-      cancelled = true;
-    };
+  useEffect(() => {
+    reloadData();
   }, []);
 
   function changeData(action, updater) {
@@ -49,10 +45,5 @@ export default function useAdminData() {
     });
   }
 
-  function resetData() {
-    localStorage.removeItem('it_erp_react_demo_v1');
-    setData(initialData);
-  }
-
-  return { data, changeData, resetData };
+  return { data, changeData, reloadData };
 }

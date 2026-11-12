@@ -264,6 +264,7 @@ function Community(props) {
                                 <button
                                     type="button"
                                     className="lounge-account-trigger"
+                                    onClick={() => navigate("/mypage")}
                                 >
                                     <span className="lounge-user-avatar" aria-hidden="true">
                                         {displayName.charAt(0)}

@@ -531,27 +531,13 @@ export default function HRManagement({
 
     // 화면 출력
     return <section className="hr-management">
-        <div className="hr-db-notice" role="status">
-            {dbLoading ? "직원 및 휴가 정보를 불러오는 중입니다." :
-                dbError ? "DB 연결 오류: " + dbError : "MySQL 직원·휴가 정보 연결됨"}
-            <button type="button" onClick={loadHrData} disabled={dbLoading || busy}>
-                <span className="hr-refresh-label">↻ 새로고침</span>
-            </button>
-        </div>
 
         {/* 페이지 제목 */}
         <div className="section-head">
 
             <div>
-                <span className="hr-eyebrow">
-                    WORKSPACE / HUMAN RESOURCES
-                </span>
-
-                <h2>인사 관리</h2>
-
-                <p>
-                    직원 등록 · 업무량 · 휴가 승인
-                </p>
+ 
+            
             </div>
 
         </div>

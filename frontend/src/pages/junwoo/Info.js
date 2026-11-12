@@ -30,6 +30,11 @@ function Info({ info = [] }) {
             return Number(b.id) - Number(a.id);
         });
 
+    // 검색 결과에 포함된 중요 공지 개수
+    const pinnedCount = filteredInfo.filter(
+        item => Number(item.isPinned) === 1
+    ).length;
+
     // 페이지네이션 (10개씩)
     const totalPages = Math.ceil(filteredInfo.length / 10);
 
@@ -128,7 +133,7 @@ function Info({ info = [] }) {
                                                 [중요]
                                             </strong>
                                         ) : (
-                                            start + index + 1
+                                            start + index + 1 - pinnedCount
                                         )}
                                     </td>
 

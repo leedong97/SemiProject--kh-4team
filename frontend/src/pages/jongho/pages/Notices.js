@@ -5,7 +5,7 @@ import getLoginUser from "../../woojin/getLoginUser";
 import { adminRequest } from "../adminApi";
 import useSortableList from "../utils/useSortableList";
 import usePagination from "../utils/usePagination";
-import Pager from "../components/Pager";
+import NumberedPager from "../components/NumberedPager";
 
 const PAGE_SIZE = 10;
 
@@ -171,10 +171,10 @@ function Notices() {
                 String(item.content || "").toLowerCase().includes(keyword)
             );
 
-        // 정렬을 고르지 않았으면 최신순(번호 큰 것부터)
+        // 정렬을 고르지 않았으면 등록 순서(오래된 순, 번호 작은 것부터)
         const ordered = sortKey
             ? sortItems(matched)
-            : [...matched].sort((a, b) => Number(b.id) - Number(a.id));
+            : [...matched].sort((a, b) => Number(a.id) - Number(b.id));
 
         // 고정 공지는 정렬과 상관없이 항상 위
         return [
@@ -183,17 +183,27 @@ function Notices() {
         ];
     }, [info, search, pinnedOnly, period, sortKey, sortItems]);
 
-    const { pageItems, currentPage, totalPages, total, goPrev, goNext } =
-        usePagination(filteredInfo, PAGE_SIZE, [search, pinnedOnly, period, sortKey]);
+    // 번호는 화면 순서대로 1부터 이어서 매긴다 (위에서 아래로 1, 2, 3 ...)
+    const numbered = useMemo(
+        () => {
+            // 고정 공지는 번호 대신 '고정', 나머지는 고정 공지를 빼고 1부터 센다
+            let no = 0;
+            return filteredInfo.map((item) => ({
+                ...item,
+                displayNo: item.isPinned ? "고정" : ++no,
+            }));
+        },
+        [filteredInfo]
+    );
+
+    const { pageItems, currentPage, totalPages, total, goTo } =
+        usePagination(numbered, PAGE_SIZE, [search, pinnedOnly, period, sortKey]);
 
     return (
         <div className="admin-boards">
             <div className="boards-header">
-                <div>
-                    <span className="boards-label">WORKSPACE / NOTICE</span>
-                    <h1>공지사항 관리</h1>
-                    <p>MySQL 데이터베이스와 연결된 공지사항 관리</p>
-                </div>
+
+
                 <div className="boards-count">전체 공지사항<strong>{info.length}건</strong></div>
             </div>
 
@@ -206,46 +216,46 @@ function Notices() {
             )}
 
             {formOpen && (
-            <form className="boards-form" onSubmit={handleSubmit}>
-                <h2>{editId === null ? "새 공지사항 등록" : "공지사항 수정"}</h2>
-                {editId === null && (
-                    <p>작성자: {me.isDummy ? "로그인 후 등록할 수 있습니다" : `${me.name || ""} 님`}</p>
-                )}
-                <div className="boards-field">
-                    <label htmlFor="notice-title">제목</label>
-                    <input id="notice-title" maxLength={200} value={title}
-                        onChange={e => setTitle(e.target.value)} placeholder="제목 입력" />
-                </div>
-                <div className="boards-field">
-                    <label htmlFor="notice-content">내용</label>
-                    <textarea id="notice-content" rows={6} value={content}
-                        onChange={e => setContent(e.target.value)} placeholder="내용 입력" />
-                </div>
-                <div className="boards-field">
-                    <label htmlFor="notice-event-date">행사일 (선택)</label>
-                    <input id="notice-event-date" type="date" value={eventDate}
-                        onChange={e => setEventDate(e.target.value)} />
-                    {editId !== null && !eventDateLoaded && !eventDateError && (
-                        <small>행사일을 불러오는 중...</small>
+                <form className="boards-form" onSubmit={handleSubmit}>
+                    <h2>{editId === null ? "새 공지사항 등록" : "공지사항 수정"}</h2>
+                    {editId === null && (
+                        <p>작성자: {me.isDummy ? "로그인 후 등록할 수 있습니다" : `${me.name || ""} 님`}</p>
                     )}
-                    {eventDateError && (
-                        <small role="alert" className="nexus-notice-event-date-error">
-                            {eventDateError}{" "}
-                            <button type="button" onClick={() => loadEventDate(editId)}>다시 불러오기</button>
-                        </small>
-                    )}
-                </div>
-                <label className="boards-check">
-                    <input type="checkbox" checked={pinned}
-                        onChange={e => setPinned(e.target.checked)} /> 상단 고정 공지로 {editId === null ? "등록" : "설정"}
-                </label>
-                <div className="boards-form-actions">
-                    <button type="button" className="boards-btn-cancel" onClick={resetForm}>취소</button>
-                    <button type="submit" className="boards-btn-primary" disabled={saving}>
-                        {saving ? "저장 중..." : editId === null ? "등록하기" : "수정 완료"}
-                    </button>
-                </div>
-            </form>
+                    <div className="boards-field">
+                        <label htmlFor="notice-title">제목</label>
+                        <input id="notice-title" maxLength={200} value={title}
+                            onChange={e => setTitle(e.target.value)} placeholder="제목 입력" />
+                    </div>
+                    <div className="boards-field">
+                        <label htmlFor="notice-content">내용</label>
+                        <textarea id="notice-content" rows={6} value={content}
+                            onChange={e => setContent(e.target.value)} placeholder="내용 입력" />
+                    </div>
+                    <div className="boards-field">
+                        <label htmlFor="notice-event-date">행사일 (선택)</label>
+                        <input id="notice-event-date" type="date" value={eventDate}
+                            onChange={e => setEventDate(e.target.value)} />
+                        {editId !== null && !eventDateLoaded && !eventDateError && (
+                            <small>행사일을 불러오는 중...</small>
+                        )}
+                        {eventDateError && (
+                            <small role="alert" className="nexus-notice-event-date-error">
+                                {eventDateError}{" "}
+                                <button type="button" onClick={() => loadEventDate(editId)}>다시 불러오기</button>
+                            </small>
+                        )}
+                    </div>
+                    <label className="boards-check">
+                        <input type="checkbox" checked={pinned}
+                            onChange={e => setPinned(e.target.checked)} /> 상단 고정 공지로 {editId === null ? "등록" : "설정"}
+                    </label>
+                    <div className="boards-form-actions">
+                        <button type="button" className="boards-btn-cancel" onClick={resetForm}>취소</button>
+                        <button type="submit" className="boards-btn-primary" disabled={saving}>
+                            {saving ? "저장 중..." : editId === null ? "등록하기" : "수정 완료"}
+                        </button>
+                    </div>
+                </form>
             )}
 
             <div className="boards-list">
@@ -286,7 +296,7 @@ function Notices() {
                                 <tr><td colSpan="6" className="boards-empty">등록된 공지사항이 없습니다.</td></tr>
                             ) : pageItems.map(item => (
                                 <tr key={item.id}>
-                                    <td>{item.id}</td>
+                                    <td>{item.displayNo}</td>
                                     <td className="boards-title-cell">
                                         {Boolean(item.isPinned) && <span className="boards-important">고정</span>}
                                         {item.title}
@@ -307,8 +317,7 @@ function Notices() {
                     </table>
                 </div>
 
-                <Pager currentPage={currentPage} totalPages={totalPages} total={total}
-                    onPrev={goPrev} onNext={goNext} />
+                <NumberedPager currentPage={currentPage} totalPages={totalPages} total={total} pageSize={PAGE_SIZE} onPage={goTo} />
             </div>
         </div>
     );

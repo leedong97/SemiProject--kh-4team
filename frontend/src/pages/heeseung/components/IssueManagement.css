@@ -4,20 +4,7 @@ PC 전용 이슈 관리 디자인
 실제 JS 클래스명: issue-Management
 ========================================= */
 
-/* 1. 전체 화면 */
-
-.issue-Management {
-    width: 100%;
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 28px 32px 50px;
-    box-sizing: border-box;
-    color: #253347;
-    background: #f7f9fc;
-    font-family: "Pretendard", "Malgun Gothic", sans-serif;
-    font-size: 14px;
-    line-height: 1.6;
-}
+/* 1. 전체 화면 */.issue-Management { width: 100%; max-width: 1440px; box-sizing: border-box; color: #253347; background: #f7f9fc; font-family: "Pretendard", "Malgun Gothic", sans-serif; font-size: 14px; line-height: 1.6; margin: 0; padding: 0; }
 
 .issue-Management *,
 .issue-Management *::before,
@@ -25,38 +12,9 @@ PC 전용 이슈 관리 디자인
     box-sizing: border-box;
 }
 
-/* 2. 페이지 제목 */
+/* 2. 페이지 제목 */ .issue-Management .section-head { border-bottom: 1px solid #e5eaf1; margin: 0 0 20px; padding: 0 0 16px; } .issue-Management .section-head h2 { margin: 0 0 7px; font-size: 24px; font-weight: 800; letter-spacing: -0.8px; color: #162b5c; } .issue-Management .section-head p { margin: 0; font-size: 14px; color: #8390a3; }
 
-.issue-Management .section-head {
-    margin-bottom: 26px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #e5eaf1;
-}
-
-.issue-Management .section-head h2 {
-    margin: 0 0 7px;
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.8px;
-    color: #162b5c;
-}
-
-.issue-Management .section-head p {
-    margin: 0;
-    font-size: 14px;
-    color: #8390a3;
-}
-
-/* 3. 공통 카드 */
-
-.issue-Management .panel {
-    padding: 22px;
-    margin-bottom: 20px;
-    background: #ffffff;
-    border: 1px solid #e5eaf1;
-    border-radius: 14px;
-    box-shadow: 0 3px 14px rgba(26, 46, 77, 0.035);
-}
+/* 3. 공통 카드 */.issue-Management .panel { background: #ffffff; border: 1px solid #e5eaf1; border-radius: 14px; box-shadow: 0 3px 14px rgba(26, 46, 77, 0.035); padding: 20px; margin: 0 0 16px; }
 
 .issue-Management h3,
 .issue-Management h4 {
@@ -69,14 +27,7 @@ PC 전용 이슈 관리 디자인
     font-weight: 700;
 }
 
-/* 4. 통계 카드 */
-
-.issue-Management .issue-stats {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 22px;
-}
+/* 4. 통계 카드 */ .issue-Management .issue-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; }
 
 .issue-Management .issue-stat-card {
     position: relative;
@@ -138,21 +89,7 @@ PC 전용 이슈 관리 디자인
     color: #d48b24;
 }
 
-/* 5. 긴급 이슈 / 마감 임박 */
-
-.issue-Management .issue-alert-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-    margin-bottom: 22px;
-}
-
-.issue-Management .issue-alert-panel {
-    padding: 22px 24px;
-    background: #ffffff;
-    border: 1px solid #e5eaf1;
-    border-radius: 14px;
-}
+/* 5. 긴급 이슈 / 마감 임박 */ .issue-Management .issue-alert-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; }.issue-Management .issue-alert-panel { background: #ffffff; border: 1px solid #e5eaf1; border-radius: 14px; padding: 20px; margin: 0 0 16px; }
 
 .issue-Management .issue-alert-panel:first-child {
     border-top: 3px solid #e85b69;
@@ -166,13 +103,7 @@ PC 전용 이슈 관리 디자인
     margin: 0 0 5px;
     font-size: 17px;
     font-weight: 750;
-}
-
-.issue-Management .issue-alert-panel>p {
-    margin: 0 0 14px;
-    font-size: 12px;
-    color: #8290a4;
-}
+} .issue-Management .issue-alert-panel>p { margin: 0 0 14px; font-size: 14px; color: #8290a4; }
 
 .issue-Management .issue-alert-item {
     display: flex;
@@ -211,27 +142,13 @@ PC 전용 이슈 관리 디자인
     text-decoration: underline;
 }
 
-/* 6. 담당자별 업무량 */
-
-.issue-Management .issue-workload-panel {
-    margin-bottom: 22px;
-    padding: 22px 24px;
-    background: #ffffff;
-    border: 1px solid #e5eaf1;
-    border-radius: 14px;
-}
+/* 6. 담당자별 업무량 */.issue-Management .issue-workload-panel { background: #ffffff; border: 1px solid #e5eaf1; border-radius: 14px; padding: 20px; margin: 0 0 16px; }
 
 .issue-Management .issue-workload-panel h3 {
     margin: 0 0 17px;
     font-size: 17px;
     font-weight: 750;
-}
-
-.issue-Management .issue-workload-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-}
+} .issue-Management .issue-workload-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 
 .issue-Management .issue-workload-item {
     display: flex;
@@ -301,37 +218,14 @@ PC 전용 이슈 관리 디자인
 .issue-Management .form-row>select {
     flex: 1 1 160px;
     min-width: 0;
-}
-
-.issue-Management .form-row label {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #52627a;
-}
+} .issue-Management .form-row label { display: flex; flex-direction: column; gap: 7px; font-size: 13px; font-weight: 600; color: #52627a; }
 
 .issue-Management .form-row label input,
 .issue-Management .form-row label select {
     min-width: 190px;
 }
 
-/* 8. 공통 버튼 */
-
-.issue-Management button {
-    min-height: 40px;
-    padding: 9px 16px;
-    background: #245fe6;
-    color: #ffffff;
-    border: 1px solid #245fe6;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 650;
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
-}
+/* 8. 공통 버튼 */ .issue-Management button { background: #245fe6; color: #ffffff; border: 1px solid #245fe6; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 650; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; min-height: 40px; padding: 0 16px; }
 
 .issue-Management button:hover {
     background: #1b4bc2;
@@ -354,32 +248,9 @@ PC 전용 이슈 관리 디자인
     cursor: not-allowed;
 }
 
-/* 9. 검색 및 등록 버튼 */
+/* 9. 검색 및 등록 버튼 */ .issue-Management .issue-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; } .issue-Management .issue-toolbar .search { flex: 1; max-width: 500px; min-height: 44px; gap: 12px; } .issue-Management .issue-toolbar>button {  min-height: 40px; padding: 0 16px; }
 
-.issue-Management .issue-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    margin-bottom: 18px;
-}
-
-.issue-Management .issue-toolbar .search {
-    flex: 1;
-    max-width: 500px;
-    min-height: 44px;
-}
-
-.issue-Management .issue-toolbar>button {
-    min-height: 44px;
-    padding: 10px 20px;
-}
-
-/* 10. 이슈 등록 폼 */
-
-.issue-Management .issue-register-form {
-    padding: 24px;
-}
+/* 10. 이슈 등록 폼 */.issue-Management .issue-register-form {  padding: 20px; margin: 0 0 16px; }
 
 .issue-Management .issue-register-form h3 {
     margin: 0 0 18px;
@@ -406,16 +277,7 @@ PC 전용 이슈 관리 디자인
     flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 17px;
-}
-
-.issue-Management .issue-tabs button {
-    min-height: 38px;
-    padding: 8px 17px;
-    background: #ffffff;
-    color: #748399;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-}
+} .issue-Management .issue-tabs button { background: #ffffff; color: #748399; border: 1px solid #e2e8f0; border-radius: 8px; min-height: 40px; padding: 0 16px; }
 
 .issue-Management .issue-tabs button.active {
     background: #e8f0ff;
@@ -428,11 +290,7 @@ PC 전용 이슈 관리 디자인
     background: #f3f6fa;
 }
 
-/* 12. 필터 영역 */
-
-.issue-Management .issue-filter-panel {
-    padding: 18px 22px;
-}
+/* 12. 필터 영역 */.issue-Management .issue-filter-panel {  padding: 20px; margin: 0 0 16px; }
 
 .issue-Management .issue-filter-panel .form-row {
     margin-bottom: 12px;
@@ -440,13 +298,7 @@ PC 전용 이슈 관리 디자인
 
 .issue-Management .issue-filter-panel .form-row select {
     flex: 1;
-}
-
-.issue-Management .issue-filter-panel p {
-    margin: 0;
-    font-size: 12px;
-    color: #8290a4;
-}
+} .issue-Management .issue-filter-panel p { margin: 0; font-size: 14px; color: #8290a4; }
 
 /* 13. 이슈 목록 */
 
@@ -586,15 +438,7 @@ PC 전용 이슈 관리 디자인
     background: #ffffff;
     border: 1px solid #e5eaf1;
     border-radius: 11px;
-}
-
-.issue-Management .issue-detail p,
-.issue-Management .issue-status-section p,
-.issue-Management .issue-work-section p {
-    margin: 8px 0;
-    font-size: 13px;
-    color: #52627a;
-}
+} .issue-Management .issue-detail p, .issue-Management .issue-status-section p, .issue-Management .issue-work-section p { margin: 8px 0; font-size: 14px; color: #52627a; }
 
 .issue-Management .issue-detail strong {
     color: #253347;
@@ -625,12 +469,7 @@ PC 전용 이슈 관리 디자인
     flex-wrap: wrap;
     gap: 8px;
     margin: 12px 0;
-}
-
-.issue-Management .issue-time-buttons button {
-    min-height: 36px;
-    padding: 7px 15px;
-}
+} .issue-Management .issue-time-buttons button {  min-height: 40px; padding: 0 16px; }
 
 .issue-Management .issue-time-buttons button.active {
     background: #245fe6;
@@ -667,14 +506,7 @@ PC 전용 이슈 관리 디자인
     background: #ffffff;
     border: 1px solid #e5eaf1;
     border-radius: 10px;
-}
-
-.issue-Management details summary {
-    font-size: 13px;
-    font-weight: 700;
-    color: #253347;
-    cursor: pointer;
-}
+} .issue-Management details summary { font-size: 13px; font-weight: 700; color: #253347; cursor: pointer; gap: 16px; }
 
 .issue-Management details[open] summary {
     margin-bottom: 14px;
@@ -738,13 +570,7 @@ PC 전용 이슈 관리 디자인
     background: #ffffff;
     border: 1px solid #e5eaf1;
     border-radius: 13px;
-}
-
-.issue-Management .issue-trash>summary {
-    font-size: 14px;
-    font-weight: 750;
-    color: #162b5c;
-}
+} .issue-Management .issue-trash>summary { font-size: 14px; font-weight: 750; color: #162b5c; gap: 16px; }
 
 .issue-Management .issue-trash-item {
     display: flex;
@@ -762,13 +588,7 @@ PC 전용 이슈 관리 디자인
 .issue-Management .issue-trash-item strong {
     font-size: 14px;
     color: #253347;
-}
-
-.issue-Management .issue-trash-item p {
-    margin: 4px 0;
-    font-size: 12px;
-    color: #8290a4;
-}
+} .issue-Management .issue-trash-item p { margin: 4px 0; font-size: 14px; color: #8290a4; }
 
 /* ===== 2026 UI 개선: 기존 기능/클래스 유지, 시각적 스타일만 보강 ===== */
 
@@ -810,25 +630,7 @@ PC 전용 이슈 관리 디자인
         transition-duration: .01ms !important;
         animation-duration: .01ms !important;
     }
-}
-
-.issue-Management {
-    max-width: 1520px;
-    margin-inline: auto;
-    padding: 32px clamp(18px, 2.5vw, 40px) 64px;
-}
-
-.issue-Management .section-head {
-    margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--ui-line);
-}
-
-.issue-Management .section-head h2 {
-    font-size: clamp(25px, 2vw, 32px);
-    letter-spacing: -.035em;
-    color: var(--ui-ink);
-}
+}.issue-Management { max-width: 1520px; margin: 0; padding: 0; } .issue-Management .section-head { border-bottom: 1px solid var(--ui-line); margin: 0 0 20px; padding: 0 0 16px; } .issue-Management .section-head h2 { font-size: 24px; letter-spacing: -.035em; color: var(--ui-ink); }
 
 .issue-Management :is(.panel, .issue-alert-panel, .issue-workload-panel) {
     border: 1px solid var(--ui-line);
@@ -894,11 +696,7 @@ PC 전용 이슈 관리 디자인
 .issue-Management .issue-list-item:hover {
     border-color: #c4d1fa;
     box-shadow: 0 8px 25px rgba(34, 72, 154, .07);
-}
-
-.issue-Management .issue-toolbar {
-    gap: 10px;
-}
+} .issue-Management .issue-toolbar { gap: 12px; }
 
 .issue-Management .issue-filter-panel {
     background: #fff;
@@ -910,11 +708,7 @@ PC 전용 이슈 관리 디자인
 
 .issue-Management :is(.issue-detail, .issue-expanded-content) {
     border-radius: 12px;
-}
-
-.issue-Management details summary {
-    cursor: pointer;
-}
+} .issue-Management details summary { cursor: pointer; gap: 16px; }
 
 @media (max-width: 760px) {
     .issue-Management {
@@ -937,20 +731,7 @@ PC 전용 이슈 관리 디자인
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 14px;
-}
-
-.issue-Management .issue-workload-list button {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    padding: 12px 16px;
-    background: #f7faff;
-    border: 1px solid #dce6f4;
-    border-radius: 10px;
-    cursor: pointer;
-    color: #253347;
-}
+} .issue-Management .issue-workload-list button { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; background: #f7faff; border: 1px solid #dce6f4; border-radius: 10px; cursor: pointer; color: #253347; min-height: 40px; padding: 0 16px; }
 
 .issue-Management .issue-workload-list button.active {
     border-color: #2563eb;
@@ -959,34 +740,7 @@ PC 전용 이슈 관리 디자인
 
 /* ================================================
 간결한 이슈 관리 화면: 기존 기능 유지, 정보 밀도 축소
-================================================ */
-
-.issue-Management {
-    max-width: 1280px;
-    background: #f8fafc;
-    padding: 26px 28px 48px;
-    color: #263449;
-}
-
-.issue-Management .section-head {
-    border-bottom: none;
-    margin-bottom: 18px;
-    padding-bottom: 0;
-}
-
-.issue-Management .section-head h2 {
-    font-size: 25px;
-    color: #1e293b;
-}
-
-.issue-Management .section-head p {
-    color: #64748b;
-}
-
-.issue-Management .issue-stats {
-    gap: 12px;
-    margin-bottom: 16px;
-}
+================================================ */.issue-Management { max-width: 1280px; background: #f8fafc; color: #263449; margin: 0; padding: 0; } .issue-Management .section-head { border-bottom: none; margin: 0 0 20px; padding: 0 0 16px; } .issue-Management .section-head h2 { font-size: 24px; color: #1e293b; } .issue-Management .section-head p { color: #64748b; font-size: 14px; } .issue-Management .issue-stats { gap: 16px; margin-bottom: 16px; }
 
 .issue-Management .issue-stat-card {
     min-height: 96px;
@@ -1016,19 +770,7 @@ PC 전용 이슈 관리 디자인
     background: #fff;
     border: 1px solid #e4e9f0;
     border-radius: 11px;
-}
-
-.issue-Management .issue-optional-section>summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    padding: 13px 18px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #334155;
-    list-style: none;
-}
+} .issue-Management .issue-optional-section>summary { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 13px 18px; font-size: 13px; font-weight: 700; color: #334155; list-style: none; gap: 16px; }
 
 .issue-Management .issue-optional-section>summary::-webkit-details-marker {
     display: none;
@@ -1047,34 +789,15 @@ PC 전용 이슈 관리 디자인
 .issue-Management .issue-workload-panel>p,
 .issue-Management .issue-workload-panel>.issue-workload-list {
     margin: 12px 18px;
-}
-
-.issue-Management .issue-alert-grid {
-    margin: 12px;
-    gap: 12px;
-}
-
-.issue-Management .issue-alert-panel {
-    padding: 14px 16px;
-    border-top-width: 1px !important;
-}
+} .issue-Management .issue-alert-grid { margin: 12px; gap: 16px; }.issue-Management .issue-alert-panel { border-top-width: 1px !important; padding: 20px; margin: 0 0 16px; }
 
 .issue-Management .issue-alert-panel h3 {
     font-size: 14px;
-}
-
-.issue-Management .issue-toolbar {
-    margin: 20px 0 14px;
-}
+} .issue-Management .issue-toolbar { margin: 20px 0 14px; gap: 12px; }
 
 .issue-Management .issue-tabs {
     margin-bottom: 12px;
-}
-
-.issue-Management .issue-filter-panel {
-    padding: 14px 16px;
-    margin-bottom: 14px;
-}
+}.issue-Management .issue-filter-panel {  padding: 20px; margin: 0 0 16px; }
 
 .issue-Management .issue-list-item {
     padding: 0;

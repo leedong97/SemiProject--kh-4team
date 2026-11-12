@@ -3,6 +3,17 @@ import { useState } from "react";
 // 휴가 상태별 배지 색: 승인=초록, 대기=주황, 반려=빨강 (색은 Mypage.css)
 const LEAVE_BADGE = { 승인: "s-approved", 대기: "s-pending", 반려: "s-rejected" };
 
+// 연차 일수 규칙: 토·일은 세지 않아요 (서버 mypage.js의 countWorkdays와 같은 규칙이에요. 공휴일은 아직 평일로 세요)
+function countWorkdays(start, end, type) {
+    if (type === "반차") return 0.5;
+    let days = 0;
+    for (let t = Date.parse(start); t <= Date.parse(end); t += 86400000) {
+        const dow = new Date(t).getUTCDay(); // 0=일, 6=토
+        if (dow !== 0 && dow !== 6) days += 1;
+    }
+    return days;
+}
+
 function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey, isDemo, onRequestLeave }) {
     // 휴가 신청 폼 입력값
     const [leaveType, setLeaveType] = useState("연차");
@@ -18,7 +29,9 @@ function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey
         if (!leaveStart || !end || leaveStart > end) return setLeaveError("휴가 기간을 확인해 주세요.");
         // 연차·반차는 남은 연차보다 많이 신청할 수 없어요 (서버도 한 번 더 검사해요)
         if (COUNTED_TYPES.includes(leaveType) && leaveStart.startsWith(thisYear)) {
-            const requestDays = leaveType === "반차" ? 0.5 : (Date.parse(end) - Date.parse(leaveStart)) / 86400000 + 1;
+            if (leaveStart.slice(0, 4) !== end.slice(0, 4)) return setLeaveError("해가 바뀌는 기간은 연도별로 나눠 신청해 주세요.");
+            const requestDays = countWorkdays(leaveStart, end, leaveType);
+            if (requestDays === 0) return setLeaveError("토·일만 선택하셨어요. 평일이 포함된 기간을 골라 주세요.");
             if (requestDays > remainLeave) {
                 return setLeaveError(`남은 연차(${remainLeave}일)보다 많이 신청할 수 없어요. (신청 ${requestDays}일)`);
             }

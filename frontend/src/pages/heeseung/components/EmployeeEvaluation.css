@@ -3,43 +3,13 @@ NEXUS ERP - 직원 인사평가
 EmployeeEvaluation.css
 ========================================== */
 
-/* 1. 전체 화면 */
-
-.employee-evaluation {
-    width: 100%;
-    min-width: 0;
-    padding: 30px;
-    background-color: #f6f8fc;
-    color: #253247;
-    font-family: "Malgun Gothic", Arial, sans-serif;
-    font-size: 14px;
-    box-sizing: border-box;
-}
+/* 1. 전체 화면 */.employee-evaluation { width: 100%; min-width: 0; background-color: #f6f8fc; color: #253247; font-family: "Malgun Gothic", Arial, sans-serif; font-size: 14px; box-sizing: border-box; margin: 0; padding: 0; }
 
 .employee-evaluation * {
     box-sizing: border-box;
 }
 
-/* 2. 공통 버튼 */
-
-.employee-evaluation button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    min-height: 38px;
-    padding: 9px 16px;
-    border: 1px solid #245fe6;
-    border-radius: 8px;
-    background-color: #245fe6;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 600;
-    font-family: inherit;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
+/* 2. 공통 버튼 */ .employee-evaluation button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid #245fe6; border-radius: 8px; background-color: #245fe6; color: #ffffff; font-size: 12px; font-weight: 600; font-family: inherit; white-space: nowrap; cursor: pointer; transition: background-color 0.2s ease; min-height: 40px; padding: 0 16px; }
 
 .employee-evaluation button:hover {
     background-color: #1b4bc2;
@@ -92,15 +62,7 @@ EmployeeEvaluation.css
 
 /* ==========================================
 4. 상단 제목
-========================================== */
-
-.employee-evaluation .ev-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    margin-bottom: 25px;
-}
+========================================== */ .employee-evaluation .ev-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 0 20px; padding: 0 0 16px; }
 
 .employee-evaluation .ev-eyebrow {
     display: inline-block;
@@ -109,25 +71,7 @@ EmployeeEvaluation.css
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 1.5px;
-}
-
-.employee-evaluation .ev-header h2 {
-    margin: 0 0 9px;
-    color: #1e2b3e;
-    font-size: 28px;
-    font-weight: 700;
-}
-
-.employee-evaluation .ev-header p {
-    margin: 0;
-    color: #8493a7;
-    font-size: 13px;
-}
-
-.employee-evaluation .ev-header>button {
-    min-height: 42px;
-    padding: 11px 20px;
-}
+} .employee-evaluation .ev-header h2 { margin: 0 0 9px; color: #1e2b3e; font-size: 24px; font-weight: 700; } .employee-evaluation .ev-header p { margin: 0; color: #8493a7; font-size: 14px; } .employee-evaluation .ev-header>button {  min-height: 40px; padding: 0 16px; }
 
 /* ==========================================
 5. 테스트 로그인 직원 선택
@@ -151,13 +95,7 @@ EmployeeEvaluation.css
 .employee-evaluation .ev-test-bar strong {
     color: #29465d;
     font-size: 13px;
-}
-
-.employee-evaluation .ev-test-bar p {
-    margin: 6px 0 0;
-    color: #7992a7;
-    font-size: 12px;
-}
+} .employee-evaluation .ev-test-bar p { margin: 6px 0 0; color: #7992a7; font-size: 14px; }
 
 .employee-evaluation .ev-test-bar select {
     width: 270px;
@@ -188,14 +126,7 @@ EmployeeEvaluation.css
 
 /* ==========================================
 6. 상단 통계 카드
-========================================== */
-
-.employee-evaluation .ev-stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
-    margin-bottom: 22px;
-}
+========================================== */ .employee-evaluation .ev-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; }
 
 .employee-evaluation .ev-stat {
     padding: 24px;
@@ -220,17 +151,7 @@ EmployeeEvaluation.css
 
 /* ==========================================
 7. 공통 패널
-========================================== */
-
-.employee-evaluation .ev-panel {
-    min-width: 0;
-    padding: 25px;
-    margin-bottom: 22px;
-    border: 1px solid #e5ebf2;
-    border-radius: 12px;
-    background-color: #ffffff;
-    box-shadow: 0 3px 12px rgba(31, 52, 80, 0.03);
-}
+========================================== */.employee-evaluation .ev-panel { min-width: 0; border: 1px solid #e5ebf2; border-radius: 12px; background-color: #ffffff; box-shadow: 0 3px 12px rgba(31, 52, 80, 0.03); padding: 20px; margin: 0 0 16px; }
 
 .employee-evaluation .ev-panel-head {
     display: flex;
@@ -238,20 +159,7 @@ EmployeeEvaluation.css
     justify-content: space-between;
     gap: 20px;
     margin-bottom: 22px;
-}
-
-.employee-evaluation .ev-panel-head h3 {
-    margin: 0;
-    color: #243247;
-    font-size: 17px;
-    font-weight: 700;
-}
-
-.employee-evaluation .ev-panel-head p {
-    margin: 8px 0 0;
-    color: #8998aa;
-    font-size: 12px;
-}
+} .employee-evaluation .ev-panel-head h3 { margin: 0; color: #243247; font-size: 18px; font-weight: 700; } .employee-evaluation .ev-panel-head p { margin: 8px 0 0; color: #8998aa; font-size: 14px; }
 
 .employee-evaluation .ev-panel-head>span {
     color: #7e8ea3;
@@ -275,24 +183,7 @@ EmployeeEvaluation.css
 
 .employee-evaluation .ev-table thead {
     background-color: #f4f7fb;
-}
-
-.employee-evaluation .ev-table th {
-    padding: 15px 16px;
-    border-bottom: 1px solid #e5ebf2;
-    color: #687b91;
-    font-size: 12px;
-    font-weight: 700;
-    text-align: left;
-    white-space: nowrap;
-}
-
-.employee-evaluation .ev-table td {
-    padding: 16px;
-    border-bottom: 1px solid #edf1f6;
-    color: #4b5d73;
-    vertical-align: middle;
-}
+} .employee-evaluation .ev-table th { border-bottom: 1px solid #e5ebf2; color: #687b91; font-size: 13px; font-weight: 700; text-align: left; white-space: nowrap; padding: 14px 15px; } .employee-evaluation .ev-table td { border-bottom: 1px solid #edf1f6; color: #4b5d73; vertical-align: middle; padding: 14px 15px; font-size: 14px; }
 
 .employee-evaluation .ev-table td:first-child {
     color: #253247;
@@ -353,22 +244,9 @@ EmployeeEvaluation.css
     margin: 0 0 8px;
     color: #253247;
     font-size: 18px;
-}
+} .employee-evaluation .ev-chart-profile p { margin: 0; color: #8493a7; font-size: 14px; }
 
-.employee-evaluation .ev-chart-profile p {
-    margin: 0;
-    color: #8493a7;
-    font-size: 12px;
-}
-
-/* 프로젝트 / 이슈 / 평가 점수 */
-
-.employee-evaluation .ev-chart-stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 26px;
-}
+/* 프로젝트 / 이슈 / 평가 점수 */ .employee-evaluation .ev-chart-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 26px; }
 
 .employee-evaluation .ev-chart-stats>div {
     padding: 22px;
@@ -477,15 +355,7 @@ EmployeeEvaluation.css
 .employee-evaluation .ev-chart-feedback strong {
     color: #334b62;
     font-size: 13px;
-}
-
-.employee-evaluation .ev-chart-feedback p {
-    margin: 12px 0 0;
-    color: #61748b;
-    font-size: 13px;
-    line-height: 1.8;
-    white-space: pre-wrap;
-}
+} .employee-evaluation .ev-chart-feedback p { margin: 12px 0 0; color: #61748b; font-size: 14px; line-height: 1.8; white-space: pre-wrap; }
 
 /* 평가가 없을 때 */
 
@@ -512,42 +382,12 @@ EmployeeEvaluation.css
     margin: 0 0 25px;
     color: #253247;
     font-size: 18px;
-}
-
-.employee-evaluation .ev-form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
-    margin-bottom: 22px;
-}
-
-.employee-evaluation .ev-form label {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    color: #52667d;
-    font-size: 12px;
-    font-weight: 700;
-}
+} .employee-evaluation .ev-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; } .employee-evaluation .ev-form label { display: flex; flex-direction: column; gap: 10px; color: #52667d; font-size: 13px; font-weight: 700; }
 
 .employee-evaluation .ev-form label select,
 .employee-evaluation .ev-form label input {
     width: 100%;
-}
-
-.employee-evaluation .ev-score-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 22px;
-}
-
-.employee-evaluation .ev-score-grid label {
-    padding: 17px;
-    border: 1px solid #e4ebf3;
-    border-radius: 10px;
-    background-color: #f8fafc;
-}
+} .employee-evaluation .ev-score-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; } .employee-evaluation .ev-score-grid label { padding: 17px; border: 1px solid #e4ebf3; border-radius: 10px; background-color: #f8fafc; font-size: 13px; }
 
 .employee-evaluation .ev-score-grid select {
     width: 100%;
@@ -633,13 +473,7 @@ EmployeeEvaluation.css
 .employee-evaluation .ev-review-title strong {
     color: #253247;
     font-size: 15px;
-}
-
-.employee-evaluation .ev-review-title p {
-    margin: 7px 0 0;
-    color: #8998aa;
-    font-size: 12px;
-}
+} .employee-evaluation .ev-review-title p { margin: 7px 0 0; color: #8998aa; font-size: 14px; }
 
 /* 초안 / 승인 요청 / 승인 / 반려 상태 */
 
@@ -791,25 +625,7 @@ EmployeeEvaluation.css
         transition-duration: .01ms !important;
         animation-duration: .01ms !important;
     }
-}
-
-.employee-evaluation {
-    max-width: 1520px;
-    margin-inline: auto;
-    padding: 32px clamp(18px, 2.5vw, 40px) 64px;
-}
-
-.employee-evaluation .ev-header {
-    margin-bottom: 26px;
-    padding-bottom: 22px;
-    border-bottom: 1px solid var(--ui-line);
-}
-
-.employee-evaluation .ev-header h2 {
-    font-size: clamp(25px, 2vw, 32px);
-    letter-spacing: -.035em;
-    color: var(--ui-ink);
-}
+}.employee-evaluation { max-width: 1520px; margin: 0; padding: 0; } .employee-evaluation .ev-header { border-bottom: 1px solid var(--ui-line); margin: 0 0 20px; padding: 0 0 16px; } .employee-evaluation .ev-header h2 { font-size: 24px; letter-spacing: -.035em; color: var(--ui-ink); }
 
 .employee-evaluation .ev-eyebrow {
     font-size: 11px;
@@ -866,17 +682,7 @@ EmployeeEvaluation.css
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-}
-
-.employee-evaluation .ev-table th {
-    background: #f5f8fd;
-    color: #50627d;
-    font-size: 12px;
-}
-
-.employee-evaluation .ev-table td {
-    border-bottom: 1px solid #edf1f6;
-}
+} .employee-evaluation .ev-table th { background: #f5f8fd; color: #50627d; font-size: 13px; } .employee-evaluation .ev-table td { border-bottom: 1px solid #edf1f6; font-size: 14px; }
 
 .employee-evaluation .ev-table tr:hover td {
     background: #f9fbff;
@@ -909,11 +715,7 @@ EmployeeEvaluation.css
 
 .employee-evaluation .ev-evidence-panel h3 {
     margin: 0 0 8px;
-}
-
-.employee-evaluation .ev-evidence-panel small {
-    color: #718096;
-}
+} .employee-evaluation .ev-evidence-panel small { color: #718096; font-size: 12px; }
 
 /* 2026 직원평가: 기존 CSS와 충돌하지 않도록 ev2026 범위만 사용합니다. */
 .ev2026 {
@@ -1004,15 +806,7 @@ EmployeeEvaluation.css
     grid-template-columns: minmax(320px, 1fr) minmax(380px, 1.15fr);
     gap: 18px;
     align-items: start;
-}
-
-.ev2026-panel {
-    padding: 22px;
-    border: 1px solid #e4eaf2;
-    background: #fff;
-    border-radius: 16px;
-    min-width: 0;
-}
+}.ev2026-panel { border: 1px solid #e4eaf2; background: #fff; border-radius: 16px; min-width: 0; padding: 20px; margin: 0 0 16px; }
 
 .ev2026-panel h3 {
     margin: 0 0 15px;
@@ -1029,13 +823,7 @@ EmployeeEvaluation.css
     gap: 6px;
     flex-wrap: wrap;
     margin-bottom: 12px;
-}
-
-.ev2026 .ev2026-tabs button {
-    min-height: 32px;
-    padding: 6px 10px;
-    border-radius: 20px;
-}
+} .ev2026 .ev2026-tabs button { border-radius: 20px; min-height: 40px; padding: 0 16px; }
 
 .ev2026 .ev2026-tabs button.active {
     background: #245fe6;
@@ -1381,15 +1169,7 @@ EmployeeEvaluation.css
     display: flex;
     flex-direction: column;
     gap: 5px;
-}
-
-.ev2026-team-member button {
-    background: #245fe6 !important;
-    color: #fff !important;
-    padding: 8px 12px !important;
-    border-radius: 8px;
-    white-space: nowrap;
-}
+} .ev2026-team-member button { background: #245fe6 !important; color: #fff !important; border-radius: 8px; white-space: nowrap; min-height: 40px; padding: 0 16px; }
 
 .ev2026-team-disabled {
     color: #64748b;

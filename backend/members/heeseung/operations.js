@@ -117,6 +117,8 @@ router.get('/issues', async (req, res) => {
                 i.issue_status AS status,
                 i.issue_priority AS priority,
                 i.assigned_employee_id AS assigneeId,
+                i.reporter_id AS reporterId,
+                reporter.employee_name AS reporterName,
                 e.employee_name AS assigneeName,
                 DATE_FORMAT(i.issue_due_date, '%Y-%m-%d') AS due,
                 DATE_FORMAT(i.issue_created_at, '%Y-%m-%d') AS createdAt,
@@ -127,6 +129,8 @@ router.get('/issues', async (req, res) => {
             FROM issues i
             LEFT JOIN employees e
                 ON i.assigned_employee_id = e.employee_id
+            LEFT JOIN employees reporter
+                ON i.reporter_id = reporter.employee_id
             LEFT JOIN projects p
                 ON p.project_id = i.project_id
             LEFT JOIN customers c
@@ -158,6 +162,11 @@ router.post('/issues', async (req, res) => {
         return res.status(400).json({ message: '마감일 형식 오류' });
     }
     try {
+        // 건의자는 요청 본문의 선택값이 아닌 인증된 로그인 직원으로 고정합니다.
+        const reporterId = Number(req.user && req.user.employee_id);
+        if (!Number.isInteger(reporterId) || reporterId <= 0) {
+            return res.status(401).json({ message: '로그인 직원 정보를 확인할 수 없습니다.' });
+        }
         const [projects] = await pool.query('SELECT project_id FROM projects WHERE project_id = ?', [projectId]);
         if (!projects.length) return res.status(404).json({ message: '프로젝트가 없습니다.' });
         if (assigneeId != null) {
@@ -168,11 +177,19 @@ router.post('/issues', async (req, res) => {
             (project_id, reporter_id, assigned_employee_id, issue_title, issue_description,
              issue_priority, issue_status, issue_due_date)
             VALUES (?, ?, ?, ?, ?, ?, '접수', ?)`,
-            [Number(projectId), req.user.employee_id, assigneeId || null,
+            [Number(projectId), reporterId, assigneeId || null,
             title.trim(), String(description || ''), priority, due || null]);
         // 알림: 담당자로 지정된 직원에게 알려요 (본인이 본인을 지정한 경우는 제외)
         if (assigneeId != null && String(assigneeId) !== String(req.user.employee_id)) {
             await createNotification(assigneeId, '이슈', '새 이슈 "' + title.trim() + '"의 담당자로 지정됐어요.', '/issue/' + result.insertId);
+        }
+        // 새 이슈 등록 후 연결된 사용자 화면의 목록 갱신
+        for (const client of req.app.locals.issueEventClients || []) {
+            try {
+                client.write('data: changed\n\n');
+            } catch (_) {
+                // 끊어진 연결은 SSE close 처리에서 제거됩니다.
+            }
         }
         res.status(201).json({ id: result.insertId, message: '이슈 등록 완료' });
     } catch (error) {

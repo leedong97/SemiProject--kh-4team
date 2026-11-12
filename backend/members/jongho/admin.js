@@ -154,7 +154,7 @@ router.get('/community/posts', async (req, res) => {
       SELECT p.id, p.board_name AS boardName, p.title, p.is_anonymous AS isAnonymous,
              e.employee_name AS authorName,
              DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i') AS createdAt,
-             (SELECT COUNT(*) FROM community_comment c WHERE c.post_id = p.id AND c.is_deleted = 0) AS commentCount
+             (SELECT COUNT(*) FROM community_comment c WHERE c.post_id = p.id) AS commentCount
       FROM community_post p
       LEFT JOIN employees e ON e.employee_id = p.author_id
       ORDER BY p.id DESC
@@ -185,7 +185,7 @@ router.get('/community/posts', async (req, res) => {
       authorName: r.authorName,
       createdAt: r.createdAt,
       deletedAt: r.deletedAt,
-      commentCount: parseComments(r.commentsJson).filter((c) => !c.isDeleted).length,
+      commentCount: parseComments(r.commentsJson).length,
     }));
 
     res.json([...live, ...dead].sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || ''))));

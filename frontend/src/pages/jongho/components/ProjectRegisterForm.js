@@ -1,9 +1,16 @@
 import { canLeadProject } from "../shared/permissions";
 import EmployeePicker from "./EmployeePicker";
+import CustomerPicker from "./CustomerPicker";
 
 // 신규 프로젝트 등록 폼 (입력값과 검사는 부모 화면에서 처리)
 // 담당자(팀장 이상 1명)와 팀원(재직자 여러 명)을 등록할 때 함께 정합니다.
-function ProjectRegisterForm({ form, onChange, onSubmit, onBack, employees = [], customers = [], onAddMember, onRemoveMember }) {
+const todayString = () => {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
+};
+
+function ProjectRegisterForm({ form, sourceQuote, onChange, onCustomerChange, onSubmit, onBack, employees = [], customers = [], onAddMember, onRemoveMember }) {
     const activeEmployees = employees.filter((e) => e.status === "재직");
     const leaderCandidates = activeEmployees.filter((e) => canLeadProject(e));
     return (
@@ -28,19 +35,31 @@ function ProjectRegisterForm({ form, onChange, onSubmit, onBack, employees = [],
 
             <h3>기본 정보</h3>
 
+            {sourceQuote && (
+              <div className="nexus-project-quote-source">
+                <strong>견적 요청 #{sourceQuote.id} 정보</strong>
+                <div>
+                  <span>신청자: {sourceQuote.applicantName || "-"}</span>
+                  <span>이메일: {sourceQuote.email || "-"}</span>
+                  <span>전화번호: {sourceQuote.phone || "-"}</span>
+                  <span>요청 예산 범위: {sourceQuote.budget || "-"}</span>
+                </div>
+                <div className="nexus-project-quote-request">
+                  <strong>고객 요청사항 원문</strong>
+                  <p>{sourceQuote.requirements || "요청사항이 없습니다."}</p>
+                </div>
+                <small>예산 범위는 참고용입니다. 계약 금액은 아래에 숫자로 입력하세요.</small>
+              </div>
+            )}
+
             <label>고객사 *</label>
-            <select
-              name="customer"
-              className="nexus-project-input"
+            <CustomerPicker
+              id="project-customer"
               value={form.customer}
-              onChange={onChange}
-              required
-            >
-              <option value="">고객사를 선택하세요</option>
-              {customers.map((c) => (
-                <option key={c.id} value={c.name}>{c.name}</option>
-              ))}
-            </select>
+              customers={customers}
+              onChange={onCustomerChange}
+              placeholder="고객사를 검색하거나 직접 입력하세요"
+            />
 
             <label>프로젝트명 *</label>
             <input
@@ -59,6 +78,7 @@ function ProjectRegisterForm({ form, onChange, onSubmit, onBack, employees = [],
                 <input
                   type="date"
                   name="startDate"
+                  min={todayString()}
                   value={form.startDate}
                   onChange={onChange}
                 />
@@ -69,6 +89,7 @@ function ProjectRegisterForm({ form, onChange, onSubmit, onBack, employees = [],
                 <input
                   type="date"
                   name="endDate"
+                  min={form.startDate || todayString()}
                   value={form.endDate}
                   onChange={onChange}
                 />

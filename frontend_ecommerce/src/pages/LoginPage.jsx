@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Breadcrumb from "../components/Breadcrumb";
 import GoogleButton from "../components/GoogleButton";
-import { callApi } from "../shopAuth";
+import { callApi, EMAIL_PATTERN, EMAIL_RULE } from "../shopAuth";
 
 /**
  * 로그인 화면 (이메일/비밀번호 + 구글)
@@ -16,8 +16,9 @@ export default function LoginPage({ onLoggedIn, onNavigate }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrorMsg("");
+    if (!EMAIL_PATTERN.test(email.trim())) return setErrorMsg(EMAIL_RULE);
     setLoading(true);
-    const { data } = await callApi("/api/shop/auth/login", { method: "POST", body: { email, password } });
+    const { data } = await callApi("/api/shop/auth/login", { method: "POST", body: { email: email.trim(), password } });
     setLoading(false);
     if (data.ok) onLoggedIn(data);
     else setErrorMsg(data.message || "로그인에 실패했어요.");

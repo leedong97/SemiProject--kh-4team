@@ -5,7 +5,7 @@ import { canLeadProject } from "../shared/permissions";
 import EmployeePicker from "../components/EmployeePicker";
 import { matchesProjectSearch } from "../utils/projectFilters";
 import usePagination from "../utils/usePagination";
-import Pager from "../components/Pager";
+import NumberedPager from "../components/NumberedPager";
 import SearchSortBar from "../components/SearchSortBar";
 import { compareText, compareNumber, descending, sortByOption } from "../utils/listSort";
 
@@ -77,7 +77,7 @@ function MemberManagement({
     const sortedProjects = sortByOption(filteredProjects, sortOption, sortRules);
 
     // 한 페이지 10개씩 (검색이나 정렬이 바뀌면 1페이지로)
-    const { pageItems: pagedProjects, currentPage, totalPages, total, goPrev, goNext } =
+    const { pageItems: pagedProjects, currentPage, totalPages, total, goTo } =
         usePagination(sortedProjects, MEMBER_PAGE_SIZE, [search, sortOption]);
     const pageOffset = (currentPage - 1) * MEMBER_PAGE_SIZE;
 
@@ -153,11 +153,6 @@ function MemberManagement({
     return (
         <div className="nexus-assignment">
 
-            <h1>인원 관리</h1>
-
-            <p className="nexus-assignment-description">
-                프로젝트의 담당자(팀장 이상)와 팀원을 배정합니다. 담당자는 자동으로 팀원 명단에도 포함됩니다.
-            </p>
 
             <div className="card">
                 <SearchSortBar
@@ -301,8 +296,7 @@ function MemberManagement({
 
                 </div>
 
-                <Pager currentPage={currentPage} totalPages={totalPages} total={total}
-                    onPrev={goPrev} onNext={goNext} />
+                <NumberedPager currentPage={currentPage} totalPages={totalPages} total={total} pageSize={MEMBER_PAGE_SIZE} onPage={goTo} />
 
             </div>
 

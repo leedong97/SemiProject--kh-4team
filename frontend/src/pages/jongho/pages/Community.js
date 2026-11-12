@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { adminRequest } from "../adminApi";
 import usePagination from "../utils/usePagination";
-import Pager from "../components/Pager";
+import NumberedPager from "../components/NumberedPager";
 import FilterChips from "../components/FilterChips";
 import SearchSortBar from "../components/SearchSortBar";
 import { compareText, compareNumber, descending, sortByOption } from "../utils/listSort";
@@ -125,18 +125,15 @@ function Community() {
     const numbered = sorted.map((p, index) => ({ ...p, displayNo: index + 1 }));
 
     // 한 페이지 10개씩 (검색어가 바뀌면 1페이지로)
-    const { pageItems, currentPage, totalPages, total, goPrev, goNext } =
+    const { pageItems, currentPage, totalPages, total, goTo } =
         usePagination(numbered, COMMUNITY_PAGE_SIZE, [search, sortOption, deletedOnly, boardFilter]);
     const deletedCount = posts.filter((p) => p.isArchived).length;
 
     return (
         <div className="admin-boards">
             <div className="boards-header">
-                <div>
-                    <span className="boards-label">WORKSPACE / COMMUNITY</span>
-                    <h1>커뮤니티 관리</h1>
-                    <p>게시글과 댓글을 확인하고 삭제합니다. 삭제된 글·댓글도 여기서 원래 내용을 볼 수 있습니다.</p>
-                </div>
+
+
                 <div className="boards-count">
                     전체 게시글<strong>{posts.length}건</strong>
                     <small className="nexus-community-deleted-count">삭제된 글 {deletedCount}건</small>
@@ -268,8 +265,7 @@ function Community() {
                     </table>
                 </div>
 
-                <Pager currentPage={currentPage} totalPages={totalPages} total={total}
-                    onPrev={goPrev} onNext={goNext} />
+                <NumberedPager currentPage={currentPage} totalPages={totalPages} total={total} pageSize={COMMUNITY_PAGE_SIZE} onPage={goTo} />
             </div>
         </div>
     );

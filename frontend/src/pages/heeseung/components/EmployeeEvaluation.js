@@ -147,11 +147,8 @@ export default function EmployeeEvaluation() {
     ];
     return <div className="employee-evaluation ev2026">
         <div className="ev2026-header">
-            <div>
-                <span className="ev2026-eyebrow">WORKSPACE / PERFORMANCE</span>
-                <h2>직원 성과 평가</h2>
-                <p>프로젝트 담당자가 팀원의 업무 성과를 평가하고 관리합니다.</p>
-            </div>
+
+
             <div className="ev2026-top-actions">
                 <span className="ev2026-role">
                     {isAdmin ? "관리자" : myProjects.length ? "프로젝트 PM" : "직원"}
