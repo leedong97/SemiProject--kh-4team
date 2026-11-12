@@ -154,10 +154,6 @@ function ProjectCompletion() {
             <div className="issue-completion-heading">
                 <div>
                     <h2>프로젝트 완료 요청</h2>
-                    <p>
-                        담당 프로젝트를 선택해 완료를 요청하면
-                        관리자 확인 후 완료 처리됩니다.
-                    </p>
                 </div>
 
                 <button

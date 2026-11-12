@@ -1,568 +1,431 @@
 /* =====================================================================
    팀 공통 틀 (shared/TeamShell.js 전용)
-   - 위쪽 메뉴바(로고·메뉴·이름·로그아웃)와 12칸 그리드
-   - 모든 선택자 앞에 .team-shell 이 붙어 있어서, 관리자·로그인·마이페이지에는
-     영향을 주지 않아요.
-   - 원래 App.css 의 "상단 메뉴" 부분만 옮겨온 것입니다 (내용은 그대로).
+   - 출발 안내판: 검정 상단 띠 (파일 아래쪽 블록), 현재 메뉴는 앰버 4px 밑줄
+   - 모든 선택자 앞에 .cmd-shell 이 붙어 있어서 로그인·관리자 화면엔 영향이 없어요.
    ===================================================================== */
 
-body:has(.team-shell),
-body:has(.woojin-frame) {
-  font-family: 'Malgun Gothic', sans-serif;
-  background: linear-gradient(135deg, #171d29, #171d29);
-  color: #e2eaf6;
-}
-
-.team-shell,
-.team-shell * {
-  box-sizing: border-box;
-}
-
-/* 전체 레이아웃 */
-
-.team-shell {
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 30px 25px;
-
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-template-areas:
-    "logo logo dash-menu dash-menu todo-menu todo-menu issue-menu issue-menu info-menu info-menu my-name my-name"
-    "calendar calendar calendar calendar calendar calendar calendar info info info info info"
-    "calendar calendar calendar calendar calendar calendar calendar todo todo todo todo todo";
-
-  grid-template-rows: 76px auto auto;
-  gap: 20px;
-}
-
-/* 상단 메뉴 배경 */
-
-.team-shell::before {
-  content: "";
-  grid-column: 1 / -1;
-  grid-row: 1;
-  background: #171d29;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-}
-
-/* 상단 공통 */
-
-.team-shell .logo,
-.team-shell .todo-menu,
-.team-shell .info-menu,
-.team-shell .my-name {
+.cmd-shell {
+  min-height: 100vh;
   display: flex;
-  align-items: center;
-  position: relative;
-  min-width: 0;
+  flex-direction: column;
+  background: var(--cmd-bg);
 }
 
-/* 회사 로고 */
-
-.team-shell .logo {
-  grid-area: logo;
-  padding-left: 25px;
-}
-
-.team-shell .logo h3 {
-  margin: 0;
-  font-size: 24px;
-  color: #8cd7b0;
-}
-
-/* 업무현황 메뉴 */
-
-.team-shell .todo-menu {
-  grid-area: todo-menu;
-  justify-content: flex-start;
-  left: -10px;
-}
-
-/* 공지사항 메뉴 */
-
-.team-shell .info-menu {
-  grid-area: info-menu;
-  justify-content: flex-start;
-  left: -10px;
-}
-
-/* 상단 메뉴 제목 */
-
-.team-shell .todo-menu h3,
-.team-shell .info-menu h3 {
-  margin: 0;
-  font-size: 15px;
-  color: #e2eaf6;
-  font-weight: 500;
-  padding: 12px 15px;
-  border-radius: 8px;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.team-shell .todo-menu h3:hover,
-.team-shell .info-menu h3:hover {
-  background: #171d29;
-  color: #8cd7b0;
-}
-
-/* 사용자 이름 */
-
-.team-shell .my-name {
-  grid-area: my-name;
-  justify-content: flex-end;
-  padding-right: 25px;
-  z-index: 10;
-  cursor: pointer;
-}
-
-.team-shell .my-name>h4 {
-  margin: 0;
-  color: #8cd7b0;
-  font-size: 15px;
-  white-space: nowrap;
-}
-
-/* 로그아웃 하위 메뉴 */
-
-.team-shell .log {
+.cmd-skip {
   position: absolute;
-  top: 100%;
-  right: 10px;
-
-  width: 140px;
-  background: #171d29;
-  border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-
-  padding: 10px;
-  text-align: center;
-
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: 0.2s;
-}
-
-.team-shell .log h4 {
-  margin: 0;
-  padding: 12px;
-  font-size: 14px;
-  color: #e2eaf6;
-  font-weight: 400;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.team-shell .log h4:hover {
-  background: #171d29;
-  color: #8cd7b0;
-}
-
-/* 사용자 이름에 마우스 올리면 표시 */
-
-.team-shell .my-name:hover .log,
-.team-shell .my-name:focus-within .log {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-/* 태블릿 */
-
-@media (max-width: 1100px) {
-  .team-shell {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    grid-template-areas:
-      "logo logo todo-menu info-menu . my-name"
-      "calendar calendar calendar calendar calendar calendar"
-      "info info info todo todo todo";
-    grid-template-rows: 76px auto auto;
-  }
-
-  .team-shell .logo {
-    padding-left: 15px;
-  }
-
-  .team-shell .my-name {
-    padding-right: 15px;
-  }
-}
-
-/* 모바일 */
-
-@media (max-width: 768px) {
-  .team-shell {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas:
-      "logo logo"
-      "todo-menu info-menu"
-      "my-name my-name"
-      "calendar calendar"
-      "info info"
-      "todo todo";
-
-    grid-template-rows: auto;
-    padding: 15px;
-    gap: 12px;
-  }
-
-  .team-shell::before {
-    grid-column: 1 / -1;
-    grid-row: 1 / 4;
-  }
-
-  .team-shell .logo {
-    justify-content: center;
-    padding: 18px 0;
-  }
-
-  .team-shell .my-name {
-    justify-content: center;
-    padding: 0 0 15px;
-  }
-
-  .team-shell .log {
-    right: 50%;
-    transform: translateX(50%);
-  }
-}
-
-/* ==========================
-   상단 메뉴 수정
-========================== */
-/* 메뉴 위치 */
-
-.team-shell .dash-menu {
-  grid-area: dash-menu;
-}
-
-.team-shell .issue-menu {
-  grid-area: issue-menu;
-}
-
-/* 상단 메뉴 4개 공통 */
-
-.team-shell .dash-menu,
-.team-shell .todo-menu,
-.team-shell .issue-menu,
-.team-shell .info-menu {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  left: 0;
-  min-width: 0;
-}
-
-/* 메뉴 제목 */
-
-.team-shell .dash-menu h3,
-.team-shell .todo-menu h3,
-.team-shell .issue-menu h3,
-.team-shell .info-menu h3 {
-  margin: 0;
-  font-size: 15px;
-  color: #e2eaf6;
-  font-weight: 500;
-  padding: 12px 15px;
-  border-radius: 8px;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-/* 메뉴에 마우스 올렸을 때 */
-
-.team-shell .dash-menu h3:hover,
-.team-shell .todo-menu h3:hover,
-.team-shell .issue-menu h3:hover,
-.team-shell .info-menu h3:hover {
-  background: #171d29;
-  color: #8cd7b0;
-}
-
-/* 메뉴 링크 */
-
-.team-shell .dash-menu a,
-.team-shell .todo-menu a,
-.team-shell .issue-menu a,
-.team-shell .info-menu a {
-  color: inherit;
+  left: var(--sp-4);
+  top: -48px;
+  z-index: 100;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--cmd-ink);
+  color: #fff;
+  font-weight: 700;
   text-decoration: none;
 }
 
-/* 태블릿 */
-
-@media (max-width: 1100px) {
-  .team-shell {
-    grid-template-areas:
-      "logo dash-menu todo-menu issue-menu info-menu my-name"
-      "calendar calendar calendar calendar calendar calendar"
-      "info info info todo todo todo";
-  }
+.cmd-skip:focus {
+  top: var(--sp-2);
 }
 
-/* 모바일 */
+/* ---------- 상단 메뉴 ---------- */
 
-@media (max-width: 768px) {
-  .team-shell {
-    grid-template-areas:
-      "logo logo"
-      "dash-menu todo-menu"
-      "issue-menu info-menu"
-      "my-name my-name"
-      "calendar calendar"
-      "info info"
-      "todo todo";
-
-    grid-template-rows: 60px auto auto auto auto auto auto;
-  }
-
-  .team-shell::before {
-    grid-row: 1 / 5;
-  }
+.cmd-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--cmd-bg);
+  border-bottom: 3px solid var(--cmd-ink);
 }
 
-/* 회사 로고 */
-.team-shell .company-logo {
-  grid-area: logo;
+.cmd-header-inner {
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  height: 60px;
+  padding: 0 var(--shell-pad);
+  display: flex;
+  align-items: stretch;
+  gap: var(--sp-8);
+}
 
+.cmd-logo {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  gap: var(--sp-2);
+  color: var(--cmd-ink);
+  text-decoration: none;
+  flex: none;
+}
 
-  width: 100%;
+.cmd-logo-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--cmd-ink);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: var(--fs-13);
+  box-shadow: inset 0 0 0 3px var(--cmd-ink), inset 0 0 0 5px #fff;
+}
+
+.cmd-logo-word {
+  font-weight: 800;
+  font-size: var(--fs-18);
+  letter-spacing: 0.02em;
+}
+
+.cmd-logo-sub {
+  font-weight: 600;
+  font-size: var(--fs-12);
+  color: var(--cmd-mute);
+  letter-spacing: 0.08em;
+  padding-top: 3px;
+}
+
+.cmd-nav ul {
+  display: flex;
   height: 100%;
-  padding-left: 20px;
-
-  position: relative;
-  z-index: 1;
-
-  min-width: 0;
-  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-/* 로고 이미지 */
-.team-shell .company-logo img {
-  display: block;
-  width: 250px;
-  max-width: 100%;
-  height: auto;
-  max-height: 90px;
-  object-fit: contain;
+.cmd-nav li {
+  display: flex;
 }
 
-/* 모바일 */
-@media (max-width: 768px) {
-  .team-shell .company-logo {
-    justify-content: center;
-    padding-left: 0;
-  }
-
-  .team-shell .company-logo img {
-    max-height: 45px;
-  }
-}
-
-/* COMMAND ERP 상단 메뉴 테마: shared/shell.css 맨 아래에 추가
-   주의: 공통 shell.css이므로 팀 전체 화면에 영향을 줄 수 있습니다. */
-
-body:has(.team-shell) {
-  background: linear-gradient(135deg, #171d29 0%, #171d29 55%, #171d29 100%);
-  color: #e2eaf6;
-}
-
-.team-shell::before {
-  border: 1px solid #2b374a;
-  box-shadow: 0 9px 28px rgba(15, 55, 110, .07);
-}
-
-.team-shell .dash-menu h3,
-.team-shell .todo-menu h3,
-.team-shell .issue-menu h3,
-.team-shell .info-menu h3 {
-  color: #e2eaf6;
-}
-
-.team-shell .dash-menu h3:hover,
-.team-shell .todo-menu h3:hover,
-.team-shell .issue-menu h3:hover,
-.team-shell .info-menu h3:hover {
-  background: #171d29;
-  color: #8cd7b0;
-}
-
-.team-shell .my-name>h4 {
-  color: #8cd7b0;
-}
-
-.team-shell .my-name>h4 a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.team-shell .log {
-  border: 1px solid #2b374a;
-  box-shadow: 0 10px 24px rgba(15, 55, 110, .11);
-}
-
-.team-shell .log h4 {
-  color: #e2eaf6;
-}
-
-.team-shell .log h4:hover {
-  background: #171d29;
-  color: #8cd7b0;
-}
-
-/* 현재 페이지 메뉴 하이라이트 (관리자 화면의 활성 메뉴와 같은 모양) */
-.team-shell .dash-menu.active h3,
-.team-shell .todo-menu.active h3,
-.team-shell .issue-menu.active h3,
-.team-shell .info-menu.active h3 {
-  background: #171d29;
-  color: #72c7f3;
-  font-weight: 600;
-  border-radius: 9px;
-  box-shadow: inset 0 -2px 0 #3868df;
-}
-
-/* 상단 메뉴 7개 자리 배치 */
-.team-shell {
-  grid-template-areas:
-    "logo logo dash-menu dash-menu todo-menu todo-menu issue-menu info-menu community-menu community-menu my-name my-name"
-    "calendar calendar calendar calendar calendar calendar calendar info info info info info"
-    "calendar calendar calendar calendar calendar calendar calendar todo todo todo todo todo";
-}
-
-/* 상단 커뮤니티 메뉴 */
-.team-shell>.community-menu {
-  grid-area: community-menu;
+.cmd-nav a {
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-width: 0;
+  padding: 0 var(--sp-4);
+  color: var(--cmd-mute);
+  font-weight: 600;
+  font-size: var(--fs-15);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
 }
 
-.team-shell>.community-menu h3 {
-  margin: 0;
-  padding: 12px 15px;
-  border-radius: 8px;
-  color: #e2eaf6;
-  font-size: 15px;
-  font-weight: 500;
+.cmd-nav a:hover {
+  color: var(--cmd-ink);
+  box-shadow: inset 0 -4px 0 var(--cmd-rule-2);
+}
+
+.cmd-nav a.active,
+.cmd-nav a[aria-current="page"] {
+  color: var(--cmd-ink);
+  box-shadow: inset 0 -4px 0 var(--accent);
+}
+
+.cmd-nav a:focus-visible {
+  outline-offset: -4px;
+}
+
+.cmd-header-meta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  font-size: var(--fs-14);
+}
+
+.cmd-date {
+  color: var(--cmd-mute);
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-.team-shell>.community-menu a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.team-shell>.community-menu h3:hover {
-  background-color: #171d29;
-  color: #8cd7b0;
-}
-
-/* 커뮤니티 화면일 때 메뉴 색상 */
-.team-shell>.community-menu.active h3 {
-  background-color: #171d29;
-  color: #72c7f3;
+.cmd-noti {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--cmd-ink);
   font-weight: 600;
-  box-shadow: inset 0 -2px 0 #3868df;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
-/* 태블릿 */
-@media (max-width: 1100px) {
-  .team-shell {
-    grid-template-areas:
-      "logo dash-menu todo-menu issue-menu info-menu my-name"
-      "community-menu community-menu community-menu community-menu community-menu community-menu"
-      "calendar calendar calendar calendar calendar calendar"
-      "info info info todo todo todo";
-    grid-template-rows: 76px auto auto auto;
-  }
-
-  .team-shell>.community-menu {
-    justify-content: flex-start;
-  }
+.cmd-noti:hover {
+  text-decoration: underline;
 }
 
-/* 모바일 */
-@media (max-width: 768px) {
-  .team-shell {
-    grid-template-areas:
-      "logo logo"
-      "dash-menu todo-menu"
-      "issue-menu info-menu"
-      "community-menu community-menu"
-      "my-name my-name"
-      "calendar calendar"
-      "info info"
-      "todo todo";
-    grid-template-rows: 60px auto auto auto auto auto auto auto;
-  }
-
-  .team-shell::before {
-    grid-row: 1 / 6;
-  }
-
-  .team-shell>.community-menu {
-    justify-content: center;
-  }
-}
-
-@media (min-width: 1101px) {
-  .team-shell {
-    grid-template-columns: repeat(14, minmax(0, 1fr));
-
-    grid-template-areas:
-      "logo logo dash-menu dash-menu todo-menu todo-menu issue-menu issue-menu info-menu info-menu community-menu community-menu my-name my-name"
-      "calendar calendar calendar calendar calendar calendar calendar info info info info info info info"
-      "calendar calendar calendar calendar calendar calendar calendar todo todo todo todo todo todo todo";
-  }
-}
-
-.team-shell .issue-menu h3,
-.team-shell .issue-menu.active h3,
-.team-shell>.community-menu h3,
-.team-shell>.community-menu.active h3 {
-  color: #8cd7b0;
-}
-
-/* 기본 글자색 */
-.team-shell .issue-menu h3,
-.team-shell>.community-menu h3 {
-  color: #e2eaf6;
-}
-
-/* 마우스를 올렸을 때 */
-.team-shell .issue-menu h3:hover,
-.team-shell>.community-menu h3:hover {
-  color: #8cd7b0;
-}
-
-/* 현재 선택된 메뉴 */
-.team-shell .issue-menu.active h3,
-.team-shell>.community-menu.active h3 {
-  color: #72c7f3;
-}
-
-/* 이름 옆 안 읽은 알림 수 배지 (우진: 마이페이지 알림 탭과 같은 데이터) */
-.team-shell .noti-badge {
-  display: inline-block;
-  min-width: 18px;
-  margin-left: 6px;
+.cmd-noti-count {
+  min-width: 22px;
+  height: 20px;
   padding: 0 6px;
-  border-radius: 9px;
-  background: #553039;
-  color: #eef3fa;
-  font-size: 11px;
-  font-weight: bold;
-  line-height: 18px;
-  text-align: center;
+  border-radius: var(--radius-m);
+  background: var(--line-red);
+  color: #fff;
+  font-size: var(--fs-12);
+  font-weight: 700;
+  display: inline-grid;
+  place-items: center;
+  font-variant-numeric: tabular-nums;
 }
+
+.cmd-account {
+  position: relative;
+}
+
+.cmd-account-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 var(--sp-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  background: none;
+  color: var(--cmd-ink);
+  font-size: var(--fs-14);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cmd-account-trigger:hover,
+.cmd-account-trigger[aria-expanded="true"] {
+  border-color: var(--cmd-rule-2);
+}
+
+.cmd-account-name {
+  font-weight: 700;
+}
+
+.cmd-account-rank {
+  color: var(--cmd-mute);
+}
+
+.cmd-chevron {
+  color: var(--cmd-mute);
+  transition: transform 160ms var(--ease-out);
+}
+
+.cmd-account-trigger[aria-expanded="true"] .cmd-chevron {
+  transform: rotate(180deg);
+}
+
+.cmd-account-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  min-width: 200px;
+  padding: var(--sp-2) 0;
+  background: #fff;
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.cmd-account-team {
+  margin: 0 0 var(--sp-1);
+  padding: var(--sp-1) var(--sp-4) var(--sp-2);
+  border-bottom: 1px solid var(--cmd-rule);
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+}
+
+.cmd-account-menu a {
+  padding: var(--sp-2) var(--sp-4);
+  color: var(--cmd-ink);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.cmd-account-menu a:hover {
+  background: var(--cmd-bg-2);
+}
+
+.cmd-account-menu .cmd-logout {
+  color: var(--red-text);
+}
+
+/* ---------- 본문 ---------- */
+
+.cmd-main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  padding: var(--sp-6) var(--shell-pad) var(--sp-10);
+  outline: none;
+}
+
+/* 예전 팀원 화면들이 12칸 그리드 안에서 쓰던 위치 지정은 무시 */
+.cmd-main > * {
+  grid-column: auto;
+  grid-area: auto;
+}
+
+/* ---------- 좁은 화면 ---------- */
+
+@media (max-width: 1180px) {
+  .cmd-date {
+    display: none;
+  }
+
+  .cmd-header-inner {
+    gap: var(--sp-5);
+  }
+
+  .cmd-nav a {
+    padding: 0 var(--sp-3);
+  }
+}
+
+@media (max-width: 860px) {
+  :root {
+    --shell-pad: 16px;
+  }
+
+  .cmd-header-inner {
+    height: auto;
+    flex-wrap: wrap;
+    row-gap: 0;
+    padding-top: var(--sp-2);
+  }
+
+  .cmd-logo {
+    height: 44px;
+  }
+
+  .cmd-logo-sub {
+    display: none;
+  }
+
+  .cmd-nav {
+    order: 3;
+    width: 100%;
+    margin: 0 calc(var(--shell-pad) * -1);
+    width: calc(100% + var(--shell-pad) * 2);
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-top: 1px solid var(--cmd-rule);
+  }
+
+  .cmd-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cmd-nav ul {
+    height: 44px;
+    padding: 0 var(--sp-2);
+  }
+
+  .cmd-header-meta {
+    gap: var(--sp-3);
+  }
+
+  .cmd-account-rank {
+    display: none;
+  }
+}
+
+/* =====================================================================
+   출발 안내판: 검정 상단 띠
+   ===================================================================== */
+
+.cmd-shell {
+  background: var(--cmd-ground);
+}
+
+.cmd-header {
+  background: var(--board-bg);
+  border-bottom: 0;
+  color: var(--board-ink);
+}
+
+.cmd-logo,
+.cmd-logo-word {
+  color: #fff;
+}
+
+.cmd-logo-mark {
+  border-radius: var(--radius-m);
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: none;
+  font-family: var(--cmd-mono);
+  font-weight: 800;
+}
+
+.cmd-logo-sub {
+  color: var(--board-mute);
+  font-family: var(--cmd-mono);
+}
+
+.cmd-nav a {
+  color: var(--board-mute);
+}
+
+.cmd-nav a:hover {
+  color: #fff;
+  box-shadow: inset 0 -4px 0 var(--board-rule);
+}
+
+.cmd-nav a.active,
+.cmd-nav a[aria-current="page"] {
+  color: #fff;
+  box-shadow: inset 0 -4px 0 var(--accent);
+}
+
+.cmd-nav a:focus-visible {
+  outline-color: var(--accent);
+}
+
+.cmd-date {
+  color: var(--board-mute);
+  font-family: var(--cmd-mono);
+  font-size: var(--fs-13);
+}
+
+.cmd-noti {
+  color: var(--board-ink);
+}
+
+.cmd-noti-count {
+  border-radius: var(--radius-m);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--cmd-mono);
+}
+
+.cmd-account-trigger {
+  color: #fff;
+}
+
+.cmd-account-trigger:hover,
+.cmd-account-trigger[aria-expanded="true"] {
+  border-color: var(--board-rule);
+}
+
+.cmd-account-rank,
+.cmd-chevron {
+  color: var(--board-mute);
+}
+
+.cmd-account-menu {
+  border-radius: var(--radius-m);
+  color: var(--cmd-ink);
+}
+
+.cmd-shell .cmd-header :focus-visible {
+  outline-color: var(--accent);
+}
+
+@media (max-width: 860px) {
+  .cmd-nav {
+    border-top: 1px solid var(--board-rule);
+  }
+}
+
+/* ZERYN 로고 (이미지 + 글자) — 어두운 상단바용 흰색 테두리 버전 */
+.cmd-logo-img {
+  height: 30px;
+  width: auto;
+  display: block;
+  flex: none;
+}
+

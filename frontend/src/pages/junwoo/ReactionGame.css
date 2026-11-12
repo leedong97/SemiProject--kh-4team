@@ -1,26 +1,26 @@
 .reaction-game {
     min-width: 0;
     padding: 24px;
-    border: 1px solid #2b374a;
+    border: 1px solid #e2eaf4;
     border-radius: 14px;
-    background: #171d29;
+    background: #fff;
 }
 
 .reaction-game-label {
-    color: #8cd7b0;
+    color: #087bdf;
     font-size: 11px;
     font-weight: 700;
 }
 
 .reaction-game-title {
     margin: 10px 0 8px;
-    color: #e2eaf6;
+    color: #213b5b;
     font-size: 18px;
 }
 
 .reaction-game-description {
     margin: 0 0 18px;
-    color: #b3c2d5;
+    color: #7c8da2;
     font-size: 12px;
     line-height: 1.6;
 }
@@ -55,28 +55,28 @@
 /* 반응 시간을 측정하므로 색상 전환 애니메이션은 넣지 않음 */
 .reaction-game .reaction-game-idle,
 .reaction-game .reaction-game-result {
-    background: #171d29;
-    color: #72c7f3;
+    background: #edf5ff;
+    color: #0868bd;
 }
 
 .reaction-game .reaction-game-waiting {
-    background: #171d29;
-    color: #ff9fa8;
+    background: #fff0ec;
+    color: #ac3c28;
 }
 
 .reaction-game .reaction-game-ready {
-    background: #14527e;
-    color: #eef3fa;
+    background: #16834b;
+    color: #fff;
 }
 
 .reaction-game .reaction-game-early {
-    background: #171d29;
-    color: #ff9fa8;
+    background: #fff5d9;
+    color: #805b08;
 }
 
 .reaction-game-target:focus-visible,
 .reaction-game-footer button:focus-visible {
-    outline: 3px solid #356684;
+    outline: 3px solid #087bdf;
     outline-offset: 4px;
 }
 
@@ -87,12 +87,12 @@
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 18px;
-    color: #b3c2d5;
+    color: #63758b;
     font-size: 12px;
 }
 
 .reaction-game-best strong {
-    color: #8cd7b0;
+    color: #087bdf;
     font-size: 20px;
 }
 
@@ -104,8 +104,8 @@
     gap: 8px;
     margin-top: 14px;
     padding-top: 12px;
-    border-top: 1px solid #2b374a;
-    color: #b3c2d5;
+    border-top: 1px solid #edf2f8;
+    color: #7c8da2;
     font-size: 11px;
 }
 
@@ -113,7 +113,7 @@
     padding: 4px 0;
     border: none;
     background: transparent;
-    color: #b3c2d5;
+    color: #63758b;
     font: inherit;
     text-decoration: underline;
     cursor: pointer;

@@ -500,7 +500,7 @@ function ProjectManagement({
           )}
 
           {listTab === "requests" && (
-            <>
+            <div className="card nexus-project-panel">
               <SearchSortBar
                 searchId="request-search"
                 placeholder="프로젝트명·요청 제목·요청자 검색"
@@ -519,15 +519,13 @@ function ProjectManagement({
                   onReject={rejectRequest}
                 />
               ) : (
-                <div className="card nexus-project-panel">
-                  <p>{pendingRequests.length > 0 ? "검색 결과가 없습니다." : "대기 중인 완료 요청이 없습니다."}</p>
-                </div>
+                <p>{pendingRequests.length > 0 ? "검색 결과가 없습니다." : "대기 중인 완료 요청이 없습니다."}</p>
               )}
-            </>
+            </div>
           )}
 
           {listTab === "quotes" && (
-            <>
+            <div className="card nexus-project-panel">
               <SearchSortBar
                 searchId="quote-search"
                 placeholder="기업명·서비스·이메일·요구사항 검색"
@@ -554,7 +552,7 @@ function ProjectManagement({
                 onChangeStatus={changeQuoteStatus}
                 onCreateProject={startProjectFromQuote}
               />
-            </>
+            </div>
           )}
         </>
 

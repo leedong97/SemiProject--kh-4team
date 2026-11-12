@@ -89,84 +89,34 @@ function ActivitySummary(props) {
     }
 
     return (
-        <section className="activity-summary" aria-label="내 활동 요약">
-            <div className="activity-profile">
-                <div className="activity-avatar" aria-hidden="true">
-                    {userName.slice(0, 1)}
+        <section className="activity-summary cmd-activity-summary" aria-label={userName + "님의 커뮤니티 활동 요약"}>
+            <dl className="cmd-activity-stats">
+                <div className="tone-green">
+                    <dt>작성한 글</dt>
+                    <dd className="cmd-num">{props.myPosts.length}</dd>
                 </div>
 
-                <div className="activity-profile-text">
-                    <span className="activity-profile-label">
-                        MY COMMUNITY
-                    </span>
-
-                    <h2>{userName}님의 커뮤니티 활동</h2>
-
-                    <p>나눈 이야기와 함께한 대화를 모았어요.</p>
+                <div className="tone-sky">
+                    <dt>작성한 댓글 <span className="cmd-activity-note">답글 포함</span></dt>
+                    <dd className="cmd-num" aria-live="polite">
+                        {commentCount !== null && !loadError && !isLoading ? commentCount : commentText}
+                    </dd>
+                    {loadError && (
+                        <button
+                            type="button"
+                            className="activity-retry cmd-text-btn"
+                            onClick={retryLoad}
+                        >
+                            다시 불러오기
+                        </button>
+                    )}
                 </div>
 
-                <span className="activity-profile-decoration" aria-hidden="true">
-                    ✦
-                </span>
-            </div>
-
-            <div className="activity-stats">
-                <div className="activity-stat activity-stat-post">
-                    <span className="activity-stat-icon" aria-hidden="true">
-                        ✍️
-                    </span>
-
-                    <div>
-                        <p>작성한 글</p>
-                        <strong>{props.myPosts.length}개</strong>
-                        <span className="activity-stat-description">
-                            내가 나눈 이야기
-                        </span>
-                    </div>
+                <div className="tone-purple">
+                    <dt>해결한 내 질문</dt>
+                    <dd className="cmd-num">{resolvedPosts.length}</dd>
                 </div>
-
-                <div className="activity-stat activity-stat-comment">
-                    <span className="activity-stat-icon" aria-hidden="true">
-                        💬
-                    </span>
-
-                    <div>
-                        <p>작성한 댓글</p>
-
-                        <strong aria-live="polite">
-                            {commentText}
-                        </strong>
-
-                        <span className="activity-stat-description">
-                            댓글과 답글을 포함해요
-                        </span>
-
-                        {loadError && (
-                            <button
-                                type="button"
-                                className="activity-retry"
-                                onClick={retryLoad}
-                            >
-                                다시 불러오기
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                <div className="activity-stat activity-stat-resolved">
-                    <span className="activity-stat-icon" aria-hidden="true">
-                        ✅
-                    </span>
-
-                    <div>
-                        <p>해결한 내 질문</p>
-                        <strong>{resolvedPosts.length}개</strong>
-                        <span className="activity-stat-description">
-                            해결 완료로 표시한 질문
-                        </span>
-                    </div>
-                </div>
-            </div>
+            </dl>
         </section>
     );
 }

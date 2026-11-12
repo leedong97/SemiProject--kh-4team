@@ -16,7 +16,7 @@ export default function Header({ onNavigate, member, onLogout }) {
             onNavigate("home");
           }}
         >
-          COMMAND <strong>SOLUTIONS</strong>
+          <strong>ZERYN</strong>
           <small>BUSINESS IT SERVICE STORE</small>
         </a>
 

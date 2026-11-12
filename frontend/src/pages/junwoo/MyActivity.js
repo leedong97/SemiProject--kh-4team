@@ -311,9 +311,6 @@ function MyActivity(props) {
                 내 활동
             </h1>
 
-            <p className="community-description">
-                내가 작성한 이야기를 한곳에서 확인하세요.
-            </p>
 
             <ActivitySummary
                 key={String(loginUser.id)}
@@ -326,7 +323,6 @@ function MyActivity(props) {
                     to="/community/activity"
                     className={postsClass}
                 >
-                    <span aria-hidden="true">✍️ </span>
                     내가 작성한 글
                 </Link>
 
@@ -334,7 +330,6 @@ function MyActivity(props) {
                     to="/community/activity/comments"
                     className={commentsClass}
                 >
-                    <span aria-hidden="true">💬 </span>
                     내가 작성한 댓글
                 </Link>
 
@@ -342,7 +337,6 @@ function MyActivity(props) {
                     to="/community/activity/bookmarks"
                     className={bookmarksClass}
                 >
-                    <span aria-hidden="true">★ </span>
                     북마크한 글
                 </Link>
 
@@ -350,7 +344,6 @@ function MyActivity(props) {
                     to="/community/activity/resolved"
                     className={resolvedClass}
                 >
-                    <span aria-hidden="true">✓ </span>
                     해결 완료한 질문
                 </Link>
             </div>

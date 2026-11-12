@@ -97,7 +97,7 @@ function Workspace({ module, compact = false }) {
           <i />
           <i />
         </span>
-        <span>COMMAND / WORKSPACE</span>
+        <span>ZERYN / WORKSPACE</span>
         <span className="nx-window-mark" aria-hidden="true">↗</span>
       </div>
 
@@ -246,7 +246,7 @@ export default function HomePage({ category, onNavigate }) {
           <div className="nx-hero-top">
             <span className="nx-eyebrow">
               <i aria-hidden="true" />
-              COMMAND SOLUTIONS
+              ZERYN
             </span>
             <span className="nx-micro">{category.eyebrow}</span>
           </div>
@@ -293,7 +293,7 @@ export default function HomePage({ category, onNavigate }) {
       <section className="nx-section nx-intro">
         <div className="nx-container">
           <div className="nx-section-meta">
-            <span>01 / WHY COMMAND</span>
+            <span>01 / WHY ZERYN</span>
             <span>업무를 이해하는 기술</span>
           </div>
           <div className="nx-intro-grid">
@@ -325,7 +325,7 @@ export default function HomePage({ category, onNavigate }) {
         <div className="nx-container">
           <div className="nx-section-meta">
             <span>02 / INSIDE THE PRODUCT</span>
-            <span>COMMAND ERP</span>
+            <span>ZERYN ERP</span>
           </div>
 
           <div className="nx-section-heading">
@@ -378,7 +378,7 @@ export default function HomePage({ category, onNavigate }) {
           <div className="nx-section-heading">
             <h2>좋은 경험은,<br /><span>연결된 구조에서.</span></h2>
             <p>
-              현재 COMMAND ERP를 구성하는 기술입니다.
+              현재 ZERYN ERP를 구성하는 기술입니다.
               <br />사용자의 입력이 서버를 거쳐 데이터로 이어집니다.
             </p>
           </div>

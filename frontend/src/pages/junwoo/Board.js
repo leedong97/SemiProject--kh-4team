@@ -955,7 +955,6 @@ function Board(props) {
                     className={freeClass}
                     onClick={showFreeBoard}
                 >
-                    <span aria-hidden="true">💬 </span>
                     자유게시판
                 </button>
 
@@ -964,7 +963,6 @@ function Board(props) {
                     className={questionClass}
                     onClick={showQuestionBoard}
                 >
-                    <span aria-hidden="true">❔ </span>
                     질문 답변
                 </button>
 
@@ -973,7 +971,6 @@ function Board(props) {
                     className={infoClass}
                     onClick={showInfoBoard}
                 >
-                    <span aria-hidden="true">💡 </span>
                     정보공유
                 </button>
             </div>

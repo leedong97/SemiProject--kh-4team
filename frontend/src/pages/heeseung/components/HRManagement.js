@@ -80,6 +80,7 @@ export default function HRManagement({
             setDbEvaluations(evaluationRows);
             setDbEmployees(employeeRows.map(employee => ({
                 id: employee.employee_id,
+                employeeCode: employee.employee_code,
                 name: employee.employee_name,
                 team: employee.employee_department,
                 department: employee.employee_department,
@@ -198,9 +199,17 @@ export default function HRManagement({
     const filteredEmployees = employees.filter(employee => {
         const keyword = employeeSearch.trim().toLowerCase();
         const nameMatch = String(employee.name || "").toLowerCase().includes(keyword);
+        const codeMatch = String(employee.employeeCode || "").toLowerCase().includes(keyword);
         const teamMatch = departmentFilter === "전체" || (employee.team || employee.department || "미지정") === departmentFilter;
-        return nameMatch && teamMatch && employee.status !== "퇴사";
+        return (nameMatch || codeMatch) && teamMatch && employee.status !== "퇴사";
     }).sort((a, b) => {
+        if (employeeSort === "employeeCode") {
+            return String(a.employeeCode || "").localeCompare(
+                String(b.employeeCode || ""),
+                "ko",
+                { numeric: true, sensitivity: "base" }
+            );
+        }
         if (employeeSort === "salaryDesc") return Number(b.salary || 0) - Number(a.salary || 0);
         if (employeeSort === "hireDesc") return String(b.hireDate || "").localeCompare(String(a.hireDate || ""));
         if (employeeSort === "rank") return String(a.rank || "").localeCompare(String(b.rank || ""), "ko");
@@ -570,7 +579,7 @@ export default function HRManagement({
             {/* 추가 기능: 검색/정렬/수정/퇴사/참여 프로젝트/업무량 */}
             <div className="panel hr-enhanced">
                 <div className="hr-enhanced-heading">
-                    <div><h3>직원 통합 관리</h3><p className="muted">직원 정보, 프로젝트 참여, 업무량을 한 화면에서 확인합니다.</p></div>
+                    <div><h3>직원 통합 관리</h3></div>
                     <span className="hr-total">전체 {employees.length}명</span>
                 </div>
                 {/* 이슈 등록과 동일하게 버튼을 눌러 신규 직원 등록 폼을 펼칩니다. */}
@@ -587,7 +596,7 @@ export default function HRManagement({
                 {showEmployeeRegister && (
                     <form className="panel hr-new-employee-form" onSubmit={addEmployee}>
                         <h3>신규 직원 등록</h3>
-                        <p className="muted">직원 정보를 한 번에 입력하세요. 입사일은 등록일(한국 시간)로 자동 설정됩니다.</p>
+                        
                         <div className="hr-new-employee-grid">
                             <label>이름<input placeholder="직원 이름" value={name} onChange={e => setName(e.target.value)} required /></label>
                             <label>직무<input placeholder="예: 프론트엔드 개발" value={position} onChange={e => setPosition(e.target.value)} /></label>
@@ -604,23 +613,23 @@ export default function HRManagement({
                     </form>
                 )}
                 <div className="hr-filters">
-                    <SearchInput aria-label="직원 이름 검색" placeholder="직원 이름 검색" value={employeeSearch} onChange={e => setEmployeeSearch(e.target.value)} />
-                    <select aria-label="부서 필터" value={departmentFilter} onChange={e => setDepartmentFilter(e.target.value)}>
+                <SearchInput aria-label="직원 이름 또는 사번 검색" placeholder="이름 또는 사번 검색" value={employeeSearch} onChange={e => setEmployeeSearch(e.target.value)} /> <select aria-label="부서 필터" value={departmentFilter} onChange={e => setDepartmentFilter(e.target.value)}>
                         <option value="전체">전체 부서</option>
                         {departments.map(x => <option key={x} value={x}>{x}</option>)}
                     </select>
                     <select aria-label="직원 정렬" value={employeeSort} onChange={e => setEmployeeSort(e.target.value)}>
                         <option value="name">이름순</option>
                         <option value="rank">직급순</option>
+                        <option value="employeeCode">사번순</option>
                         <option value="hireDesc">입사일 최신순</option>
                         <option value="salaryDesc">연봉 높은순</option>
                     </select>
                 </div>
                 <div className="hr-table-wrap"><table className="hr-staff-table">
-                    <thead><tr><th>이름</th><th>부서</th><th>직급</th><th>연봉</th><th>입사일</th><th>상태</th><th>관리</th></tr></thead>
-                    <tbody>{shownEmployees.map(employee => <React.Fragment key={employee.id}><tr>
+                     <thead><tr><th>이름</th><th>부서</th><th>직급</th><th>사번</th><th>연봉</th><th>입사일</th><th>상태</th><th>관리</th></tr></thead>                    <tbody>{shownEmployees.map(employee => <React.Fragment key={employee.id}><tr>
                         <td>{employee.name}</td><td>{employee.team || employee.department || "-"}</td>
                         <td>{employee.rank || "-"}</td>
+                        <td>{employee.employeeCode || "-"}</td>
                         <td>{employee.salary == null ? "미등록" : Number(employee.salary).toLocaleString("ko-KR") + "원"}</td>
                         <td>{formatEmployeeDate(employee.hireDate)}</td>
                         <td>
@@ -633,7 +642,7 @@ export default function HRManagement({
                                         aria-expanded={openedLeaveEmployeeId === employee.id}
                                         title="클릭하면 휴가 기간을 볼 수 있습니다."
                                     >
-                                        휴가 <span aria-hidden="true">{openedLeaveEmployeeId === employee.id ? "▲" : "▼"}</span>
+                                        휴가
                                     </button>
                                     {openedLeaveEmployeeId === employee.id && (
                                         <div className="hr-vacation-dates">
@@ -662,7 +671,7 @@ export default function HRManagement({
                             {employee.status !== "퇴사" && <><button type="button" className="hr-action-edit" onClick={() => startEmployeeEdit(employee)}>수정</button><button type="button" className="hr-danger-button" onClick={() => retireEmployee(employee)}>퇴사</button></>}
                         </div></td>
                     </tr>
-                    {editingEmployee && sameId(editingEmployee.id, employee.id) && <tr className="hr-expanded-row hr-edit-expanded-row"><td colSpan="7">
+                    {editingEmployee && sameId(editingEmployee.id, employee.id) && <tr className="hr-expanded-row hr-edit-expanded-row"><td colSpan="8">
                 <form className="hr-edit-form" onSubmit={saveEmployeeEdit}>
                     <h4>{editingEmployee.name} 직원 정보 수정</h4>
                     <label>부서<select value={editTeam} onChange={e => setEditTeam(e.target.value)} required>{[...new Set([...departments, editTeam])].filter(Boolean).map(x => <option key={x} value={x}>{x}</option>)}</select></label>
@@ -671,11 +680,11 @@ export default function HRManagement({
                     <button type="submit">저장</button><button type="button" onClick={() => setEditingEmployee(null)}>취소</button>
                 </form>
                     </td></tr>}
-                    {sameId(selectedEmployeeId, employee.id) && <tr className="hr-expanded-row"><td colSpan="7">
+                    {sameId(selectedEmployeeId, employee.id) && <tr className="hr-expanded-row"><td colSpan="8">
                         {renderEmployeeDetail(employee)}
                     </td></tr>}
                     </React.Fragment>)}
-                        {filteredEmployees.length === 0 && <tr><td colSpan="7">조건에 맞는 직원이 없습니다.</td></tr>}
+                        {filteredEmployees.length === 0 && <tr><td colSpan="8">조건에 맞는 직원이 없습니다.</td></tr>}
                     </tbody></table></div>
                 <div className="hr-work-pages" aria-label="직원 목록 페이지">
                     <button type="button" disabled={currentEmployeePage === 1} onClick={() => setEmployeePage(currentEmployeePage - 1)}>이전</button>
@@ -691,7 +700,7 @@ export default function HRManagement({
                 <div className="hr-enhanced-heading">
                     <div>
                         <h3>직원별 업무 현황</h3>
-                        <p className="muted">직원을 선택하면 참여 프로젝트와 담당 이슈를 확인할 수 있습니다. 프로젝트·이슈 관리 데이터가 자동 반영됩니다.</p>
+                        
                     </div>
                     <button type="button" onClick={loadHrData} disabled={dbLoading}>새로고침</button>
                 </div>
@@ -724,7 +733,6 @@ export default function HRManagement({
                             <div><span>미완료 이슈</span><strong>{openIssues.length}건</strong><small className="hr-work-overdue-count">기한 초과 {openIssues.filter(isIssueOverdue).length}건</small></div>
                             <div><span>프로젝트 미지정 이슈</span><strong>{unlinked.length}건</strong></div>
                         </div>
-                        <p className="hr-work-hint">담당자 지정 이슈는 재직 직원에게 배정된 건수입니다. 프로젝트 미지정은 전체 이슈 중 프로젝트 연결이 없는 건수입니다.</p>
                         <div className="hr-work-filters">
                             <label>직원 검색<SearchInput value={workSearch} onChange={event => { setWorkSearch(event.target.value); setWorkPage(1); }} placeholder="이름 또는 부서 검색" /></label>
                             <label>부서<select value={workDepartment} onChange={event => { setWorkDepartment(event.target.value); setWorkPage(1); }}><option value="전체">전체 부서</option>{teams.map(teamName => <option key={teamName}>{teamName}</option>)}</select></label>
@@ -767,7 +775,7 @@ export default function HRManagement({
         {activeTab === "retired" && <div className="hr-tab-content">
             <div className="panel hr-enhanced">
                 <div className="hr-enhanced-heading">
-                    <div><h3>퇴사자 관리</h3><p className="muted">퇴사 직원의 인사 정보와 과거 평가·업무 이력을 조회합니다.</p></div>
+                    <div><h3>퇴사자 관리</h3></div>
                     <span className="hr-total">퇴사자 {retiredEmployees.length}명</span>
                 </div>
                 <div className="hr-filters">
@@ -891,7 +899,6 @@ export default function HRManagement({
                 <div>
                     <span className="hr-analytics-eyebrow">HR INSIGHTS</span>
                     <h2>인사 통계 대시보드</h2>
-                    <p>직원 현황과 업무 분포를 한눈에 확인하세요.</p>
                 </div>
                 <span className="hr-analytics-chip">실시간 데이터 기준</span>
             </div>
@@ -906,7 +913,7 @@ export default function HRManagement({
                 <div className="hr-unified-heading">
                     <div>
                         <h3>직원별 업무 현황</h3>
-                        <p className="muted">미완료 이슈를 직원별로 비교합니다. 업무량은 성과 평가 점수가 아닙니다.</p>
+                        
                     </div>
                     <span className="hr-unified-count">재직 직원 {employees.filter(employee => employee.status !== "퇴사").length}명</span>
                 </div>

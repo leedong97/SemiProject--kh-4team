@@ -71,8 +71,12 @@ function App() {
   }
 
   // 관리자 화면(/admin)은 관리자 계정만 들어갈 수 있어요. 일반 사원이 주소를 직접 쳐도 메인으로 돌려보내요.
+  // 단, 마이페이지의 "팀원 평가하러 가기"로 들어온 평가 화면(/admin/evaluations?from=mypage)은 팀장도 열 수 있어요.
+  // (실제 평가 권한은 백엔드 /api/evaluations 가 담당 PM인지 다시 검사해요)
   const isAdminPath = location.pathname === '/admin' || location.pathname.startsWith('/admin/');
-  if (REQUIRE_LOGIN && isAdminPath && loginUser.role !== '관리자') {
+  const isEvaluationFromMypage =
+    location.pathname === '/admin/evaluations' && new URLSearchParams(location.search).get('from') === 'mypage';
+  if (REQUIRE_LOGIN && isAdminPath && loginUser.role !== '관리자' && !isEvaluationFromMypage) {
     return <Navigate to="/" replace />;
   }
 

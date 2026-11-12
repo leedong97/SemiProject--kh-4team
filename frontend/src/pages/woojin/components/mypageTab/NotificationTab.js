@@ -1,6 +1,6 @@
 // 알림 탭: 나에게 온 소식(이슈·프로젝트 상태 변경 등)을 목록으로 보여줘요
-// 종류(type)별로 앞에 붙는 아이콘 (없는 종류는 기본 🔔)
-const TYPE_ICON = { "이슈": "🐞", "프로젝트": "📁", "휴가": "🌴" };
+// 종류(type)별 칩 색 (노선색). 없는 종류는 회색
+const TYPE_TONE = { "이슈": "orange", "프로젝트": "green", "휴가": "red" };
 
 function NotificationTab({ notifications, onRead, onReadAll }) {
     // 안 읽은 알림 개수 (isRead 가 false 인 것만 센다)
@@ -27,7 +27,7 @@ function NotificationTab({ notifications, onRead, onReadAll }) {
                     className={n.isRead ? "mp-noti" : "mp-noti unread"}
                     onClick={() => !n.isRead && onRead(n.id)}
                 >
-                    <span className="mp-noti-icon">{TYPE_ICON[n.type] || "🔔"}</span>
+                    <span className={"mp-noti-icon cmd-chip tone-" + (TYPE_TONE[n.type] || "grey")}>{n.type || "알림"}</span>
                     <div className="mp-noti-body">
                         <p className="mp-noti-msg">{n.message}</p>
                         <p className="mp-noti-time">{n.time}</p>

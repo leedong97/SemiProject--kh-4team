@@ -1,56 +1,114 @@
-/* ===== 로그인/회원가입 스타일 (Login.css) =====
-   팀 App.css 는 건드리지 않고, 로그인·회원가입 전용으로 따로 뒀어요.
+/* ===== 로그인 · 회원가입 (출발 안내판) =====
+   회색 바탕 위 흰 카드, 위쪽은 검정 띠(브랜드). 색·글자는 shared/theme.css 를 그대로 써요.
    클래스가 .login / .signup 안쪽에만 적용돼서 다른 페이지와 겹치지 않아요. */
 
 .login, .signup {
-    --main-color: #1686ca;
-    --main-color-dark: #1686ca;
-    --error-color: #ff9fa8;
-    --border-color: #2b374a;
+    --main-color: var(--cmd-ink);
+    --main-color-dark: #000;
+    --error-color: var(--red-text);
+    --border-color: var(--cmd-rule-2);
 }
 
-/* 이 두 페이지 안에서만 padding이 칸 크기를 키우지 않게 해요 */
 .login, .login *,
 .signup, .signup * {
     box-sizing: border-box;
 }
 
-/* 카드 전체 (바깥 div) */
+/* 카드: 위는 띠, 아래는 넉넉한 여백 */
 .login, .signup {
-    width: min(400px, calc(100% - 32px));
-    margin: 80px auto;
-    padding: 32px 28px;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    width: min(420px, calc(100% - 32px));
+    margin: 72px auto;
+    padding: 0 28px 40px;
+    overflow: hidden;
+    border: 1px solid var(--cmd-rule);
+    border-radius: var(--radius-m);
+    background: var(--cmd-bg);
+    box-shadow: none;
+    color: var(--cmd-ink);
+    font-family: var(--cmd-font);
+}
+
+/* 검정 브랜드 띠 */
+.cmd-auth-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 -28px 28px;
+    padding: 14px 28px;
+    background: var(--board-bg);
+    color: #fff;
+}
+
+.cmd-auth-mark {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-s);
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: var(--cmd-mono);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.cmd-auth-word {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.cmd-auth-sub {
+    padding-top: 3px;
+    color: var(--board-mute);
+    font-family: var(--cmd-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
 }
 
 .login h2, .signup h2 {
-    margin: 0 0 8px;
-    text-align: center;
+    margin: 0 0 4px;
+    padding-bottom: 19px;
+    text-align: left;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    box-shadow: inset 0 -3px 0 var(--cmd-ink);
 }
 
-/* 입력창: 한 줄에 하나씩, 칸 가득 */
+/* 입력창 */
 .login input, .signup input {
     display: block;
     width: 100%;
+    height: 44px;
     margin-top: 12px;
-    padding: 12px;
+    padding: 0 12px;
+    font-family: inherit;
     font-size: 15px;
+    color: var(--cmd-ink);
+    background: var(--cmd-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: var(--radius-s);
+}
+
+.login input::placeholder, .signup input::placeholder {
+    color: #767676;
+    opacity: 1;
 }
 
 .login input:focus, .signup input:focus {
-    outline: none;
-    border-color: var(--main-color);
-    box-shadow: 0 0 0 3px rgba(36, 95, 230, 0.15);
+    outline: 2px solid var(--cmd-ink);
+    outline-offset: 0;
+    border-color: var(--cmd-ink);
+    box-shadow: none;
 }
 
-/* 빨간 오류 문구 (입력창 바로 아래) */
+/* 오류 문구 */
 .login .error, .signup .error {
     margin: 6px 0 0;
     font-size: 13px;
+    font-weight: 600;
     text-align: left;
     color: var(--error-color);
 }
@@ -59,14 +117,16 @@
 .btn-login, .btn-signup {
     display: block;
     width: 100%;
-    margin-top: 20px;
-    padding: 12px;
+    height: 46px;
+    margin-top: 24px;
+    padding: 0 12px;
+    font-family: inherit;
     font-size: 16px;
-    font-weight: 600;
-    color: #eef3fa;
+    font-weight: 700;
+    color: #fff;
     background: var(--main-color);
-    border: none;
-    border-radius: 8px;
+    border: 1px solid var(--main-color);
+    border-radius: var(--radius-s);
     cursor: pointer;
 }
 
@@ -74,22 +134,43 @@
     background: var(--main-color-dark);
 }
 
-/* "가입된 계정이 없으신가요?" 문구와 Sign up 링크 */
+.btn-login:focus-visible, .btn-signup:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* 다른 화면으로 가는 안내 */
 .login p, .signup p {
-    margin: 20px 0 4px;
+    margin: 24px 0 4px;
     font-size: 14px;
     text-align: center;
+    color: var(--cmd-mute);
+}
+
+.login p.error, .signup p.error {
+    margin: 6px 0 0;
+    text-align: left;
+    color: var(--error-color);
 }
 
 .login a, .signup a {
     display: block;
     text-align: center;
-    font-weight: 600;
-    color: var(--main-color);
-    text-decoration: none;
+    font-weight: 700;
+    color: var(--cmd-ink);
+    text-decoration: underline;
+    text-underline-offset: 4px;
 }
 
-/* 카드 배경 (바깥 틀은 Frame.js / woojin.css 가 맡아요) */
-.login, .signup {
-    background: #171d29;
+.login a:hover, .signup a:hover {
+    text-decoration-color: var(--accent);
 }
+
+/* ZERYN 로고 이미지 */
+.cmd-auth-img {
+    height: 28px;
+    width: auto;
+    display: block;
+    flex: none;
+}
+

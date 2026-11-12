@@ -175,7 +175,6 @@ function ProjectDetail({ project, manager, pendingRequest, busy, onApprove, onCl
     <>
       <div className="nexus-project-heading">
         <div>
-          <p>관리자 / 프로젝트 관리 / 상세정보</p>
           <h2>프로젝트 상세정보</h2>
         </div>
 
@@ -183,7 +182,7 @@ function ProjectDetail({ project, manager, pendingRequest, busy, onApprove, onCl
           type="button"
           onClick={onClose}
         >
-          ← 목록으로
+          목록으로
         </button>
       </div>
 

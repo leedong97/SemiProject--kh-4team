@@ -131,14 +131,6 @@ function Community() {
 
     return (
         <div className="admin-boards">
-            <div className="boards-header">
-
-
-                <div className="boards-count">
-                    전체 게시글<strong>{posts.length}건</strong>
-                    <small className="nexus-community-deleted-count">삭제된 글 {deletedCount}건</small>
-                </div>
-            </div>
 
             <div className="boards-list">
                 <div className="boards-list-header">

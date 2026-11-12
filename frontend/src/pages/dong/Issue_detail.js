@@ -128,7 +128,7 @@ function Issue_detail({ projects, issues }) {
                 {/* 등록일 */}
                 <div className="issue-detail-row">
                     <strong>등록일</strong>
-                    <span>{issue.createdAt}</span>
+                    <span>{issue.createdAt ? String(issue.createdAt).replace("T", " ").slice(0, 16) : "-"}</span>
                 </div>
 
                 {/* 상태 */}

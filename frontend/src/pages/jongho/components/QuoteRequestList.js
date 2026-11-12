@@ -19,7 +19,7 @@ export default function QuoteRequestList({ quotes, busy, onChangeStatus, onCreat
 
   if (quotes.length === 0) {
     return (
-      <div className="card nexus-project-panel nexus-quote-card">
+      <div className="nexus-quote-list">
         <div className="nexus-quote-head">
           <strong>견적 요청</strong>
           <span className="nexus-request-count">0건</span>
@@ -30,7 +30,7 @@ export default function QuoteRequestList({ quotes, busy, onChangeStatus, onCreat
   }
 
   return (
-    <div className="card nexus-project-panel nexus-quote-card">
+    <div className="nexus-quote-list">
       <div className="nexus-quote-head">
         <strong>견적 요청</strong>
         <span className="nexus-request-count">{quotes.length}건</span>

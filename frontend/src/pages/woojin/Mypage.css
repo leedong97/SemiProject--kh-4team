@@ -1,4 +1,4 @@
-/* 마이페이지 파란색 팔레트: 주색 #286b60 / 진한색 #1d564d / 연한 틴트 (관리자 화면과 동일) */
+/* 마이페이지 파란색 팔레트: 주색 #245fe6 / 진한색 #1b4bc2 / 연한 틴트 (관리자 화면과 동일) */
 /* ==========================
    마이페이지
    (클래스 이름은 모두 mp- 로 시작해서 다른 페이지와 겹치지 않아요)
@@ -7,7 +7,7 @@
 .mypage {
   width: 100%;
 
-  background: #171d29;
+  background: white;
   padding: 0 35px 35px;
   border-radius: 18px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
@@ -16,7 +16,7 @@
 
 /* 상단 프로필 배너 */
 .mp-banner {
-  background: linear-gradient(135deg, #14527e 0%, #14527e 100%);
+  background: linear-gradient(135deg, #2a63e8 0%, #4f86f0 100%);
   color: white;
   margin: 0 -35px;               /* 카드 좌우 끝까지 */
   padding: 14px 35px 28px;
@@ -107,7 +107,7 @@
 
   width: 140px;
   padding: 10px;
-  background: #171d29;
+  background: white;
   border-radius: 10px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -123,14 +123,14 @@
   padding: 12px;
   font-size: 14px;
   font-weight: 400;
-  color: #e2eaf6;
+  color: #4d566c;
   border-radius: 8px;
   cursor: pointer;
 }
 
 .mp-logout h4:hover {
-  background: #171d29;
-  color: #8cd7b0;
+  background: #e4eaf9;
+  color: #245fe6;
 }
 
 .mp-me:hover .mp-logout,
@@ -159,27 +159,27 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: #f4f6fb;
+  border: 1px solid #eceff6;
   border-radius: 10px;
   padding: 14px 16px;
 }
 
 .mp-stat-label {
   font-size: 13px;
-  color: #b3c2d5;
+  color: #808696;
 }
 
 .mp-stat strong {
   font-size: 22px;
-  color: #e2eaf6;
+  color: #303748;
 }
 
 .mp-stat small {
   margin-left: 2px;
   font-size: 13px;
   font-weight: 400;
-  color: #b3c2d5;
+  color: #808696;
 }
 
 /* 탭 */
@@ -193,23 +193,23 @@
 .mp-tab {
   flex: 1 1 auto;
   padding: 11px 14px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: white;
+  border: 1px solid #dae0ed;
   border-radius: 9px;
-  color: #e2eaf6;
+  color: #4d566c;
   font-size: 14px;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .mp-tab:hover {
-  background: #171d29;
-  color: #8cd7b0;
+  background: #e4eaf9;
+  color: #245fe6;
 }
 
 .mp-tab.active {
-  background: #14527e;
-  border-color: #356684;
+  background: #3b78f0;
+  border-color: #3b78f0;
   color: white;
   font-weight: bold;
 }
@@ -218,7 +218,7 @@
 .mp-panel h3 {
   margin: 25px 0 15px;
   padding-bottom: 12px;
-  border-bottom: 2px solid #2b374a;
+  border-bottom: 2px solid #e4eaf7;
   font-size: 18px;
 }
 
@@ -229,7 +229,7 @@
 .mp-note {
   margin: 22px 0 0;
   font-size: 13px;
-  color: #b3c2d5;
+  color: #808696;
   line-height: 1.5;
 }
 
@@ -251,22 +251,22 @@
 
 .mp-cal-nav button {
   padding: 8px 14px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: white;
+  border: 1px solid #dae0ed;
   border-radius: 8px;
-  color: #e2eaf6;
+  color: #4d566c;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .mp-cal-nav button:hover {
-  background: #171d29;
-  color: #8cd7b0;
+  background: #e4eaf9;
+  color: #245fe6;
 }
 
 .mp-add-btn {
   padding: 11px 18px;
-  background: #14527e;
+  background: #3b78f0;
   border: none;
   border-radius: 9px;
   color: white;
@@ -278,7 +278,7 @@
 }
 
 .mp-add-btn:hover {
-  background: #14527e;
+  background: #245fe6;
 }
 
 /* 달력 격자 */
@@ -287,8 +287,8 @@
   flex-direction: column;
   gap: 0;
   text-align: center;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: #fff;
+  border: 1px solid #dcdfe8;
   border-right: none;            /* 오른쪽·아래 선은 날짜 칸이 직접 그려요 */
   border-bottom: none;
   border-radius: 8px;
@@ -326,7 +326,7 @@
   padding: 0 6px;
   border: none;
   border-radius: 0;
-  color: #e2eaf6;
+  color: #2a303e;
   font: inherit;
   font-size: 12px;
   font-weight: 800;
@@ -357,7 +357,7 @@
   border: none;
   border-radius: 4px;
   background: transparent;
-  color: #e2eaf6;
+  color: #222836;
   font: inherit;
   font-size: 12px;
   font-weight: 800;              /* 이름은 굵게 */
@@ -369,7 +369,7 @@
 }
 
 .mp-line:hover {
-  background: #171d29;
+  background: #e9edf8;
 }
 
 .mp-line span {
@@ -385,10 +385,10 @@
   border-radius: 50%;
 }
 
-.mp-line.project .mp-line-dot { background: #14527e; }
-.mp-line.work .mp-line-dot { background: #14527e; }
-.mp-line.personal .mp-line-dot { background: #553039; }
-.mp-line.leave .mp-line-dot { background: #553039; }
+.mp-line.project .mp-line-dot { background: #4f52d6; }
+.mp-line.work .mp-line-dot { background: #2a6fd6; }
+.mp-line.personal .mp-line-dot { background: #b85f0a; }
+.mp-line.leave .mp-line-dot { background: #c23d7a; }
 
 /* 진짜 시작일/종료일은 그 날짜 칸의 "절반"만 채워요. 칸 끝까지 꽉 찬 쪽은 다음 주·다음 달로 이어지는 쪽이에요 */
 .mp-seg.starts {
@@ -410,19 +410,19 @@
 }
 
 .mp-seg.work,
-.mp-pop-chip.work { background: #14527e; color: #eef3fa; }
+.mp-pop-chip.work { background: #2a6fd6; color: #fff; }
 .mp-seg.personal,
-.mp-pop-chip.personal { background: #553039; color: #eef3fa; }
+.mp-pop-chip.personal { background: #b85f0a; color: #fff; }
 .mp-seg.leave,
-.mp-pop-chip.leave { background: #553039; color: #eef3fa; }
+.mp-pop-chip.leave { background: #c23d7a; color: #fff; }
 .mp-seg.project,
-.mp-pop-chip.project { background: #14527e; color: #eef3fa; }
+.mp-pop-chip.project { background: #4f52d6; color: #fff; }
 
 .mp-week {
   padding: 10px 0;
-  border-right: 1px solid #2b374a;
-  border-bottom: 1px solid #2b374a;
-  color: #b3c2d5;
+  border-right: 1px solid #e7e9f0;
+  border-bottom: 1px solid #e7e9f0;
+  color: #6b7280;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -430,27 +430,27 @@
 
 .mp-week.sun,
 .mp-day.sun {
-  color: #ff9fa8;
+  color: #d66b6b;
 }
 
 .mp-blank {
   min-height: 124px;
-  background: #171d29;
-  border-right: 1px solid #2b374a;
-  border-bottom: 1px solid #2b374a;
+  background: #fafbfd;
+  border-right: 1px solid #e7e9f0;
+  border-bottom: 1px solid #e7e9f0;
 }
 
 .mp-day {
   min-height: 124px;
   background: transparent;
   border: none;
-  border-right: 1px solid #2b374a;
-  border-bottom: 1px solid #2b374a;
+  border-right: 1px solid #e7e9f0;
+  border-bottom: 1px solid #e7e9f0;
   border-radius: 0;
   font: inherit;
   font-size: 14px;
   font-weight: 600;
-  color: #e2eaf6;
+  color: #2f3542;
   cursor: pointer;
   transition: background 0.15s;
 
@@ -463,11 +463,11 @@
 }
 
 .mp-day.sun {
-  color: #ff9fa8;
+  color: #d66b6b;
 }
 
 .mp-day:hover {
-  background: #171d29;
+  background: #f4f6fc;
 }
 
 /* 날짜 숫자: 오늘은 진한 원 안에 흰 글자로 */
@@ -481,14 +481,14 @@
 }
 
 .mp-day.today .mp-daynum {
-  background: #14527e;
-  color: #eef3fa;
+  background: #4f52d6;
+  color: #fff;
   font-weight: 700;
 }
 
 .mp-day.selected {
-  background: #171d29;
-  box-shadow: inset 0 0 0 2px #327b6c;
+  background: #eef3ff;
+  box-shadow: inset 0 0 0 2px #3b78f0;
 }
 
 .mp-dots {
@@ -508,19 +508,19 @@
 }
 
 .mp-dot.work {
-  background: #14527e;
+  background: #2a6fd6;
 }
 
 .mp-dot.personal {
-  background: #553039;
+  background: #b85f0a;
 }
 
 .mp-dot.leave {
-  background: #553039;
+  background: #c23d7a;
 }
 
 .mp-dot.project {
-  background: #14527e;
+  background: #4f52d6;
 }
 
 /* 쪽지: 날짜를 누르면 그 날 겹친 일정을 이름·시작일·종료일로 보여 줘요 */
@@ -531,11 +531,11 @@
   width: 260px;
   max-width: calc(100vw - 48px);
   padding: 12px 14px 10px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: #fff8d6;
+  border: 1px solid #ecdd9a;
   border-radius: 4px 4px 12px 4px;
   box-shadow: 0 8px 18px rgba(60, 50, 10, 0.2);
-  color: #e2eaf6;
+  color: #3d3a28;
   text-align: left;
 }
 
@@ -552,7 +552,7 @@
 
 .mp-pop-head span {
   font-size: 12px;
-  color: #f0c980;
+  color: #7a7350;
 }
 
 .mp-pop-close {
@@ -560,7 +560,7 @@
   padding: 0 2px;
   border: none;
   background: none;
-  color: #f0c980;
+  color: #8a7f4a;
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
@@ -601,13 +601,13 @@
 .mp-pop-date {
   margin: 2px 0 0;
   font-size: 11px;
-  color: #f0c980;
+  color: #7a7350;
 }
 
 .mp-legend {
   margin: 12px 0 0;
   font-size: 13px;
-  color: #b3c2d5;
+  color: #808696;
 }
 
 .mp-legend .mp-dot {
@@ -619,7 +619,7 @@
 
 .mp-legend-tip {
   margin-left: 6px;
-  color: #8cd7b0;
+  color: #245fe6;
 }
 
 /* 선택한 날짜의 일정 */
@@ -629,7 +629,7 @@
   align-items: baseline;
   margin: 25px 0 12px;
   padding-top: 20px;
-  border-top: 2px solid #2b374a;
+  border-top: 2px solid #e4eaf7;
 }
 
 .mp-panel .mp-day-head h3 {
@@ -640,13 +640,13 @@
 
 .mp-day-head span {
   font-size: 13px;
-  color: #b3c2d5;
+  color: #808696;
 }
 
 .mp-empty {
   padding: 25px;
   text-align: center;
-  color: #b3c2d5;
+  color: #808696;
 }
 
 .mp-item {
@@ -656,26 +656,26 @@
   gap: 15px;
   padding: 14px 18px;
   margin-bottom: 10px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: #f4f6fb;
+  border: 1px solid #eceff6;
   border-left-width: 4px;
   border-radius: 10px;
 }
 
 .mp-item.work {
-  border-left-color: #356684;
+  border-left-color: #2a6fd6;
 }
 
 .mp-item.personal {
-  border-left-color: #2b374a;
+  border-left-color: #b85f0a;
 }
 
 .mp-item.leave {
-  border-left-color: #2b374a;
+  border-left-color: #c23d7a;
 }
 
 .mp-item.project {
-  border-left-color: #356684;
+  border-left-color: #4f52d6;
 }
 
 .mp-item-title {
@@ -687,24 +687,24 @@
 .mp-item-sub {
   margin: 3px 0 0;
   font-size: 13px;
-  color: #b3c2d5;
+  color: #808696;
 }
 
 .mp-del {
   flex-shrink: 0;
   padding: 8px 15px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: white;
+  border: 1px solid #f1c6c6;
   border-radius: 8px;
-  color: #ff9fa8;
+  color: #d66b6b;
   font-size: 13px;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .mp-del:hover {
-  background: #171d29;
-  border-color: #2b374a;
+  background: #fff0f0;
+  border-color: #e89b9b;
 }
 
 /* 일정 등록 폼 */
@@ -714,14 +714,14 @@
   gap: 12px;
   margin-top: 18px;
   padding: 20px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: #f7f8fa;
+  border: 1px solid #eceff6;
   border-radius: 10px;
 }
 
 .mp-form h4 {
   margin: 0;
-  color: #8cd7b0;
+  color: #245fe6;
 }
 
 .mp-form label,
@@ -731,7 +731,7 @@
   flex-direction: column;
   gap: 6px;
   font-size: 13px;
-  color: #e2eaf6;
+  color: #4d566c;
 }
 
 .mp-form input,
@@ -739,8 +739,8 @@
 .mp-info input {
   width: 100%;
   padding: 12px 15px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: white;
+  border: 1px solid #dae0ed;
   border-radius: 10px;
   font: inherit;
   font-size: 14px;
@@ -749,7 +749,7 @@
 
 .mp-form input:focus,
 .mp-form select:focus {
-  border-color: #356684;
+  border-color: #6f9bf5;
 }
 
 .mp-form-row {
@@ -760,13 +760,13 @@
 .mp-error {
   margin: 0;
   font-size: 13px;
-  color: #ff9fa8;
+  color: #d66b6b;
 }
 
 .mp-submit {
   align-self: flex-end;
   padding: 12px 30px;
-  background: #14527e;
+  background: #3b78f0;
   border: none;
   border-radius: 9px;
   color: white;
@@ -776,15 +776,15 @@
 }
 
 .mp-submit:hover {
-  background: #14527e;
+  background: #245fe6;
 }
 
 /* 내 업무 */
 .mp-card {
   padding: 16px 18px;
   margin-bottom: 10px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: #f4f6fb;
+  border: 1px solid #eceff6;
   border-radius: 10px;
 }
 
@@ -805,21 +805,21 @@
 .mp-bar {
   flex: 1;
   height: 8px;
-  background: #202b3b;
+  background: #dae0ed;
   border-radius: 999px;
   overflow: hidden;
 }
 
 .mp-bar-fill {
   height: 100%;
-  background: #14527e;
+  background: #3b78f0;
 }
 
 .mp-progress span {
   width: 40px;
   text-align: right;
   font-size: 13px;
-  color: #b3c2d5;
+  color: #808696;
 }
 
 .mp-badge {
@@ -830,40 +830,40 @@
 }
 
 .mp-badge.s-doing {
-  background: #1d2e42;
-  color: #8cd7b0;
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
 .mp-badge.s-done {
-  background: #1d2e42;
-  color: #8cd7b0;
+  background: #dde5f8;
+  color: #245fe6;
 }
 
 .mp-badge.s-wait {
-  background: #171d29;
-  color: #e2eaf6;
+  background: #eeeff2;
+  color: #4d566c;
 }
 
 /* 휴가 상태 배지: 승인 초록 / 대기 주황 / 반려 빨강 */
 .mp-badge.s-approved {
-  background: #1d2e42;
-  color: #8cd7b0;
+  background: #dcf3e4;
+  color: #1b7a3d;
 }
 
 .mp-badge.s-pending {
-  background: #171d29;
-  color: #ff9fa8;
+  background: #ffeccc;
+  color: #a85d00;
 }
 
 .mp-badge.s-rejected {
-  background: #171d29;
-  color: #ff9fa8;
+  background: #fde0e0;
+  color: #b3261e;
 }
 
 /* 고정 공지 배지 */
 .mp-badge.s-pin {
-  background: #171d29;
-  color: #ff9fa8;
+  background: #fff1d6;
+  color: #9a5b00;
 }
 
 /* 내 정보(보기 전용) */
@@ -874,18 +874,18 @@
 }
 
 .mp-info input {
-  background: #171d29;
-  color: #e2eaf6;
+  background: #f7f8fa;
+  color: #4d566c;
 }
 
 /* 직접 입력하는 칸(비밀번호)은 흰 배경 + 진한 글자 */
 .mp-info input:not([readonly]) {
-  background: #171d29;
-  color: #e2eaf6;
+  background: white;
+  color: #303748;
 }
 
 .mp-info input:not([readonly]):focus {
-  border-color: #356684;
+  border-color: #6f9bf5;
 }
 
 /* ---------- 추가 기능 ---------- */
@@ -900,23 +900,23 @@
 
 .mp-chip {
   padding: 7px 16px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: white;
+  border: 1px solid #dae0ed;
   border-radius: 999px;
-  color: #e2eaf6;
+  color: #4d566c;
   font-size: 13px;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .mp-chip:hover {
-  background: #171d29;
-  color: #8cd7b0;
+  background: #e4eaf9;
+  color: #245fe6;
 }
 
 .mp-chip.active {
-  background: #14527e;
-  border-color: #356684;
+  background: #3b78f0;
+  border-color: #3b78f0;
   color: white;
 }
 
@@ -929,17 +929,17 @@
 
 .mp-edit {
   padding: 8px 15px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: white;
+  border: 1px solid #ccd4e8;
   border-radius: 8px;
-  color: #8cd7b0;
+  color: #245fe6;
   font-size: 13px;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .mp-edit:hover {
-  background: #171d29;
+  background: #e4eaf9;
 }
 
 .mp-form-btns {
@@ -950,23 +950,23 @@
 
 .mp-cancel {
   padding: 12px 24px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: white;
+  border: 1px solid #dae0ed;
   border-radius: 9px;
-  color: #e2eaf6;
+  color: #4d566c;
   font-size: 14px;
   cursor: pointer;
 }
 
 .mp-cancel:hover {
-  background: #171d29;
+  background: #f7f8fa;
 }
 
 /* 비밀번호 변경 성공 메시지 */
 .mp-ok {
   margin: 0;
   font-size: 13px;
-  color: #8cd7b0;
+  color: #245fe6;
 }
 
 /* 이번 주 근무 시간 막대 그래프 */
@@ -992,7 +992,7 @@
   flex: 1;
   width: 100%;
   max-width: 44px;
-  background: #171d29;
+  background: #f7f8fa;
   border-radius: 8px 8px 0 0;
 }
 
@@ -1001,7 +1001,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: #14527e;
+  background: #3b78f0;
   border-radius: 8px 8px 0 0;
 }
 
@@ -1012,7 +1012,7 @@
 
 .mp-bar-day {
   font-size: 13px;
-  color: #b3c2d5;
+  color: #808696;
 }
 
 /* 연차 카드 3개 */
@@ -1028,8 +1028,8 @@
   flex-direction: column;
   gap: 4px;
   padding: 14px 16px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: #f4f6fb;
+  border: 1px solid #eceff6;
   border-radius: 10px;
 }
 
@@ -1041,19 +1041,19 @@
   margin-left: 2px;
   font-size: 13px;
   font-weight: 400;
-  color: #b3c2d5;
+  color: #808696;
 }
 
 .mp-leave-card.remain {
-  background: #1d2e42;
-  border-color: #356684;
+  background: #dde5f8;
+  border-color: #3b78f0;
 }
 
 /* "전체 보기" 링크 */
 .mp-more {
   display: inline-block;
   margin-top: 4px;
-  color: #8cd7b0;
+  color: #245fe6;
   font-size: 13px;
   text-decoration: none;
 }
@@ -1123,15 +1123,15 @@
   gap: 8px;
   margin-bottom: 18px;
   padding: 14px 16px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: #f7f8fa;
+  border: 1px solid #eceff6;
   border-radius: 10px;
 }
 
 .mp-projects h4 {
   margin: 0 0 2px;
   font-size: 14px;
-  color: #8cd7b0;
+  color: #245fe6;
 }
 
 .mp-proj {
@@ -1140,18 +1140,18 @@
   align-items: center;
   gap: 14px;
   padding: 8px 10px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: white;
+  border: 1px solid #eceff6;
   border-radius: 8px;
   font: inherit;
   text-align: left;
   cursor: default;
   transition: 0.2s;
-  --c: #286b60;
+  --c: #245fe6;
 }
 
 /* 남은 기한 단계별 색: 같은 색은 항상 같은 뜻 */
-.mp-proj.ok     { --c: #286b60; }   /* 15일 이상 남음: 여유 */
+.mp-proj.ok     { --c: #245fe6; }   /* 15일 이상 남음: 여유 */
 .mp-proj.warn   { --c: #d98a2b; }   /* 8~14일: 주의 */
 .mp-proj.danger { --c: #d66b6b; }   /* 7일 이내: 임박 */
 .mp-proj.idle   { --c: #a7acb8; }   /* 시작 전 / 종료 */
@@ -1159,7 +1159,7 @@
 .mp-proj-name {
   font-size: 14px;
   font-weight: 700;
-  color: #e2eaf6;
+  color: #303748;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1168,7 +1168,7 @@
 .mp-proj-track {
   position: relative;
   height: 10px;
-  background: #171d29;
+  background: #eeeff2;
   border-radius: 999px;
   overflow: hidden;
 }
@@ -1189,7 +1189,7 @@
 
 .mp-proj-date {
   font-size: 12px;
-  color: #b3c2d5;
+  color: #808696;
   white-space: nowrap;
 }
 
@@ -1205,8 +1205,8 @@
   margin-left: 10px;
   padding: 3px 10px;
   border-radius: 999px;
-  background: #171d29;
-  color: #8cd7b0;
+  background: #e4eaf9;
+  color: #245fe6;
   font-size: 13px;
   font-weight: 600;
   vertical-align: middle;
@@ -1218,24 +1218,24 @@
   gap: 14px;
   padding: 14px 18px;
   margin-bottom: 10px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: #f4f6fb;
+  border: 1px solid #eceff6;
   border-radius: 10px;
-  color: #b3c2d5;                 /* 읽은 알림은 살짝 흐리게 */
+  color: #6b7387;                 /* 읽은 알림은 살짝 흐리게 */
   transition: background 0.15s, border-color 0.15s;
 }
 
 .mp-noti:hover {
-  background: #171d29;
-  border-color: #2b374a;
+  background: #e4eaf9;
+  border-color: #cfd9f3;
 }
 
 /* 안 읽은 알림: 연한 파란 배경 + 왼쪽 파란 줄 + 진한 글자 */
 .mp-noti.unread {
-  background: #171d29;
-  border-color: #356684;
-  border-left: 4px solid #356684;
-  color: #e2eaf6;
+  background: #eef3ff;
+  border-color: #cfdcfb;
+  border-left: 4px solid #3b78f0;
+  color: #303748;
 }
 
 .mp-noti-icon {
@@ -1246,8 +1246,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: white;
+  border: 1px solid #dae0ed;
   font-size: 18px;
 }
 
@@ -1270,7 +1270,7 @@
 .mp-noti-time {
   margin: 4px 0 0;
   font-size: 12px;
-  color: #b3c2d5;
+  color: #808696;
 }
 
 .mp-noti-dot {
@@ -1278,7 +1278,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #14527e;
+  background: #3b78f0;
 }
 /* 화면이 좁을 때 탭 6개를 3개씩 2줄로 */
 @media (max-width: 640px) {
@@ -1296,17 +1296,17 @@
 .mp-noti-readall {
   margin-left: 10px;
   padding: 3px 10px;
-  background: #171d29;
-  border: 1px solid #2b374a;
+  background: white;
+  border: 1px solid #dae0ed;
   border-radius: 6px;
-  color: #e2eaf6;
+  color: #4d566c;
   font-size: 12px;
   cursor: pointer;
 }
 
 .mp-noti-readall:hover {
-  background: #171d29;
-  color: #8cd7b0;
+  background: #e4eaf9;
+  color: #245fe6;
 }
 
 
@@ -1322,10 +1322,10 @@
 .mp-eval-link {
   display: inline-block;
   padding: 8px 14px;
-  border: 1px solid #356684;
+  border: 1px solid #bed3ff;
   border-radius: 8px;
-  background: #171d29;
-  color: #8cd7b0;
+  background: #eaf4ff;
+  color: #087bdf;
   font-size: 13px;
   font-weight: bold;
   text-decoration: none;
@@ -1333,8 +1333,8 @@
 }
 
 .mp-eval-link:hover {
-  border-color: #356684;
-  background: #1d2e42;
+  border-color: #087bdf;
+  background: #dcecff;
 }
 
 
@@ -1347,10 +1347,10 @@
   --mp-bg: #f4f6fa;
   --mp-card: #ffffff;
   --mp-line: #eef1f6;
-  --mp-text: #e8eef8;
+  --mp-text: #191f28;
   --mp-sub: #6b7684;
-  --mp-primary: #1686ca;
-  --mp-primary-soft: #1686ca;
+  --mp-primary: #3182f6;
+  --mp-primary-soft: #eaf3ff;
   --mp-r-lg: 22px;
   --mp-r-md: 16px;
   --mp-r-sm: 12px;
@@ -1369,7 +1369,7 @@
   margin: 24px 0 0;
   padding: 10px 28px 30px;
   border-radius: var(--mp-r-lg);
-  background: linear-gradient(135deg, #14527e 0%, #14527e 100%);
+  background: linear-gradient(135deg, #2f7bf5 0%, #5aa0fb 100%);
   box-shadow: 0 10px 28px rgba(49, 130, 246, 0.3);
 }
 
@@ -1402,7 +1402,7 @@
   gap: 4px;
   margin-bottom: 20px;
   padding: 5px;
-  background: #171d29;
+  background: #e8ecf3;
   border-radius: 18px;
 }
 
@@ -1467,7 +1467,7 @@
 }
 
 .mp-add-btn:hover,
-.mp-submit:hover { background: #14527e; }
+.mp-submit:hover { background: #1b6ae0; }
 
 /* 달력: 연한 선 + 둥근 모서리 */
 .mp-cal {
@@ -1483,12 +1483,12 @@
 .mp-day { border-right-color: var(--mp-line); border-bottom-color: var(--mp-line); }
 
 .mp-week { color: var(--mp-sub); font-weight: 700; }
-.mp-blank { background: #171d29; }
+.mp-blank { background: #fafbfd; }
 .mp-day { color: var(--mp-text); }
-.mp-day:hover { background: #171d29; }
-.mp-day.selected { background: #171d29; box-shadow: inset 0 0 0 2px var(--mp-primary); }
+.mp-day:hover { background: #f5f9ff; }
+.mp-day.selected { background: #f0f6ff; box-shadow: inset 0 0 0 2px var(--mp-primary); }
 .mp-day.today .mp-daynum { background: var(--mp-primary); }
-.mp-week.sun, .mp-day.sun { color: #ff9fa8; }
+.mp-week.sun, .mp-day.sun { color: #f04452; }
 
 .mp-seg { border-radius: 0; box-shadow: none; }
 .mp-seg.starts { border-top-left-radius: 6px; border-bottom-left-radius: 6px; }
@@ -1524,10 +1524,10 @@
 .mp-item:hover,
 .mp-card:hover,
 .mp-noti:hover { background: var(--mp-card); border-color: transparent; box-shadow: var(--mp-shadow-hover); }
-.mp-item.work { border-left-color: #356684; }
-.mp-item.personal { border-left-color: #2b374a; }
-.mp-item.leave { border-left-color: #2b374a; }
-.mp-item.project { border-left-color: #356684; }
+.mp-item.work { border-left-color: #2a6fd6; }
+.mp-item.personal { border-left-color: #b85f0a; }
+.mp-item.leave { border-left-color: #c23d7a; }
+.mp-item.project { border-left-color: #4f52d6; }
 .mp-item-title { font-weight: 700; }
 .mp-item-sub { color: var(--mp-sub); }
 
@@ -1535,11 +1535,11 @@
 .mp-del,
 .mp-cancel { border-radius: 10px; font-weight: 600; }
 .mp-edit { border-color: transparent; background: var(--mp-primary-soft); color: var(--mp-primary); }
-.mp-edit:hover { background: #1d2e42; }
-.mp-del { border-color: transparent; background: #171d29; color: #ff9fa8; }
-.mp-del:hover { background: #171d29; border-color: transparent; }
+.mp-edit:hover { background: #d9e9ff; }
+.mp-del { border-color: transparent; background: #fff0f1; color: #f04452; }
+.mp-del:hover { background: #ffe2e4; border-color: transparent; }
 .mp-cancel { border-color: transparent; background: var(--mp-bg); color: var(--mp-sub); }
-.mp-cancel:hover { background: #171d29; }
+.mp-cancel:hover { background: #e8ecf3; }
 
 /* 필터 알약 */
 .mp-chip {
@@ -1551,7 +1551,7 @@
 }
 
 .mp-chip:hover { background: var(--mp-primary-soft); color: var(--mp-primary); }
-.mp-chip.active { background: var(--mp-text); color: #eef3fa; }
+.mp-chip.active { background: var(--mp-text); color: #fff; }
 
 /* 폼 */
 .mp-form {
@@ -1585,17 +1585,17 @@
 .mp-info input { background: var(--mp-bg); box-shadow: none; }
 .mp-info input:not([readonly]) { background: var(--mp-card); box-shadow: 0 1px 3px rgba(25, 40, 80, 0.06); }
 .mp-ok { color: var(--mp-primary); }
-.mp-error { color: #ff9fa8; }
+.mp-error { color: #f04452; }
 
 /* 진행 바 */
-.mp-bar { height: 10px; background: #171d29; }
-.mp-bar-fill { background: linear-gradient(90deg, #14527e, #202b3b); border-radius: 999px; }
+.mp-bar { height: 10px; background: #e8ecf3; }
+.mp-bar-fill { background: linear-gradient(90deg, #3182f6, #6aa9fb); border-radius: 999px; }
 .mp-progress span { color: var(--mp-sub); font-weight: 600; }
 .mp-badge { padding: 5px 12px; font-weight: 700; }
 
 /* 이번 주 근무 시간 */
-.mp-bar-track { max-width: 40px; background: #171d29; border-radius: 12px; overflow: hidden; }
-.mp-bar-v { background: linear-gradient(180deg, #202b3b, #14527e); border-radius: 12px; }
+.mp-bar-track { max-width: 40px; background: #eef2f8; border-radius: 12px; overflow: hidden; }
+.mp-bar-v { background: linear-gradient(180deg, #6aa9fb, #3182f6); border-radius: 12px; }
 .mp-bar-val { font-weight: 800; }
 .mp-bar-day { color: var(--mp-sub); }
 
@@ -1615,9 +1615,9 @@
 .mp-leave-card small { margin-left: 4px; font-size: 15px; font-weight: 600; color: var(--mp-sub); }
 
 .mp-leave-card.remain {
-  background: linear-gradient(135deg, #14527e, #14527e);
+  background: linear-gradient(135deg, #2f7bf5, #5aa0fb);
   border: none;
-  color: #eef3fa;
+  color: #fff;
   box-shadow: 0 10px 24px rgba(49, 130, 246, 0.3);
 }
 
@@ -1637,20 +1637,20 @@
 
 .mp-proj {
   padding: 14px 16px;
-  background: #171d29;
+  background: #f7f9fc;
   border: none;
   border-radius: var(--mp-r-sm);
 }
 
 .mp-proj-name { font-weight: 700; color: var(--mp-text); }
-.mp-proj-track { height: 8px; background: #171d29; }
+.mp-proj-track { height: 8px; background: #e8ecf3; }
 .mp-proj-date { color: var(--mp-sub); }
 
 /* 알림 */
 .mp-noti { color: var(--mp-sub); }
 .mp-noti.unread { background: var(--mp-card); border-left: 5px solid var(--mp-primary); color: var(--mp-text); }
 .mp-noti-icon { width: 42px; height: 42px; background: var(--mp-primary-soft); border: none; }
-.mp-noti-time { color: #b3c2d5; }
+.mp-noti-time { color: #8b95a1; }
 .mp-noti-count { background: var(--mp-primary-soft); color: var(--mp-primary); }
 .mp-noti-dot { background: var(--mp-primary); }
 
@@ -1683,7 +1683,7 @@
 .mp-nav .mp-logout h4:hover { background: var(--mp-primary-soft); color: var(--mp-primary); }
 
 /* 필터 알약: 선택된 것도 탭과 같은 파란색으로 */
-.mp-chip.active { background: var(--mp-primary); color: #eef3fa; }
+.mp-chip.active { background: var(--mp-primary); color: #fff; }
 
 /* ---------- 로그아웃 박스: 슬림하게 ---------- */
 .mp-nav .mp-logout {
@@ -1725,8 +1725,8 @@
 ===================================================================== */
 .mypage {
   --mp-bg: #f2f5fb;
-  --mp-primary: #1686ca;
-  --mp-primary-soft: #1686ca;
+  --mp-primary: #4a86f0;
+  --mp-primary-soft: #e9f1ff;
   --mp-line: #e8ecf4;
 
   /* 달력·일정 색: 점은 중간 톤, 막대는 연한 바탕 + 진한 글자 */
@@ -1738,14 +1738,14 @@
 
 /* 배너: 부드러운 파랑 → 연보라 */
 .mp-banner {
-  background: linear-gradient(135deg, #14527e 0%, #14527e 60%, #14527e 100%);
+  background: linear-gradient(135deg, #4f86ee 0%, #6f8ff2 60%, #8b90f5 100%);
   box-shadow: 0 8px 22px rgba(90, 120, 230, 0.22);
 }
 
 /* 요약 카드 3개: 연한 색 바탕 + 같은 계열 숫자 */
 .mp-stat {
   --accent: 91, 82, 200;
-  background: linear-gradient(160deg, rgba(var(--accent), 0.1) 0%, rgba(var(--accent), 0) 65%), #171d29;
+  background: linear-gradient(160deg, rgba(var(--accent), 0.1) 0%, rgba(var(--accent), 0) 65%), #fff;
 }
 
 .mp-stat:nth-child(2) { --accent: 52, 115, 205; }
@@ -1753,21 +1753,21 @@
 .mp-stat strong { color: rgb(var(--accent)); }
 
 /* 탭 안쪽 제목: 왼쪽에 연한 포인트 줄 */
-.mp-panel h3 { padding-left: 11px; border-left: 3px solid #356684; line-height: 1.2; }
+.mp-panel h3 { padding-left: 11px; border-left: 3px solid #9db8f7; line-height: 1.2; }
 
 /* 버튼·필터 */
 .mp-add-btn, .mp-submit { background: var(--mp-primary); box-shadow: 0 6px 14px rgba(74, 134, 240, 0.25); }
-.mp-add-btn:hover, .mp-submit:hover { background: #14527e; }
-.mp-chip.active { background: var(--mp-primary); border-color: var(--mp-primary); color: #eef3fa; }
+.mp-add-btn:hover, .mp-submit:hover { background: #3a76e2; }
+.mp-chip.active { background: var(--mp-primary); border-color: var(--mp-primary); color: #fff; }
 
 /* 달력 */
 .mp-cal { border-color: var(--mp-line); }
 .mp-week, .mp-blank, .mp-day { border-right-color: var(--mp-line); border-bottom-color: var(--mp-line); }
-.mp-blank { background: #171d29; }
-.mp-day:hover { background: #171d29; }
-.mp-day.selected { background: #171d29; box-shadow: inset 0 0 0 2px #8fb0f7; }
-.mp-day.today .mp-daynum { background: var(--mp-primary); color: #eef3fa; }
-.mp-line { color: #e2eaf6; }
+.mp-blank { background: #f8faff; }
+.mp-day:hover { background: #f4f8ff; }
+.mp-day.selected { background: #eef4ff; box-shadow: inset 0 0 0 2px #8fb0f7; }
+.mp-day.today .mp-daynum { background: var(--mp-primary); color: #fff; }
+.mp-line { color: #2a3347; }
 
 /* 종류별 색: 점은 중간 톤 / 막대·칩은 연한 바탕 + 진한 글자 + 얇은 테두리 */
 .mp-line.project .mp-line-dot, .mp-dot.project { background: var(--mp-dot-project); }
@@ -1787,30 +1787,30 @@
 .mp-item.leave { border-left-color: var(--mp-dot-leave); }
 
 /* 알림: 안 읽은 알림에 은은한 파란 배경 */
-.mp-noti.unread { background: linear-gradient(90deg, #171d29, #171d29 65%); border-left-color: #356684; }
+.mp-noti.unread { background: linear-gradient(90deg, #eef5ff, #fff 65%); border-left-color: #8fb0f7; }
 
 /* 근무 시간 막대 · 진행 바 */
-.mp-bar-v { background: linear-gradient(180deg, #202b3b, #14527e); }
-.mp-bar-fill { background: linear-gradient(90deg, #14527e, #14527e); }
+.mp-bar-v { background: linear-gradient(180deg, #a9c4ff, #7b95f2); }
+.mp-bar-fill { background: linear-gradient(90deg, #6f9cf5, #8b90f5); }
 
 /* 연차 카드: 연한 색 바탕, 남은 연차는 연한 파란 카드 */
 .mp-leave-card {
   --accent: 20, 160, 148;
-  background: linear-gradient(160deg, rgba(var(--accent), 0.1) 0%, rgba(var(--accent), 0) 65%), #171d29;
+  background: linear-gradient(160deg, rgba(var(--accent), 0.1) 0%, rgba(var(--accent), 0) 65%), #fff;
 }
 
 .mp-leave-card:nth-child(2) { --accent: 200, 112, 24; }
 
 .mp-leave-card.remain {
-  background: linear-gradient(135deg, #1d2e42, #171d29);
+  background: linear-gradient(135deg, #e7f0ff, #edecff);
   box-shadow: 0 6px 18px rgba(90, 120, 230, 0.14);
 }
 
-.mp-leave-card.remain strong { color: #72c7f3; }
-.mp-leave-card.remain small, .mp-leave-card.remain .mp-stat-label { color: #72c7f3; }
+.mp-leave-card.remain strong { color: #2f56b8; }
+.mp-leave-card.remain small, .mp-leave-card.remain .mp-stat-label { color: #5b73b8; }
 
 /* 진행 중 프로젝트 목록 */
-.mp-proj { background: #171d29; }
+.mp-proj { background: #f6f8fd; }
 .mp-proj.ok { --c: #5b93f2; }
 .mp-proj.warn { --c: #eeb04a; }
 .mp-proj.danger { --c: #ea7487; }

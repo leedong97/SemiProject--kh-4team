@@ -16,7 +16,7 @@ function MyWorkTab({ projects, managedProjects = [], canEvaluate = false }) {
                             </div>
                             {/* 직원 평가 화면(희승 작성, 관리자 화면 안에 있음)으로 이동 */}
                             {canEvaluate && (
-                                <Link to="/admin/evaluations" className="mp-eval-link">
+                                <Link to="/admin/evaluations?from=mypage" className="mp-eval-link">
                                     팀원 평가하러 가기
                                 </Link>
                             )}

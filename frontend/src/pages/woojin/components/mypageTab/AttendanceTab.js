@@ -109,9 +109,6 @@ function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey
                     <strong>{remainLeave}<small>일</small></strong>
                 </div>
             </div>
-            {pendingLeave > 0 && (
-                <p className="mp-note">대기 중인 {pendingLeave}일은 승인 전이어도 남은 연차에서 미리 빼서 보여요. 반려되면 다시 돌아와요.</p>
-            )}
 
             {/* 로그인한 직원만 신청할 수 있어요 (체험 모드는 토큰이 없어서 서버가 거절해요) */}
             {!isDemo && (
@@ -157,10 +154,6 @@ function AttendanceTab({ weekHours, maxHours, leaveTotal, leaveHistory, todayKey
                 </div>
             ))}
 
-            <p className="mp-note">
-                {isDemo ? "체험 모드: 근무 시간은 예시 숫자예요. " : "근무 시간은 출퇴근 기록(점심 1시간 제외)으로 계산해요. "}
-                연차는 올해 승인된 연차·반차를 사용으로 세고, 승인 대기 중인 것도 미리 빼요(병가·경조사 제외).
-            </p>
         </section>
     );
 }

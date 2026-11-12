@@ -141,7 +141,7 @@ function ProjectRequestList({ requests, busy, onOpenProject, onApprove, onReject
 
                 {req.projectId && (
                   <button type="button" className="btn btn-ghost btn-sm" onClick={() => onOpenProject(req.projectId)}>
-                    프로젝트 보기 →
+                    프로젝트 보기
                   </button>
                 )}
               </div>

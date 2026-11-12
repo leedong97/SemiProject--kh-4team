@@ -3,27 +3,27 @@
 .lunch-picker {
     min-width: 0;
     padding: 24px;
-    border: 1px solid #2b374a;
+    border: 1px solid #f0e4d5;
     border-radius: 14px;
-    background: #171d29;
+    background: #fff;
 }
 
 .lunch-picker-label {
-    color: #ff9fa8;
+    color: #a45b13;
     font-size: 11px;
     font-weight: 700;
 }
 
 .lunch-picker-title {
     margin: 10px 0 8px;
-    color: #e2eaf6;
+    color: #213b5b;
     font-size: 18px;
     line-height: 1.5;
 }
 
 .lunch-picker-description {
     margin: 0 0 18px;
-    color: #b3c2d5;
+    color: #708197;
     font-size: 12px;
     line-height: 1.6;
 }
@@ -34,7 +34,7 @@
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 14px;
-    color: #b3c2d5;
+    color: #63758b;
     font-size: 12px;
 }
 
@@ -42,10 +42,10 @@
     min-width: 100px;
     min-height: 38px;
     padding: 8px 12px;
-    border: 1px solid #2b374a;
+    border: 1px solid #e8dccd;
     border-radius: 8px;
-    background: #171d29;
-    color: #ff9fa8;
+    background: #fff;
+    color: #614b35;
     font: inherit;
     cursor: pointer;
 }
@@ -59,9 +59,9 @@
     min-height: 200px;
     box-sizing: border-box;
     padding: 22px 14px;
-    border: 1px solid #2b374a;
+    border: 1px solid #f8ead7;
     border-radius: 12px;
-    background: #171d29;
+    background: #fff8ed;
     text-align: center;
 }
 
@@ -71,7 +71,7 @@
 }
 
 .lunch-picker-menu {
-    color: #ff9fa8;
+    color: #6f421d;
     font-size: 22px;
     line-height: 1.4;
     overflow-wrap: anywhere;
@@ -79,7 +79,7 @@
 
 .lunch-picker-message {
     margin: 0;
-    color: #ff9fa8;
+    color: #866447;
     font-size: 12px;
     line-height: 1.6;
 }
@@ -87,8 +87,8 @@
 .lunch-picker-badge {
     padding: 4px 10px;
     border-radius: 20px;
-    background: #171d29;
-    color: #ff9fa8;
+    background: #ffebcc;
+    color: #88500f;
     font-size: 11px;
     font-weight: 700;
 }
@@ -100,8 +100,8 @@
     padding: 12px;
     border: none;
     border-radius: 9px;
-    background: #553039;
-    color: #eef3fa;
+    background: #a95312;
+    color: #fff;
     font: inherit;
     font-size: 13px;
     font-weight: 700;
@@ -110,22 +110,22 @@
 }
 
 .lunch-picker .lunch-picker-button:hover {
-    background: #553039;
+    background: #87400b;
 }
 
 .lunch-picker .lunch-picker-button:active {
-    background: #553039;
+    background: #713509;
 }
 
 .lunch-picker-button:focus-visible,
 .lunch-picker-filter select:focus-visible {
-    outline: 3px solid #2b374a;
+    outline: 3px solid #a95312;
     outline-offset: 3px;
 }
 
 .lunch-picker-note {
     margin: 12px 0 0;
-    color: #b3c2d5;
+    color: #708197;
     font-size: 11px;
     line-height: 1.6;
     text-align: center;
@@ -136,7 +136,7 @@
 .lunch-picker button.lunch-picker-button:hover,
 .lunch-picker button.lunch-picker-button:active,
 .lunch-picker button.lunch-picker-button:focus {
-    color: #eef3fa !important;
-    -webkit-text-fill-color: #171d29;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff;
     font-weight: 700;
 }

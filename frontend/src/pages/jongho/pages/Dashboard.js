@@ -15,10 +15,10 @@ export default function Dashboard({ projects = [], data }) {
     const unassigned = projects.filter(project => project.managerId == null);
     const active = projects.filter(project => [PROJECT_STATUS.IN_PROGRESS, "진행 중"].includes(project.status));
     const cards = [
-        { title: "전체 프로젝트", value: projects.length, detail: `진행 중 ${active.length}개`, path: "/admin/projects", icon: "▣" },
-        { title: "미완료 이슈", value: openIssues.length, detail: `기한 초과 ${overdue.length}건`, path: "/admin/issues", icon: "◈" },
-        { title: "재직 직원", value: data.employees.filter(e => e.status === "재직").length, detail: "인사 정보 보기", path: "/admin/employees", icon: "♙" },
-        { title: "평가 승인 대기", value: pending.length, detail: "승인 요청 확인", path: "/admin/evaluations", icon: "◎" }
+        { title: "전체 프로젝트", value: projects.length, detail: `진행 중 ${active.length}개`, path: "/admin/projects" },
+        { title: "미완료 이슈", value: openIssues.length, detail: `기한 초과 ${overdue.length}건`, path: "/admin/issues" },
+        { title: "재직 직원", value: data.employees.filter(e => e.status === "재직").length, detail: "인사 정보 보기", path: "/admin/employees" },
+        { title: "평가 승인 대기", value: pending.length, detail: "승인 요청 확인", path: "/admin/evaluations" }
     ];
     const employeeName = id => data.employees.find(e => String(e.id) === String(id))?.name || "미배정";
 
@@ -84,7 +84,7 @@ export default function Dashboard({ projects = [], data }) {
 
 
             <div className="nexus-alerts">
-                <div><strong>운영 알림 센터</strong><p>현재 데이터에서 확인된 관리 필요 항목</p></div>
+                <div><strong>운영 알림 센터</strong></div>
                 <button onClick={() => navigate('/admin/issues')}>기한 초과 이슈 <b>{overdue.length}건</b></button>
                 <button onClick={() => navigate('/admin/members')}>미배정 프로젝트 <b>{unassigned.length}건</b></button>
                 <button onClick={() => navigate('/admin/evaluations')}>평가 승인 요청 <b>{pending.length}건</b></button>
@@ -106,11 +106,6 @@ export default function Dashboard({ projects = [], data }) {
                         // 카드를 클릭하면 해당 관리 페이지로 이동
                         onClick={() => navigate(card.path)}
                     >
-                        {/* 카드 아이콘 */}
-                        <span className="merge-kpi-icon">
-                            {card.icon}
-                        </span>
-
                         {/* 카드 제목 */}
                         <span>
                             {card.title}
@@ -123,7 +118,7 @@ export default function Dashboard({ projects = [], data }) {
 
                         {/* 카드의 추가 설명 */}
                         <small>
-                            {card.detail} →
+                            {card.detail}
                         </small>
                     </button>
 
@@ -140,7 +135,7 @@ export default function Dashboard({ projects = [], data }) {
                 {/* 프로젝트 진행 현황 */}
                 <DashboardPanel
                     title="프로젝트 진행 현황"
-                    actionLabel="전체 보기 →"
+                    actionLabel="전체 보기"
                     onAction={() => navigate("/admin/projects")}
                 >
 
@@ -199,7 +194,7 @@ export default function Dashboard({ projects = [], data }) {
                 {/* 최근 공지사항 */}
                 <DashboardPanel
                     title="공지사항"
-                    actionLabel="공지사항 관리 →"
+                    actionLabel="공지사항 관리"
                     onAction={() => navigate("/admin/boards")}
                 >
 
@@ -245,7 +240,7 @@ export default function Dashboard({ projects = [], data }) {
                 {/* 최근 이슈 목록 */}
                 <DashboardPanel
                     title="최근 이슈"
-                    actionLabel="이슈 관리 →"
+                    actionLabel="이슈 관리"
                     onAction={() => navigate("/admin/issues")}
                 >
 
@@ -316,7 +311,7 @@ export default function Dashboard({ projects = [], data }) {
                 {/* 재무관리: 프로젝트 예상 계약 금액 요약 */}
                 <DashboardPanel
                     title="재무관리"
-                    actionLabel="프로젝트 관리 →"
+                    actionLabel="프로젝트 관리"
                     onAction={() => navigate("/admin/projects")}
                 >
 

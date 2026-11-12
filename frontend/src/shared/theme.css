@@ -1,0 +1,264 @@
+/* =====================================================================
+   COMMAND ERP 디자인 기준 (색 · 글자 · 간격) — 출발 안내판
+   - 세계관: 역·버스터미널 출발 시각표. 콘크리트 회색 바탕 위 흰 작업판, 잉크, 검정 상단 띠.
+   - 앰버(--accent)는 '지금 여기'(현재 메뉴, 다음 출발, 선택)에만 써요.
+   - 상태등: 정시/진행 초록, 지연 주황, 완료 회색. 직각 모서리, 1px 괘선, 그림자 없음.
+   - 시각·코드·숫자는 고정폭 글꼴(--cmd-mono). 이전(지하철 노선도) 기준은 .impeccable/backup-subway.
+   ===================================================================== */
+
+:root {
+  /* 바탕과 잉크 */
+  --cmd-ground: #e9ebee;
+  --cmd-bg: #ffffff;
+  --cmd-bg-2: #f2f3f5;
+  --cmd-bg-3: #e3e6ea;
+  --cmd-ink: #14171c;
+  --cmd-ink-2: #343a43;
+  --cmd-mute: #5a606a;
+  --cmd-faint: #8b919b;
+  --cmd-rule: #dcdfe4;
+  --cmd-rule-2: #c3c8cf;
+
+  /* 안내판 (오늘 보드) */
+  --board-bg: #14171c;
+  --board-row: #1d2128;
+  --board-rule: #2c313a;
+  --board-ink: #e9ebee;
+  --board-mute: #9aa1ad;
+
+  /* 지금 여기: 앰버 */
+  --accent: #f2a900;
+  --accent-ink: #14171c;
+  --accent-text: #8a5d00;
+  --accent-tint: #fdf3d6;
+
+  /* 막대 그래프: 검정에서 살짝 밝은 회색으로 이어지는 그라데이션 */
+  --bar-ink: linear-gradient(90deg, #14171c 0%, #2b3038 55%, #525a66 100%);
+
+  /* 우선도 긴급 */
+  --prio-urgent: #d6293e;
+
+  /* 상태등 */
+  --lamp-ok: #2f9e44;
+  --lamp-late: #d9480f;
+  --lamp-done: #8b919b;
+
+  /* 종류 색 (달력 점·칩). 이름은 예전 그대로 둬서 다른 파일이 그대로 써요 */
+  --line-green: #2f9e44;
+  --line-sky: #1c7ed6;
+  --line-orange: #f08c00;
+  --line-purple: #7048e8;
+  --line-red: #d9480f;
+  --line-gold: #b08900;
+  --line-navy: #364fc7;
+  --line-olive: #5c940d;
+
+  /* 종류 색을 글자로 쓸 때 (흰 바탕 4.5:1 이상) */
+  --green-text: #237032;
+  --sky-text: #1864ab;
+  --orange-text: #9a5300;
+  --purple-text: #5f3dc4;
+  --red-text: #b33a0b;
+
+  /* 종류 색 옅은 면 */
+  --green-tint: #e6f4e9;
+  --sky-tint: #e5f0fb;
+  --orange-tint: #fdf0dc;
+  --purple-tint: #efebfc;
+  --red-tint: #fbe9e1;
+
+  /* 일정 종류 (달력 점) — 업무 파랑, 개인 주황, 휴가 분홍, 프로젝트 초록, 공지 보라 */
+  --cat-work: #1c7ed6;
+  --cat-personal: #f08c00;
+  --cat-leave: #e64980;
+  --cat-project: #2f9e44;
+  --cat-notice: #7048e8;
+
+  /* 글자 */
+  --cmd-font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+  --cmd-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --fs-12: 0.75rem;
+  --fs-13: 0.8125rem;
+  --fs-14: 0.875rem;
+  --fs-15: 0.9375rem;
+  --fs-16: 1rem;
+  --fs-18: 1.125rem;
+  --fs-20: 1.25rem;
+  --fs-24: 1.5rem;
+  --fs-28: 1.75rem;
+
+  /* 간격 (8px 단위) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+
+  /* 직각 */
+  --radius-s: 10px;
+  --radius-m: 10px;
+  --shell-max: 1440px;
+  --shell-pad: 32px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 공통 틀이 있는 화면의 바탕 */
+body:has(.cmd-shell) {
+  margin: 0;
+  background: var(--cmd-ground);
+  color: var(--cmd-ink);
+  font-family: var(--cmd-font);
+  font-size: var(--fs-14);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "tnum" 0;
+}
+
+/* 마이페이지 틀(.woojin-frame)은 예전 배경을 유지 */
+body:has(.woojin-frame) {
+  font-family: var(--cmd-font);
+  background: var(--cmd-ground);
+  color: var(--cmd-ink);
+}
+
+.cmd-shell,
+.cmd-shell * {
+  box-sizing: border-box;
+}
+
+.cmd-shell {
+  font-family: var(--cmd-font);
+  color: var(--cmd-ink);
+}
+
+.cmd-shell ::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.cmd-shell input,
+.cmd-shell select,
+.cmd-shell textarea,
+.cmd-shell button {
+  font-family: inherit;
+  caret-color: var(--cmd-ink);
+}
+
+.cmd-shell :focus-visible {
+  outline: 2px solid var(--cmd-ink);
+  outline-offset: 2px;
+}
+
+.cmd-shell a {
+  text-underline-offset: 3px;
+}
+
+/* 스크롤바 */
+.cmd-shell * {
+  scrollbar-color: var(--cmd-rule-2) transparent;
+  scrollbar-width: thin;
+}
+
+/* 숫자 열: 시각·코드·숫자는 고정폭 */
+.cmd-num {
+  font-family: var(--cmd-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+/* 스크린리더 전용 */
+.cmd-sr {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cmd-shell *,
+  .cmd-shell *::before,
+  .cmd-shell *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* 펼침 목록(select): 지원하는 브라우저(Chrome 135+)에서는 운영체제 파란 선택 대신 디자인 기준 색
+   지원하지 않는 브라우저는 기본 모양 그대로예요. */
+@supports (appearance: base-select) {
+  :is(.cmd-shell, .nexus-admin-layout.cmd-admin) select,
+  :is(.cmd-shell, .nexus-admin-layout.cmd-admin) ::picker(select) {
+    appearance: base-select;
+  }
+
+  :is(.cmd-shell, .nexus-admin-layout.cmd-admin) ::picker(select) {
+    margin-top: 2px;
+    padding: 4px 0;
+    border: 1px solid var(--cmd-ink);
+    border-radius: var(--radius-m);
+    background: var(--cmd-bg);
+    box-shadow: none;
+  }
+
+  :is(.cmd-shell, .nexus-admin-layout.cmd-admin) select option {
+    padding: 8px 12px;
+    color: var(--cmd-ink);
+    font-size: var(--fs-14);
+  }
+
+  :is(.cmd-shell, .nexus-admin-layout.cmd-admin) select option:hover,
+  :is(.cmd-shell, .nexus-admin-layout.cmd-admin) select option:focus-visible {
+    background: var(--cmd-bg-2);
+    outline: none;
+  }
+
+  :is(.cmd-shell, .nexus-admin-layout.cmd-admin) select option:checked {
+    background: var(--cmd-ink);
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  :is(.cmd-shell, .nexus-admin-layout.cmd-admin) select option::checkmark {
+    display: none;
+  }
+
+  :is(.cmd-shell, .nexus-admin-layout.cmd-admin) select::picker-icon {
+    color: var(--cmd-ink);
+  }
+}
+
+/* 지원하지 않는 브라우저: 선택된 항목만이라도 맞춰요 */
+:is(.cmd-shell, .nexus-admin-layout.cmd-admin) select option:checked {
+  background: var(--cmd-ink);
+  color: var(--accent);
+}
+
+/* base-select 를 쓰는 브라우저: 선택 상자 안 글자를 가운데 줄에 맞춰요 */
+@supports (appearance: base-select) {
+  :is(.cmd-shell, .nexus-admin-layout.cmd-admin) select {
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* 선택 상자: 글자는 왼쪽, 화살표는 오른쪽 끝 한 줄로 */
+@supports (appearance: base-select) {
+  :is(.cmd-shell, .nexus-admin-layout.cmd-admin) select {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-2);
+  }
+
+  :is(.cmd-shell, .nexus-admin-layout.cmd-admin) select::picker-icon {
+    flex: none;
+    margin-left: auto;
+    order: 2;
+  }
+}

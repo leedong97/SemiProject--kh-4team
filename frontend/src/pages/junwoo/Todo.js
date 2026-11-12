@@ -2,6 +2,8 @@ import SearchInput from "../../shared/SearchInput";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import getLoginUser from "../woojin/getLoginUser";
+import { StationStrip } from "../../shared/subway";
+import { Priority } from "../../shared/priority";
 import "./ProjectList.css";
 
 const STATUS_TABS = [
@@ -99,7 +101,6 @@ function Todo({ todo = [] }) {
             <header className="jpl-header">
                 <div>
                     <h1>SI 프로젝트 목록</h1>
-                    <p>사내 프로젝트를 조회하고 진행 상태를 확인할 수 있습니다.</p>
                 </div>
 
                 <div className="jpl-header-actions">
@@ -210,19 +211,19 @@ function Todo({ todo = [] }) {
                                         </td>
 
                                         <td className="jpl-project-title">
-                                            <Link to={`/todo/${project.id}`}>
-                                                {project.title}
+                                            <Link to={`/todo/${project.id}`} className="jpl-project-link">
+                                                <span>{project.title}</span>
                                             </Link>
                                         </td>
 
-                                        <td>{project.priority || "보통"}</td>
+                                        <td><Priority value={project.priority} /></td>
 
                                         <td>
                                             {project.managerName || "미지정"}
                                         </td>
 
                                         <td>
-                                            {project.progress ?? 0}%
+                                            <StationStrip project={project} />
                                         </td>
 
                                         <td>

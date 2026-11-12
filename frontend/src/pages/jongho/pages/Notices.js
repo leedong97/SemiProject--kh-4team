@@ -202,11 +202,6 @@ function Notices() {
 
     return (
         <div className="admin-boards">
-            <div className="boards-header">
-
-
-                <div className="boards-count">전체 공지사항<strong>{info.length}건</strong></div>
-            </div>
 
             {!formOpen && (
                 <div className="nexus-notice-form-toggle">

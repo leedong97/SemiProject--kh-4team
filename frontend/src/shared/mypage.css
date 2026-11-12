@@ -1,0 +1,502 @@
+/* =====================================================================
+   마이페이지를 새 디자인 기준에 맞춰요 (Mypage.css 위에 덮어쓰기)
+   - 공통 상단 메뉴 안에서 보여요. 파란 배너와 자체 메뉴는 없앴어요.
+   - 일정 색은 대시보드 달력과 같은 종류 색을 써요.
+   ===================================================================== */
+
+.cmd-shell #cmd-main .mypage {
+  --mp-bg: transparent;
+  --mp-card: #ffffff;
+  --mp-line: var(--cmd-rule);
+  --mp-text: var(--cmd-ink);
+  --mp-sub: var(--cmd-mute);
+  --mp-primary: var(--cmd-ink);
+  --mp-primary-soft: var(--cmd-bg-2);
+  --mp-r-lg: var(--radius-m);
+  --mp-r-md: var(--radius-m);
+  --mp-r-sm: var(--radius-s);
+  --mp-shadow: none;
+  --mp-shadow-hover: none;
+
+  /* 일정 종류 색: 대시보드 달력과 같게 (프로젝트 초록, 업무 하늘, 개인 주황, 휴가 빨강) */
+  --mp-dot-project: var(--cat-project);
+  --mp-bg-project: var(--green-tint);
+  --mp-tx-project: var(--green-text);
+  --mp-dot-work: var(--cat-work);
+  --mp-bg-work: var(--sky-tint);
+  --mp-tx-work: var(--sky-text);
+  --mp-dot-personal: var(--cat-personal);
+  --mp-bg-personal: var(--orange-tint);
+  --mp-tx-personal: var(--orange-text);
+  --mp-dot-leave: var(--cat-leave);
+  --mp-bg-leave: var(--red-tint);
+  --mp-tx-leave: var(--red-text);
+
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border-radius: var(--radius-m);
+  background: none;
+  box-shadow: none;
+  font-family: var(--cmd-font);
+  color: var(--cmd-ink);
+}
+
+/* 머리말 */
+.cmd-shell #cmd-main .mypage .mp-banner.cmd-mp-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  margin: 0 0 var(--sp-2);
+  padding: 0 0 calc(var(--sp-4) + 3px);
+  border: 0;
+  border-radius: var(--radius-m);
+  background: none;
+  box-shadow: inset 0 -3px 0 var(--cmd-ink);
+  color: var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main .mypage .mp-title {
+  margin: 0;
+  color: var(--cmd-ink);
+  font-size: var(--fs-24);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.cmd-shell #cmd-main .mypage .mp-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: 0;
+}
+
+.cmd-shell #cmd-main .mypage .mp-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-m);
+  background: var(--cmd-ink);
+  color: #fff;
+  border: 0;
+  box-shadow: none;
+  display: grid;
+  place-items: center;
+  font-size: var(--fs-16);
+  font-weight: 800;
+}
+
+.cmd-shell #cmd-main .mypage .mp-name {
+  margin: 0;
+  color: var(--cmd-ink);
+  font-size: var(--fs-16);
+  font-weight: 800;
+}
+
+.cmd-shell #cmd-main .mypage .mp-name span {
+  color: var(--cmd-mute);
+  font-weight: 600;
+}
+
+.cmd-shell #cmd-main .mypage .mp-sub {
+  margin: 2px 0 0;
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+}
+
+/* 요약 한 줄 */
+.cmd-shell #cmd-main .mypage .mp-stats.cmd-stat-row {
+  display: flex;
+  margin: 0 0 var(--sp-2);
+  padding: var(--sp-4) 0;
+  background: none;
+  border-radius: var(--radius-m);
+  border-top: 0;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .mypage .mp-stats.cmd-stat-row > div {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+/* 탭: 3px 잉크 괘선 위 밑줄 탭 */
+.cmd-shell #cmd-main .mypage .mp-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  margin: var(--sp-2) 0 var(--sp-5);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: inset 0 -3px 0 var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main .mypage .mp-tab {
+  flex: none;
+  height: 44px;
+  padding: 0 var(--sp-4);
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--cmd-mute);
+  font-size: var(--fs-15);
+  font-weight: 600;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.cmd-shell #cmd-main .mypage .mp-tab:hover {
+  color: var(--cmd-ink);
+  box-shadow: inset 0 -4px 0 var(--cmd-rule-2);
+}
+
+.cmd-shell #cmd-main .mypage .mp-tab.active {
+  background: none;
+  color: var(--cmd-ink);
+  font-weight: 800;
+  box-shadow: inset 0 -4px 0 var(--accent);
+}
+
+/* 판(패널)·카드: 흰 바탕 + 1px 선, 그림자 없음 */
+.cmd-shell #cmd-main .mypage :is(.mp-panel, .mp-card, .mp-projects, .mp-leave-card, .mp-info, .mp-form, .mp-pop) {
+  background: var(--cmd-bg);
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .mypage .mp-panel {
+  padding: var(--sp-5) var(--sp-6);
+}
+
+/* 버튼: 잉크 버튼 / 테두리 버튼 */
+.cmd-shell #cmd-main .mypage :is(.mp-add-btn, .mp-submit) {
+  height: 36px;
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-s);
+  background: var(--cmd-ink);
+  color: #fff;
+  font-size: var(--fs-14);
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .mypage :is(.mp-add-btn, .mp-submit):hover {
+  background: #000;
+}
+
+.cmd-shell #cmd-main .mypage :is(.mp-cal-nav button, .mp-cancel, .mp-edit, .mp-more, .mp-noti-readall, .mp-eval-link) {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .mypage :is(.mp-cal-nav button, .mp-cancel, .mp-edit, .mp-more, .mp-noti-readall, .mp-eval-link):hover {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-bg);
+}
+
+.cmd-shell #cmd-main .mypage .mp-del {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--red-text);
+  box-shadow: none;
+}
+
+/* 필터 칩: 선택은 잉크 */
+.cmd-shell #cmd-main .mypage .mp-chip {
+  height: 32px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink-2);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .mypage .mp-chip.active {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-ink);
+  color: #fff;
+}
+
+/* 달력: 요일 줄은 3px 잉크 괘선 */
+.cmd-shell #cmd-main .mypage .mp-cal {
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .mypage .mp-week {
+  background: none;
+  color: var(--cmd-mute);
+  font-weight: 700;
+  border-bottom: 3px solid var(--cmd-ink);
+}
+
+/* 판 안 소제목: 왼쪽 색 막대 대신 노선 고리 */
+.cmd-shell #cmd-main .mypage .mp-panel h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-left: 0;
+  border-left: 0;
+  color: var(--cmd-ink);
+  font-size: var(--fs-18);
+  font-weight: 800;
+}
+
+.cmd-shell #cmd-main .mypage .mp-panel h3::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-m);
+  border: 0;
+  background: var(--accent);
+  flex: none;
+}
+
+/* 안 읽은 알림: 왼쪽 굵은 줄 대신 옅은 바탕 + 빨간 점 */
+.cmd-shell #cmd-main .mypage .mp-noti.unread {
+  background: var(--cmd-bg-2);
+  border: 1px solid var(--cmd-rule);
+  border-left: 1px solid var(--cmd-rule);
+  color: var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main .mypage .mp-noti-icon.cmd-chip {
+  width: auto;
+  height: 22px;
+  font-size: var(--fs-12);
+  border-radius: var(--radius-m);
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .mypage .mp-noti-dot {
+  background: var(--line-red);
+}
+
+/* 근무 시간 막대: 초록 노선색 */
+.cmd-shell #cmd-main .mypage .mp-bar-v {
+  background: var(--cmd-ink);
+  border-radius: var(--radius-m);
+}
+
+.cmd-shell #cmd-main .mypage .mp-bar-val {
+  color: var(--cmd-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 연차 숫자 */
+.cmd-shell #cmd-main .mypage .mp-leave-card,
+.cmd-shell #cmd-main .mypage .mp-leave-card.remain {
+  background: var(--cmd-bg);
+  border: 1px solid var(--cmd-rule);
+  color: var(--cmd-ink);
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .mypage .mp-leave-card strong {
+  color: var(--cmd-ink);
+  font-size: var(--fs-28);
+  font-variant-numeric: tabular-nums;
+}
+
+.cmd-shell #cmd-main .mypage .mp-leave-card.remain strong {
+  color: var(--green-text);
+}
+
+.cmd-shell #cmd-main .mypage .mp-leave-card small,
+.cmd-shell #cmd-main .mypage .mp-leave-card.remain small {
+  color: var(--cmd-mute);
+}
+
+.cmd-shell #cmd-main .mypage .mp-ok {
+  color: var(--green-text);
+}
+
+/* 상태 배지: 노선색 옅은 바탕 */
+.cmd-shell #cmd-main .mypage .mp-badge.s-doing { background: var(--green-tint); color: var(--green-text); }
+.cmd-shell #cmd-main .mypage .mp-badge.s-done { background: var(--cmd-bg-2); color: var(--cmd-mute); }
+.cmd-shell #cmd-main .mypage .mp-badge.s-wait,
+.cmd-shell #cmd-main .mypage .mp-badge.s-pending { background: var(--purple-tint); color: var(--purple-text); }
+.cmd-shell #cmd-main .mypage .mp-badge.s-approved { background: var(--sky-tint); color: var(--sky-text); }
+.cmd-shell #cmd-main .mypage .mp-badge.s-rejected { background: var(--red-tint); color: var(--red-text); }
+.cmd-shell #cmd-main .mypage .mp-badge.s-pin { background: var(--purple-tint); color: var(--purple-text); }
+
+/* 오늘 / 선택한 날 */
+.cmd-shell #cmd-main .mypage .mp-day.today .mp-daynum {
+  background: var(--cmd-ink);
+  color: #fff;
+}
+
+.cmd-shell #cmd-main .mypage .mp-day.selected {
+  background: var(--cmd-bg-2);
+  box-shadow: inset 0 0 0 2px var(--cmd-ink);
+}
+
+/* 진행·예정 프로젝트 남은 기한 색: 여유 초록 / 주의 주황 / 임박 빨강 */
+.cmd-shell #cmd-main .mypage .mp-proj.ok { --c: var(--line-green); }
+.cmd-shell #cmd-main .mypage .mp-proj.warn { --c: var(--line-orange); }
+.cmd-shell #cmd-main .mypage .mp-proj.danger { --c: var(--line-red); }
+
+.cmd-shell #cmd-main .mypage .mp-proj {
+  background: var(--cmd-bg-2);
+  border: 0;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .mypage .mp-bar-fill {
+  background: var(--cmd-ink);
+}
+
+/* 진행 막대 바탕 */
+.cmd-shell #cmd-main .mypage :is(.mp-progress, .mp-proj-track, .mp-bar-track) {
+  background: var(--cmd-bg-3);
+}
+
+.cmd-shell #cmd-main .mypage .mp-badge {
+  border: 0;
+  box-shadow: none;
+}
+
+/* 표 (근태·평가 등) */
+.cmd-shell #cmd-main .mypage table th {
+  background: none;
+  border-bottom: 3px solid var(--cmd-ink);
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  text-align: left;
+}
+
+.cmd-shell #cmd-main .mypage table td {
+  border-bottom: 1px solid var(--cmd-rule);
+}
+
+/* 입력칸 */
+.cmd-shell #cmd-main .mypage :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-family: inherit;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .mypage :is(input, select, textarea):focus {
+  border-color: var(--cmd-ink);
+  outline: 2px solid var(--cmd-ink);
+  outline-offset: 0;
+}
+
+/* 출발 안내판: 직각 */
+.cmd-shell #cmd-main .mypage :is(.mp-daynum, .mp-proj-track, .mp-proj-fill, .mp-seg, .mp-seg.starts, .mp-seg.ends, .mp-line, .mp-bar-track, .mp-bar-v, .mp-progress, .mp-bar-fill, .mp-pop-chip, .mp-dot, .mp-legend i) {
+  border-radius: var(--radius-m);
+}
+
+.cmd-shell #cmd-main .mypage .mp-day.today .mp-daynum {
+  color: var(--accent);
+}
+
+.cmd-shell #cmd-main .mypage .mp-proj.ok { --c: var(--cmd-ink); }
+.cmd-shell #cmd-main .mypage .mp-proj.warn { --c: var(--accent); }
+.cmd-shell #cmd-main .mypage .mp-proj.danger { --c: var(--lamp-late); }
+
+.cmd-shell #cmd-main .mypage :is(.mp-proj-date, .mp-daynum, .mp-bar-val, .mp-leave-card strong, .mp-stats dd) {
+  font-family: var(--cmd-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 3차: 판 안쪽 여백은 위보다 아래를 넓게, 범례는 달력 위에서 한 줄로 */
+.cmd-shell #cmd-main .mypage .mp-panel {
+  padding: var(--sp-4) var(--sp-6) var(--sp-8);
+  border-radius: var(--radius-m);
+}
+
+.cmd-shell #cmd-main .mypage .mp-legend-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-4);
+  margin: 0 0 var(--sp-4);
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-13);
+}
+
+.cmd-shell #cmd-main .mypage .mp-legend-top .mp-legend-tip {
+  width: 100%;
+  color: var(--cmd-mute);
+}
+
+/* 내 정보: 항목마다 따로 있던 안쪽 상자를 없애고, 판 하나에 소제목 + 입력칸으로 정리 */
+.cmd-shell #cmd-main .mypage :is(.mp-info, .mp-form, form.mp-info, .mp-contact) {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .mypage .mp-panel > :is(.mp-info, form.mp-info) {
+  display: grid;
+  gap: var(--sp-3);
+  max-width: 560px;
+  margin-bottom: var(--sp-6);
+}
+
+.cmd-shell #cmd-main .mypage .mp-panel h3 {
+  margin-top: var(--sp-5);
+  margin-bottom: var(--sp-3);
+}
+
+.cmd-shell #cmd-main .mypage .mp-panel > h3:first-child {
+  margin-top: 0;
+}
+
+.cmd-shell #cmd-main .mypage .mp-info label {
+  display: grid;
+  gap: var(--sp-1);
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-13);
+  font-weight: 700;
+}
+
+.cmd-shell #cmd-main .mypage .mp-info input {
+  min-height: 44px;
+  padding: 0 var(--sp-3);
+  font-size: var(--fs-14);
+  font-weight: 500;
+}
+
+.cmd-shell #cmd-main .mypage .mp-info input[readonly],
+.cmd-shell #cmd-main .mypage .mp-info input:disabled {
+  background: var(--cmd-bg-2);
+  color: var(--cmd-ink-2);
+}
+
+/* 상태 배지·알림 개수: 다른 화면의 상태 표시와 같은 모서리 */
+.cmd-shell #cmd-main .mypage :is(.mp-badge, .mp-noti-count) {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--radius-s);
+  font-size: var(--fs-12);
+  font-weight: 700;
+}
+
+.cmd-shell #cmd-main .mypage :is(.mp-bar-fill, .mp-proj-fill) {
+  background: var(--bar-ink);
+}

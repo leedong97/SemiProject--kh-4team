@@ -2,6 +2,7 @@ import SearchInput from "../../shared/SearchInput";
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Priority } from "../../shared/priority";
 
 // 수정: projects, issues, setIssues를 App에서 전달받는다.
 function Issue({ projects, issues, setIssues }) {
@@ -72,9 +73,6 @@ function Issue({ projects, issues, setIssues }) {
             <div className="issue-header">
                 <div>
                     <h1>SI 프로젝트 이슈 목록</h1>
-                    <p>
-                        프로젝트별 이슈를 조회하고 관리할 수 있습니다.
-                    </p>
                 </div>
 
                 <div className="issue-header-actions">
@@ -180,16 +178,27 @@ function Issue({ projects, issues, setIssues }) {
                                     <tr key={issue.id}>
                                         <td className="issue-row-number">{startIndex + index + 1}</td>
                                         <td>{issue.customerName || "-"}</td>
-                                        <td>{project?.name || "-"}</td>
+                                        <td>
+                                            {project ? (
+                                                <span className="issue-project">
+                                                    <span>{project.name}</span>
+                                                </span>
+                                            ) : "-"}
+                                        </td>
                                         {/*수정: 제목 클릭 시 상세 페이지 이동 */}
                                         <td>
                                             <button className="issue-title-link" onClick={() => navigate(`/issue/${issue.id}`)} >
                                                 {issue.title}
                                             </button>
                                         </td>
-                                        <td>{issue.priority || "보통"}</td>
+                                        <td><Priority value={issue.priority} /></td>
                                         <td>{issue.reporterName || "-"}</td>
-                                        <td>{issue.status || "-"}</td>
+                                        <td>
+                                            {/* 상태별 노선색 칩 (색은 shared/pages.css) */}
+                                            <span className="issue-status" data-status={issue.status || ""}>
+                                                {issue.status || "-"}
+                                            </span>
+                                        </td>
                                     </tr>
                                 );
                             })

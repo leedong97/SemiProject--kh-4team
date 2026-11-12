@@ -1,13 +1,13 @@
 /* 게시글/댓글 공통 입력 도구: dong 전용 클래스만 사용합니다. */
 .dong-community-input { margin: 12px 0; font: inherit; color: inherit; }
-.dong-community-input .dong-input-button { display: inline-flex; align-items: center; justify-content: center; padding: 9px 14px; border: 1px solid #2b374a; border-radius: 8px; background: #171d29; color: #e2eaf6; font: inherit; cursor: pointer; }
-.dong-community-input .dong-input-button:hover:not(:disabled) { background: #171d29; }
-.dong-community-input .dong-input-button:focus-visible { outline: 3px solid #356684; outline-offset: 3px; }
+.dong-community-input .dong-input-button { display: inline-flex; align-items: center; justify-content: center; padding: 9px 14px; border: 1px solid #bac9dc; border-radius: 8px; background: #fff; color: #263a56; font: inherit; cursor: pointer; }
+.dong-community-input .dong-input-button:hover:not(:disabled) { background: #eef5ff; }
+.dong-community-input .dong-input-button:focus-visible { outline: 3px solid #087bdf; outline-offset: 3px; }
 .dong-community-input .dong-input-button:disabled { opacity: .5; cursor: not-allowed; }
-.dong-community-input .dong-input-help { margin: 8px 0; font-size: 13px; color: #b3c2d5; }
+.dong-community-input .dong-input-help { margin: 8px 0; font-size: 13px; color: #52647a; }
 .dong-community-input .dong-attachment-list { display: grid; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
-.dong-community-input .dong-attachment-list li { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid #2b374a; border-radius: 8px; }
+.dong-community-input .dong-attachment-list li { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid #dce5ef; border-radius: 8px; }
 .dong-community-input .dong-attachment-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .dong-community-input .dong-attachment-preview { width: 56px; height: 56px; flex-shrink: 0; object-fit: cover; border-radius: 5px; }
 .dong-community-input.dong-anonymous { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
-.dong-community-input .dong-anonymous-button[aria-pressed="true"] { background: #171d29; border-color: #356684; color: #72c7f3; font-weight: 700; }
+.dong-community-input .dong-anonymous-button[aria-pressed="true"] { background: #eaf1ff; border-color: #2154c3; color: #2154c3; font-weight: 700; }

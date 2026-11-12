@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
+import zerynMark from "../../assets/zeryn-logo-light.png";
 function Signup() {
 
     const navi = useNavigate()
@@ -69,6 +70,9 @@ function Signup() {
 
     return (
         <div className="signup">
+            <div className="cmd-auth-brand">
+                <img className="cmd-auth-img" src={zerynMark} alt="" aria-hidden="true" />
+            </div>
             <h2>회원가입</h2>
             <form onSubmit={handleSubmit} noValidate>
                 <div className='signup-form'>

@@ -4,6 +4,7 @@ import { API_BASE } from "../../../shared/config";
 import getLoginUser from "../../woojin/getLoginUser";
 import { useJongho } from "../JonghoContext";
 
+import zerynMark from "../../../assets/zeryn-logo-light.png";
 function AdminLayout({ onLogout }) {
 
   // 대기 중인 요청(완료 + 등록) 알림
@@ -116,20 +117,9 @@ function AdminLayout({ onLogout }) {
   const currentMenu = menus.find((menu) => menu.end
     ? location.pathname === menu.path
     : location.pathname === menu.path) || menus[0];
-  const pageDescriptions = {
-    "/admin": "핵심 운영 지표와 진행 상황을 한눈에 확인합니다.",
-    "/admin/projects": "프로젝트 진행 현황, 승인 요청 및 담당자를 관리합니다.",
-    "/admin/members": "프로젝트별 참여 인원과 배정 상태를 확인합니다.",
-    "/admin/issues": "이슈 진행 상태, 우선순위와 담당 업무를 확인합니다.",
-    "/admin/employees": "직원 정보, 인사 현황과 휴가 업무를 관리합니다.",
-    "/admin/evaluations": "직원 성과 평가와 승인 현황을 관리합니다.",
-    "/admin/boards": "공지사항 등록과 게시 현황을 관리합니다.",
-    "/admin/community": "커뮤니티 게시글과 댓글을 관리합니다.",
-    "/admin/workload": "업무 배분과 담당자별 업무량을 분석합니다.",
-  };
 
   return (
-    <div className="nexus-admin-layout">
+    <div className="nexus-admin-layout cmd-admin">
 
       {/* 상단 네비게이션 */}
       <header className="nexus-admin-header">
@@ -137,14 +127,11 @@ function AdminLayout({ onLogout }) {
         <div className="nexus-header-top">
 
           <div className="nexus-logo-area">
-            {/* 일반 화면 상단과 같은 로고 이미지 (public/images/command-logo.png) */}
-            <img
-              className="admin-brand-logo"
-              src="/images/command-logo.png"
-              alt="COMMAND ERP"
-              onClick={() => navigate("/admin")}
-            />
-            <p className="admin-brand-label">ADMIN WORKSPACE</p>
+            {/* 일반 화면 상단과 같은 ZERYN 로고 + 관리자 표시 */}
+            <button type="button" className="cmd-logo cmd-admin-logo" onClick={() => navigate("/admin")} aria-label="ZERYN 관리자 대시보드">
+              <img className="cmd-logo-img" src={zerynMark} alt="" aria-hidden="true" />
+            </button>
+            <span className="cmd-admin-tag">관리자</span>
           </div>
 
           <div className="nexus-admin-user">
@@ -152,10 +139,11 @@ function AdminLayout({ onLogout }) {
               <button
                 type="button"
                 className="btn btn-outline admin-alert-button"
-                title="대기 중인 요청"
+                data-tip="대기 중인 요청"
+                aria-label={`대기 중인 요청 ${alertTotal}건`}
                 onClick={() => { setAlertOpen((prev) => !prev); loadAlerts(); }}
               >
-                🔔 요청
+                요청
                 {alertTotal > 0 && (
                   <span className="admin-alert-count">{alertTotal}</span>
                 )}
@@ -227,7 +215,7 @@ function AdminLayout({ onLogout }) {
             <div className="nexus-admin-user-menu">
               <button type="button" className="nexus-admin-user-name">
                 {me.isDummy || !me.name ? "관리자" : me.name} 님
-                <span className="nexus-admin-user-caret" aria-hidden="true">▾</span>
+                <svg className="nexus-admin-user-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" /></svg>
               </button>
 
               <div className="nexus-admin-user-sub">
@@ -278,9 +266,8 @@ function AdminLayout({ onLogout }) {
       <main className="nexus-admin-main">
         <div className="nexus-workspace-heading">
           <div>
-            <span className="nexus-workspace-breadcrumb">NEXUS ERP / ADMIN</span>
             <h1>{currentMenu.name}</h1>
-            <p>{pageDescriptions[currentMenu.path]}</p>
+            
           </div>
         </div>
         <Outlet />

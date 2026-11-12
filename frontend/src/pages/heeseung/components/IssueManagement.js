@@ -539,9 +539,6 @@ export default function IssueManagement({
 
     return <section className="issue-Management">
         {/* 페이지 제목 */}
-        <div className="section-head">
-            <p>프로젝트별 이슈 현황 및 작업 관리</p>
-        </div>
         <div className="issue-stats">
             <div className="panel issue-stat-card">
                 <span>전체 이슈</span>
@@ -564,7 +561,6 @@ export default function IssueManagement({
         <details className="issue-workload-panel panel issue-optional-section">
             <summary>
                 <span className="issue-workload-title">건의자별 업무량</span>
-                <span className="issue-workload-hint">프로젝트 참여 직원 기준 · 클릭하여 이슈 필터</span>
             </summary>
             <div className="issue-workload-body">
                 {employeeWorkload.length === 0 ? <p className="issue-workload-empty">{memberLoading ? "프로젝트 참여 직원을 불러오는 중입니다." : memberError ? "참여 직원 조회 오류: " + memberError : "프로젝트 참여 직원이 없습니다. DB의 팀원 배정 정보를 확인해 주세요."}</p> : <div className="issue-workload-list">
@@ -601,7 +597,7 @@ export default function IssueManagement({
         </details>
         {/* 관리자 우선 확인: 긴급 이슈와 마감 임박 이슈 */}
         <details className="issue-alert-wrapper issue-optional-section">
-            <summary>긴급 · 마감 임박 이슈 <span>펼쳐서 확인</span></summary>
+            <summary>긴급 · 마감 임박 이슈</summary>
             <div className="issue-alert-grid">
                 <div className="issue-alert-panel">
                     <h3>긴급 이슈</h3>

@@ -17,7 +17,6 @@ function ProjectRegisterForm({ form, sourceQuote, onChange, onCustomerChange, on
       <>
         <div className="nexus-project-heading">
           <div>
-            <p>관리자 / 프로젝트 관리 / 신규 등록</p>
             <h2>신규 프로젝트 등록</h2>
           </div>
 
@@ -25,7 +24,7 @@ function ProjectRegisterForm({ form, sourceQuote, onChange, onCustomerChange, on
             type="button"
             onClick={onBack}
           >
-            ← 목록
+            목록
           </button>
         </div>
 

@@ -59,7 +59,6 @@ function Info({ info = [] }) {
             <div className="info-header info-manage-header">
                 <div>
                     <h1>공지사항</h1>
-                    <p>사내 공지사항을 조회할 수 있습니다.</p>
                 </div>
 
                 <button
@@ -127,14 +126,7 @@ function Info({ info = [] }) {
 
                                     <td>
                                         {Number(item.isPinned) === 1 ? (
-                                            <strong
-                                                style={{
-                                                    color: "#d32f2f",
-                                                    whiteSpace: "nowrap"
-                                                }}
-                                            >
-                                                [중요]
-                                            </strong>
+                                            <span className="cmd-chip tone-purple">중요</span>
                                         ) : (
                                             start + index + 1 - pinnedCount
                                         )}

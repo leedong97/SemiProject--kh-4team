@@ -1,8 +1,6 @@
 import SearchInput from "../../shared/SearchInput";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import ReactionGame from "./ReactionGame";
-import LunchPicker from "./LunchPicker";
 import PraiseBox from "./PraiseBox";
 import CommunityBanner from "./CommunityBanner";
 
@@ -77,7 +75,7 @@ function CommunityHome(props) {
                                             aria-label={board.name + " 더보기"}
                                             onClick={() => props.onSelectBoard(board.name)}
                                         >
-                                            더보기 →
+                                            더보기
                                         </button>
                                     </div>
                                     <p className="lounge-board-summary" role="status">
@@ -104,7 +102,7 @@ function CommunityHome(props) {
                                                                 <span>{formatDate(post.createdAt)}</span>
                                                             </div>
                                                         </div>
-                                                        <span className="lounge-feed-arrow" aria-hidden="true">›</span>
+                                                        <span className="lounge-feed-arrow" aria-hidden="true" />
                                                     </li>
                                                 );
                                             })}
@@ -125,9 +123,6 @@ function CommunityHome(props) {
                             우리들의 이야기
                         </h2>
 
-                        <p className="lounge-side-description">
-                            게시판에 모인 이야기를 확인하세요.
-                        </p>
 
                         <div className="lounge-total-posts">
                             <span>전체 게시글</span>
@@ -149,7 +144,7 @@ function CommunityHome(props) {
                                         자유게시판
                                     </span>
 
-                                    <strong>{freeCount}개 →</strong>
+                                    <strong>{freeCount}개</strong>
                                 </button>
                             </li>
 
@@ -167,7 +162,7 @@ function CommunityHome(props) {
                                         질문 답변
                                     </span>
 
-                                    <strong>{questionCount}개 →</strong>
+                                    <strong>{questionCount}개</strong>
                                 </button>
                             </li>
 
@@ -185,7 +180,7 @@ function CommunityHome(props) {
                                         정보공유
                                     </span>
 
-                                    <strong>{infoCount}개 →</strong>
+                                    <strong>{infoCount}개</strong>
                                 </button>
                             </li>
                         </ul>
@@ -195,7 +190,7 @@ function CommunityHome(props) {
                             className="lounge-side-button"
                             onClick={props.onShowBoard}
                         >
-                            게시판 둘러보기 →
+                            게시판 둘러보기
                         </button>
                     </section>
 
@@ -239,9 +234,6 @@ function CommunityHome(props) {
                             </li>
                         </ul>
                     </section>
-
-                    <LunchPicker />
-                    <ReactionGame />
 
                     <section className="lounge-welcome-card">
                         <span className="lounge-welcome-label">

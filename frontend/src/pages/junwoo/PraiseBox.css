@@ -3,9 +3,9 @@
     min-width: 0;
     margin-top: 24px;
     padding: 24px;
-    border: 1px solid #2b374a;
+    border: 1px solid #f0dedb;
     border-radius: 14px;
-    background: #171d29;
+    background: #fffaf8;
 }
 
 /* 제목과 작성 버튼 */
@@ -19,13 +19,13 @@
 
 .praise-title {
     margin: 0;
-    color: #e2eaf6;
+    color: #563b37;
     font-size: 20px;
 }
 
 .praise-description {
     margin: 8px 0 0;
-    color: #b3c2d5;
+    color: #876e69;
     font-size: 13px;
     line-height: 1.6;
 }
@@ -45,13 +45,13 @@
 /* 작성 / 등록 버튼 */
 .praise-box button.praise-open-button,
 .praise-box button.praise-submit-button {
-    background: #553039;
-    color: #eef3fa !important;
+    background: #a34e43;
+    color: #fff !important;
 }
 
 .praise-box button.praise-open-button:hover,
 .praise-box button.praise-submit-button:hover {
-    background: #553039;
+    background: #873e35;
 }
 
 .praise-box button:disabled {
@@ -63,9 +63,9 @@
 .praise-form {
     margin-top: 20px;
     padding: 20px;
-    border: 1px solid #2b374a;
+    border: 1px solid #efded8;
     border-radius: 10px;
-    background: #171d29;
+    background: #fff;
 }
 
 /* 이름 입력칸 두 개 */
@@ -81,7 +81,7 @@
     flex-direction: column;
     gap: 8px;
     min-width: 0;
-    color: #e2eaf6;
+    color: #674f49;
     font-size: 13px;
 }
 
@@ -91,10 +91,10 @@
     box-sizing: border-box;
     width: 100%;
     padding: 11px 12px;
-    border: 1px solid #2b374a;
+    border: 1px solid #dfd4d0;
     border-radius: 8px;
-    background: #171d29;
-    color: #e2eaf6;
+    background: #fff;
+    color: #3e3532;
     font: inherit;
     line-height: 1.6;
 }
@@ -108,14 +108,14 @@
 .praise-box select:focus-visible,
 .praise-box textarea:focus-visible,
 .praise-box button:focus-visible {
-    outline: 2px solid #2b374a;
+    outline: 2px solid #a34e43;
     outline-offset: 3px;
 }
 
 /* 글자 수 */
 .praise-length {
     margin: 8px 0 0;
-    color: #b3c2d5;
+    color: #88746e;
     font-size: 12px;
     text-align: right;
 }
@@ -123,7 +123,7 @@
 /* 입력 오류 */
 .praise-error {
     margin: 8px 0;
-    color: #ff9fa8;
+    color: #b42318;
     font-size: 13px;
 }
 
@@ -136,8 +136,8 @@
 }
 
 .praise-box button.praise-cancel-button {
-    background: #171d29;
-    color: #e2eaf6 !important;
+    background: #f2eeec;
+    color: #66534c !important;
 }
 
 /* 칭찬 카드 3개 배치 */
@@ -156,14 +156,14 @@
     flex-direction: column;
     min-width: 0;
     padding: 20px;
-    border: 1px solid #2b374a;
+    border: 1px solid #efded8;
     border-radius: 10px;
-    background: #171d29;
+    background: #fff;
 }
 
 .praise-receiver {
     margin: 0 0 12px;
-    color: #ff9fa8;
+    color: #8e493e;
     font-size: 15px;
     line-height: 1.6;
     overflow-wrap: anywhere;
@@ -172,7 +172,7 @@
 .praise-message {
     flex: 1;
     margin: 0 0 20px;
-    color: #e2eaf6;
+    color: #5e514c;
     font-size: 13px;
     line-height: 1.8;
     white-space: pre-wrap;
@@ -185,8 +185,8 @@
     flex-wrap: wrap;
     gap: 8px;
     padding-top: 12px;
-    border-top: 1px solid #2b374a;
-    color: #b3c2d5;
+    border-top: 1px solid #f2e9e5;
+    color: #88746e;
     font-size: 11px;
     overflow-wrap: anywhere;
 }
@@ -203,7 +203,7 @@
 
 .praise-empty p {
     margin: 10px 0 0;
-    color: #b3c2d5;
+    color: #876e69;
     font-size: 13px;
     line-height: 1.6;
 }

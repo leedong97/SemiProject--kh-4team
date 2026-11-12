@@ -1,0 +1,1650 @@
+/* =====================================================================
+   관리자 화면을 직원 화면과 같은 디자인 기준(출발 안내판)에 맞춰요.
+   - admin-unified.css / jongho.css 위에 덮어쓰는 층이에요. 이 파일을 지우면 예전 모양으로 돌아가요.
+   - 색·글자·간격은 shared/theme.css 의 토큰을 그대로 써요.
+   ===================================================================== */
+
+.nexus-admin-layout.cmd-admin {
+  --admin-primary: var(--cmd-ink);
+  --admin-primary-hover: #000;
+  --admin-heading: var(--cmd-ink);
+  --admin-text: var(--cmd-ink);
+  --admin-muted: var(--cmd-mute);
+  --admin-border: var(--cmd-rule);
+  --admin-bg: var(--cmd-bg);
+  --admin-surface: var(--cmd-bg);
+  --admin-radius: var(--radius-m);
+  --admin-shadow: none;
+  --admin-control-height: 40px;
+
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-family: var(--cmd-font);
+}
+
+.nexus-admin-layout.cmd-admin ::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :focus-visible {
+  outline: 2px solid var(--cmd-ink);
+  outline-offset: 2px;
+}
+
+/* ---------- 상단: 흰 바탕 + 3px 잉크 괘선 ---------- */
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--cmd-bg);
+  border: 0;
+  border-bottom: 3px solid var(--cmd-ink);
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-header-top {
+  max-width: var(--shell-max);
+  min-height: 0;
+  height: 60px;
+  margin: 0 auto;
+  padding: 0 var(--shell-pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-logo-area {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .cmd-admin-logo {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .cmd-admin-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--radius-m);
+  background: var(--cmd-ink);
+  color: #fff;
+  font-size: var(--fs-12);
+  font-weight: 700;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-user {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+/* 요청 알림 버튼 */
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 34px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-size: var(--fs-14);
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-button:hover {
+  border-color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-count {
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-m);
+  background: var(--line-red);
+  color: #fff;
+  font-size: var(--fs-12);
+  font-weight: 700;
+  display: inline-grid;
+  place-items: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-panel {
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-head {
+  border-bottom: 1px solid var(--cmd-rule);
+  color: var(--cmd-ink);
+  font-weight: 800;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-item {
+  border: 0;
+  border-bottom: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: none;
+  color: var(--cmd-ink);
+  text-align: left;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-item:hover {
+  background: var(--cmd-bg-2);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-type {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--radius-m);
+  background: var(--purple-tint);
+  color: var(--purple-text);
+  font-size: var(--fs-12);
+  font-weight: 700;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-item small {
+  color: var(--cmd-mute);
+}
+
+/* 이름 메뉴 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-user-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 var(--sp-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  background: none;
+  color: var(--cmd-ink);
+  font-size: var(--fs-14);
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-user-menu:hover .nexus-admin-user-name,
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-user-menu:focus-within .nexus-admin-user-name {
+  border-color: var(--cmd-rule-2);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-user-caret {
+  color: var(--cmd-mute);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-user-sub-box {
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  box-shadow: none;
+  padding: var(--sp-2) 0;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-user-sub-item {
+  border: 0;
+  border-radius: var(--radius-m);
+  background: none;
+  color: var(--cmd-ink);
+  font-weight: 500;
+  text-align: left;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-user-sub-item:hover {
+  background: var(--cmd-bg-2);
+}
+
+/* 관리자 메뉴: 밑줄 탭, 현재 메뉴는 2호선 초록 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-nav {
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  padding: 0 var(--shell-pad);
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border: 0;
+  border-top: 1px solid var(--cmd-rule);
+  background: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-nav-item {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 var(--sp-3);
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--cmd-mute);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-nav-item:hover {
+  color: var(--cmd-ink);
+  background: none;
+  box-shadow: inset 0 -4px 0 var(--cmd-rule-2);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-nav-item.active {
+  color: var(--cmd-ink);
+  font-weight: 800;
+  background: none;
+  box-shadow: inset 0 -4px 0 var(--accent);
+}
+
+/* ---------- 본문 ---------- */
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main {
+  max-width: var(--shell-max);
+  padding: var(--sp-6) var(--shell-pad) var(--sp-10);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-workspace-heading {
+  margin: 0 0 var(--sp-5);
+  padding: 0 0 calc(var(--sp-4) + 3px);
+  border: 0;
+  border-radius: var(--radius-m);
+  background: none;
+  box-shadow: inset 0 -3px 0 var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-workspace-heading h1 {
+  margin: 0;
+  color: var(--cmd-ink);
+  font-size: var(--fs-24);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-workspace-heading p {
+  margin: var(--sp-1) 0 0;
+  color: var(--cmd-mute);
+  font-size: var(--fs-14);
+}
+
+/* 화면 안의 소제목 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.merge-title h1, .nexus-project-heading h2, .section-head h2, .nexus-assignment h1, .merge-panel h2, .nexus-project-panel h3, .nexus-detail-section-title) {
+  color: var(--cmd-ink);
+  letter-spacing: -0.01em;
+}
+
+/* 판·카드: 흰 바탕 + 1px 선, 그림자 없음 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.merge-panel, .nexus-project-panel, .nexus-detail-panel, .panel, .card, .nexus-assignment-table-wrap) {
+  background: var(--cmd-bg);
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  box-shadow: none;
+}
+
+/* 대시보드 요약 숫자: 큰 카드 대신 괘선으로 나눈 한 줄 */
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0;
+  margin-bottom: var(--sp-5);
+  border-top: 1px solid var(--cmd-rule);
+  border-bottom: 1px solid var(--cmd-rule);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "title title"
+    "value detail";
+  align-items: baseline;
+  column-gap: var(--sp-3);
+  row-gap: var(--sp-1);
+  min-height: 0;
+  padding: var(--sp-4) var(--sp-5);
+  border: 0;
+  border-left: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: none;
+  box-shadow: none;
+  text-align: left;
+  cursor: pointer;
+  transform: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi:first-child {
+  border-left: 0;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi:hover {
+  background: var(--cmd-bg-2);
+  transform: none;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi > span {
+  grid-area: title;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-14);
+  font-weight: 600;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi > span::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--lamp-ok);
+  flex: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi:nth-child(2) > span::before { background: var(--lamp-late); }
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi:nth-child(3) > span::before { background: var(--cmd-ink); }
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi:nth-child(4) > span::before { background: var(--cmd-faint); }
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi strong {
+  grid-area: value;
+  color: var(--cmd-ink);
+  font-size: var(--fs-28);
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi small {
+  grid-area: detail;
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi-icon {
+  display: none;
+}
+
+/* 패널 머리 + 이동 버튼(꺾쇠) */
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-panel-head {
+  border-bottom: 1px solid var(--cmd-rule);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-panel-head .btn-ghost {
+  border: 0;
+  background: none;
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-panel-head .btn-ghost::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  border-top: 1.6px solid currentColor;
+  border-right: 1.6px solid currentColor;
+  transform: translateY(-1px) rotate(45deg);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-panel-head .btn-ghost:hover {
+  color: var(--cmd-ink);
+}
+
+/* 진행 막대 */
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-bar {
+  background: var(--cmd-bg-3);
+  border-radius: var(--radius-m);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-bar-fill {
+  background: var(--cmd-ink);
+  border-radius: var(--radius-m);
+}
+
+/* ---------- 버튼 ---------- */
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.btn-primary, button[type="submit"]) {
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-s);
+  background: var(--cmd-ink);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.btn-primary, button[type="submit"]):hover:not(:disabled) {
+  border-color: #000;
+  background: #000;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.btn-outline, .btn-secondary, .btn-light, .btn-default) {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.btn-outline, .btn-secondary, .btn-light, .btn-default):hover:not(:disabled) {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-bg);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.btn-danger, .btn-delete) {
+  border: 1px solid var(--line-red);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--red-text);
+  box-shadow: none;
+}
+
+/* ---------- 입력 ---------- */
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-family: inherit;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(input, select, textarea):focus {
+  border-color: var(--cmd-ink);
+  outline: 2px solid var(--cmd-ink);
+  outline-offset: 0;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(input, textarea)::placeholder {
+  color: #767676;
+  opacity: 1;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(input[type="checkbox"], input[type="radio"]) {
+  accent-color: var(--cmd-ink);
+}
+
+/* ---------- 표: 3px 잉크 머리 괘선 ---------- */
+
+.nexus-admin-layout.cmd-admin.cmd-admin table {
+  font-size: var(--fs-14);
+  font-variant-numeric: tabular-nums;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin table thead,
+.nexus-admin-layout.cmd-admin.cmd-admin table thead tr {
+  background: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin table th {
+  background: none;
+  border-bottom: 3px solid var(--cmd-ink);
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-13);
+  font-weight: 700;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin table td {
+  border-bottom: 1px solid var(--cmd-rule);
+  color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin table tbody tr:hover {
+  background: var(--cmd-bg-2);
+}
+
+/* 배지·칩: 옅은 바탕 + 진한 글자, 테두리 없음 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.badge, .chip, .status-badge) {
+  border: 0;
+  border-radius: var(--radius-m);
+  box-shadow: none;
+  font-weight: 700;
+}
+
+/* 페이지 번호 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.pagination, .nexus-pager, .nexus-pagination-controls) button {
+  border: 1px solid transparent;
+  border-radius: var(--radius-m);
+  background: none;
+  color: var(--cmd-ink-2);
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.pagination, .nexus-pager, .nexus-pagination-controls) button:hover:not(:disabled) {
+  border-color: var(--cmd-rule-2);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.pagination, .nexus-pager, .nexus-pagination-controls) button:is(.active, .current, [aria-current="page"]) {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-ink);
+  color: #fff;
+}
+
+/* 좁은 화면 */
+@media (max-width: 860px) {
+  .nexus-admin-layout.cmd-admin.cmd-admin .nexus-header-top {
+    padding: 0 16px;
+  }
+
+  .nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-nav {
+    padding: 0 8px;
+  }
+
+  .nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main {
+    padding: var(--sp-5) 16px var(--sp-8);
+  }
+
+  .nexus-admin-layout.cmd-admin.cmd-admin .cmd-logo-sub {
+    display: none;
+  }
+}
+
+/* ---------- 관리자 대시보드 세부 ---------- */
+
+/* 빈 제목 칸(제목은 공통 머리말이 그려요) */
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-title:empty {
+  display: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-dashboard {
+  padding-top: 0;
+}
+
+/* 요약 숫자 칸 위 파란 굵은 선 제거 */
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi {
+  border-top: 0;
+}
+
+/* 운영 알림 센터: 흰 판 + 테두리 버튼 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-alerts {
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-alerts strong {
+  color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-alerts p {
+  color: var(--cmd-mute);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-alerts button {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink-2);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-alerts button:hover {
+  border-color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-alerts button b {
+  color: var(--red-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 고정 공지 표시: 직원 화면과 같은 보라 칩 */
+.nexus-admin-layout.cmd-admin.cmd-admin .dash-pinned-badge {
+  border: 0;
+  border-radius: var(--radius-m);
+  background: var(--purple-tint);
+  color: var(--purple-text);
+  font-weight: 700;
+}
+
+/* jongho.css 의 !important 파란 윗선을 덮어요 */
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi {
+  border-top: 0 !important;
+}
+
+/* 우선순위 표시(표 안 작은 칸) */
+.nexus-admin-layout.cmd-admin.cmd-admin td span.merge-erp-module {
+  border: 0;
+  box-shadow: none;
+  border-radius: var(--radius-m);
+  font-weight: 700;
+}
+
+/* 재무·알림 상자: 옅은 회색 판 + 잉크 숫자 */
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-alert {
+  border: 0;
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg-2);
+  color: var(--cmd-ink);
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-alert :is(b, strong) {
+  color: var(--cmd-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-alert small {
+  color: var(--cmd-mute);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-log {
+  border: 0;
+  border-bottom: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: none;
+  color: var(--cmd-ink);
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-log:hover {
+  background: var(--cmd-bg-2);
+}
+
+/* 인사·평가·이슈 모듈(희승) 기본 버튼: 파랑 대신 잉크
+   - erp.css 의 기본 규칙(.merge-erp-module button)과 같은 무게로만 덮어써서,
+     목록 항목처럼 자기 모양이 따로 있는 버튼은 건드리지 않아요. */
+body .merge-erp-module button {
+  background: var(--cmd-ink);
+  color: #fff;
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-m);
+}
+
+body .merge-erp-module button:hover:not(:disabled) {
+  background: #000;
+}
+
+/* ---------- 관리자 화면별 세부 (파랑 잔여 정리) ---------- */
+
+/* 필터·화면 전환 칩: 선택은 잉크 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-filter-chip {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink-2);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-filter-chip:hover {
+  border-color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-filter-chip.is-active {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-ink);
+  color: #fff;
+}
+
+/* 상태 배지 */
+.nexus-admin-layout.cmd-admin.cmd-admin .badge-info { background: var(--sky-tint); color: var(--sky-text); }
+.nexus-admin-layout.cmd-admin.cmd-admin .badge-success { background: var(--green-tint); color: var(--green-text); }
+.nexus-admin-layout.cmd-admin.cmd-admin .badge-warning { background: var(--orange-tint); color: var(--orange-text); }
+.nexus-admin-layout.cmd-admin.cmd-admin .badge-danger { background: var(--red-tint); color: var(--red-text); }
+
+/* 이슈 상태·우선순위 칩 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.issue-status-badge, .issue-priority) {
+  border: 0;
+  border-radius: var(--radius-m);
+  box-shadow: none;
+  font-weight: 700;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .issue-status-progress { background: var(--green-tint); color: var(--green-text); }
+.nexus-admin-layout.cmd-admin.cmd-admin [class*="issue-priority-긴급"] { background: var(--red-tint); color: var(--red-text); }
+.nexus-admin-layout.cmd-admin.cmd-admin [class*="issue-priority-높음"] { background: var(--orange-tint); color: var(--orange-text); }
+.nexus-admin-layout.cmd-admin.cmd-admin [class*="issue-priority-보통"] { background: var(--cmd-bg-2); color: var(--cmd-ink-2); }
+.nexus-admin-layout.cmd-admin.cmd-admin [class*="issue-priority-낮음"] { background: var(--cmd-bg-2); color: var(--cmd-mute); }
+
+/* 이슈 목록 머리: 왼쪽 굵은 색 막대 제거 */
+.nexus-admin-layout.cmd-admin.cmd-admin .issue-list-header[class*="issue-border-"] {
+  border-left: 1px solid var(--cmd-rule);
+}
+
+/* 표 안 작은 버튼: 테두리 버튼 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(table button, .hr-action-detail, .hr-action-edit) {
+  min-height: 30px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(table button, .hr-action-detail, .hr-action-edit):hover:not(:disabled) {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-bg);
+}
+
+/* 인사 관리 탭: 밑줄 탭 */
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-tabs {
+  display: flex;
+  gap: var(--sp-1);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: inset 0 -3px 0 var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-tab {
+  height: 44px;
+  min-height: 44px;
+  padding: 0 var(--sp-4);
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--cmd-mute);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-tab:hover {
+  background: none;
+  color: var(--cmd-ink);
+  box-shadow: inset 0 -4px 0 var(--cmd-rule-2);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-tab.active {
+  background: none;
+  color: var(--cmd-ink);
+  font-weight: 800;
+  box-shadow: inset 0 -4px 0 var(--accent);
+}
+
+/* 업무량 막대 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-workload-track {
+  background: var(--cmd-bg-3);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-workload-fill {
+  background: var(--cmd-ink);
+}
+
+/* 회색-파랑 구획선을 같은 회색으로 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.boards-count, .nexus-member-toolbar, .hr-filters, .hr-table-wrap, .ev2026-panel, .ev2026-project-panel, .issue-completion, .issue-completion-item) {
+  border-color: var(--cmd-rule);
+  box-shadow: none;
+}
+
+/* 본문 글자색: 푸른 회색 대신 잉크·회색 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main {
+  color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main :is(label, small, .muted, p) {
+  color: var(--cmd-mute);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main :is(h2, h3, h4, strong, td, .merge-kpi strong) {
+  color: var(--cmd-ink);
+}
+
+/* 인사 관리 행 버튼 (HRManagement.css 의 !important 를 덮어요) */
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-inline-actions :is(.hr-action-detail, .hr-action-edit) {
+  background: var(--cmd-bg) !important;
+  border-color: var(--cmd-rule-2) !important;
+  color: var(--cmd-ink) !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-inline-actions :is(.hr-action-detail, .hr-action-edit):hover {
+  border-color: var(--cmd-ink) !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-inline-actions .hr-danger-button {
+  background: var(--cmd-bg) !important;
+  border-color: var(--line-red) !important;
+  color: var(--red-text) !important;
+}
+
+/* 컨테이너가 물려주는 푸른 회색 글자를 잉크로 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main :is(div, section, article, table, thead, tbody, tr, summary, button.card, a:not([class])) {
+  color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main span:not([class]) {
+  color: inherit;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-total,
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.issue-workload-hint, .issue-workload-projects) {
+  color: var(--cmd-mute);
+}
+
+/* 이슈 관리: 업무량 막대 (인라인 색을 덮어요) */
+.nexus-admin-layout.cmd-admin.cmd-admin .issue-workload-meter > span {
+  background: var(--cmd-ink) !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .issue-workload-title,
+.nexus-admin-layout.cmd-admin.cmd-admin td span.merge-erp-module {
+  color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .issue-Management .issue-workload-list button {
+  background: var(--cmd-bg);
+  border: 1px solid var(--cmd-rule);
+  color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .issue-Management .issue-workload-list button:hover {
+  border-color: var(--cmd-ink);
+}
+
+/* =====================================================================
+   출발 안내판: 관리자 상단도 검정 띠 + 앰버 현재 표시
+   ===================================================================== */
+
+.nexus-admin-layout.cmd-admin {
+  background: var(--cmd-ground);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-header {
+  background: var(--board-bg);
+  border-bottom: 0;
+  color: var(--board-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .cmd-admin-tag {
+  border-radius: var(--radius-m);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-button {
+  border-color: var(--board-rule);
+  background: transparent;
+  color: var(--board-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-button:hover {
+  border-color: var(--board-mute);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-count {
+  border-radius: var(--radius-m);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--cmd-mono);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-user-name {
+  color: #fff;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-user-menu:hover .nexus-admin-user-name,
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-user-menu:focus-within .nexus-admin-user-name {
+  border-color: var(--board-rule);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-user-caret {
+  color: var(--board-mute);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-nav {
+  border-top: 1px solid var(--board-rule);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-nav-item {
+  color: var(--board-mute);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-nav-item:hover {
+  color: #fff;
+  box-shadow: inset 0 -4px 0 var(--board-rule);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-nav-item.active {
+  color: #fff;
+  box-shadow: inset 0 -4px 0 var(--accent);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-header :focus-visible {
+  outline-color: var(--accent);
+}
+
+/* 숫자는 고정폭 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.merge-kpi strong, table td, .nexus-pager button, .merge-alert b, .merge-alert strong) {
+  font-variant-numeric: tabular-nums;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi strong {
+  font-family: var(--cmd-mono);
+}
+
+/* 판·제목 흰 작업판 위로 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-workspace-heading {
+  box-shadow: none;
+  padding-bottom: var(--sp-4);
+  border-bottom: 0;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpis {
+  background: var(--cmd-bg);
+  border: 1px solid var(--cmd-rule);
+}
+
+/* =====================================================================
+   관리자 세부 (출발 안내판 2차)
+   ===================================================================== */
+
+/* 요청 버튼: 마우스를 올리면 앰버로 또렷하게 + 어두운 안내 말풍선 */
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-button {
+  position: relative;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-button:hover,
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-button:focus-visible {
+  border-color: var(--accent);
+  background: var(--board-row);
+  color: #fff;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-button[data-tip]:hover::after,
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-button[data-tip]:focus-visible::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  padding: 6px 10px;
+  border: 1px solid var(--accent);
+  background: var(--board-bg);
+  color: #fff;
+  font-size: var(--fs-12);
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* 프로젝트 상세: 머리줄·제목·상태·진행 막대 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-project-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin: 0 0 var(--sp-4);
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-project-heading h2 {
+  margin: 0;
+  font-size: var(--fs-20);
+  font-weight: 800;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-detail-title {
+  color: var(--cmd-ink);
+  font-weight: 800;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-detail-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--cmd-ink);
+  font-weight: 800;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-detail-section-title::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-detail-track {
+  height: 8px;
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg-3);
+  overflow: hidden;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-detail-fill {
+  height: 100%;
+  border-radius: var(--radius-m);
+  background: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-detail-fill.plan,
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-detail-fill.planned {
+  background: var(--cmd-faint);
+}
+
+/* 수정 폼: 슬라이더·버튼 */
+.nexus-admin-layout.cmd-admin.cmd-admin input[type="range"] {
+  accent-color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.nexus-detail-edit-btn, .nexus-detail-edit-toggle) {
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.nexus-detail-edit-btn, .nexus-detail-edit-toggle):hover {
+  background: var(--cmd-ink);
+  color: #fff;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .btn-ghost {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .btn-ghost:hover {
+  border-color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .badge {
+  border-radius: var(--radius-m);
+}
+
+/* 인사 관리: 상태는 모두 같은 모양 (네모 불 + 글자) */
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-employee-status {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  min-height: 26px;
+  padding: 0 var(--sp-2) !important;
+  border: 0 !important;
+  border-radius: var(--radius-m) !important;
+  background: var(--cmd-bg-2) !important;
+  font-size: var(--fs-13);
+  font-weight: 700;
+  box-shadow: none !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-employee-status::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  flex: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-employee-status.hr-status-working { color: var(--green-text) !important; background: var(--green-tint) !important; }
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-employee-status.hr-status-vacation { color: var(--sky-text) !important; background: var(--sky-tint) !important; }
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-employee-status.hr-status-leave { color: var(--orange-text) !important; background: var(--orange-tint) !important; }
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-employee-status.hr-status-retired { color: var(--red-text) !important; background: var(--red-tint) !important; }
+
+/* 휴가 버튼: 같은 모양 + 그린 꺾쇠 */
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-vacation-button {
+  cursor: pointer;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-vacation-button::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  margin-left: 2px;
+  border-right: 1.6px solid currentColor;
+  border-bottom: 1.6px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-vacation-button[aria-expanded="true"]::after {
+  transform: translateY(1px) rotate(225deg);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-vacation-button:hover {
+  box-shadow: inset 0 0 0 1px currentColor !important;
+}
+
+/* 페이지 번호: 테두리 없는 숫자, 현재는 잉크 칸 + 앰버 숫자 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-pages, .merge-erp-module [class*="pages"], .merge-erp-module [class*="pagination"]) button {
+  min-width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 var(--sp-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-m);
+  background: none;
+  color: var(--cmd-ink-2);
+  font-family: var(--cmd-mono);
+  font-size: var(--fs-13);
+  font-weight: 700;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-pages, .merge-erp-module [class*="pages"], .merge-erp-module [class*="pagination"]) button:hover:not(:disabled) {
+  border-color: var(--cmd-rule-2);
+  background: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-pages, .merge-erp-module [class*="pages"], .merge-erp-module [class*="pagination"]) button:is(.active, [aria-current="page"]) {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-ink);
+  color: var(--accent);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-pages, .merge-erp-module [class*="pages"], .merge-erp-module [class*="pagination"]) button:disabled {
+  opacity: 0.4;
+}
+
+/* 직원 평가: 네모 판, 역할 표시, 숫자 칸은 괘선으로 나눈 한 줄 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.ev2026-panel, .ev2026-project-panel, .ev2026-detail) {
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m) !important;
+  background: var(--cmd-bg);
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .ev2026-role {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 var(--sp-2);
+  border: 0;
+  border-radius: var(--radius-m);
+  background: var(--cmd-ink);
+  color: var(--accent);
+  font-size: var(--fs-12);
+  font-weight: 700;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .ev2026-stats {
+  gap: 0;
+  border: 1px solid var(--cmd-rule);
+  background: var(--cmd-bg);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .ev2026-stats > * {
+  border: 0;
+  border-left: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m) !important;
+  background: none;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .ev2026-stats > *:first-child {
+  border-left: 0;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .ev2026-stats strong {
+  font-family: var(--cmd-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .ev2026-status {
+  border-radius: var(--radius-m);
+  font-style: normal;
+}
+
+/* 관리자 화면 전체: 남은 둥근 모서리 정리 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main :is(.panel, .card, section, input, select, textarea, .badge, .pill, button) {
+  border-radius: var(--radius-m);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main div:not([class*="avatar"]):not([class*="dot"]) {
+  border-radius: var(--radius-m);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-detail-description {
+  border-radius: var(--radius-m);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.nexus-progress-label, .nexus-progress-unit) {
+  color: var(--cmd-ink-2);
+}
+
+/* 페이지 번호가 잉크 버튼 규칙에 덮이지 않게 */
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-work-pages button {
+  border-color: transparent !important;
+  background: none !important;
+  color: var(--cmd-ink-2) !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-work-pages button:hover:not(:disabled) {
+  border-color: var(--cmd-rule-2) !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-work-pages button:is(.active, [aria-current="page"]) {
+  border-color: var(--cmd-ink) !important;
+  background: var(--cmd-ink) !important;
+  color: var(--accent) !important;
+}
+
+
+/* 업무 현황: 직원 목록 항목 (흰 줄 + 선택은 회색 바탕과 잉크 테두리) */
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-work-list {
+  border: 1px solid var(--cmd-rule);
+  background: var(--cmd-bg);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-work-list-title {
+  border-bottom: 2px solid var(--cmd-ink);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-work-list-title span {
+  color: var(--cmd-mute);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-work-person {
+  border: 0;
+  border-bottom: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-work-person:hover {
+  background: var(--cmd-bg-2);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-work-person.selected {
+  background: var(--cmd-bg-2);
+  box-shadow: inset 0 0 0 2px var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-work-person :is(strong, b) {
+  color: var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-work-person :is(small, span:not(.hr-work-person-count)) {
+  color: var(--cmd-mute);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-work-person-count {
+  border: 0;
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg-2);
+  color: var(--cmd-ink);
+  font-family: var(--cmd-mono);
+  font-size: var(--fs-12);
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-work-person.selected .hr-work-person-count {
+  background: var(--cmd-ink);
+  color: var(--accent);
+}
+
+/* 희승 모듈: 보조·필터 버튼과 링크 버튼 */
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-erp-module button.secondary {
+  border: 1px solid var(--cmd-rule-2) !important;
+  background: var(--cmd-bg) !important;
+  color: var(--cmd-ink) !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-erp-module button.secondary:hover:not(:disabled) {
+  border-color: var(--cmd-ink) !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-erp-module button.active {
+  border: 1px solid var(--cmd-ink) !important;
+  background: var(--cmd-ink) !important;
+  color: var(--accent) !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-erp-module .hr-register-toggle {
+  border: 1px solid var(--cmd-ink) !important;
+  background: var(--cmd-ink) !important;
+  color: #fff !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-erp-module .issue-alert-link {
+  border: 0;
+  background: none;
+  color: var(--cmd-ink) !important;
+  text-align: left;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-erp-module .issue-alert-link:hover {
+  text-decoration: underline;
+}
+
+
+/* 3차: 관리자 판 안쪽 여백은 위보다 아래를 넓게 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.merge-panel, .nexus-project-panel, .nexus-detail-panel, .panel) {
+  padding: var(--sp-4) var(--sp-5) var(--sp-8);
+  border-radius: var(--radius-m);
+}
+
+/* 4차: 관리자 표도 10px 박스로 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.nexus-project-table-wrap, .boards-table-wrap, .hr-table-wrap, .merge-table-wrap, .nexus-assignment-table-wrap) {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background: var(--cmd-bg);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin table :is(th, td):first-child {
+  padding-left: var(--sp-4);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin table :is(th, td):last-child {
+  padding-right: var(--sp-4);
+}
+
+/* 이슈 관리: 작은 안내 글씨 정리, 요약 칸 위쪽 색 선 제거 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.issue-workload-hint, .issue-alert-hint, .issue-stat-card small, .merge-title p, .section-head p) {
+  display: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .issue-stat-card {
+  border: 1px solid var(--cmd-rule-2) !important;
+  border-top: 1px solid var(--cmd-rule-2) !important;
+  border-radius: var(--radius-m);
+}
+
+/* 이슈 관리: 요약 칸 위쪽 색 선(가상 요소) 제거 */
+.nexus-admin-layout.cmd-admin.cmd-admin .issue-stat-card::before {
+  display: none;
+}
+
+/* =====================================================================
+   5차: 요청 버튼 · 정보 수정 막대 · 안내 말풍선
+   ===================================================================== */
+
+/* 요청 버튼: 마우스를 올려도 글자가 보이게 (기존 흰 hover 규칙을 덮어요) */
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-button:is(:hover, :focus-visible) {
+  background: var(--board-row) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .admin-alert-button[data-tip]:is(:hover, :focus-visible)::after {
+  border-radius: var(--radius-s);
+}
+
+/* 정보 수정: 바깥 칸은 투명, 버튼만 잉크 버튼 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-detail-edit-toggle,
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-detail-edit-toggle:hover {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: inherit !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-detail-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-m);
+  background: var(--cmd-ink);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-detail-edit-btn:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* =====================================================================
+   6차: 탭·필터 묶음을 커뮤니티와 같은 밑줄 탭으로 통일
+   (프로젝트 관리 탭 · 기간 필터 · 인사 관리 탭 · 이슈 상태 · 커뮤니티 관리)
+   ===================================================================== */
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main :is(.nexus-filter-chips, .hr-tabs, .issue-tabs) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  margin: 0 0 var(--sp-5);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: inset 0 -3px 0 var(--cmd-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main :is(.nexus-filter-chips, .hr-tabs, .issue-tabs) :is(button, .hr-tab, .nexus-filter-chip) {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 var(--sp-4);
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  color: var(--cmd-mute) !important;
+  font-size: var(--fs-15);
+  font-weight: 600;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main :is(.nexus-filter-chips, .hr-tabs, .issue-tabs) :is(button, .hr-tab, .nexus-filter-chip):hover:not(:disabled) {
+  color: var(--cmd-ink) !important;
+  background: none !important;
+  box-shadow: inset 0 -4px 0 var(--cmd-rule-2) !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main :is(.nexus-filter-chips, .hr-tabs, .issue-tabs) :is(.active, .is-active, [aria-pressed="true"], [aria-selected="true"]) {
+  color: var(--cmd-ink) !important;
+  font-weight: 800;
+  background: none !important;
+  box-shadow: inset 0 -4px 0 var(--accent) !important;
+}
+
+/* 연한 파랑 검색·필터 상자 → 연한 회색 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.nexus-member-toolbar, .hr-filters, .nexus-notice-filters, .boards-filters) {
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg-2);
+  box-shadow: none;
+}
+
+/* 밑줄 탭 묶음: 모서리를 둥글리면 아래 선 끝이 휘어서 직각으로 고정 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main :is(.nexus-filter-chips, .hr-tabs, .issue-tabs) {
+  border-radius: 0 !important;
+}
+
+/* =====================================================================
+   7차: 요약 카드 한 가지 양식 (인사 통계 분석 카드가 기준)
+   - 인사 업무 관리 · 관리자 대시보드 · 이슈 관리 · 인사 통계 분석이 모두 같은 카드
+   - 흰 바탕, 1px 테두리, 위쪽 3px 색 띠, 왼쪽 위 작은 이름 + 아래 큰 숫자
+   ===================================================================== */
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-summary, .merge-kpis, .issue-stats, .hr-overview-grid) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--sp-4);
+  margin: 0 0 var(--sp-5);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-summary > div, .merge-kpi, .issue-stat-card, .hr-overview-card) {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  min-height: 138px;
+  padding: var(--sp-5) var(--sp-5) var(--sp-6);
+  border: 1px solid var(--cmd-rule-2) !important;
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg) !important;
+  box-shadow: 0 5px 22px rgba(20, 23, 28, 0.04) !important;
+  overflow: hidden;
+  text-align: left;
+  transform: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-summary > div, .merge-kpi, .issue-stat-card, .hr-overview-card)::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute;
+  inset: 0 0 auto 0;
+  width: auto;
+  height: 3px;
+  border: 0;
+  border-radius: 0;
+  background: var(--cmd-faint);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-summary > div, .merge-kpis > .merge-kpi, .issue-stats > .issue-stat-card, .hr-overview-grid > .hr-overview-card):nth-child(2)::before { background: var(--lamp-ok); }
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-summary > div, .merge-kpis > .merge-kpi, .issue-stats > .issue-stat-card, .hr-overview-grid > .hr-overview-card):nth-child(3)::before { background: var(--line-sky); }
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-summary > div, .merge-kpis > .merge-kpi, .issue-stats > .issue-stat-card, .hr-overview-grid > .hr-overview-card):nth-child(4)::before { background: var(--accent); }
+
+/* 이슈 관리: 긴급은 주황, 기한 초과는 빨강 */
+.nexus-admin-layout.cmd-admin.cmd-admin .issue-stats > .issue-stat-card:nth-child(3)::before { background: var(--line-orange); }
+.nexus-admin-layout.cmd-admin.cmd-admin .issue-stats > .issue-stat-card:nth-child(4)::before { background: var(--prio-urgent); }
+
+/* 이름 (작게) */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-summary > div, .merge-kpi, .issue-stat-card, .hr-overview-card) > :is(span, p):first-child {
+  display: block;
+  grid-area: auto;
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-13);
+  font-weight: 700;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .merge-kpi > span::before {
+  display: none;
+}
+
+/* 숫자 (크게) */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-summary > div, .merge-kpi, .issue-stat-card, .hr-overview-card) > strong {
+  grid-area: auto;
+  color: var(--cmd-ink);
+  font-size: 2.0625rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 보조 숫자 (기한 초과 등) */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-summary > div, .merge-kpi, .issue-stat-card, .hr-overview-card) > small {
+  grid-area: auto;
+  color: var(--cmd-mute);
+  font-size: var(--fs-12);
+  font-weight: 600;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-summary > div, .merge-kpi, .issue-stat-card, .hr-overview-card) > small.hr-work-overdue-count {
+  color: var(--red-text);
+}
+
+button.merge-kpi:hover,
+.nexus-admin-layout.cmd-admin.cmd-admin button.merge-kpi:hover {
+  border-color: var(--cmd-ink) !important;
+  background: var(--cmd-bg) !important;
+}
+
+/* =====================================================================
+   7차: 접이식 3곳(건의자별 업무량 · 긴급·마감 임박 이슈 · 이슈 완료 요청 검토)을 같은 줄 높이로
+   ===================================================================== */
+
+.nexus-admin-layout.cmd-admin.cmd-admin details.issue-optional-section {
+  margin: 0 0 var(--sp-3);
+  padding: 0;
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin details.issue-optional-section > summary {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  margin: 0;
+  padding: 0 var(--sp-4);
+  color: var(--cmd-ink);
+  font-size: var(--fs-15);
+  font-weight: 800;
+  list-style: none;
+  cursor: pointer;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin details.issue-optional-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin details.issue-optional-section > summary:hover {
+  background: var(--cmd-bg-2);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin details.issue-optional-section > summary .issue-workload-title {
+  margin: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin details.issue-optional-section[open] > summary {
+  border-bottom: 1px solid var(--cmd-rule);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin details.issue-optional-section > :not(summary) {
+  padding: var(--sp-4) var(--sp-4) var(--sp-6);
+}
+
+/* =====================================================================
+   7차: 신규 프로젝트 등록 버튼은 오른쪽으로, 구석에 붙지 않게
+   ===================================================================== */
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-project-heading:has(> button:only-child) {
+  justify-content: flex-end;
+  margin: 0;
+  padding: var(--sp-4) var(--sp-5) var(--sp-3);
+}
+
+/* 막대 그래프: 밋밋한 검정 대신 그라데이션 (업무량 · 진행 막대 · 이슈 업무량) */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.nexus-workload-fill, .merge-bar-fill, .nexus-detail-fill:not(.plan):not(.planned)) {
+  background: var(--bar-ink);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .issue-workload-meter > span {
+  background: var(--bar-ink) !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-workload-fill {
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
