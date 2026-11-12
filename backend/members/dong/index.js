@@ -4,9 +4,34 @@
 const express = require('express');
 const db = require('../../db');
 const { createNotification } = require('../../notify');
+const { requireAuth } = require('../../middleware/session');
 
 const router = express.Router();
+router.get('/issues/:id/comments', requireAuth, async (req, res) => {
+  const issueId = Number(req.params.id);
 
+  if (!Number.isSafeInteger(issueId) || issueId <= 0) {
+    return res.status(400).json({ message: '이슈 번호 오류' });
+  }
+
+  try {
+    const [rows] = await db.query(`
+      SELECT c.comment_id AS id,
+             e.employee_name AS author,
+             c.content,
+             DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i') AS createdAt
+      FROM nexus_issue_comments c
+      LEFT JOIN employees e ON e.employee_id = c.employee_id
+      WHERE c.issue_id = ?
+      ORDER BY c.created_at ASC, c.comment_id ASC
+    `, [issueId]);
+
+    res.json(rows);
+  } catch (error) {
+    console.error('이슈 코멘트 조회 실패:', error);
+    res.status(500).json({ message: '코멘트를 불러오지 못했습니다.' });
+  }
+});
 // GET /api/dong/projects  -> [{ id, name, customerName }]
 router.get('/projects', async (req, res) => {
   try {

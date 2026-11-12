@@ -1,3 +1,4 @@
+import SearchInput from "../../../shared/SearchInput";
 import React, { useState, useEffect, useCallback } from "react";
 import "./HRManagement.css";
 
@@ -603,7 +604,7 @@ export default function HRManagement({
                     </form>
                 )}
                 <div className="hr-filters">
-                    <input aria-label="직원 이름 검색" placeholder="직원 이름 검색" value={employeeSearch} onChange={e => setEmployeeSearch(e.target.value)} />
+                    <SearchInput aria-label="직원 이름 검색" placeholder="직원 이름 검색" value={employeeSearch} onChange={e => setEmployeeSearch(e.target.value)} />
                     <select aria-label="부서 필터" value={departmentFilter} onChange={e => setDepartmentFilter(e.target.value)}>
                         <option value="전체">전체 부서</option>
                         {departments.map(x => <option key={x} value={x}>{x}</option>)}
@@ -725,7 +726,7 @@ export default function HRManagement({
                         </div>
                         <p className="hr-work-hint">담당자 지정 이슈는 재직 직원에게 배정된 건수입니다. 프로젝트 미지정은 전체 이슈 중 프로젝트 연결이 없는 건수입니다.</p>
                         <div className="hr-work-filters">
-                            <label>직원 검색<input value={workSearch} onChange={event => { setWorkSearch(event.target.value); setWorkPage(1); }} placeholder="이름 또는 부서 검색" /></label>
+                            <label>직원 검색<SearchInput value={workSearch} onChange={event => { setWorkSearch(event.target.value); setWorkPage(1); }} placeholder="이름 또는 부서 검색" /></label>
                             <label>부서<select value={workDepartment} onChange={event => { setWorkDepartment(event.target.value); setWorkPage(1); }}><option value="전체">전체 부서</option>{teams.map(teamName => <option key={teamName}>{teamName}</option>)}</select></label>
                             <label>업무 상태<select value={workStatus} onChange={event => { setWorkStatus(event.target.value); setWorkPage(1); }}><option>전체</option><option>진행 중</option><option>완료</option><option>업무 없음</option></select></label>
                         </div>
@@ -770,7 +771,7 @@ export default function HRManagement({
                     <span className="hr-total">퇴사자 {retiredEmployees.length}명</span>
                 </div>
                 <div className="hr-filters">
-                    <input aria-label="퇴사자 검색" placeholder="이름, 사번 또는 부서 검색" value={retiredSearch} onChange={e => setRetiredSearch(e.target.value)} />
+                    <SearchInput aria-label="퇴사자 검색" placeholder="이름, 사번 또는 부서 검색" value={retiredSearch} onChange={e => setRetiredSearch(e.target.value)} />
                 </div>
                 <div className="hr-table-wrap"><table className="hr-staff-table">
                     <thead><tr><th>이름</th><th>부서</th><th>직급</th><th>입사일</th><th>퇴사일</th><th>상태</th><th>관리</th></tr></thead>
@@ -825,7 +826,7 @@ export default function HRManagement({
 
                 <h3>휴가 승인 목록</h3>
                 <div className="hr-leave-filters">
-                    <input aria-label="휴가 직원 검색" placeholder="직원 이름·사번·휴가 종류 검색" value={leaveSearch} onChange={event => { setLeaveSearch(event.target.value); setLeavePage(1); }} />
+                    <SearchInput aria-label="휴가 직원 검색" placeholder="직원 이름·사번·휴가 종류 검색" value={leaveSearch} onChange={event => { setLeaveSearch(event.target.value); setLeavePage(1); }} />
                     <select aria-label="휴가 종류" value={leaveType} onChange={event => { setLeaveType(event.target.value); setLeavePage(1); }}>
                         <option value="전체">전체 종류</option>
                         {leaveTypes.map(type => <option key={type} value={type}>{type}</option>)}

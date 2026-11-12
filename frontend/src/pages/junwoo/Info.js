@@ -1,3 +1,4 @@
+import SearchInput from "../../shared/SearchInput";
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +8,7 @@ function Info({ info = [] }) {
     const navigate = useNavigate();
 
     // 검색 및 페이지
+    const [searchResetKey, setSearchResetKey] = useState(0);
     const [search, setSearch] = useState("");
     const [pages, setPages] = useState(1);
 
@@ -45,6 +47,7 @@ function Info({ info = [] }) {
 
     const handleReset = () => {
         setSearch("");
+        setSearchResetKey((key) => key + 1);
         setPages(1);
     };
 
@@ -81,7 +84,7 @@ function Info({ info = [] }) {
                     공지사항 제목 검색
                 </label>
 
-                <input
+                <SearchInput key={searchResetKey}
                     id="info-search"
                     type="text"
                     placeholder="공지사항 제목 검색"

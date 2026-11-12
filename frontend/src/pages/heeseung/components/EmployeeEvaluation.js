@@ -1,3 +1,4 @@
+import SearchInput from "../../../shared/SearchInput";
 import React, { useEffect, useState } from "react";
 import "./EmployeeEvaluation.css";
 const API_BASE = (process.env.REACT_APP_API_URL || "http://localhost:3333") + "/api/evaluations";
@@ -247,7 +248,7 @@ export default function EmployeeEvaluation() {
                     <span>
                         {filtered.length}건</span>
                 </div>
-                <input aria-label="직원 또는 프로젝트 검색" placeholder="직원명 또는 프로젝트 검색" value={search} onChange={e => setSearch(e.target.value)} />
+                <SearchInput aria-label="직원 또는 프로젝트 검색" placeholder="직원명 또는 프로젝트 검색" value={search} onChange={e => setSearch(e.target.value)} />
                 {loading && <p className="ev2026-empty">불러오는 중입니다...</p>}
                 {!loading && filtered.length === 0 && <p className="ev2026-empty">해당하는 평가가 없습니다. PM으로 배정된 프로젝트가 있는지 확인하세요.</p>}
                 {filtered.map(item => <button type="button" key={item.id} className={"ev2026-person " + (selected?.id === item.id ? "chosen" : "")} onClick={() => setSelectedId(item.id)}>

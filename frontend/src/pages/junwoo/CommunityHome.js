@@ -1,3 +1,4 @@
+import SearchInput from "../../shared/SearchInput";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ReactionGame from "./ReactionGame";
@@ -12,6 +13,8 @@ const boards = [
 ];
 
 function CommunityHome(props) {
+    
+    const [searchResetKey, setSearchResetKey] = useState(0);
     const [searchText, setSearchText] = useState("");
     const keyword = searchText.trim().toLowerCase();
     const recentPosts = props.posts.slice().sort(function (a, b) {
@@ -42,7 +45,7 @@ function CommunityHome(props) {
             <div className="lounge-home-grid">
                 <div className="lounge-home-boards">
                     <div className="lounge-search-toolbar lounge-home-search">
-                        <input
+                        <SearchInput key={searchResetKey}
                             type="search"
                             className="lounge-search-input"
                             aria-label="전체 게시판 제목 또는 내용 검색"
@@ -50,7 +53,7 @@ function CommunityHome(props) {
                             value={searchText}
                             onChange={event => setSearchText(event.target.value)}
                         />
-                        <button type="button" className="lounge-search-reset" onClick={() => setSearchText("")}>
+                        <button type="button" className="lounge-search-reset" onClick={() => (setSearchText(""), setSearchResetKey((key) => key + 1))}>
                             초기화
                         </button>
                     </div>

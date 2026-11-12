@@ -13,12 +13,18 @@ const router = express.Router();
 const LEADER_GRADES = ['팀장', '실장', '부장', '이사', '상무', '전무', '대표'];
 
 // 주어진 직원 번호가 모두 재직 중인지 확인합니다.
-async function allActiveEmployees(conn, ids) {
+async function allActiveEmployees(conn, ids, managerId = null) {
   if (!ids.length) return true;
+
   const [rows] = await conn.query(
-    "SELECT employee_id FROM employees WHERE employee_status = '재직' AND employee_id IN (?)",
-    [ids]
+    `SELECT employee_id
+     FROM employees
+     WHERE employee_status = '재직'
+       AND employee_id IN (?)
+       AND (employee_id = ? OR employee_grade IN ('사원', '대리'))`,
+    [ids, managerId]
   );
+
   return rows.length === ids.length;
 }
 
@@ -196,6 +202,11 @@ router.post('/projects', async (req, res) => {
     return res.status(400).json({ message: '팀원 번호가 올바르지 않습니다.' });
   if (!name || !name.trim() || !customer || !customer.trim() || !description || !description.trim())
     return res.status(400).json({ message: '프로젝트명, 고객사, 설명을 입력하세요.' });
+  if (!endDate) {
+    return res.status(400).json({
+      message: '프로젝트 마감일(종료 예정일)을 입력하세요.'
+    });
+  }
   const today = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit'
   }).format(new Date());
@@ -227,9 +238,15 @@ router.post('/projects', async (req, res) => {
         return res.status(400).json({ message: '담당자는 재직 중인 팀장 이상만 지정할 수 있습니다.' });
       }
     }
-    if (!(await allActiveEmployees(connection, [...new Set([...(managerNo ? [managerNo] : []), ...members])]))) {
+    if (!(await allActiveEmployees(
+      connection,
+      [...new Set([...(managerNo ? [managerNo] : []), ...members])],
+      managerNo
+    ))) {
       await connection.rollback();
-      return res.status(400).json({ message: '재직 중이 아닌 직원이 포함되어 있습니다.' });
+      return res.status(400).json({
+        message: '팀원은 재직 중인 사원 또는 대리만 배정할 수 있습니다.'
+      });
     }
     const [result] = await connection.query(
       `INSERT INTO projects (project_title, project_content, created_by, customer_id, budget, start_date, end_date, status, manager_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -490,9 +507,11 @@ router.put('/projects/:id/members', async (req, res) => {
       await connection.rollback();
       return res.status(400).json({ message: '완료된 프로젝트는 팀원을 변경할 수 없습니다.' });
     }
-    if (!(await allActiveEmployees(connection, memberIds))) {
+    if (!(await allActiveEmployees(connection, memberIds, projects[0].manager_id))) {
       await connection.rollback();
-      return res.status(400).json({ message: '재직 중이 아닌 직원이 포함되어 있습니다.' });
+      return res.status(400).json({
+        message: '팀원은 재직 중인 사원 또는 대리만 배정할 수 있습니다.'
+      });
     }
     const [beforeRows] = await connection.query('SELECT employee_id FROM project_members WHERE project_id = ?', [projectId]);
     await saveProjectMembers(connection, projectId, projects[0].manager_id, memberIds);

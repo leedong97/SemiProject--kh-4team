@@ -9,9 +9,9 @@
     margin-bottom: 24px;
     padding: 32px 36px;
     overflow: hidden;
-    border: 1px solid #d6e7ff;
+    border: 1px solid #356684;
     border-radius: 17px;
-    background: #eaf3ff;
+    background: #171d29;
 }
 
 /* 왼쪽 문구 */
@@ -20,7 +20,7 @@
 }
 
 .community-banner-label {
-    color: #087bdf;
+    color: #8cd7b0;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 2px;
@@ -28,7 +28,7 @@
 
 .community-banner .community-banner-title {
     margin: 12px 0 10px;
-    color: #153d69;
+    color: #e2eaf6;
     font-size: 29px;
     font-weight: 700;
     line-height: 1.4;
@@ -38,7 +38,7 @@
 
 .community-banner-description {
     margin: 0;
-    color: #6a87a7;
+    color: #b3c2d5;
     font-size: 12px;
     line-height: 1.8;
     word-break: keep-all;
@@ -53,10 +53,10 @@
     min-height: 40px;
     margin-top: 18px;
     padding: 10px 15px;
-    border: 1px solid #c6ddff;
+    border: 1px solid #356684;
     border-radius: 8px;
-    background: #f7faff;
-    color: #087bdf;
+    background: #171d29;
+    color: #8cd7b0;
     font-size: 12px;
     font-weight: 400;
     line-height: 1.5;
@@ -64,12 +64,12 @@
 }
 
 .community-banner a.community-banner-link:hover {
-    background: #fff;
-    color: #075ba6;
+    background: #171d29;
+    color: #72c7f3;
 }
 
 .community-banner-link:focus-visible {
-    outline: 2px solid #087bdf;
+    outline: 2px solid #356684;
     outline-offset: 4px;
 }
 
@@ -99,7 +99,7 @@
     width: 115px;
     height: 80px;
     border-radius: 24px;
-    background: #fff;
+    background: #171d29;
     box-shadow: 0 16px 35px rgba(70, 126, 194, 0.12);
     transform: rotate(-10deg);
 }
@@ -109,7 +109,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #087bdf;
+    background: #14527e;
 }
 
 /* 파란색 말풍선 */
@@ -123,8 +123,8 @@
     width: 106px;
     height: 70px;
     border-radius: 22px;
-    background: #1087ee;
-    color: #fff;
+    background: #14527e;
+    color: #eef3fa;
     font-size: 25px;
     font-weight: 500;
     box-shadow: 0 18px 35px rgba(49, 122, 207, 0.14);
@@ -142,7 +142,7 @@
     position: absolute;
     top: 30px;
     right: 25px;
-    color: #64a6ff;
+    color: #72c7f3;
     font-size: 35px;
     line-height: 1;
 }

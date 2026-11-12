@@ -4,9 +4,9 @@
     min-width: 0;
     box-sizing: border-box;
     padding: 30px;
-    background: #ffffff;
+    background: #171d29;
     border-radius: 20px;
-    color: #18385f;
+    color: #e2eaf6;
 }
 
 .team-shell .junwoo-project-list * {
@@ -19,12 +19,12 @@
     align-items: center;
     gap: 20px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #e0edff;
+    border-bottom: 1px solid #2b374a;
 }
 
 .team-shell .junwoo-project-list .jpl-header h1 {
     margin: 0;
-    color: #0782f5;
+    color: #72c7f3;
     font-size: 25px;
     font-weight: 700;
     letter-spacing: 1px;
@@ -32,7 +32,7 @@
 
 .team-shell .junwoo-project-list .jpl-header p {
     margin: 10px 0 0;
-    color: #7890b0;
+    color: #b3c2d5;
     font-size: 13px;
     line-height: 1.6;
 }
@@ -47,10 +47,10 @@
 .team-shell .junwoo-project-list .jpl-page-buttons button {
     min-height: 40px;
     padding: 9px 18px;
-    border: 1px solid #d3e4ff;
+    border: 1px solid #356684;
     border-radius: 10px;
-    background: #ffffff;
-    color: #4774a7;
+    background: #171d29;
+    color: #72c7f3;
     font-size: 13px;
     white-space: nowrap;
 }
@@ -58,8 +58,8 @@
 .team-shell .junwoo-project-list .jpl-reset:hover,
 .team-shell .junwoo-project-list .jpl-tabs button:hover,
 .team-shell .junwoo-project-list .jpl-page-buttons button:hover {
-    background: #eff6ff;
-    border-color: #8fc2ff;
+    background: #171d29;
+    border-color: #356684;
 }
 
 .team-shell .junwoo-project-list .jpl-summary {
@@ -67,7 +67,7 @@
     flex-wrap: wrap;
     gap: 8px 20px;
     margin: 20px 0;
-    color: #0782f5;
+    color: #72c7f3;
     font-size: 13px;
 }
 
@@ -79,7 +79,7 @@
 
 .team-shell .junwoo-project-list .jpl-filter label {
     margin-top: 2px;
-    color: #355983;
+    color: #72c7f3;
     font-size: 13px;
 }
 
@@ -91,20 +91,20 @@
     height: 46px;
     margin: 0 0 3px;
     padding: 0 14px;
-    border: 1px solid #d3e4ff;
+    border: 1px solid #356684;
     border-radius: 10px;
-    background: #f5f9ff;
-    color: #18385f;
+    background: #171d29;
+    color: #e2eaf6;
     font: inherit;
     font-size: 14px;
 }
 
 .team-shell .junwoo-project-list .jpl-filter input::placeholder {
-    color: #94accb;
+    color: #b3c2d5;
 }
 
 .team-shell .junwoo-project-list :is(input, select, button, a):focus-visible {
-    outline: 2px solid #168bf5;
+    outline: 2px solid #356684;
     outline-offset: 3px;
 }
 
@@ -118,13 +118,13 @@
 
 .team-shell .junwoo-project-list .jpl-list-header h2 {
     margin: 0;
-    color: #18385f;
+    color: #e2eaf6;
     font-size: 17px;
     font-weight: 600;
 }
 
 .team-shell .junwoo-project-list .jpl-list-header>span {
-    color: #0782f5;
+    color: #72c7f3;
     font-size: 13px;
 }
 
@@ -137,9 +137,9 @@
 
 .team-shell .junwoo-project-list .jpl-tabs button[aria-pressed="true"],
 .team-shell .junwoo-project-list .jpl-page-buttons button[aria-current="page"] {
-    border-color: #168bf5;
-    background: #168bf5;
-    color: #ffffff;
+    border-color: #356684;
+    background: #14527e;
+    color: #eef3fa;
     font-weight: 600;
 }
 
@@ -158,17 +158,17 @@
 
 .team-shell .junwoo-project-list .jpl-table th {
     padding: 16px 10px;
-    border-bottom: 1px solid #d9e9ff;
-    background: #e8f2ff;
-    color: #0782f5;
+    border-bottom: 1px solid #2b374a;
+    background: #171d29;
+    color: #72c7f3;
     text-align: center;
     font-weight: 600;
 }
 
 .team-shell .junwoo-project-list .jpl-table td {
     padding: 18px 10px;
-    border-bottom: 1px solid #e5efff;
-    color: #18385f;
+    border-bottom: 1px solid #2b374a;
+    color: #e2eaf6;
     text-align: center;
     vertical-align: middle;
     overflow-wrap: anywhere;
@@ -204,11 +204,11 @@
 }
 
 .team-shell .junwoo-project-list .jpl-table tbody tr:hover {
-    background: #f8fbff;
+    background: #171d29;
 }
 
 .team-shell .junwoo-project-list .jpl-project-title a {
-    color: #0782f5;
+    color: #72c7f3;
     text-decoration: none;
 }
 
@@ -225,18 +225,18 @@
 }
 
 .team-shell .junwoo-project-list .jpl-status[data-status="완료 요청"] {
-    color: #8a5c00;
-    background: #fff4d8;
+    color: #ff9fa8;
+    background: #171d29;
 }
 
 .team-shell .junwoo-project-list .jpl-status[data-status="완료"] {
-    color: #22724b;
-    background: #edf8f1;
+    color: #8cd7b0;
+    background: #171d29;
 }
 
 .team-shell .junwoo-project-list .jpl-table .jpl-empty {
     padding: 45px 12px;
-    color: #7890b0;
+    color: #b3c2d5;
 }
 
 .team-shell .junwoo-project-list .jpl-pagination {
@@ -246,7 +246,7 @@
     flex-wrap: wrap;
     gap: 16px;
     margin-top: 22px;
-    color: #7890b0;
+    color: #b3c2d5;
     font-size: 13px;
 }
 
@@ -264,12 +264,12 @@
 .team-shell .junwoo-project-list .jpl-page-buttons button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
-    background: #ffffff;
+    background: #171d29;
 }
 
 .team-shell .junwoo-project-list .jpl-footer {
     margin: 22px 0 0;
-    color: #7890b0;
+    color: #b3c2d5;
     font-size: 12px;
     line-height: 1.7;
 }
@@ -318,10 +318,10 @@
 
 .team-shell .junwoo-project-list .jpl-completion-button {
     padding: 7px 12px;
-    border: 1px solid #168bf5;
+    border: 1px solid #356684;
     border-radius: 7px;
-    background: #ffffff;
-    color: #0782f5;
+    background: #171d29;
+    color: #72c7f3;
     font-size: 12px;
     font-weight: 600;
     white-space: nowrap;
@@ -329,8 +329,8 @@
 }
 
 .team-shell .junwoo-project-list .jpl-completion-button:hover {
-    background: #168bf5;
-    color: #ffffff;
+    background: #14527e;
+    color: #eef3fa;
 }
 
 .team-shell .junwoo-project-list .jpl-completion-button:disabled {
@@ -339,7 +339,7 @@
 }
 
 .team-shell .junwoo-project-list .jpl-completion-wait {
-    color: #8a5c00;
+    color: #ff9fa8;
     font-size: 11px;
     white-space: nowrap;
 }

@@ -1,3 +1,4 @@
+import SearchInput from "../../shared/SearchInput";
 import React, { useState, useRef, useCallback } from "react";
 import PostForm from "./PostForm";
 import axios, {
@@ -45,6 +46,7 @@ function Board(props) {
     const savingRef = useRef(false);
 
     // 화면에 표시할 저장 상태
+    const [searchResetKey, setSearchResetKey] = useState(0);
     const [isSaving, setIsSaving] = useState(false);
 
     // 페이지네이션 기능
@@ -125,6 +127,7 @@ function Board(props) {
 
     function changeBoard(nextBoardName) {
         setSearchText("");
+        setSearchResetKey((key) => key + 1);
         setPage(1);
         setQuestionFilter("전체");
 
@@ -161,6 +164,7 @@ function Board(props) {
 
     function resetSearch() {
         setSearchText("");
+        setSearchResetKey((key) => key + 1);
         setQuestionFilter("전체");
         setPage(1);
     }
@@ -361,6 +365,7 @@ function Board(props) {
 
             if (isNewPost) {
                 setSearchText("");
+                setSearchResetKey((key) => key + 1);
                 setQuestionFilter("전체");
                 setPage(1);
             }
@@ -909,7 +914,7 @@ function Board(props) {
 
                 <div className="lounge-search-toolbar">
                     {questionFilterControl}
-                    <input
+                    <SearchInput key={searchResetKey}
                         type="search"
                         className="lounge-search-input"
                         aria-label="게시판 제목 또는 내용 검색"

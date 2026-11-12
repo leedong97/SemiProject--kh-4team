@@ -3,10 +3,10 @@
    클래스가 .login / .signup 안쪽에만 적용돼서 다른 페이지와 겹치지 않아요. */
 
 .login, .signup {
-    --main-color: #245fe6;
-    --main-color-dark: #1b4bc2;
-    --error-color: #e53935;
-    --border-color: #d0d5dd;
+    --main-color: #1686ca;
+    --main-color-dark: #1686ca;
+    --error-color: #ff9fa8;
+    --border-color: #2b374a;
 }
 
 /* 이 두 페이지 안에서만 padding이 칸 크기를 키우지 않게 해요 */
@@ -63,7 +63,7 @@
     padding: 12px;
     font-size: 16px;
     font-weight: 600;
-    color: #fff;
+    color: #eef3fa;
     background: var(--main-color);
     border: none;
     border-radius: 8px;
@@ -91,5 +91,5 @@
 
 /* 카드 배경 (바깥 틀은 Frame.js / woojin.css 가 맡아요) */
 .login, .signup {
-    background: #fff;
+    background: #171d29;
 }

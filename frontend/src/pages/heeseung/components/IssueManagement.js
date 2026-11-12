@@ -1,3 +1,4 @@
+import SearchInput from "../../../shared/SearchInput";
 import React, { useState, useEffect } from "react";
 import "./IssueManagement.css";
 import { erpRequest } from "../erpApi";
@@ -17,6 +18,7 @@ export default function IssueManagement({
     const loginUserName = loginUser.name || loginUser.employee_name || "임시 사용자";
 
     // 1. 이슈 등록 입력값
+    const [searchResetKey, setSearchResetKey] = useState(0);
     const [title, setTitle] = useState("");
     const [assigneeId, setAssigneeId] = useState("");
     const [due, setDue] = useState("");
@@ -224,6 +226,8 @@ export default function IssueManagement({
         setCurrentPage(1);
 
         setSearch("");
+
+        setSearchResetKey((key) => key + 1);
         setStatusFilter("전체");
         setPriorityFilter("전체");
         setAssigneeFilter("전체");
@@ -647,7 +651,7 @@ export default function IssueManagement({
             <IssueCompletion admin onReviewed={() => loadIssues()} />
         </details>
         <div className="issue-toolbar">
-            <input className="search" placeholder="이슈 제목 검색" value={search} onChange={e => {
+            <SearchInput key={searchResetKey} className="search" placeholder="이슈 제목 검색" value={search} onChange={e => {
                 setSearch(e.target.value);
                 setCurrentPage(1);
             }} />

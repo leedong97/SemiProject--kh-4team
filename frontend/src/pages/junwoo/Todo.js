@@ -1,3 +1,4 @@
+import SearchInput from "../../shared/SearchInput";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import getLoginUser from "../woojin/getLoginUser";
@@ -141,7 +142,7 @@ function Todo({ todo = [] }) {
                 </select>
 
                 <label htmlFor="jpl-title">프로젝트 제목 검색</label>
-                <input
+                <SearchInput
                     id="jpl-title"
                     type="search"
                     placeholder="프로젝트 제목 검색"
@@ -150,7 +151,7 @@ function Todo({ todo = [] }) {
                 />
 
                 <label htmlFor="jpl-manager">프로젝트 담당자 검색</label>
-                <input
+                <SearchInput
                     id="jpl-manager"
                     type="search"
                     placeholder="담당자 이름"

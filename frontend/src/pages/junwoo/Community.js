@@ -54,15 +54,19 @@ function Community(props) {
 
             try {
                 // 첫 페이지 조회
+                console.log("🔴 1. 첫 페이지 API 호출 시작");
+                console.log("🔴 실제 요청 주소:", API_BASE + "/api/community");
+                console.log("🔴 Axios 요청 시작 시간:", new Date().toLocaleTimeString());
                 const firstResponse = await axios.get(
                     API_BASE + "/api/community",
                     {
                         params: {
                             page: 1
-                        }
+                        },
+                        timeout: 10000 // 🔴 수정: 최대 10초 대기
                     }
                 );
-
+                console.log("🟢 2. 첫 페이지 응답 성공:", firstResponse.data);
                 if (cancelled) {
                     return;
                 }
@@ -72,6 +76,7 @@ function Community(props) {
 
                 // 2페이지부터 마지막 페이지까지 조회
                 for (let pageNumber = 2; pageNumber <= totalPages; pageNumber++) {
+                    console.log("🔴 추가 페이지 요청:", pageNumber);
                     const response = await axios.get(
                         API_BASE + "/api/community",
                         {
@@ -80,7 +85,7 @@ function Community(props) {
                             }
                         }
                     );
-
+                    console.log("🟢 추가 페이지 응답:", pageNumber);
                     if (cancelled) {
                         return;
                     }
@@ -96,11 +101,11 @@ function Community(props) {
                 if (cancelled) {
                     return;
                 }
-
+                console.log("🔴 3. 댓글 수 API 요청 시작");
                 const countsResponse = await axios.get(
                     API_BASE + "/api/community-comment-counts"
                 );
-
+                console.log("🟢 4. 댓글 수 응답 성공:", countsResponse.data);
                 if (cancelled) {
                     return;
                 }
@@ -121,7 +126,7 @@ function Community(props) {
                             countByPostId.get(String(post.id)) ?? 0,
                     };
                 });
-
+                console.log("🟢 5. 최종 게시글 수:", postsWithCounts.length);
                 setPosts(postsWithCounts);
             } catch (error) {
                 console.error("커뮤니티 글 불러오기 실패:", error);

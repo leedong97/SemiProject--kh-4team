@@ -9,8 +9,8 @@
 body:has(.team-shell),
 body:has(.woojin-frame) {
   font-family: 'Malgun Gothic', sans-serif;
-  background: linear-gradient(135deg, #ecf1fb, #f4f8ff);
-  color: #303748;
+  background: linear-gradient(135deg, #171d29, #171d29);
+  color: #e2eaf6;
 }
 
 .team-shell,
@@ -42,7 +42,7 @@ body:has(.woojin-frame) {
   content: "";
   grid-column: 1 / -1;
   grid-row: 1;
-  background: white;
+  background: #171d29;
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
 }
@@ -69,7 +69,7 @@ body:has(.woojin-frame) {
 .team-shell .logo h3 {
   margin: 0;
   font-size: 24px;
-  color: #245fe6;
+  color: #8cd7b0;
 }
 
 /* 업무현황 메뉴 */
@@ -94,7 +94,7 @@ body:has(.woojin-frame) {
 .team-shell .info-menu h3 {
   margin: 0;
   font-size: 15px;
-  color: #4d566c;
+  color: #e2eaf6;
   font-weight: 500;
   padding: 12px 15px;
   border-radius: 8px;
@@ -105,8 +105,8 @@ body:has(.woojin-frame) {
 
 .team-shell .todo-menu h3:hover,
 .team-shell .info-menu h3:hover {
-  background: #e4eaf9;
-  color: #245fe6;
+  background: #171d29;
+  color: #8cd7b0;
 }
 
 /* 사용자 이름 */
@@ -121,7 +121,7 @@ body:has(.woojin-frame) {
 
 .team-shell .my-name>h4 {
   margin: 0;
-  color: #245fe6;
+  color: #8cd7b0;
   font-size: 15px;
   white-space: nowrap;
 }
@@ -134,7 +134,7 @@ body:has(.woojin-frame) {
   right: 10px;
 
   width: 140px;
-  background: white;
+  background: #171d29;
   border-radius: 10px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 
@@ -151,15 +151,15 @@ body:has(.woojin-frame) {
   margin: 0;
   padding: 12px;
   font-size: 14px;
-  color: #4d566c;
+  color: #e2eaf6;
   font-weight: 400;
   border-radius: 8px;
   cursor: pointer;
 }
 
 .team-shell .log h4:hover {
-  background: #e4eaf9;
-  color: #245fe6;
+  background: #171d29;
+  color: #8cd7b0;
 }
 
 /* 사용자 이름에 마우스 올리면 표시 */
@@ -266,7 +266,7 @@ body:has(.woojin-frame) {
 .team-shell .info-menu h3 {
   margin: 0;
   font-size: 15px;
-  color: #4d566c;
+  color: #e2eaf6;
   font-weight: 500;
   padding: 12px 15px;
   border-radius: 8px;
@@ -281,8 +281,8 @@ body:has(.woojin-frame) {
 .team-shell .todo-menu h3:hover,
 .team-shell .issue-menu h3:hover,
 .team-shell .info-menu h3:hover {
-  background: #e4eaf9;
-  color: #245fe6;
+  background: #171d29;
+  color: #8cd7b0;
 }
 
 /* 메뉴 링크 */
@@ -372,12 +372,12 @@ body:has(.woojin-frame) {
    주의: 공통 shell.css이므로 팀 전체 화면에 영향을 줄 수 있습니다. */
 
 body:has(.team-shell) {
-  background: linear-gradient(135deg, #F5F9FF 0%, #EEF5FF 55%, #F8FBFF 100%);
-  color: #263A56;
+  background: linear-gradient(135deg, #171d29 0%, #171d29 55%, #171d29 100%);
+  color: #e2eaf6;
 }
 
 .team-shell::before {
-  border: 1px solid #E2ECF8;
+  border: 1px solid #2b374a;
   box-shadow: 0 9px 28px rgba(15, 55, 110, .07);
 }
 
@@ -385,19 +385,19 @@ body:has(.team-shell) {
 .team-shell .todo-menu h3,
 .team-shell .issue-menu h3,
 .team-shell .info-menu h3 {
-  color: #385577;
+  color: #e2eaf6;
 }
 
 .team-shell .dash-menu h3:hover,
 .team-shell .todo-menu h3:hover,
 .team-shell .issue-menu h3:hover,
 .team-shell .info-menu h3:hover {
-  background: #EAF4FF;
-  color: #087BDF;
+  background: #171d29;
+  color: #8cd7b0;
 }
 
 .team-shell .my-name>h4 {
-  color: #087BDF;
+  color: #8cd7b0;
 }
 
 .team-shell .my-name>h4 a {
@@ -406,17 +406,17 @@ body:has(.team-shell) {
 }
 
 .team-shell .log {
-  border: 1px solid #E0EAF7;
+  border: 1px solid #2b374a;
   box-shadow: 0 10px 24px rgba(15, 55, 110, .11);
 }
 
 .team-shell .log h4 {
-  color: #385577;
+  color: #e2eaf6;
 }
 
 .team-shell .log h4:hover {
-  background: #EAF4FF;
-  color: #087BDF;
+  background: #171d29;
+  color: #8cd7b0;
 }
 
 /* 현재 페이지 메뉴 하이라이트 (관리자 화면의 활성 메뉴와 같은 모양) */
@@ -424,8 +424,8 @@ body:has(.team-shell) {
 .team-shell .todo-menu.active h3,
 .team-shell .issue-menu.active h3,
 .team-shell .info-menu.active h3 {
-  background: #eaf1ff;
-  color: #2154c3;
+  background: #171d29;
+  color: #72c7f3;
   font-weight: 600;
   border-radius: 9px;
   box-shadow: inset 0 -2px 0 #3868df;
@@ -452,7 +452,7 @@ body:has(.team-shell) {
   margin: 0;
   padding: 12px 15px;
   border-radius: 8px;
-  color: #385577;
+  color: #e2eaf6;
   font-size: 15px;
   font-weight: 500;
   white-space: nowrap;
@@ -464,14 +464,14 @@ body:has(.team-shell) {
 }
 
 .team-shell>.community-menu h3:hover {
-  background-color: #eaf4ff;
-  color: #087bdf;
+  background-color: #171d29;
+  color: #8cd7b0;
 }
 
 /* 커뮤니티 화면일 때 메뉴 색상 */
 .team-shell>.community-menu.active h3 {
-  background-color: #eaf1ff;
-  color: #2154c3;
+  background-color: #171d29;
+  color: #72c7f3;
   font-weight: 600;
   box-shadow: inset 0 -2px 0 #3868df;
 }
@@ -531,25 +531,25 @@ body:has(.team-shell) {
 .team-shell .issue-menu.active h3,
 .team-shell>.community-menu h3,
 .team-shell>.community-menu.active h3 {
-  color: #087BDF;
+  color: #8cd7b0;
 }
 
 /* 기본 글자색 */
 .team-shell .issue-menu h3,
 .team-shell>.community-menu h3 {
-  color: #385577;
+  color: #e2eaf6;
 }
 
 /* 마우스를 올렸을 때 */
 .team-shell .issue-menu h3:hover,
 .team-shell>.community-menu h3:hover {
-  color: #087BDF;
+  color: #8cd7b0;
 }
 
 /* 현재 선택된 메뉴 */
 .team-shell .issue-menu.active h3,
 .team-shell>.community-menu.active h3 {
-  color: #2154c3;
+  color: #72c7f3;
 }
 
 /* 이름 옆 안 읽은 알림 수 배지 (우진: 마이페이지 알림 탭과 같은 데이터) */
@@ -559,8 +559,8 @@ body:has(.team-shell) {
   margin-left: 6px;
   padding: 0 6px;
   border-radius: 9px;
-  background: #e5484d;
-  color: #fff;
+  background: #553039;
+  color: #eef3fa;
   font-size: 11px;
   font-weight: bold;
   line-height: 18px;

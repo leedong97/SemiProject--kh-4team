@@ -15,7 +15,10 @@ export default function EmployeePicker({
   const isSelected = (employee) => selectedIds.includes(employee.id);
 
   const availableEmployees = activeEmployees.filter(
-    (employee) => !isSelected(employee) && !isExcluded(employee)
+    (employee) =>
+      ["사원", "대리"].includes(employee.rank) &&
+      !isSelected(employee) &&
+      !isExcluded(employee)
   );
   const selectedEmployees = activeEmployees.filter(
     (employee) => isSelected(employee) && !isExcluded(employee)

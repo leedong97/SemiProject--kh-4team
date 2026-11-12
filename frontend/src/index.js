@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import './erp-theme.css';
 
 // BrowserRouter(주소 관리자)는 프로젝트 전체에서 딱 한 번, 여기에만 둡니다.
 // 각자 폴더 안에서는 절대 BrowserRouter 를 또 만들지 마세요! (Router 안에 Router → 에러)

@@ -3,15 +3,15 @@
   align-items: center;
   justify-content: center;
   padding: 11px 18px;
-  border: 1px solid #3b78f0;
+  border: 1px solid #356684;
   border-radius: 8px;
-  background: #3b78f0;
-  color: #fff;
+  background: #14527e;
+  color: #eef3fa;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
 .notice-admin-calendar-register-btn:hover {
-  background: #245fe6;
-  border-color: #245fe6;
+  background: #14527e;
+  border-color: #356684;
 }

@@ -246,8 +246,37 @@ router.patch('/issues/:id', async (req, res) => {
         const params = keys.map(k => values[k] === '' ? null : values[k]);
         if (values.status === '완료') sets.push('issue_resolved_at = NOW()');
         if (values.status === '재오픈') sets.push('issue_resolved_at = NULL');
-        const [result] = await pool.query('UPDATE issues SET ' + sets.join(', ') + ' WHERE issue_id = ?', [...params, id]);
-        if (!result.affectedRows) return res.status(404).json({ message: '이슈가 없습니다.' });
+        if (!beforeIssue.length) {
+            return res.status(404).json({ message: '이슈가 없습니다.' });
+        }
+
+        let condition = '';
+        const conditionParams = [];
+
+        if (values.status !== undefined) {
+            // 마감일도 함께 수정하면 이번에 입력한 날짜로 판단합니다.
+            const hasDuePatch = keys.includes('due');
+            const dueExpression = hasDuePatch ? '?' : 'issue_due_date';
+
+            condition = ` AND (issue_status = ? OR ${dueExpression} IS NOT NULL)`;
+            conditionParams.push(values.status);
+
+            if (hasDuePatch) {
+                conditionParams.push(values.due || null);
+            }
+        }
+
+        const [result] = await pool.query(
+            'UPDATE issues SET ' + sets.join(', ') +
+            ' WHERE issue_id = ?' + condition,
+            [...params, id, ...conditionParams]
+        );
+
+        if (!result.affectedRows) {
+            return res.status(400).json({
+                message: '마감일을 먼저 입력해야 처리 상태를 변경할 수 있습니다.'
+            });
+        }
         // 알림: 상태가 바뀌면 등록자와 담당자에게, 담당자가 바뀌면 새 담당자에게 알려요 (처리한 본인은 제외)
         const before = beforeIssue[0];
 

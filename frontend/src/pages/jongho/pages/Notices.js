@@ -1,3 +1,4 @@
+import SearchInput from "../../../shared/SearchInput";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useJunwoo } from "../../junwoo/JunwooContext";
@@ -261,7 +262,7 @@ function Notices() {
             <div className="boards-list">
                 <div className="boards-list-header">
                     <h2>공지사항 목록</h2>
-                    <input value={search} onChange={e => setSearch(e.target.value)} placeholder="제목 또는 내용 검색" />
+                    <SearchInput value={search} onChange={e => setSearch(e.target.value)} placeholder="제목 또는 내용 검색" />
                 </div>
 
                 <div className="boards-filters nexus-notice-filters">

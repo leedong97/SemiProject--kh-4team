@@ -1,3 +1,4 @@
+import SearchInput from "../../shared/SearchInput";
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +8,7 @@ function Issue({ projects, issues, setIssues }) {
 
 
     const navigate = useNavigate();
+    const [searchResetKey, setSearchResetKey] = useState(0);
     const [selectedProject, setSelectedProject] = useState("");
     const [search, setSearch] = useState("");
     const [searchPerson, setSearchPerson] = useState("")
@@ -20,6 +22,7 @@ function Issue({ projects, issues, setIssues }) {
     const handleProjectChange = (e) => {
         setSelectedProject(e.target.value);
         setSearch("");
+        setSearchResetKey((key) => key + 1);
     };
 
     const filteredIssues = issues.filter((issue) => {
@@ -109,13 +112,13 @@ function Issue({ projects, issues, setIssues }) {
                     이슈 제목 검색
                 </label>
 
-                <input id="issue-search" type="text" placeholder="이슈 제목 검색" value={search} onChange={(e) => setSearch(e.target.value)} />
+                <SearchInput key={searchResetKey} id="issue-search" type="text" placeholder="이슈 제목 검색" value={search} onChange={(e) => setSearch(e.target.value)} />
 
                 <label htmlFor="issue-search">
                     이슈 건의자 검색
                 </label>
 
-                <input id="issue-search" type="text" placeholder="건의자 이름" value={searchPerson} onChange={(e) => setSearchPerson(e.target.value)} />
+                <SearchInput key={searchResetKey} id="issue-search" type="text" placeholder="건의자 이름" value={searchPerson} onChange={(e) => setSearchPerson(e.target.value)} />
             </section>
 
 

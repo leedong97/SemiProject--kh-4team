@@ -89,7 +89,7 @@ function ProjectManagement({
 
   // 탭별 정렬 선택
   const [requestSort, setRequestSort] = useState("latest");
-  const [quoteSort, setQuoteSort] = useState("company");
+  const [quoteSort, setQuoteSort] = useState("latest");
 
   const REQUEST_SORT_OPTIONS = [
     { value: "latest", label: "요청일 최신순" },
@@ -214,7 +214,10 @@ function ProjectManagement({
       alert("고객사, 프로젝트명, 설명을 입력하세요.");
       return;
     }
-
+    if (!form.endDate) {
+      alert("프로젝트 마감일(종료 예정일)을 입력하세요.");
+      return;
+    }
     const today = todayString();
     if (form.startDate && form.startDate < today) {
       alert("시작 예정일은 오늘 이후로 입력하세요.");

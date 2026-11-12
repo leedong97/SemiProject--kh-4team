@@ -51,12 +51,12 @@ export default function QuoteRequestList({ quotes, busy, onChangeStatus, onCreat
           </tr>
         </thead>
         <tbody>
-          {quotes.map((q) => {
+        {quotes.map((q, index) => {
             const open = openIds.includes(q.id);
             return (
               <Fragment key={q.id}>
                 <tr>
-                  <td>{q.id}</td>
+                  <td>{index + 1}</td>
                   <td>{q.company}</td>
                   <td>{q.service}</td>
                   <td>{q.applicantName || "-"}</td>
