@@ -179,8 +179,8 @@ router.post('/issues', async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?, '접수', ?)`,
             [Number(projectId), reporterId, assigneeId || null,
             title.trim(), String(description || ''), priority, due || null]);
-        // 알림: 담당자로 지정된 직원에게 알려요 (본인이 본인을 지정한 경우는 제외)
-        if (assigneeId != null && String(assigneeId) !== String(req.user.employee_id)) {
+        // 알림: 담당자로 지정된 직원에게 알려요 (회의 결정: 본인이 본인을 지정해도 알림을 받아요)
+        if (assigneeId != null) {
             await createNotification(assigneeId, '이슈', '새 이슈 "' + title.trim() + '"의 담당자로 지정됐어요.', '/issue/' + result.insertId);
         }
         // 새 이슈 등록 후 연결된 사용자 화면의 목록 갱신
@@ -263,17 +263,15 @@ router.patch('/issues/:id', async (req, res) => {
         }
 
         if (before) {
-            const actorId = String(req.user.employee_id);
             const link = '/issue/' + id;
             if (values.status !== undefined && values.status !== before.issue_status) {
-                const targets = [...new Set([before.reporter_id, before.assigned_employee_id].filter(v => v != null).map(String))]
-                    .filter(v => v !== actorId);
+                // 회의 결정: 상태를 바꾼 본인도 보고자/담당자이면 알림을 받아요 (Set 으로 같은 사람은 한 번만)
+                const targets = [...new Set([before.reporter_id, before.assigned_employee_id].filter(v => v != null).map(String))];
                 for (const target of targets) {
                     await createNotification(target, '이슈', '이슈 "' + before.issue_title + '"의 상태가 ' + values.status + '(으)로 바뀌었어요.', link);
                 }
             }
-            if (values.assigneeId != null && String(values.assigneeId) !== String(before.assigned_employee_id) &&
-                String(values.assigneeId) !== actorId) {
+            if (values.assigneeId != null && String(values.assigneeId) !== String(before.assigned_employee_id)) {
                 await createNotification(values.assigneeId, '이슈', '이슈 "' + before.issue_title + '"의 담당자로 지정됐어요.', link);
             }
         }
@@ -319,9 +317,9 @@ router.post('/issues/:id/comments', async (req, res) => {
         const [result] = await pool.query(
             'INSERT INTO nexus_issue_comments (issue_id, employee_id, content) VALUES (?, ?, ?)',
             [issueId, req.user.employee_id, content]);
-        // 본인에게는 알림을 보내지 않습니다. 기존 알림 탭에서 확인할 수 있습니다.
+        // 회의 결정: 본인이 담당자인 이슈에 본인이 코멘트를 남겨도 알림을 받아요.
         const assigneeId = issues[0].assigned_employee_id;
-        if (assigneeId && String(assigneeId) !== String(req.user.employee_id)) {
+        if (assigneeId) {
             const [authors] = await pool.query('SELECT employee_name FROM employees WHERE employee_id = ?', [req.user.employee_id]);
             const authorName = authors[0]?.employee_name || '직원';
             await createNotification(assigneeId, '이슈',

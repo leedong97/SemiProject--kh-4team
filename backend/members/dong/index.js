@@ -45,7 +45,8 @@ router.get('/issues', async (req, res) => {
         assignee.employee_name  AS assigneeName,
         assignee.employee_grade AS assigneeGrade,
         assignee.employee_phone AS assigneePhone,
-        p.project_title      AS projectName
+        p.project_title      AS projectName,
+        c.customer_name      AS customerName
         FROM issues i
         LEFT JOIN employees e ON i.reporter_id = e.employee_id LEFT JOIN employees assignee ON i.assigned_employee_id = assignee.employee_id
         LEFT JOIN projects  p ON i.project_id  = p.project_id
