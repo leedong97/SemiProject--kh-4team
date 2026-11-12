@@ -70,6 +70,7 @@ export default function IssueManagement({
                     number: Number(item.id),
                     projectId: item.projectId == null ? null : Number(item.projectId),
                     assigneeId: item.assigneeId == null ? null : Number(item.assigneeId),
+                    reporterId: item.reporterId == null ? null : Number(item.reporterId),
                     due: item.due || '',
                     comments: [], history: [], workLogs: []
                 };
@@ -535,7 +536,6 @@ export default function IssueManagement({
     return <section className="issue-Management">
         {/* 페이지 제목 */}
         <div className="section-head">
-            <h2>이슈 관리</h2>
             <p>프로젝트별 이슈 현황 및 작업 관리</p>
         </div>
         <div className="issue-stats">
@@ -666,7 +666,7 @@ export default function IssueManagement({
                     </option>)}
                 </select>
                 <select value={assigneeId} onChange={e => setAssigneeId(e.target.value)}>
-                    <option value="">건의자 미지정</option>
+                    <option value="">담당자 미지정</option>
                     {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>
                         {employee.name || employee.employee_name}
                     </option>)}
@@ -766,7 +766,7 @@ export default function IssueManagement({
                             <div><span>프로젝트명</span><strong>{getProjectInfo(issue).name}</strong></div>
                             <div><span>고객사</span><strong>{getProjectInfo(issue).customer}</strong></div>
                             <div><span>프로젝트 마감일</span><strong>{getProjectInfo(issue).endDate}</strong></div>
-                            <div><span>건의자</span><strong>{employeeName(issue.assigneeId)}</strong></div>
+                            <div><span>건의자</span><strong>{issue.reporterName || employeeName(issue.reporterId)}</strong></div>
                         </div>
                     </div>
                 </div>
@@ -795,12 +795,7 @@ export default function IssueManagement({
                     <div className="form-row">
                         <label>
                             건의자
-                            <select value={issue.assigneeId || ""} onChange={e => changeAssignee(issue, e.target.value)}>
-                                <option value="">미지정</option>
-                                {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>
-                                    {employee.name || employee.employee_name}
-                                </option>)}
-                            </select>
+                            <strong>{issue.reporterName || employeeName(issue.reporterId)}</strong>
                         </label>
                         <label>
                             마감일

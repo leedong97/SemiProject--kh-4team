@@ -432,10 +432,8 @@ function ProjectManagement({
       {page === "list" ? (
         <>
           <div className="nexus-project-heading">
-            <div>
-              <p>관리자 / 프로젝트 관리</p>
-              <h2>프로젝트 관리</h2>
-            </div>
+
+
 
             <button
               type="button"
@@ -462,40 +460,40 @@ function ProjectManagement({
           />
 
           {listTab === "projects" && (
-          <div className="card nexus-project-panel">
+            <div className="card nexus-project-panel">
 
-            <SearchSortBar
-              searchId="project-search"
-              placeholder="프로젝트명 또는 고객사 검색"
-              search={search}
-              onSearchChange={setSearch}
-              selects={[
-                { id: "project-sort", label: "정렬 기준", value: sortOption, onChange: setSortOption, options: SORT_OPTIONS },
-              ]}
-            />
-            <FilterChips
-              label="기간 필터"
-              value={overdueOnly}
-              onChange={setOverdueOnly}
-              options={[
-                { value: false, label: "전체" },
-                { value: true, label: `기간 초과 (${overdueCount})` },
-              ]}
-            />
+              <SearchSortBar
+                searchId="project-search"
+                placeholder="프로젝트명 또는 고객사 검색"
+                search={search}
+                onSearchChange={setSearch}
+                selects={[
+                  { id: "project-sort", label: "정렬 기준", value: sortOption, onChange: setSortOption, options: SORT_OPTIONS },
+                ]}
+              />
+              <FilterChips
+                label="기간 필터"
+                value={overdueOnly}
+                onChange={setOverdueOnly}
+                options={[
+                  { value: false, label: "전체" },
+                  { value: true, label: `기간 초과 (${overdueCount})` },
+                ]}
+              />
 
-            <ProjectTable
-              startIndex={(currentPage - 1) * PROJECT_PAGE_SIZE}
-              projects={pagedProjects}
-              employees={employees}
-              isEmpty={filteredProjects.length === 0}
-              isOverdue={isOverdue}
-              onOpenProject={openDetail}
-              onManageMembers={() => navigate("/admin/members")}
-              onDeleteProject={deleteProject}
-            />
+              <ProjectTable
+                startIndex={(currentPage - 1) * PROJECT_PAGE_SIZE}
+                projects={pagedProjects}
+                employees={employees}
+                isEmpty={filteredProjects.length === 0}
+                isOverdue={isOverdue}
+                onOpenProject={openDetail}
+                onManageMembers={() => navigate("/admin/members")}
+                onDeleteProject={deleteProject}
+              />
 
-            <NumberedPager currentPage={currentPage} totalPages={totalPages} total={total} pageSize={PROJECT_PAGE_SIZE} onPage={goTo} />
-          </div>
+              <NumberedPager currentPage={currentPage} totalPages={totalPages} total={total} pageSize={PROJECT_PAGE_SIZE} onPage={goTo} />
+            </div>
           )}
 
           {listTab === "requests" && (

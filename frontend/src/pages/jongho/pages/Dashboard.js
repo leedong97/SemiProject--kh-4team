@@ -80,16 +80,6 @@ export default function Dashboard({ projects = [], data }) {
             {/* ================================ */}
 
             <div className="merge-title">
-                <div>
-                    <span>WORKSPACE / OVERVIEW</span>
-
-                    <h1>운영 대시보드</h1>
-
-                    <p>
-                        프로젝트, 이슈, 인사 및 평가 현황을 한눈에 확인하세요.
-                    </p>
-                </div>
-
             </div>
 
 

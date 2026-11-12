@@ -44,8 +44,7 @@
 .nexus-admin-layout :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) { max-width: 100%; border: 1px solid #d6dfeb; border-radius: 8px; background: #fff; color: var(--admin-text); font-family: inherit; }
 .nexus-admin-layout :is(input,select,textarea)::placeholder { color: #94a3b8; }
 /* 테이블: 동일한 헤더 색, 구분선, 행 간격 */
-.nexus-admin-layout table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.nexus-admin-layout table th { background: #f3f6fb; color: #475569; font-weight: 700; text-align: left; }
+.nexus-admin-layout table { width: 100%; border-collapse: collapse; font-size: 13px; } .nexus-admin-layout table th { background: #f3f6fb; color: #475569; font-weight: 700; text-align: left; font-size: 13px; }
 .nexus-admin-layout table :is(th,td) { padding: 13px 14px; border-bottom: 1px solid #e8edf4; vertical-align: middle; }
 .nexus-admin-layout table tbody tr:hover { background-color: #f9fbff; }
 .nexus-admin-layout :is(.merge-table-wrap, .nexus-project-table-wrap, .nexus-assignment-table-wrap) { max-width: 100%; overflow-x: auto; }
@@ -89,9 +88,7 @@
 .nexus-admin-layout textarea { min-height:90px; resize:vertical; }
 .nexus-admin-layout :is(label) { color:#45556d; font-size:13px; font-weight:600; }
 .nexus-admin-layout :is(.merge-table-wrap, .nexus-project-table-wrap, .nexus-assignment-table-wrap, .table-wrap) { width:100%; max-width:100%; overflow-x:auto; border-radius:12px; }
-.nexus-admin-layout table { width:100%; border-spacing:0; border-collapse:separate; font-size:13px; }
-.nexus-admin-layout table th { background:#f6f8fc; color:#52617a; font-size:12px; font-weight:800; white-space:nowrap; border-bottom:1px solid #e4eaf2; }
-.nexus-admin-layout table td { color:#34435b; background:transparent; }
+.nexus-admin-layout table { width:100%; border-spacing:0; border-collapse:separate; font-size:13px; } .nexus-admin-layout table th { background:#f6f8fc; color:#52617a; font-size: 13px; font-weight:800; white-space:nowrap; border-bottom:1px solid #e4eaf2; } .nexus-admin-layout table td { color:#34435b; background:transparent; font-size: 14px; }
 .nexus-admin-layout table :is(th,td) { padding:14px 16px; vertical-align:middle; border-bottom:1px solid #edf1f6; }
 .nexus-admin-layout table tbody tr:last-child td { border-bottom:0; }
 .nexus-admin-layout table tbody tr:hover td { background:#f8faff; }
@@ -214,13 +211,7 @@
     background: transparent; border: 0; box-shadow: none;
 }
 .nexus-admin-layout .nexus-pagination-total { font-size: 13px; color: #78869b; font-weight: 600; }
-.nexus-admin-layout .nexus-pagination-controls { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
-.nexus-admin-layout .nexus-unified-pagination button {
-    box-sizing: border-box; min-width: 36px; height: 36px; padding: 0 11px;
-    border: 1px solid #dfe6f0; border-radius: 9px; background: #fff;
-    color: #56657a; font-size: 13px; font-weight: 700; line-height: 1;
-    box-shadow: none; cursor: pointer; transition: background .15s, border-color .15s;
-}
+.nexus-admin-layout .nexus-pagination-controls { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; } .nexus-admin-layout .nexus-unified-pagination button { box-sizing: border-box; min-width: 36px; border: 1px solid #dfe6f0; border-radius: 9px; background: #fff; color: #56657a; font-size: 13px; font-weight: 700; line-height: 1; box-shadow: none; cursor: pointer; transition: background .15s, border-color .15s; min-height: 40px; padding: 0 16px; }
 .nexus-admin-layout .nexus-unified-pagination button:hover:not(:disabled):not(.active) { background: #eef3ff; border-color: #b6c9fa; color: #315fe8; }
 .nexus-admin-layout .nexus-unified-pagination button.active,
 .nexus-admin-layout .nexus-unified-pagination button[aria-current="page"] {
@@ -258,17 +249,14 @@
     padding:0 2px 22px; margin:0 0 24px; border-bottom:1px solid #e0e7f1;
 }
 .nexus-admin-layout .nexus-workspace-breadcrumb { display:block; color:#7889a4; font-size:11px; font-weight:800; letter-spacing:1.3px; }
-.nexus-admin-layout .nexus-workspace-heading h1 { margin:5px 0 3px; color:#192d4e; font-size:25px; font-weight:800; line-height:1.35; }
-.nexus-admin-layout .nexus-workspace-heading p { margin:0; font-size:13px; color:#74849b; }
+.nexus-admin-layout .nexus-workspace-heading h1 { margin:5px 0 3px; color:#192d4e; font-size:25px; font-weight:800; line-height:1.35; } .nexus-admin-layout .nexus-workspace-heading p { margin:0; font-size: 14px; color:#74849b; }
 .nexus-admin-layout :is(.card,.panel,.merge-panel,.merge-kpi,.nexus-project-panel,.nexus-detail-panel,.nexus-assignment-table-wrap,.boards-list) {
     border:1px solid var(--admin-border); border-radius:15px; box-shadow:var(--admin-shadow); background:#fff;
 }
 .nexus-admin-layout :is(.merge-title h1,.section-head h1,.section-head h2,.nexus-project-heading h1,.nexus-project-heading h2,.boards-header h1) { color:#1c3152; font-size:23px; font-weight:800; }
 .nexus-admin-layout :is(.merge-title p,.section-head p,.nexus-project-heading p,.boards-header p) { color:#718199; font-size:13px; }
 .nexus-admin-layout :is(.merge-table-wrap, .nexus-project-table-wrap, .nexus-assignment-table-wrap, .boards-table-wrap, .table-wrap) { max-width:100%; overflow-x:auto; }
-.nexus-admin-layout table { border-collapse:separate; border-spacing:0; width:100%; }
-.nexus-admin-layout table th { padding:14px 15px; background:#f3f6fb; color:#52657f; font-size:12px; font-weight:800; border-bottom:1px solid #dfe7f1; }
-.nexus-admin-layout table td { padding:14px 15px; color:#34465f; font-size:13px; line-height:1.55; border-bottom:1px solid #e9eef5; }
+.nexus-admin-layout table { border-collapse:separate; border-spacing:0; width:100%; } .nexus-admin-layout table th { padding:14px 15px; background:#f3f6fb; color:#52657f; font-size: 13px; font-weight:800; border-bottom:1px solid #dfe7f1; } .nexus-admin-layout table td { padding:14px 15px; color:#34465f; font-size: 14px; line-height:1.55; border-bottom:1px solid #e9eef5; }
 .nexus-admin-layout table tbody tr:hover td { background:#f7faff; }
 .nexus-admin-layout table td :is(button,.btn) { white-space:nowrap; }
 .nexus-admin-layout :is(input:not([type=checkbox]):not([type=radio]),select,textarea) { border:1px solid #d7e0ed; border-radius:9px; background:#fff; color:#283b56; font-size:13px; }
@@ -277,10 +265,34 @@
 .nexus-admin-layout :is(.badge,[class*=status-badge]) { border-radius:999px; font-weight:700; }
 .nexus-admin-layout .nexus-unified-pagination { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:13px; padding:22px 8px 10px; }
 .nexus-admin-layout .nexus-pagination-total { font-size:12px; color:#708099; font-weight:700; }
-.nexus-admin-layout .nexus-pagination-controls { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
-.nexus-admin-layout .nexus-unified-pagination button { min-width:37px; min-height:37px; padding:0 11px; background:#fff; color:#51627a; border:1px solid #dce4ef; border-radius:9px; font-size:13px; }
+.nexus-admin-layout .nexus-pagination-controls { display:flex; flex-wrap:wrap; align-items:center; gap:6px; } .nexus-admin-layout .nexus-unified-pagination button { min-width:37px; background:#fff; color:#51627a; border:1px solid #dce4ef; border-radius:9px; font-size:13px; min-height: 40px; padding: 0 16px; }
 .nexus-admin-layout .nexus-unified-pagination button.active { background:#315fe8; color:#fff; border-color:#315fe8; }
 .nexus-admin-layout .nexus-unified-pagination button:disabled { opacity:.4; }
 .nexus-admin-layout :is(.boards-empty) { text-align:center; color:#7b8ba2; padding:42px 20px; }
 @media(max-width:900px) { .nexus-admin-layout .nexus-admin-main { padding:22px 18px 45px; } }
 @media(max-width:600px) { .nexus-admin-layout .nexus-workspace-heading { align-items:flex-start; } .nexus-admin-layout .nexus-workspace-heading h1 { font-size:21px; } .nexus-admin-layout .nexus-admin-main { padding:17px 12px 35px; } .nexus-admin-layout table :is(td,th) { padding:11px 12px; } }
+
+/* 페이지 제목과 본문 카드 사이 간격 (모든 관리자 화면 공통, 20px) */
+.nexus-admin-layout .nexus-assignment > h1,
+.nexus-admin-layout .admin-boards > h1,
+.nexus-admin-layout .nexus-project-management > h1,
+.nexus-admin-layout .nexus-project-management > .nexus-project-heading,
+.nexus-admin-layout .nexus-project-heading,
+.nexus-admin-layout .boards-header,
+.nexus-admin-layout .merge-title {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+/* ===== 페이지 제목 크기 통일 (관리자 레이아웃 바로 아래 제목, 모든 화면 공통 24px) =====
+   화면마다 h1/h2 로 다르게 잡혀 있던 제목을 한 규칙으로 맞춘다. 여백은 각 머리글 블록이 담당한다. */
+.nexus-admin-layout .nexus-assignment > h1,
+.nexus-admin-layout .admin-boards .boards-header h1,
+.nexus-admin-layout .nexus-project-heading h2,
+.nexus-admin-layout .issue-Management .section-head h2,
+.nexus-admin-layout .hr-management > div > h2,
+.nexus-admin-layout .employee-evaluation .ev2026-header h2 {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.3;
+}

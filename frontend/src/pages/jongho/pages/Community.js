@@ -132,11 +132,8 @@ function Community() {
     return (
         <div className="admin-boards">
             <div className="boards-header">
-                <div>
-                    <span className="boards-label">WORKSPACE / COMMUNITY</span>
-                    <h1>커뮤니티 관리</h1>
-                    <p>게시글과 댓글을 확인하고 삭제합니다. 삭제된 글·댓글도 여기서 원래 내용을 볼 수 있습니다.</p>
-                </div>
+
+
                 <div className="boards-count">
                     전체 게시글<strong>{posts.length}건</strong>
                     <small className="nexus-community-deleted-count">삭제된 글 {deletedCount}건</small>

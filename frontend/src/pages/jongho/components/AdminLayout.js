@@ -111,10 +111,11 @@ function AdminLayout({ onLogout }) {
     { name: "업무량 분석", path: "/admin/workload" },
   ];
 
-  // 메뉴별 화면 제목과 설명은 공통 레이아웃에서만 관리합니다.
+
+  // 메뉴별 화면 제목과 설명은 공통 레이아웃에서 관리한다 (각 화면은 제목을 따로 그리지 않는다)
   const currentMenu = menus.find((menu) => menu.end
     ? location.pathname === menu.path
-    : location.pathname === menu.path || location.pathname.startsWith(menu.path + "/")) || menus[0];
+    : location.pathname === menu.path) || menus[0];
   const pageDescriptions = {
     "/admin": "핵심 운영 지표와 진행 상황을 한눈에 확인합니다.",
     "/admin/projects": "프로젝트 진행 현황, 승인 요청 및 담당자를 관리합니다.",
@@ -281,7 +282,6 @@ function AdminLayout({ onLogout }) {
             <h1>{currentMenu.name}</h1>
             <p>{pageDescriptions[currentMenu.path]}</p>
           </div>
-          {currentMenu.path !== "/admin/members"}
         </div>
         <Outlet />
       </main>

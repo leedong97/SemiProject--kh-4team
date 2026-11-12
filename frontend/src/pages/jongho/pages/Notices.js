@@ -202,11 +202,8 @@ function Notices() {
     return (
         <div className="admin-boards">
             <div className="boards-header">
-                <div>
-                    <span className="boards-label">WORKSPACE / NOTICE</span>
-                    <h1>공지사항 관리</h1>
-                    <p>MySQL 데이터베이스와 연결된 공지사항 관리</p>
-                </div>
+
+
                 <div className="boards-count">전체 공지사항<strong>{info.length}건</strong></div>
             </div>
 
@@ -219,46 +216,46 @@ function Notices() {
             )}
 
             {formOpen && (
-            <form className="boards-form" onSubmit={handleSubmit}>
-                <h2>{editId === null ? "새 공지사항 등록" : "공지사항 수정"}</h2>
-                {editId === null && (
-                    <p>작성자: {me.isDummy ? "로그인 후 등록할 수 있습니다" : `${me.name || ""} 님`}</p>
-                )}
-                <div className="boards-field">
-                    <label htmlFor="notice-title">제목</label>
-                    <input id="notice-title" maxLength={200} value={title}
-                        onChange={e => setTitle(e.target.value)} placeholder="제목 입력" />
-                </div>
-                <div className="boards-field">
-                    <label htmlFor="notice-content">내용</label>
-                    <textarea id="notice-content" rows={6} value={content}
-                        onChange={e => setContent(e.target.value)} placeholder="내용 입력" />
-                </div>
-                <div className="boards-field">
-                    <label htmlFor="notice-event-date">행사일 (선택)</label>
-                    <input id="notice-event-date" type="date" value={eventDate}
-                        onChange={e => setEventDate(e.target.value)} />
-                    {editId !== null && !eventDateLoaded && !eventDateError && (
-                        <small>행사일을 불러오는 중...</small>
+                <form className="boards-form" onSubmit={handleSubmit}>
+                    <h2>{editId === null ? "새 공지사항 등록" : "공지사항 수정"}</h2>
+                    {editId === null && (
+                        <p>작성자: {me.isDummy ? "로그인 후 등록할 수 있습니다" : `${me.name || ""} 님`}</p>
                     )}
-                    {eventDateError && (
-                        <small role="alert" className="nexus-notice-event-date-error">
-                            {eventDateError}{" "}
-                            <button type="button" onClick={() => loadEventDate(editId)}>다시 불러오기</button>
-                        </small>
-                    )}
-                </div>
-                <label className="boards-check">
-                    <input type="checkbox" checked={pinned}
-                        onChange={e => setPinned(e.target.checked)} /> 상단 고정 공지로 {editId === null ? "등록" : "설정"}
-                </label>
-                <div className="boards-form-actions">
-                    <button type="button" className="boards-btn-cancel" onClick={resetForm}>취소</button>
-                    <button type="submit" className="boards-btn-primary" disabled={saving}>
-                        {saving ? "저장 중..." : editId === null ? "등록하기" : "수정 완료"}
-                    </button>
-                </div>
-            </form>
+                    <div className="boards-field">
+                        <label htmlFor="notice-title">제목</label>
+                        <input id="notice-title" maxLength={200} value={title}
+                            onChange={e => setTitle(e.target.value)} placeholder="제목 입력" />
+                    </div>
+                    <div className="boards-field">
+                        <label htmlFor="notice-content">내용</label>
+                        <textarea id="notice-content" rows={6} value={content}
+                            onChange={e => setContent(e.target.value)} placeholder="내용 입력" />
+                    </div>
+                    <div className="boards-field">
+                        <label htmlFor="notice-event-date">행사일 (선택)</label>
+                        <input id="notice-event-date" type="date" value={eventDate}
+                            onChange={e => setEventDate(e.target.value)} />
+                        {editId !== null && !eventDateLoaded && !eventDateError && (
+                            <small>행사일을 불러오는 중...</small>
+                        )}
+                        {eventDateError && (
+                            <small role="alert" className="nexus-notice-event-date-error">
+                                {eventDateError}{" "}
+                                <button type="button" onClick={() => loadEventDate(editId)}>다시 불러오기</button>
+                            </small>
+                        )}
+                    </div>
+                    <label className="boards-check">
+                        <input type="checkbox" checked={pinned}
+                            onChange={e => setPinned(e.target.checked)} /> 상단 고정 공지로 {editId === null ? "등록" : "설정"}
+                    </label>
+                    <div className="boards-form-actions">
+                        <button type="button" className="boards-btn-cancel" onClick={resetForm}>취소</button>
+                        <button type="submit" className="boards-btn-primary" disabled={saving}>
+                            {saving ? "저장 중..." : editId === null ? "등록하기" : "수정 완료"}
+                        </button>
+                    </div>
+                </form>
             )}
 
             <div className="boards-list">

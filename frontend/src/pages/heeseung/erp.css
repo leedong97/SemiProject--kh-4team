@@ -7,16 +7,7 @@
 
 .merge-erp-module * {
     box-sizing: border-box;
-}
-
-.merge-erp-module button {
-    background: #245fe6;
-    color: white;
-    border: 0;
-    border-radius: 8px;
-    padding: 10px 14px;
-    cursor: pointer;
-}
+} .merge-erp-module button { background: #245fe6; color: white; border: 0; border-radius: 8px; cursor: pointer; min-height: 40px; padding: 0 16px; }
 
 .merge-erp-module input,
 .merge-erp-module select,
@@ -27,42 +18,18 @@
     border-radius: 8px;
     background: white;
     font: inherit;
-}
-
-.merge-erp-module label {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    color: #475569;
-}
+} .merge-erp-module label { display: flex; flex-direction: column; gap: 6px; color: #475569; font-size: 13px; }
 
 .merge-erp-module h1,
 .merge-erp-module h2,
 .merge-erp-module h3 {
     margin: 0 0 10px;
-}
-
-.merge-erp-module p {
-    line-height: 1.5;
-}
-
-.merge-erp-module .section-head {
-    margin: 28px 0 18px;
-}
+} .merge-erp-module p { line-height: 1.5; font-size: 14px; } .merge-erp-module .section-head {  margin: 0 0 20px; padding: 0 0 16px; }
 
 .merge-erp-module .section-head p,
 .merge-erp-module .muted {
     color: #718096;
-}
-
-.merge-erp-module .panel {
-    background: white;
-    padding: 20px;
-    margin: 14px 0;
-    border: 1px solid #e4eaf2;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(15, 23, 42, .025);
-}
+}.merge-erp-module .panel { background: white; border: 1px solid #e4eaf2; border-radius: 12px; box-shadow: 0 3px 12px rgba(15, 23, 42, .025); padding: 20px; margin: 0 0 16px; }
 
 .merge-erp-module .form-row {
     display: flex;
