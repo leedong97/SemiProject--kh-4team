@@ -1,5 +1,6 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { erpRequest } from "../heeseung/erpApi";
 import { useParams, useNavigate } from "react-router-dom";
 
 function Issue_detail({ projects, issues }) {
@@ -15,7 +16,32 @@ function Issue_detail({ projects, issues }) {
     const issue = issues.find(
         (item) => String(item.id) === id
     );
+    const [comments, setComments] = useState([]);
+    const [commentLoading, setCommentLoading] = useState(true);
+    const [commentError, setCommentError] = useState("");
 
+    useEffect(() => {
+        let cancelled = false;
+
+        setComments([]);
+        setCommentLoading(true);
+        setCommentError("");
+
+        erpRequest(`/api/dong/issues/${id}/comments`)
+            .then((rows) => {
+                if (!cancelled) setComments(rows);
+            })
+            .catch((error) => {
+                if (!cancelled) setCommentError(error.message);
+            })
+            .finally(() => {
+                if (!cancelled) setCommentLoading(false);
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [id]);
     // 해당 이슈가 존재하지 않는 경우
     if (!issue) {
         return (
@@ -102,7 +128,7 @@ function Issue_detail({ projects, issues }) {
                 {/* 등록일 */}
                 <div className="issue-detail-row">
                     <strong>등록일</strong>
-                    <span>{issue.createdAt}</span>
+                    <span>{issue.createdAt ? String(issue.createdAt).replace("T", " ").slice(0, 16) : "-"}</span>
                 </div>
 
                 {/* 상태 */}
@@ -118,6 +144,27 @@ function Issue_detail({ projects, issues }) {
                     <h3>이슈 내용</h3>
                     <p>{issue.description}</p>
                 </div>
+
+                <section className="issue-detail-description">
+                    <h3>요청사항 코멘트</h3>
+
+                    {commentLoading && <p>코멘트를 불러오는 중...</p>}
+                    {commentError && <p role="alert">{commentError}</p>}
+
+                    {!commentLoading && !commentError && comments.length === 0 && (
+                        <p>등록된 요청사항 코멘트가 없습니다.</p>
+                    )}
+
+                    {!commentLoading && !commentError && comments.map((comment) => (
+                        <article key={comment.id}>
+                            <strong>{comment.author || "관리자"}</strong>
+                            <small> · {comment.createdAt}</small>
+                            <p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+                                {comment.content}
+                            </p>
+                        </article>
+                    ))}
+                </section>
 
             </div>
 

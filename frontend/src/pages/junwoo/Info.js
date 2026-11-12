@@ -1,3 +1,4 @@
+import SearchInput from "../../shared/SearchInput";
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +8,7 @@ function Info({ info = [] }) {
     const navigate = useNavigate();
 
     // 검색 및 페이지
+    const [searchResetKey, setSearchResetKey] = useState(0);
     const [search, setSearch] = useState("");
     const [pages, setPages] = useState(1);
 
@@ -45,6 +47,7 @@ function Info({ info = [] }) {
 
     const handleReset = () => {
         setSearch("");
+        setSearchResetKey((key) => key + 1);
         setPages(1);
     };
 
@@ -56,7 +59,6 @@ function Info({ info = [] }) {
             <div className="info-header info-manage-header">
                 <div>
                     <h1>공지사항</h1>
-                    <p>사내 공지사항을 조회할 수 있습니다.</p>
                 </div>
 
                 <button
@@ -81,7 +83,7 @@ function Info({ info = [] }) {
                     공지사항 제목 검색
                 </label>
 
-                <input
+                <SearchInput key={searchResetKey}
                     id="info-search"
                     type="text"
                     placeholder="공지사항 제목 검색"
@@ -124,14 +126,7 @@ function Info({ info = [] }) {
 
                                     <td>
                                         {Number(item.isPinned) === 1 ? (
-                                            <strong
-                                                style={{
-                                                    color: "#d32f2f",
-                                                    whiteSpace: "nowrap"
-                                                }}
-                                            >
-                                                [중요]
-                                            </strong>
+                                            <span className="cmd-chip tone-purple">중요</span>
                                         ) : (
                                             start + index + 1 - pinnedCount
                                         )}

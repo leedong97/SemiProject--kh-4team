@@ -180,9 +180,6 @@ function Info_detail({ info = [], onViewInfo }) {
                 <div>
                     <h1>공지사항 상세정보</h1>
 
-                    <p>
-                        등록된 공지사항의 내용을 확인할 수 있습니다.
-                    </p>
                 </div>
 
                 <button onClick={() => navigate("/info")}>

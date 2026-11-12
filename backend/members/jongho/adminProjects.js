@@ -1,4 +1,6 @@
 const express = require('express');
+const crypto = require('crypto');
+const quoteBus = require('../../notifyBus');
 const pool = require('../../db');
 const { validId } = require('./adminHelpers');
 const { createNotification } = require('../../notify');
@@ -11,12 +13,18 @@ const router = express.Router();
 const LEADER_GRADES = ['팀장', '실장', '부장', '이사', '상무', '전무', '대표'];
 
 // 주어진 직원 번호가 모두 재직 중인지 확인합니다.
-async function allActiveEmployees(conn, ids) {
+async function allActiveEmployees(conn, ids, managerId = null) {
   if (!ids.length) return true;
+
   const [rows] = await conn.query(
-    "SELECT employee_id FROM employees WHERE employee_status = '재직' AND employee_id IN (?)",
-    [ids]
+    `SELECT employee_id
+     FROM employees
+     WHERE employee_status = '재직'
+       AND employee_id IN (?)
+       AND (employee_id = ? OR employee_grade IN ('사원', '대리'))`,
+    [ids, managerId]
   );
+
   return rows.length === ids.length;
 }
 
@@ -27,6 +35,35 @@ async function findCustomerId(conn, name) {
     [name]
   );
   return rows.length ? rows[0].customer_id : null;
+}
+
+async function findOrCreateCustomerId(conn, name) {
+  const customerName = name.trim();
+  const existingId = await findCustomerId(conn, customerName);
+  if (existingId) return existingId;
+
+  // customer_code 는 최대 20자이며, 같은 이름에는 같은 코드를 생성합니다.
+  const customerCode = 'AUTO' + crypto
+    .createHash('sha256')
+    .update(customerName.toLowerCase())
+    .digest('hex')
+    .slice(0, 16)
+    .toUpperCase();
+
+  try {
+    const [result] = await conn.query(
+      'INSERT INTO customers (customer_code, customer_name) VALUES (?, ?)',
+      [customerCode, customerName]
+    );
+    return result.insertId;
+  } catch (error) {
+    // 같은 고객사를 동시에 등록한 요청은 먼저 생성된 번호를 사용합니다.
+    if (error.code === 'ER_DUP_ENTRY') {
+      const concurrentId = await findCustomerId(conn, customerName);
+      if (concurrentId) return concurrentId;
+    }
+    throw error;
+  }
 }
 
 // 프로젝트 팀원 명단을 통째로 저장합니다. 담당자는 항상 팀원에 포함됩니다.
@@ -51,9 +88,19 @@ async function notifyProjectPeople(ids, message) {
 // 고객사 목록 (등록·수정 화면의 선택지)
 router.get('/customers', async (req, res) => {
   try {
-    const [rows] = await pool.query(
-      "SELECT customer_id AS id, customer_name AS name, customer_status AS status FROM customers ORDER BY customer_name"
-    );
+    const [rows] = await pool.query(`
+      SELECT customer_id AS id, customer_name COLLATE utf8mb4_unicode_ci AS name, customer_status AS status
+      FROM customers
+      UNION
+      SELECT NULL AS id, qr.company_name COLLATE utf8mb4_unicode_ci AS name, '견적문의' AS status
+      FROM shop_quote_requests qr
+      WHERE TRIM(COALESCE(qr.company_name, '')) <> ''
+        AND NOT EXISTS (
+          SELECT 1 FROM customers c
+          WHERE c.customer_name COLLATE utf8mb4_unicode_ci = qr.company_name COLLATE utf8mb4_unicode_ci
+        )
+      ORDER BY name
+    `);
     res.json(rows);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -155,18 +202,32 @@ router.post('/projects', async (req, res) => {
     return res.status(400).json({ message: '팀원 번호가 올바르지 않습니다.' });
   if (!name || !name.trim() || !customer || !customer.trim() || !description || !description.trim())
     return res.status(400).json({ message: '프로젝트명, 고객사, 설명을 입력하세요.' });
+  if (!endDate) {
+    return res.status(400).json({
+      message: '프로젝트 마감일(종료 예정일)을 입력하세요.'
+    });
+  }
+  const today = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).format(new Date());
+  const isValidDate = (value) => {
+    if (!value) return true;
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const date = new Date(value + 'T00:00:00Z');
+    return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+  };
+  if (!isValidDate(startDate) || !isValidDate(endDate))
+    return res.status(400).json({ message: '시작일과 종료일 형식을 확인하세요.' });
+  if (startDate && startDate < today)
+    return res.status(400).json({ message: '프로젝트 시작일은 오늘 이후로 선택하세요.' });
   if (startDate && endDate && startDate > endDate)
-    return res.status(400).json({ message: '종료일을 확인하세요.' });
+    return res.status(400).json({ message: '종료일은 시작일 당일 또는 이후로 선택하세요.' });
   if (budget !== undefined && (!Number.isSafeInteger(Number(budget)) || Number(budget) < 0))
     return res.status(400).json({ message: '예산이 올바르지 않습니다.' });
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
-    const customerId = await findCustomerId(connection, customer.trim());
-    if (!customerId) {
-      await connection.rollback();
-      return res.status(400).json({ message: '등록된 고객사를 선택하세요.' });
-    }
+    const customerId = await findOrCreateCustomerId(connection, customer.trim());
     if (managerNo !== null) {
       const [managers] = await connection.query(
         'SELECT employee_status, employee_grade FROM employees WHERE employee_id = ?',
@@ -177,9 +238,15 @@ router.post('/projects', async (req, res) => {
         return res.status(400).json({ message: '담당자는 재직 중인 팀장 이상만 지정할 수 있습니다.' });
       }
     }
-    if (!(await allActiveEmployees(connection, [...new Set([...(managerNo ? [managerNo] : []), ...members])]))) {
+    if (!(await allActiveEmployees(
+      connection,
+      [...new Set([...(managerNo ? [managerNo] : []), ...members])],
+      managerNo
+    ))) {
       await connection.rollback();
-      return res.status(400).json({ message: '재직 중이 아닌 직원이 포함되어 있습니다.' });
+      return res.status(400).json({
+        message: '팀원은 재직 중인 사원 또는 대리만 배정할 수 있습니다.'
+      });
     }
     const [result] = await connection.query(
       `INSERT INTO projects (project_title, project_content, created_by, customer_id, budget, start_date, end_date, status, manager_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -329,11 +396,7 @@ router.patch('/projects/:id', async (req, res) => {
       values.push(description.trim());
     }
     if (customer !== undefined) {
-      const customerId = await findCustomerId(connection, customer.trim());
-      if (!customerId) {
-        await connection.rollback();
-        return res.status(400).json({ message: '등록된 고객사를 선택하세요.' });
-      }
+      const customerId = await findOrCreateCustomerId(connection, customer.trim());
       fields.push('customer_id = ?');
       values.push(customerId);
     }
@@ -444,9 +507,11 @@ router.put('/projects/:id/members', async (req, res) => {
       await connection.rollback();
       return res.status(400).json({ message: '완료된 프로젝트는 팀원을 변경할 수 없습니다.' });
     }
-    if (!(await allActiveEmployees(connection, memberIds))) {
+    if (!(await allActiveEmployees(connection, memberIds, projects[0].manager_id))) {
       await connection.rollback();
-      return res.status(400).json({ message: '재직 중이 아닌 직원이 포함되어 있습니다.' });
+      return res.status(400).json({
+        message: '팀원은 재직 중인 사원 또는 대리만 배정할 수 있습니다.'
+      });
     }
     const [beforeRows] = await connection.query('SELECT employee_id FROM project_members WHERE project_id = ?', [projectId]);
     await saveProjectMembers(connection, projectId, projects[0].manager_id, memberIds);
@@ -532,6 +597,28 @@ router.get('/quote-requests', async (req, res) => {
   }
 });
 
+// 견적 변경 실시간 알림 (SSE). 새 견적이 저장되거나 상태가 바뀌면 'quote-changed' 이벤트가 온다.
+// 브라우저는 EventSource 로 연결만 유지하고, 신호를 받으면 목록을 다시 불러온다.
+router.get('/quote-requests/events', (req, res) => {
+  res.set({
+    'Content-Type': 'text/event-stream; charset=utf-8',
+    'Cache-Control': 'no-cache, no-transform',
+    'Connection': 'keep-alive',
+    'X-Accel-Buffering': 'no',
+  });
+  res.flushHeaders();
+  res.write('data: changed\n\n');
+
+  const send = () => res.write('data: changed\n\n');
+  quoteBus.on('quote-changed', send);
+  const heartbeat = setInterval(() => res.write(': ping\n\n'), 25000);
+
+  req.on('close', () => {
+    clearInterval(heartbeat);
+    quoteBus.off('quote-changed', send);
+  });
+});
+
 // 견적 상태 변경 (접수 → 검토중 → 처리완료)
 router.patch('/quote-requests/:id/status', async (req, res) => {
   const quoteId = Number(req.params.id);
@@ -548,6 +635,25 @@ router.patch('/quote-requests/:id/status', async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: '견적을 찾을 수 없습니다.' });
     }
+    if (status !== '접수') {
+      const notificationLink = `/admin/projects?quoteId=${quoteId}`;
+      try {
+        const [recipients] = await pool.query(
+          'SELECT DISTINCT employee_id FROM notifications WHERE type = ? AND link = ?',
+          ['견적 요청', notificationLink]
+        );
+        await pool.query(
+          'UPDATE notifications SET is_read = 1 WHERE type = ? AND link = ? AND is_read = 0',
+          ['견적 요청', notificationLink]
+        );
+        recipients.forEach(({ employee_id }) => {
+          quoteBus.emit('notification', Number(employee_id));
+        });
+      } catch (notificationError) {
+        console.error('[견적 알림 읽음 처리 실패]', notificationError.code || notificationError.message);
+      }
+    }
+    quoteBus.emit('quote-changed');
     res.json({ message: '견적 상태를 바꿨습니다.' });
   } catch (err) {
     console.error('[견적 상태 변경 실패]', err.code || err.message);

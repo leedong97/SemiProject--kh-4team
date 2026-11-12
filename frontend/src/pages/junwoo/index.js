@@ -49,11 +49,15 @@ export const shellRoutes = [
   // 공지사항 목록, 상세 유지
   { path: '/info', element: <InfoRoute /> },
   { path: '/info/:id', element: <InfoDetailRoute /> },
+  // 커뮤니티도 같은 상단 메뉴 안에서 보여줘요 (예전에는 별도 화면이었어요)
+  ...communityRoutes(),
 ];
 
-// TeamShell 밖에서 별도 화면으로 보여줄 커뮤니티 페이지와 주소
-// standalone은 공통 데이터 Provider까지 제외한다는 뜻은 아니다
-export const standaloneRoutes = [
+// 공통 틀 밖에서 보여줄 화면은 이제 없어요
+export const standaloneRoutes = [];
+
+function communityRoutes() {
+  return [
   {
     path: "/community",
     element: <Community />
@@ -94,4 +98,5 @@ export const standaloneRoutes = [
     path: "/community/edit/:postId",
     element: <Community menu="게시판" screen="form" />
   }
-];
+  ];
+}

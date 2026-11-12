@@ -1,0 +1,1828 @@
+/* =====================================================================
+   목록 화면(프로젝트 · 이슈 · 공지)과 커뮤니티를 새 디자인 기준에 맞춰요.
+   - 팀원별 CSS는 그대로 두고, 공통 틀 안(.cmd-shell .cmd-main)에서만 덮어써요.
+   - 표 머리는 역 사인처럼 3px 잉크 괘선, 상태는 노선색 칩.
+   ===================================================================== */
+
+/* ---------- 페이지 바깥 상자: 예전 흰 카드·그림자 제거 ---------- */
+
+.cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .info-page, .info-manage-page) {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: var(--radius-m);
+  box-shadow: none;
+  font-family: var(--cmd-font);
+  color: var(--cmd-ink);
+}
+
+/* ---------- 머리말 ---------- */
+
+.cmd-shell #cmd-main :is(.jpl-header, .issue-header, .info-header, .info-manage-header) {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin: 0 0 var(--sp-5);
+  padding: 0 0 var(--sp-4);
+  border: 0;
+  border-bottom: 3px solid var(--cmd-ink);
+  background: none;
+}
+
+.cmd-shell #cmd-main :is(.jpl-header, .issue-header, .info-header, .info-manage-header) :is(h1, h2) {
+  margin: 0;
+  color: var(--cmd-ink);
+  font-size: var(--fs-24);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+.cmd-shell #cmd-main :is(.jpl-header, .issue-header, .info-header, .info-manage-header) p {
+  margin: var(--sp-1) 0 0;
+  color: var(--cmd-mute);
+  font-size: var(--fs-14);
+}
+
+.cmd-shell #cmd-main :is(.jpl-header-actions, .issue-header-actions) {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+/* 머리말 버튼: 잉크 테두리 버튼 */
+.cmd-shell #cmd-main :is(.jpl-reset, .issue-reset, .info-reset, .issue-header-actions button, .issue-header-actions a) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-size: var(--fs-14);
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out);
+}
+
+.cmd-shell #cmd-main :is(.jpl-reset, .issue-reset, .info-reset, .issue-header-actions button, .issue-header-actions a):hover {
+  background: var(--cmd-ink);
+  color: #fff;
+}
+
+/* ---------- 요약 숫자 ---------- */
+
+.cmd-shell #cmd-main :is(.jpl-summary, .issue-summary, .info-summary) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-4);
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+.cmd-shell #cmd-main :is(.jpl-summary, .issue-summary, .info-summary) > * {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 var(--sp-3);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg-2);
+  border: 0;
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  box-shadow: none;
+}
+
+/* ---------- 검색 영역: 한 줄로 ---------- */
+
+.cmd-shell #cmd-main :is(.jpl-filter, .issue-filter, .info-filter) {
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  column-gap: var(--sp-3);
+  row-gap: 6px;
+  margin: 0 0 var(--sp-6);
+  padding: var(--sp-4);
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg-2);
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main :is(.jpl-filter, .issue-filter, .info-filter) label {
+  margin: 0;
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-13);
+  font-weight: 700;
+}
+
+.cmd-shell #cmd-main :is(.jpl-filter, .issue-filter, .info-filter) :is(input, select) {
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background-color: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-size: var(--fs-14);
+  box-shadow: none;
+  transition: border-color 160ms var(--ease-out);
+}
+
+.cmd-shell #cmd-main :is(.jpl-filter, .issue-filter, .info-filter) :is(input, select):hover {
+  border-color: var(--cmd-faint);
+}
+
+.cmd-shell #cmd-main :is(.jpl-filter, .issue-filter, .info-filter) :is(input, select):focus {
+  border-color: var(--cmd-ink);
+  outline: 2px solid var(--cmd-ink);
+  outline-offset: 0;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main :is(input, textarea)::placeholder {
+  color: #767676;
+  opacity: 1;
+}
+
+/* ---------- 목록 머리 + 상태 탭 ---------- */
+
+.cmd-shell #cmd-main :is(.jpl-list-header, .issue-list-header, .info-list-header) {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  margin: 0 0 var(--sp-3);
+}
+
+.cmd-shell #cmd-main :is(.jpl-list-header, .issue-list-header, .info-list-header) :is(h2, h3) {
+  margin: 0;
+  color: var(--cmd-ink);
+  font-size: var(--fs-18);
+  font-weight: 800;
+}
+
+.cmd-shell #cmd-main :is(.jpl-list-header, .issue-list-header, .info-list-header) > span {
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.cmd-shell #cmd-main :is(.jpl-tabs, .issue-view-switch) {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 0 0 var(--sp-4);
+  padding: 3px;
+  border-radius: 0;
+  background: var(--cmd-bg-2);
+  border: 0;
+}
+
+.cmd-shell #cmd-main :is(.jpl-tabs, .issue-view-switch) button {
+  height: 32px;
+  padding: 0 var(--sp-4);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--cmd-mute);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out);
+}
+
+.cmd-shell #cmd-main :is(.jpl-tabs, .issue-view-switch) button:hover {
+  color: var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main :is(.jpl-tabs, .issue-view-switch) button:is([aria-pressed="true"], .active, [aria-selected="true"]) {
+  background: var(--cmd-ink);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* ---------- 표 ---------- */
+
+.cmd-shell #cmd-main :is(.jpl-table-wrap, .issue-list-section, .info-list-section) {
+  background: none;
+  border: 0;
+  border-radius: var(--radius-m);
+  box-shadow: none;
+  padding: 0;
+  overflow-x: auto;
+}
+
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table) {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background: none;
+  font-size: var(--fs-14);
+  font-variant-numeric: tabular-nums;
+}
+
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table) thead th {
+  height: 40px;
+  padding: 0 var(--sp-3);
+  border: 0;
+  border-bottom: 3px solid var(--cmd-ink);
+  background: none;
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table) tbody td {
+  height: 52px;
+  padding: var(--sp-2) var(--sp-3);
+  border: 0;
+  border-bottom: 1px solid var(--cmd-rule);
+  background: none;
+  color: var(--cmd-ink);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table) tbody tr {
+  background: none;
+  transition: background-color 120ms var(--ease-out);
+}
+
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table) tbody tr:hover td {
+  background: var(--cmd-bg-2);
+}
+
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table) :is(a, button):is(.jpl-project-title, .issue-title-link, .info-title-link),
+.cmd-shell #cmd-main .jpl-table td a {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cmd-ink);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table) :is(a, button):hover {
+  text-decoration: underline;
+}
+
+/* 번호 열은 좁게, 회색 */
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table) :is(th, td):first-child {
+  width: 64px;
+  color: var(--cmd-mute);
+}
+
+/* 상태 칩 */
+.cmd-shell #cmd-main :is(.jpl-status, .issue-status) {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 var(--sp-2);
+  border: 0;
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg-2);
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main [data-status="진행중"],
+.cmd-shell #cmd-main [data-status="진행 중"] { background: var(--green-tint); color: var(--green-text); }
+.cmd-shell #cmd-main [data-status="예정"],
+.cmd-shell #cmd-main [data-status="접수"] { background: var(--sky-tint); color: var(--sky-text); }
+.cmd-shell #cmd-main [data-status="완료 요청"],
+.cmd-shell #cmd-main [data-status="검토 중"] { background: var(--purple-tint); color: var(--purple-text); }
+.cmd-shell #cmd-main [data-status="보류"],
+.cmd-shell #cmd-main [data-status="재오픈"] { background: var(--orange-tint); color: var(--orange-text); }
+.cmd-shell #cmd-main [data-status="완료"] { background: var(--cmd-bg-2); color: var(--cmd-mute); }
+
+/* 빈 결과 */
+.cmd-shell #cmd-main :is(.jpl-empty, .issue-empty, .info-empty) {
+  padding: var(--sp-8) var(--sp-4);
+  color: var(--cmd-mute);
+  text-align: center;
+  background: none;
+}
+
+/* ---------- 페이지 번호 ---------- */
+
+.cmd-shell #cmd-main :is(.jpl-footer, .issue-footer, .jpl-pagination, .issue-pagination, .info-pages) {
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+}
+
+.cmd-shell #cmd-main :is(.jpl-pagination, .issue-pagination, .issue-pagination-buttons, .jpl-page-buttons, .info-pages) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  margin-top: var(--sp-5);
+}
+
+.cmd-shell #cmd-main :is(.jpl-pagination, .issue-pagination, .info-pages) button {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 var(--sp-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-m);
+  background: none;
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.cmd-shell #cmd-main :is(.jpl-pagination, .issue-pagination, .info-pages) button:hover:not(:disabled) {
+  border-color: var(--cmd-rule-2);
+}
+
+.cmd-shell #cmd-main :is(.jpl-pagination, .issue-pagination, .info-pages) button:is([aria-current="page"], .active) {
+  background: var(--cmd-ink);
+  color: #fff;
+}
+
+.cmd-shell #cmd-main :is(.jpl-pagination, .issue-pagination, .info-pages) button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* =====================================================================
+   커뮤니티
+   ===================================================================== */
+
+.cmd-shell #cmd-main .community-layout.cmd-community {
+  display: grid;
+  grid-template-columns: 184px minmax(0, 1fr);
+  gap: var(--sp-8);
+  align-items: start;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  font-family: var(--cmd-font);
+  color: var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main .cmd-community .community-sidebar {
+  position: sticky;
+  top: 84px;
+  width: auto;
+  min-height: 0;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .cmd-community-title {
+  margin: 0 0 var(--sp-3);
+  padding-bottom: var(--sp-2);
+  border-bottom: 3px solid var(--cmd-ink);
+  font-size: var(--fs-18);
+  font-weight: 800;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-side-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-side-menu .community-menu-button {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 40px;
+  padding: 0 var(--sp-3);
+  border: 0;
+  border-radius: var(--radius-s);
+  background: none;
+  color: var(--cmd-mute);
+  font-size: var(--fs-15);
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-side-menu .community-menu-button::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-m);
+  border: 2px solid var(--cmd-rule-2);
+  background: #fff;
+  flex: none;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-side-menu .community-menu-button:hover {
+  background: var(--cmd-bg-2);
+  color: var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main .cmd-community .community-side-menu .community-menu-selected {
+  background: var(--cmd-bg-2);
+  color: var(--cmd-ink);
+  font-weight: 800;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-side-menu .community-menu-selected::before {
+  border: 0;
+  border-radius: var(--radius-m);
+  background: var(--accent);
+}
+
+.cmd-shell #cmd-main .cmd-community .lounge-main {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-content {
+  margin: 0;
+  padding: 0;
+  background: none;
+  font-family: var(--cmd-font);
+}
+
+/* 커뮤니티 안의 패널·카드: 흰 바탕, 얇은 선, 그림자 없음 */
+.cmd-shell #cmd-main .cmd-community :is(.community-panel, .lounge-feed-panel, .lounge-side-card, .lounge-welcome-card, .lounge-board-card, .praise-box, .lunch-picker, .reaction-game, .activity-list-panel, .community-board) {
+  background: var(--cmd-bg);
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.lounge-board-card, .lounge-welcome-card) :is(.lounge-board-card, .lounge-welcome-card) {
+  border: 0;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.community-panel-title, .lounge-side-title, .praise-title, .lunch-picker-title, .reaction-game-title, .community-title) {
+  color: var(--cmd-ink);
+  font-weight: 800;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.lounge-side-description, .lounge-board-summary, .lounge-feed-meta, .praise-description, .lunch-picker-description, .lunch-picker-note, .reaction-game-description, .community-description, .lounge-welcome-label) {
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.lounge-welcome-label, .lunch-picker-label, .reaction-game-label) {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.lounge-feed-title, .lounge-feed-title-button, .community-home-title-button, .community-board-title-button) {
+  color: var(--cmd-ink);
+  font-weight: 600;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.lounge-board-more, .lounge-search-reset, .lounge-side-button, .lounge-board-shortcut, .community-button, .praise-open-button, .lunch-picker-button, .praise-submit-button) {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.lounge-board-more, .lounge-search-reset, .lounge-side-button, .lounge-board-shortcut, .community-button, .praise-open-button, .lunch-picker-button, .praise-submit-button):hover {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.lounge-search-input, .lounge-board-select, .praise-field input, .praise-field textarea, .praise-field select) {
+  height: 40px;
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-size: var(--fs-14);
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .cmd-community .praise-field textarea {
+  height: auto;
+}
+
+.cmd-shell #cmd-main .cmd-community .lounge-total-posts,
+.cmd-shell #cmd-main .cmd-community .lounge-board-counts strong {
+  color: var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main .cmd-community .lounge-dot-free { background: var(--line-green); }
+.cmd-shell #cmd-main .cmd-community .lounge-dot-question { background: var(--line-sky); }
+.cmd-shell #cmd-main .cmd-community .lounge-dot-info { background: var(--line-orange); }
+
+/* 작은 영어 라벨 숨김 (상단 라벨은 쓰지 않아요) */
+.cmd-shell #cmd-main .cmd-community .lounge-menu-label {
+  display: none;
+}
+
+/* ---------- 좁은 화면 ---------- */
+
+@media (max-width: 960px) {
+  .cmd-shell #cmd-main :is(.jpl-filter, .issue-filter, .info-filter) {
+    grid-auto-flow: row;
+    grid-template-rows: none;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cmd-shell #cmd-main .community-layout.cmd-community {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-4);
+  }
+
+  .cmd-shell #cmd-main .cmd-community .community-sidebar {
+    position: static;
+  }
+
+  .cmd-shell #cmd-main .cmd-community .community-side-menu {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .cmd-shell #cmd-main :is(.jpl-header, .issue-header, .info-header, .info-manage-header) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* 표 머리 바탕(thead 자체에 색을 칠한 예전 규칙 정리) */
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table) thead,
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table) thead tr {
+  background: none;
+  border: 0;
+}
+
+/* 커뮤니티 숫자 강조 */
+.cmd-shell #cmd-main .cmd-community .lounge-total-posts {
+  background: var(--cmd-bg-2);
+  border: 0;
+}
+
+.cmd-shell #cmd-main .cmd-community .lounge-total-posts :is(strong, span) {
+  color: var(--cmd-ink);
+}
+
+/* =====================================================================
+   마무리 검토 반영 (덮어쓰기)
+   ===================================================================== */
+
+/* 요약 알약은 목록 머리의 "N건"과 겹쳐서 숨겨요 (화면 낭독기에는 남김) */
+.cmd-shell #cmd-main :is(.jpl-summary, .issue-summary, .info-summary) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  margin: 0;
+}
+
+/* 검색 영역: 회색 상자 대신 괘선 한 줄 */
+.cmd-shell #cmd-main :is(.jpl-filter, .issue-filter, .info-filter) {
+  padding: 0 0 var(--sp-5);
+  border: 0;
+  border-bottom: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: none;
+  column-gap: var(--sp-4);
+}
+
+/* 상태 탭: 상단 메뉴와 같은 밑줄 탭 */
+.cmd-shell #cmd-main :is(.jpl-tabs, .issue-view-switch) {
+  display: flex;
+  gap: var(--sp-1);
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  border-bottom: 1px solid var(--cmd-rule);
+}
+
+.cmd-shell #cmd-main :is(.jpl-tabs, .issue-view-switch) button {
+  height: 40px;
+  padding: 0 var(--sp-3);
+  border-radius: 0;
+  background: none;
+  color: var(--cmd-mute);
+  margin-bottom: -1px;
+}
+
+.cmd-shell #cmd-main :is(.jpl-tabs, .issue-view-switch) button:hover {
+  color: var(--cmd-ink);
+  box-shadow: inset 0 -4px 0 var(--cmd-rule-2);
+}
+
+.cmd-shell #cmd-main :is(.jpl-tabs, .issue-view-switch) button:is([aria-pressed="true"], .active, [aria-selected="true"]) {
+  background: none;
+  color: var(--cmd-ink);
+  font-weight: 800;
+  box-shadow: inset 0 -4px 0 var(--accent);
+}
+
+/* 프로젝트 이름 + 노선 배지 */
+.cmd-shell #cmd-main :is(.jpl-project-link, .issue-project) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+/* 커뮤니티 머리말: 목록 화면과 같은 형식 */
+.cmd-shell #cmd-main .cmd-community .community-banner.cmd-page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin: 0 0 var(--sp-5);
+  padding: 0 0 calc(var(--sp-4) + 3px);
+  border: 0;
+  background: none;
+  box-shadow: inset 0 -3px 0 var(--cmd-ink);
+  color: var(--cmd-ink);
+  overflow: visible;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-banner-title {
+  color: var(--cmd-ink);
+  font-size: var(--fs-24);
+}
+
+.cmd-shell #cmd-main .cmd-community .community-banner-description {
+  margin: var(--sp-1) 0 0;
+  color: var(--cmd-mute);
+}
+
+.cmd-shell #cmd-main .cmd-community .community-banner-link {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-ink);
+  color: #fff;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-banner-link:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* 화살표 글자 대신 그린 꺾쇠 */
+.cmd-shell #cmd-main .cmd-community :is(.lounge-board-more, .lounge-side-button, .lounge-board-shortcut strong)::after,
+.cmd-shell #cmd-main .cmd-community .lounge-feed-arrow::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  border-top: 1.6px solid currentColor;
+  border-right: 1.6px solid currentColor;
+  transform: translateY(-1px) rotate(45deg);
+}
+
+.cmd-shell #cmd-main .cmd-community .lounge-feed-arrow {
+  color: var(--cmd-faint);
+  font-size: 0;
+}
+
+/* 진행률 역 띠가 들어갈 자리 */
+.cmd-shell #cmd-main .jpl-table {
+  table-layout: auto;
+}
+
+.cmd-shell #cmd-main .jpl-table td:has(.cmd-strip) {
+  min-width: 150px;
+  white-space: nowrap;
+}
+
+/* 커뮤니티 글쓰기 버튼 */
+.cmd-shell #cmd-main .cmd-community .community-banner-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-s);
+  font-size: var(--fs-14);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* =====================================================================
+   커뮤니티 · 게시판 / 내 활동
+   ===================================================================== */
+
+/* 화면 제목 + 설명 */
+.cmd-shell #cmd-main .cmd-community :is(.community-board, .activity-page) {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.community-board, .activity-page) > .community-title {
+  margin: 0;
+  padding: 0;
+  color: var(--cmd-ink);
+  font-size: var(--fs-24);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+.cmd-shell #cmd-main .cmd-community .activity-page > .community-description {
+  margin: var(--sp-1) 0 0;
+  color: var(--cmd-mute);
+  font-size: var(--fs-14);
+}
+
+/* 탭: 상단 메뉴처럼 3px 잉크 괘선 위의 밑줄 탭 */
+.cmd-shell #cmd-main .cmd-community .community-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  margin: var(--sp-4) 0 var(--sp-5);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: inset 0 -3px 0 var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main .cmd-community .community-tabs .community-tab-button {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 var(--sp-4);
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--cmd-mute);
+  font-size: var(--fs-15);
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-tabs .community-tab-button:hover {
+  color: var(--cmd-ink);
+  box-shadow: inset 0 -4px 0 var(--cmd-rule-2);
+}
+
+.cmd-shell #cmd-main .cmd-community .community-tabs .community-tab-selected {
+  color: var(--cmd-ink);
+  font-weight: 800;
+  background: none;
+  box-shadow: inset 0 -4px 0 var(--accent);
+}
+
+/* 게시판 목록 판 */
+.cmd-shell #cmd-main .cmd-community .board-list-panel,
+.cmd-shell #cmd-main .cmd-community .activity-list-panel {
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-m);
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.cmd-shell #cmd-main .cmd-community .board-list-panel .board-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin: 0 0 var(--sp-4);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-m);
+  background: none;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .cmd-community .board-intro-text h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  color: var(--cmd-ink);
+  font-size: var(--fs-20);
+  font-weight: 800;
+}
+
+.cmd-shell #cmd-main .cmd-community .board-intro-text h2 .lounge-category-dot {
+  width: 12px;
+  height: 12px;
+}
+
+.cmd-shell #cmd-main .cmd-community .board-intro-text p {
+  margin: var(--sp-1) 0 0;
+  color: var(--cmd-mute);
+  font-size: var(--fs-14);
+}
+
+.cmd-shell #cmd-main .cmd-community .board-write-link {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-s);
+  background: var(--cmd-ink);
+  color: #fff;
+  font-size: var(--fs-14);
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+.cmd-shell #cmd-main .cmd-community .board-write-link:hover {
+  background: #000;
+}
+
+/* 검색줄 */
+.cmd-shell #cmd-main .cmd-community .lounge-search-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-4);
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+.cmd-shell #cmd-main .cmd-community .lounge-search-toolbar .lounge-search-input {
+  flex: 1;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-home-count {
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 게시판 · 내 활동 표: 목록 화면과 같은 표 */
+.cmd-shell #cmd-main .cmd-community :is(.community-board-table, .community-home-table) {
+  width: 100%;
+  border-collapse: collapse;
+  background: none;
+  font-size: var(--fs-14);
+  font-variant-numeric: tabular-nums;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.community-board-table, .community-home-table) :is(thead, thead tr) {
+  background: none;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.community-board-table, .community-home-table) th {
+  height: 40px;
+  padding: 0 var(--sp-3);
+  border: 0;
+  border-bottom: 3px solid var(--cmd-ink);
+  background: none;
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  text-align: left;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.community-board-table, .community-home-table) td {
+  height: 52px;
+  padding: var(--sp-2) var(--sp-3);
+  border: 0;
+  border-bottom: 1px solid var(--cmd-rule);
+  background: none;
+  color: var(--cmd-ink);
+  text-align: left;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.community-board-table, .community-home-table) tbody tr:hover td {
+  background: var(--cmd-bg-2);
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.community-board-table, .community-home-table) :is(th, td):first-child {
+  width: 64px;
+  color: var(--cmd-mute);
+}
+
+.cmd-shell #cmd-main .cmd-community .board-author {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--cmd-ink-2);
+}
+
+.cmd-shell #cmd-main .cmd-community .board-author-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--cmd-bg-3);
+  color: var(--cmd-ink);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  display: inline-grid;
+  place-items: center;
+  box-shadow: none;
+  border: 0;
+}
+
+.cmd-shell #cmd-main .cmd-community .activity-board-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 var(--sp-2);
+  border: 0;
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg-2);
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  box-shadow: none;
+}
+
+/* 내 활동 요약: 큰 카드 대신 한 줄 숫자 */
+.cmd-shell #cmd-main .cmd-community .cmd-activity-summary {
+  margin: var(--sp-5) 0 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .cmd-community .cmd-activity-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-8);
+  margin: 0;
+  padding: var(--sp-4) 0;
+  border-top: 1px solid var(--cmd-rule);
+  border-bottom: 1px solid var(--cmd-rule);
+}
+
+.cmd-shell #cmd-main .cmd-community .cmd-activity-stats > div {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+}
+
+.cmd-shell #cmd-main .cmd-community .cmd-activity-stats dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-14);
+  font-weight: 600;
+}
+
+.cmd-shell #cmd-main .cmd-community .cmd-activity-stats dt::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-m);
+  border: 0;
+  background: var(--tone);
+  flex: none;
+  align-self: center;
+}
+
+.cmd-shell #cmd-main .cmd-community .cmd-activity-note {
+  color: var(--cmd-mute);
+  font-size: var(--fs-12);
+  font-weight: 500;
+}
+
+.cmd-shell #cmd-main .cmd-community .cmd-activity-stats dd {
+  margin: 0;
+  color: var(--cmd-ink);
+  font-size: var(--fs-20);
+  font-weight: 800;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-tabs {
+  overflow: visible;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.community-board-table-wrap, .community-home-table-wrap) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  overflow-x: auto;
+}
+
+/* =====================================================================
+   출발 안내판: 회색 바탕 위 흰 작업판
+   ===================================================================== */
+
+.cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .info-page, .info-manage-page) {
+  padding: var(--sp-6) var(--sp-8) var(--sp-8);
+  border: 1px solid var(--cmd-rule);
+  background: var(--cmd-bg);
+}
+
+.cmd-shell #cmd-main .cmd-community .lounge-main {
+  padding: var(--sp-6) var(--sp-8) var(--sp-8);
+  border: 1px solid var(--cmd-rule);
+  background: var(--cmd-bg);
+}
+
+.cmd-shell #cmd-main .cmd-community .community-sidebar {
+  padding: var(--sp-4);
+  border: 1px solid var(--cmd-rule);
+  background: var(--cmd-bg);
+}
+
+/* 프로젝트 이름 옆 코드표 */
+.cmd-shell #cmd-main :is(.jpl-project-link, .issue-project) {
+  gap: var(--sp-3);
+}
+
+/* 표 숫자: 고정폭 */
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table, .community-board-table, .community-home-table) td:is(:first-child, :last-child) {
+  font-family: var(--cmd-mono);
+  font-size: var(--fs-13);
+}
+
+/* 상태 칩 대신 상태등 모양: 네모 불 + 글자 */
+.cmd-shell #cmd-main :is(.jpl-status, .issue-status) {
+  height: auto;
+  padding: 0;
+  background: none !important;
+  gap: 6px;
+}
+
+.cmd-shell #cmd-main :is(.jpl-status, .issue-status)::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  flex: none;
+}
+
+@media (max-width: 720px) {
+  .cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .info-page, .info-manage-page),
+  .cmd-shell #cmd-main .cmd-community .lounge-main {
+    padding: var(--sp-4);
+  }
+}
+
+/* =====================================================================
+   상세 화면 (공지 · 프로젝트 · 이슈) — 출발 안내판
+   머리말 / 항목표(이름 | 값) / 내용 / 다른 목록
+   ===================================================================== */
+
+.cmd-shell #cmd-main :is(.info-detail-page, .todo-detail-page, .issue-detail-page) {
+  max-width: none;
+  margin: 0;
+  padding: var(--sp-6) var(--sp-8) var(--sp-8);
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  box-shadow: none;
+  color: var(--cmd-ink);
+  font-family: var(--cmd-font);
+}
+
+/* 머리말 */
+.cmd-shell #cmd-main :is(.info-detail-header, .todo-detail-header, .issue-detail-header) {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin: 0 0 var(--sp-5);
+  padding: 0 0 calc(var(--sp-4) + 3px);
+  border: 0;
+  background: none;
+  box-shadow: inset 0 -3px 0 var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main :is(.info-detail-header, .todo-detail-header, .issue-detail-header) :is(h1, h2) {
+  margin: 0;
+  color: var(--cmd-ink);
+  font-size: var(--fs-24);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+.cmd-shell #cmd-main :is(.info-detail-header, .todo-detail-header, .issue-detail-header) p {
+  margin: var(--sp-1) 0 0;
+  color: var(--cmd-mute);
+  font-size: var(--fs-14);
+}
+
+/* 머리말·아래쪽 버튼: 테두리 버튼 / 아래쪽 돌아가기는 잉크 버튼 */
+.cmd-shell #cmd-main :is(.info-detail-page, .todo-detail-page, .issue-detail-page) :is(.info-detail-header, .todo-detail-header, .issue-detail-header) button {
+  height: 36px;
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-size: var(--fs-14);
+  font-weight: 700;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.cmd-shell #cmd-main :is(.info-detail-page, .todo-detail-page, .issue-detail-page) :is(.info-detail-header, .todo-detail-header, .issue-detail-header) button:hover {
+  background: var(--cmd-ink);
+  color: #fff;
+}
+
+.cmd-shell #cmd-main :is(.info-detail-bottom, .todo-detail-bottom, .issue-detail-bottom) {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--cmd-rule);
+}
+
+.cmd-shell #cmd-main :is(.info-detail-bottom, .todo-detail-bottom, .issue-detail-bottom) :is(button, a) {
+  height: 40px;
+  padding: 0 var(--sp-5);
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-m);
+  background: var(--cmd-ink);
+  color: #fff;
+  font-size: var(--fs-14);
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.cmd-shell #cmd-main :is(.info-detail-bottom, .todo-detail-bottom, .issue-detail-bottom) :is(button, a):hover {
+  background: #000;
+}
+
+/* 항목표: 이름 열은 회색 칸, 값은 흰 칸, 1px 괘선 */
+.cmd-shell #cmd-main :is(.info-detail-content, .todo-detail-content, .issue-detail-content) {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.cmd-shell #cmd-main :is(.info-detail-row, .todo-detail-row, .issue-detail-row) {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  align-items: stretch;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: none;
+}
+
+.cmd-shell #cmd-main :is(.info-detail-row, .todo-detail-row, .issue-detail-row) > strong {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0 var(--sp-4);
+  border: 0;
+  border-right: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg-2);
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-13);
+  font-weight: 700;
+}
+
+.cmd-shell #cmd-main :is(.info-detail-row, .todo-detail-row, .issue-detail-row) > :is(span, div, p) {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: var(--sp-2) var(--sp-4);
+  background: none;
+  color: var(--cmd-ink);
+  font-size: var(--fs-14);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 내용 */
+.cmd-shell #cmd-main :is(.info-detail-description, .todo-detail-description, .issue-detail-description) {
+  margin: 0;
+  padding: var(--sp-5) var(--sp-4) var(--sp-6);
+  border: 0;
+  border-radius: var(--radius-m);
+  background: none;
+  min-height: 120px;
+}
+
+.cmd-shell #cmd-main :is(.info-detail-description, .todo-detail-description, .issue-detail-description) h3 {
+  margin: 0 0 var(--sp-3);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--cmd-ink);
+  font-size: var(--fs-15);
+  font-weight: 800;
+}
+
+.cmd-shell #cmd-main :is(.info-detail-description, .todo-detail-description, .issue-detail-description) h3::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+}
+
+.cmd-shell #cmd-main :is(.info-detail-description, .todo-detail-description, .issue-detail-description) p {
+  margin: 0;
+  color: var(--cmd-ink);
+  font-size: var(--fs-15);
+  line-height: 1.7;
+  max-width: 75ch;
+}
+
+/* 다른 목록 */
+.cmd-shell #cmd-main :is(.info-detail-other, .todo-detail-other) {
+  margin-top: var(--sp-8);
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main :is(.info-detail-other, .todo-detail-other) > h3 {
+  margin: 0 0 var(--sp-3);
+  color: var(--cmd-ink);
+  font-size: var(--fs-18);
+  font-weight: 800;
+}
+
+.cmd-shell #cmd-main :is(.info-list-head, .todo-list-head) {
+  margin: 0;
+  padding: 0 var(--sp-3);
+  height: 36px;
+  align-items: center;
+  border: 0;
+  border-bottom: 2px solid var(--cmd-ink);
+  border-radius: var(--radius-m);
+  background: none;
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-12);
+  font-weight: 700;
+}
+
+.cmd-shell #cmd-main :is(.info-list, .todo-list) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cmd-shell #cmd-main :is(.info-item, .todo-item) {
+  margin: 0;
+  padding: 0 var(--sp-3);
+  min-height: 48px;
+  align-items: center;
+  border: 0;
+  border-bottom: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: none;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main :is(.info-item, .todo-item):hover {
+  background: var(--cmd-bg-2);
+}
+
+.cmd-shell #cmd-main :is(.info-number, .todo-number) {
+  width: auto;
+  min-width: 28px;
+  height: auto;
+  border-radius: var(--radius-m);
+  background: none;
+  color: var(--cmd-mute);
+  font-family: var(--cmd-mono);
+  font-size: var(--fs-13);
+  font-weight: 700;
+}
+
+.cmd-shell #cmd-main :is(.info-item, .todo-item) a {
+  color: var(--cmd-ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.cmd-shell #cmd-main :is(.info-item, .todo-item) a:hover {
+  text-decoration: underline;
+}
+
+.cmd-shell #cmd-main :is(.info-author, .todo-author) {
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+}
+
+.cmd-shell #cmd-main :is(.info-pages, .todo-pages) button {
+  min-width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-m);
+  background: none;
+  color: var(--cmd-ink-2);
+  font-family: var(--cmd-mono);
+  font-size: var(--fs-13);
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main :is(.info-pages, .todo-pages) button:is(.active, [aria-current="page"]) {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-ink);
+  color: var(--accent);
+}
+
+@media (max-width: 720px) {
+  .cmd-shell #cmd-main :is(.info-detail-page, .todo-detail-page, .issue-detail-page) {
+    padding: var(--sp-4);
+  }
+
+  .cmd-shell #cmd-main :is(.info-detail-row, .todo-detail-row, .issue-detail-row) {
+    grid-template-columns: 112px minmax(0, 1fr);
+  }
+}
+
+/* 상세 화면: 돌아가기 버튼 · 글자색 */
+.cmd-shell #cmd-main :is(.info-detail-back, .todo-detail-back) {
+  height: 40px;
+  padding: 0 var(--sp-5);
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-m);
+  background: var(--cmd-ink);
+  color: #fff;
+  font-size: var(--fs-14);
+  font-weight: 700;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.cmd-shell #cmd-main :is(.info-detail-back, .todo-detail-back):hover {
+  background: #000;
+}
+
+.cmd-shell #cmd-main :is(.info-detail-content, .todo-detail-content, .issue-detail-content, .info-detail-row, .todo-detail-row, .issue-detail-row, .info-detail-description, .todo-detail-description, .issue-detail-description, .info-title, .todo-title) {
+  color: var(--cmd-ink);
+}
+
+/* =====================================================================
+   3차: 위보다 아래가 넓은 안쪽 여백 + 둥근 모서리
+   ===================================================================== */
+
+.cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .info-page, .info-manage-page, .info-detail-page, .todo-detail-page, .issue-detail-page),
+.cmd-shell #cmd-main .cmd-community .lounge-main {
+  padding: var(--sp-5) var(--sp-8) var(--sp-10);
+  border-radius: var(--radius-m);
+}
+
+.cmd-shell #cmd-main .cmd-community .community-sidebar {
+  padding: var(--sp-3) var(--sp-4) var(--sp-6);
+  border-radius: var(--radius-m);
+}
+
+@media (max-width: 720px) {
+  .cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .info-page, .info-manage-page, .info-detail-page, .todo-detail-page, .issue-detail-page),
+  .cmd-shell #cmd-main .cmd-community .lounge-main {
+    padding: var(--sp-3) var(--sp-4) var(--sp-8);
+  }
+}
+
+/* =====================================================================
+   4차: 모서리 10px — 표도 박스로 감싸서 둥글게
+   ===================================================================== */
+
+.cmd-shell #cmd-main :is(.jpl-table-wrap, .issue-list-section, .info-list-section, .community-board-table-wrap, .community-home-table-wrap, .dash-table-wrap) {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background: var(--cmd-bg);
+}
+
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table, .community-board-table, .community-home-table, .dash-table) tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table, .community-board-table, .community-home-table, .dash-table) :is(th, td):first-child {
+  padding-left: var(--sp-4);
+}
+
+.cmd-shell #cmd-main :is(.jpl-table, .issue-table, .info-table, .community-board-table, .community-home-table, .dash-table) :is(th, td):last-child {
+  padding-right: var(--sp-4);
+}
+
+/* =====================================================================
+   5차: 둥근 박스 안 글자 여백 · 작은 버튼 여백 · 커뮤니티 버튼 글자색
+   ===================================================================== */
+
+/* 표를 감싼 박스 안의 목록 머리: 가장자리에서 띄우기 */
+.cmd-shell #cmd-main :is(.info-list-section, .issue-list-section) {
+  padding-top: var(--sp-4);
+  padding-bottom: var(--sp-2);
+}
+
+.cmd-shell #cmd-main :is(.info-list-section, .issue-list-section) :is(.info-list-header, .issue-list-header) {
+  padding: 0 var(--sp-4);
+}
+
+/* 검색 영역은 아래 괘선뿐이라 모서리를 둥글리지 않아요 */
+.cmd-shell #cmd-main :is(.jpl-filter, .issue-filter, .info-filter) {
+  border-radius: 0;
+}
+
+/* 작은 버튼: 글자가 테두리에 붙지 않게 좌우 여백과 높이를 줘요 */
+.cmd-shell #cmd-main .cmd-community :is(.lounge-board-more, .lounge-search-reset, .lounge-side-button, .lounge-board-shortcut, .community-button, .community-delete-button, .praise-open-button, .praise-submit-button, .praise-cancel-button, .lunch-picker-button, .activity-retry, .board-write-link, .community-banner-link, .lounge-board-select) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 var(--sp-4);
+  border-radius: var(--radius-m);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* 글자가 배경에 묻히던 버튼 (칭찬하기 · 점심 고르기 등) */
+.cmd-shell #cmd-main .cmd-community :is(.praise-open-button, .lunch-picker-button, .praise-submit-button, .praise-cancel-button, .lounge-board-more, .lounge-search-reset, .lounge-side-button, .community-button) {
+  border: 1px solid var(--cmd-rule-2) !important;
+  background: var(--cmd-bg) !important;
+  color: var(--cmd-ink) !important;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.praise-open-button, .lunch-picker-button, .praise-submit-button, .praise-cancel-button, .lounge-board-more, .lounge-search-reset, .lounge-side-button, .community-button):hover:not(:disabled) {
+  border-color: var(--cmd-ink) !important;
+  background: var(--cmd-bg-2) !important;
+}
+
+/* 주요 동작(글쓰기·등록·제출)은 잉크 버튼 */
+.cmd-shell #cmd-main .cmd-community :is(.praise-submit-button, .board-write-link, .community-banner-link) {
+  border-color: var(--cmd-ink) !important;
+  background: var(--cmd-ink) !important;
+  color: #fff !important;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.praise-submit-button, .board-write-link, .community-banner-link):hover:not(:disabled) {
+  background: #000 !important;
+}
+
+/* =====================================================================
+   5차: 이슈 건의 · 이슈/프로젝트 완료 요청 화면
+   ===================================================================== */
+
+.cmd-shell #cmd-main :is(.issue-completion, .issue-register) {
+  max-width: none;
+  margin: 0;
+  padding: var(--sp-5) var(--sp-8) var(--sp-10);
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  box-shadow: none;
+  font-family: var(--cmd-font);
+}
+
+.cmd-shell #cmd-main .issue-completion-heading {
+  margin: 0 0 var(--sp-5);
+  padding: 0 0 calc(var(--sp-4) + 3px);
+  box-shadow: inset 0 -3px 0 var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main :is(.issue-completion-heading h2, .issue-register h3) {
+  margin: 0 0 var(--sp-4);
+  color: var(--cmd-ink);
+  font-size: var(--fs-24);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.cmd-shell #cmd-main .issue-completion-heading h2 {
+  margin: 0;
+}
+
+.cmd-shell #cmd-main .issue-register-form {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main :is(.issue-completion-form, .issue-register-form) label {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-13);
+  font-weight: 700;
+}
+
+.cmd-shell #cmd-main :is(.issue-completion, .issue-register) :is(input, select, textarea) {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  background-color: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font: inherit;
+  font-size: var(--fs-14);
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main :is(.issue-completion, .issue-register) textarea {
+  min-height: 120px;
+  padding: var(--sp-3);
+  resize: vertical;
+}
+
+.cmd-shell #cmd-main :is(.issue-completion, .issue-register) :is(input, select, textarea):focus {
+  border-color: var(--cmd-ink);
+  outline: 2px solid var(--cmd-ink);
+  outline-offset: 0;
+  box-shadow: none;
+}
+
+/* 버튼: 기본은 테두리 버튼, 제출은 잉크 버튼 */
+.cmd-shell #cmd-main :is(.issue-completion, .issue-register) :is(button, a.issue-completion-link) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 var(--sp-5);
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-size: var(--fs-14);
+  font-weight: 700;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.cmd-shell #cmd-main :is(.issue-completion, .issue-register) button:hover:not(:disabled) {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-bg-2);
+}
+
+.cmd-shell #cmd-main :is(.issue-completion-actions button[type="submit"], .issue-completion-actions button:first-child, .issue-register-form button[type="submit"], .issue-register-form button:not([type]):first-of-type) {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-ink);
+  color: #fff;
+}
+
+.cmd-shell #cmd-main :is(.issue-completion-actions button[type="submit"], .issue-completion-actions button:first-child, .issue-register-form button[type="submit"]):hover:not(:disabled) {
+  background: #000;
+  color: #fff;
+}
+
+.cmd-shell #cmd-main .issue-completion-actions a {
+  color: var(--cmd-ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.cmd-shell #cmd-main .issue-completion-item {
+  border-top: 1px solid var(--cmd-rule);
+  padding: var(--sp-4) 0 var(--sp-5);
+}
+
+.cmd-shell #cmd-main .issue-completion-error {
+  color: var(--red-text);
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .cmd-shell #cmd-main :is(.issue-completion, .issue-register) {
+    padding: var(--sp-3) var(--sp-4) var(--sp-8);
+  }
+}
+
+/* =====================================================================
+   5차: 커뮤니티에 남은 파랑 정리 (글자는 잉크·회색, 버튼은 테두리·잉크)
+   ===================================================================== */
+
+.cmd-shell #cmd-main .cmd-community :where(h1, h2, h3, h4, p, strong, label, li, td, th, a, span, small, textarea, input, select) {
+  color: var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main .cmd-community :is(small, time, [class*="date"], [class*="help"], [class*="meta"], [class*="count"], [class*="caption"]) {
+  color: var(--cmd-mute);
+}
+
+/* 좋아요 · 북마크 · 첨부 · 익명 · 일반 버튼 */
+.cmd-shell #cmd-main .cmd-community :is(.community-like-button, .community-bookmark-button, .dong-input-button, .community-secondary-button, .community-cancel-button) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.community-like-button, .community-bookmark-button, .dong-input-button, .community-secondary-button, .community-cancel-button):hover:not(:disabled) {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-bg-2);
+}
+
+.cmd-shell #cmd-main .cmd-community :is(.community-like-button.is-active, .community-like-button.active, .community-like-button[aria-pressed="true"], .dong-anonymous-button[aria-pressed="true"]) {
+  border-color: var(--cmd-ink);
+  background: var(--cmd-ink);
+  color: #fff;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-like-heart,
+.cmd-shell #cmd-main .cmd-community .community-like-button strong {
+  color: inherit;
+}
+
+/* 주요 동작: 잉크 버튼 */
+.cmd-shell #cmd-main .cmd-community .community-primary-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 var(--sp-5);
+  border: 1px solid var(--cmd-ink);
+  border-radius: var(--radius-m);
+  background: var(--cmd-ink);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-primary-button:hover:not(:disabled) {
+  background: #000;
+}
+
+/* 답글: 글자 버튼 */
+.cmd-shell #cmd-main .cmd-community .community-reply-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cmd-ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  box-shadow: none;
+}
+
+/* 입력 */
+.cmd-shell #cmd-main .cmd-community :is(textarea, input[type="text"], input[type="search"], select) {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  background-color: var(--cmd-bg);
+  box-shadow: none;
+}
+
+.cmd-shell #cmd-main .cmd-community :is(textarea, input, select):focus {
+  border-color: var(--cmd-ink);
+  outline: 2px solid var(--cmd-ink);
+  outline-offset: 0;
+}
+
+/* 댓글 작성 칸 등 연한 파랑 바탕 → 연한 회색 */
+.cmd-shell #cmd-main .cmd-community :is([class*="comment-form"], [class*="comment-write"], [class*="comment-editor"], [class*="reply-form"]) {
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg-2);
+  box-shadow: none;
+}
+
+/* 반응속도 게임 위젯 */
+.cmd-shell #cmd-main .cmd-community :is(.reaction-game-best, .reaction-game-footer) {
+  color: var(--cmd-mute);
+}
+
+.cmd-shell #cmd-main .cmd-community .reaction-game button:not(.reaction-game-target) {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  padding: 0 var(--sp-3);
+  min-height: 32px;
+}
+
+.cmd-shell #cmd-main .cmd-community .reaction-game-target.reaction-game-idle {
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  background: var(--cmd-bg-2);
+  color: var(--cmd-ink);
+}
+
+/* 완료 요청 · 이슈 건의 화면 다듬기 */
+.cmd-shell #cmd-main .issue-completion-heading {
+  padding-bottom: var(--sp-3);
+  box-shadow: inset 0 -1px 0 var(--cmd-rule-2);
+}
+
+.cmd-shell #cmd-main .issue-completion > .issue-completion-heading:first-child {
+  padding-bottom: calc(var(--sp-4) + 3px);
+  box-shadow: inset 0 -3px 0 var(--cmd-ink);
+}
+
+.cmd-shell #cmd-main .issue-page .issue-register {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+/* 아래 선을 그림자로 그린 머리말·탭 줄은 모서리를 둥글리면 선 끝이 휘어서 직각으로 고정 */
+.cmd-shell #cmd-main :is(.mypage .mp-banner.cmd-mp-head, .mypage .mp-tabs, .community-banner.cmd-page-head, .community-tabs, .info-detail-header, .todo-detail-header, .issue-detail-header, .issue-completion-heading, .jpl-tabs, .issue-view-switch) {
+  border-radius: 0 !important;
+}
+
+/* =====================================================================
+   커뮤니티 왼쪽 메뉴 아래: 오늘 점심 뭐 먹지 · 반응속도 테스트
+   ===================================================================== */
+.cmd-shell #cmd-main .cmd-community .community-side-extras {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+
+.cmd-shell #cmd-main .cmd-community .community-side-extras > * {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: var(--sp-3);
+}
+
+.cmd-shell #cmd-main .cmd-community .community-side-extras select {
+  width: 100%;
+}
+
+.cmd-shell #cmd-main .cmd-community .community-side-extras .lunch-picker-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--sp-1);
+}
+
+.cmd-shell #cmd-main .cmd-community .community-side-extras :is(.lunch-picker-title, .reaction-game-title) {
+  font-size: var(--fs-16);
+  word-break: keep-all;
+}
+
+/* 메뉴가 화면보다 길어도 아래 카드까지 안쪽에서 스크롤해서 볼 수 있게 */
+.cmd-shell #cmd-main .cmd-community .community-sidebar {
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}

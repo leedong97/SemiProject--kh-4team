@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "../dong/communityClient";
 import { API_BASE } from "../../shared/config";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CommunityMenu from "./CommunityMenu";
 import CommunityHome from "./CommunityHome";
 import Board from "./Board";
 import MyActivity from "./MyActivity";
-import getLoginUser, { clearLoginUser } from "../woojin/getLoginUser";
+import LunchPicker from "./LunchPicker";
+import ReactionGame from "./ReactionGame";
+import getLoginUser from "../woojin/getLoginUser";
 import "./junwoo.css";
 
 function Community(props) {
@@ -23,25 +25,6 @@ function Community(props) {
     }
 
     const loginUser = getLoginUser();
-
-    function handleLogout() {
-        // 직원 정보와 커뮤니티·ERP 인증 토큰 삭제
-        clearLoginUser();
-
-        // 현재 탭에 남아 있는 관리자 인증 토큰도 삭제
-        sessionStorage.removeItem("nexus_token");
-
-        // 페이지를 새로 열어 메모리의 사용자 데이터와 연결도 초기화
-        window.location.replace("/login");
-    }
-
-    let displayName = "로그인이 필요합니다";
-    let displayTeam = "";
-
-    if (!loginUser.isDummy) {
-        displayName = loginUser.name;
-        displayTeam = loginUser.team;
-    }
 
     // 화면을 처음 열거나 다시 시도할 때 DB 조회
     useEffect(function () {
@@ -217,96 +200,22 @@ function Community(props) {
         );
     }
     return (
-        <div className="community-layout community-standalone">
-            <aside className="community-sidebar">
-                <Link
-                    to="/community"
-                    className="lounge-brand"
-                    aria-label="COMMAND LOUNGE 홈"
-                >
-                    <span className="lounge-brand-mark">
-                        C
-                    </span>
-
-                    <span className="lounge-brand-text">
-                        COMMAND
-                        <small>LOUNGE · 사내 커뮤니티</small>
-                    </span>
-                </Link>
-
-                <div className="lounge-workspace">
-                    <strong>우리 회사 워크스페이스</strong>
-                    <span>함께 만드는 더 좋은 일상</span>
-                </div>
-
-                <p className="lounge-menu-label">
-                    WORK TOGETHER
-                </p>
-
-                <CommunityMenu menu={menu} />
-
-                <div className="lounge-sidebar-bottom">
-                    <p>동료와 연결되는 공간</p>
+        <div className="community-layout cmd-community">
+            <aside className="community-sidebar" aria-label="커뮤니티 메뉴">
+                <p className="cmd-community-title">커뮤니티</p>
+                <nav>
+                    <CommunityMenu menu={menu} />
+                </nav>
+                <div className="community-side-extras">
+                    <LunchPicker />
+                    <ReactionGame />
                 </div>
             </aside>
 
             <div className="lounge-main">
-                <header className="lounge-header">
-                    <div className="lounge-breadcrumb">
-                        <span>워크스페이스</span>
-                        <span>/</span>
-                        <strong>{menu}</strong>
-                    </div>
-
-                    <div className="lounge-user-profile">
-                        {!loginUser.isDummy ? (
-                            <div className="lounge-account-menu">
-                                <button
-                                    type="button"
-                                    className="lounge-account-trigger"
-                                >
-                                    <span className="lounge-user-avatar" aria-hidden="true">
-                                        {displayName.charAt(0)}
-                                    </span>
-
-                                    <span className="lounge-user-info">
-                                        <strong>{displayName}님</strong>
-                                        <span>{displayTeam}</span>
-                                    </span>
-                                </button>
-
-                                <div className="lounge-account-dropdown">
-                                    {loginUser.role === "관리자" && (
-                                        <Link to="/admin">
-                                            관리자 페이지
-                                        </Link>
-                                    )}
-
-                                    <Link to="/">
-                                        직원 페이지
-                                    </Link>
-
-                                    <button type="button" onClick={handleLogout}>
-                                        로그아웃
-                                    </button>
-                                </div>
-                            </div>
-                        ) : (
-                            <Link to="/login" className="lounge-logout-button">
-                                로그인
-                            </Link>
-                        )}
-                    </div>
-                </header>
-
-                <main className="community-content">
+                <div className="community-content">
                     {content}
-                </main>
-
-                <footer className="lounge-footer">
-                    <span>COMMAND LOUNGE</span>
-                    <span>좋은 이야기가, 좋은 팀을 만듭니다.</span>
-                </footer>
+                </div>
             </div>
         </div>
     );

@@ -1,6 +1,7 @@
 import { API_BASE } from '../../shared/config';
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 import getLoginUser from "./getLoginUser";
 import ProfileBanner from "./components/mypageCommon/ProfileBanner";
 import SummaryCards from "./components/mypageCommon/SummaryCards";
@@ -10,6 +11,7 @@ import FilterBar from "./components/mypageCal/FilterBar";
 import ProjList from "./components/mypageCal/ProjList";
 import CalGrid from "./components/mypageCal/CalGrid";
 import DayList from "./components/mypageCal/DayList";
+import Legend from "./components/mypageCal/Legend";
 import SchForm from "./components/mypageCal/SchForm";
 import MyWorkTab from "./components/mypageTab/MyWorkTab";
 import AttendanceTab from "./components/mypageTab/AttendanceTab";
@@ -164,7 +166,14 @@ function Mypage() {
             .catch((err) => console.error("알림 전체 읽음 처리 실패:", err.message));
     };
 
-    const [tab, setTab] = useState("일정 관리");
+    // 상단 메뉴의 "알림"을 누르면 주소가 /mypage?tab=noti 라서, 그때는 "알림" 탭부터 열어요
+    const [searchParams] = useSearchParams();
+    const wantNotiTab = searchParams.get("tab") === "noti";
+    const [tab, setTab] = useState(wantNotiTab ? "알림" : "일정 관리");
+    // 이미 마이페이지에 있는 상태에서 "알림"을 눌러도 탭이 바뀌게 (useState 첫 값은 처음 한 번만 쓰이니까)
+    useEffect(() => {
+        if (wantNotiTab) setTab("알림");
+    }, [wantNotiTab]);
     const [year, setYear] = useState(today.getFullYear());
     const [month, setMonth] = useState(today.getMonth()); // 0 = 1월
     const [selectedKey, setSelectedKey] = useState(todayKey);
@@ -630,6 +639,8 @@ function Mypage() {
 
                     <FilterBar filter={filter} setFilter={setFilter} FILTERS={FILTERS} />
 
+                    <Legend />
+
                     <ProjList projectBars={visibleProjectBars.filter((p) => p.end >= todayKey)} todayKey={todayKey} countDays={countDays} />
 
                     <CalGrid
@@ -672,12 +683,6 @@ function Mypage() {
                         closeForm={closeForm}
                         handleSave={handleSave}
                     />
-
-                    {user.isDummy && (
-                        <p className="mp-note">
-                            체험 모드: 로그인하지 않아서 일정 등록·수정·삭제가 화면에서만 동작하고, 새로고침하면 처음 상태로 돌아와요.
-                        </p>
-                    )}
                 </section>
             )}
 

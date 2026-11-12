@@ -90,7 +90,7 @@ export default function Hero({ category, onNavigate }) {
 
               <div className="cm-dashboard">
                 <div className="cm-panel-header">
-                  <span className="cm-panel-brand">COMMAND</span>
+                  <span className="cm-panel-brand">ZERYN</span>
                   <span className="cm-live">
                     <i /> SYSTEM ONLINE
                   </span>

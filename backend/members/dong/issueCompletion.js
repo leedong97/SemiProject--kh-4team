@@ -87,6 +87,9 @@ router.patch('/issue-completion-requests/:id', requireManager, async (req, res, 
     if (!request || request.status !== '대기') fail(409, '이미 처리된 요청입니다.');
     if (decision === '승인') {
       if (issues[0].issue_status === '완료') fail(409, '이미 완료된 이슈입니다. 요청을 반려해주세요.');
+      if (!issues[0].issue_due_date) {
+        fail(400, '마감일을 먼저 입력해야 완료 승인할 수 있습니다.');
+      }
       await connection.query("UPDATE issues SET issue_status='완료', issue_resolved_at=NOW(), issue_updated_at=NOW() WHERE issue_id=?", [request.issue_id]);
     }
     await connection.query('UPDATE issue_completion_requests SET status=?, review_comment=?, reviewer_id=?, reviewed_at=NOW() WHERE id=?', [decision, comment.trim(), req.user.employee_id, request.id]);

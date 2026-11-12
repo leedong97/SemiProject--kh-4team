@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { adminRequest } from "../adminApi";
 import { matchesProjectSearch } from "../utils/projectFilters";
 import usePagination from "../utils/usePagination";
@@ -7,7 +7,8 @@ import NumberedPager from "../components/NumberedPager";
 import { DEFAULT_PROJECT_STATUS, PROJECT_STATUS } from "../shared/projectConstants";
 import ProjectRequestList from "../components/ProjectRequestList";
 import QuoteRequestList from "../components/QuoteRequestList";
-import { getQuoteRequests, updateQuoteStatus } from "../adminApi";
+import { updateQuoteStatus } from "../adminApi";
+import { useJongho } from "../JonghoContext";
 import ProjectRegisterForm from "../components/ProjectRegisterForm";
 import ProjectDetail from "../components/ProjectDetail";
 import ProjectTable from "../components/ProjectTable";
@@ -16,6 +17,12 @@ import SearchSortBar from "../components/SearchSortBar";
 import { isInvalidDateRange } from "../utils/projectHelpers";
 import { findEmployee } from "../shared/employees";
 import { compareText, compareNumber, compareDate, descending, sortByOption } from "../utils/listSort";
+// 오늘 날짜 (YYYY-MM-DD, 한국 시간 기준 로컬 날짜)
+const todayString = () => {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
+};
 
 const PROJECT_PAGE_SIZE = 10;
 
@@ -57,14 +64,19 @@ function ProjectManagement({
   const [selectedProjectId, setSelectedProjectId] = useState(null);
 
   // 대기 중인 완료 요청 목록 (requests 테이블)
-  const [pendingRequests, setPendingRequests] = useState([]);
   const [requestBusy, setRequestBusy] = useState(false);
   // 목록 구분 탭: 프로젝트 / 완료 요청 / 견적 요청
   const [listTab, setListTab] = useState("projects");
+  // 헤더 알림에서 넘어오면 해당 탭을 바로 연다 (예: { tab: "quotes" })
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state && location.state.tab) setListTab(location.state.tab);
+  }, [location.state]);
   // 견적 요청 (쇼핑 고객이 보낸 것)
-  const [quotes, setQuotes] = useState([]);
+  const { quotes, refreshAlerts, completionRequests: pendingRequests = [] } = useJongho();
   const [quoteStatus, setQuoteStatus] = useState("all");
   const [quoteBusy, setQuoteBusy] = useState(false);
+  const [sourceQuote, setSourceQuote] = useState(null);
   // 탭별 검색어
   const [requestSearch, setRequestSearch] = useState("");
   const [quoteSearch, setQuoteSearch] = useState("");
@@ -77,7 +89,7 @@ function ProjectManagement({
 
   // 탭별 정렬 선택
   const [requestSort, setRequestSort] = useState("latest");
-  const [quoteSort, setQuoteSort] = useState("company");
+  const [quoteSort, setQuoteSort] = useState("latest");
 
   const REQUEST_SORT_OPTIONS = [
     { value: "latest", label: "요청일 최신순" },
@@ -125,37 +137,16 @@ function ProjectManagement({
     QUOTE_SORT_RULES
   );
 
-  const loadQuotes = async () => {
-    try {
-      setQuotes(await getQuoteRequests());
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
   const changeQuoteStatus = async (quoteId, status) => {
     setQuoteBusy(true);
     try {
-      await updateQuoteStatus(quoteId, status);
-      await loadQuotes();
+      await updateQuoteStatus(quoteId, status); // 목록은 견적 변경 신호(SSE)로 Context가 다시 받는다
     } catch (error) {
       alert(error.message);
     } finally {
       setQuoteBusy(false);
     }
   };
-
-  // 견적은 30초마다 자동으로 다시 불러온다 (헤더 알림과 같은 주기)
-  useEffect(() => {
-    loadQuotes();
-    const timer = setInterval(loadQuotes, 30000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // 견적 탭을 열 때도 바로 다시 불러온다
-  useEffect(() => {
-    if (listTab === "quotes") loadQuotes();
-  }, [listTab]);
 
   // 신규 프로젝트 입력 데이터
   const [form, setForm] = useState({
@@ -177,6 +168,26 @@ function ProjectManagement({
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleCustomerChange = (value) => {
+    setForm((prev) => ({ ...prev, customer: value }));
+  };
+
+  const startProjectFromQuote = async (quote) => {
+    await loadCustomers();
+    setForm({
+      customer: quote.company || "",
+      name: quote.service || "",
+      startDate: "",
+      endDate: "",
+      budget: "",
+      description: quote.requirements || "",
+      managerId: "",
+      memberIds: [],
+    });
+    setSourceQuote(quote);
+    setPage("register");
   };
 
   // 팀원 추가 / 제거 (셀렉트로 추가, 칩의 × 로 제거)
@@ -203,6 +214,19 @@ function ProjectManagement({
       alert("고객사, 프로젝트명, 설명을 입력하세요.");
       return;
     }
+    if (!form.endDate) {
+      alert("프로젝트 마감일(종료 예정일)을 입력하세요.");
+      return;
+    }
+    const today = todayString();
+    if (form.startDate && form.startDate < today) {
+      alert("시작 예정일은 오늘 이후로 입력하세요.");
+      return;
+    }
+    if (form.startDate && form.endDate && form.endDate < form.startDate) {
+      alert("종료 예정일은 시작 예정일과 같거나 이후여야 합니다.");
+      return;
+    }
 
     if (isInvalidDateRange(form.startDate, form.endDate)) {
       alert("종료 예정일은 시작 예정일 이후여야 합니다.");
@@ -224,7 +248,7 @@ function ProjectManagement({
       name: form.name.trim(),
       startDate: form.startDate,
       endDate: form.endDate,
-      budget: Number(form.budget || 0),
+      budget: form.budget === "" ? null : Number(form.budget),
       description: form.description,
       status: form.managerId ? PROJECT_STATUS.IN_PROGRESS : DEFAULT_PROJECT_STATUS,
       progress: 0,
@@ -242,6 +266,7 @@ function ProjectManagement({
 
     alert("프로젝트가 등록되었습니다.");
 
+    setSourceQuote(null);
     setForm({
       customer: "",
       name: "",
@@ -340,35 +365,17 @@ function ProjectManagement({
 
   // 고객사 목록 (등록·수정 때 선택지로 쓴다)
   const [customers, setCustomers] = useState([]);
-  useEffect(() => {
-    adminRequest("/customers")
-      .then((rows) => setCustomers(Array.isArray(rows) ? rows : []))
-      .catch(() => setCustomers([]));
-  }, []);
-
-  // 완료 요청 목록: 상태가 '완료 요청'인 프로젝트를 요청 형태로 바꿔서 보여준다
-  const loadPendingRequests = async () => {
+  const loadCustomers = async () => {
     try {
-      const rows = await adminRequest("/projects");
-      const list = Array.isArray(rows) ? rows : [];
-      setPendingRequests(
-        list
-          .filter((p) => p.status === PROJECT_STATUS.REQUESTED)
-          .map((p) => ({
-            id: "status-" + p.id,
-            type: "완료",
-            source: "status",
-            projectId: p.id,
-            projectName: p.name,
-            title: p.name,
-            requesterName: p.customer || "",
-            requestedAt: ""
-          }))
-      );
-    } catch (err) {
-      setPendingRequests([]);
+      const rows = await adminRequest("/customers");
+      setCustomers(Array.isArray(rows) ? rows : []);
+    } catch (error) {
+      setCustomers([]);
     }
   };
+  useEffect(() => {
+    loadCustomers();
+  }, []);
 
   // 선택한 프로젝트에 대기 중인 요청 찾기
   const pendingFor = (projectId) =>
@@ -389,7 +396,7 @@ function ProjectManagement({
           String(p.id) === String(req.projectId) ? { ...p, status: PROJECT_STATUS.DONE, progress: 100 } : p
         )
       );
-      await loadPendingRequests();
+      refreshAlerts();
       alert("프로젝트를 완료 처리했습니다.");
     } catch (err) {
       alert(err.message);
@@ -410,18 +417,13 @@ function ProjectManagement({
         prev.map((p) => (String(p.id) === String(req.projectId) ? { ...p, status: PROJECT_STATUS.IN_PROGRESS } : p))
       );
       alert(`완료 요청을 반려했습니다. (사유: ${reason})`);
-      await loadPendingRequests();
+      refreshAlerts();
     } catch (err) {
       alert(err.message);
     } finally {
       setRequestBusy(false);
     }
   };
-
-  // 화면이 열릴 때 대기 요청 목록 불러오기
-  useEffect(() => {
-    loadPendingRequests();
-  }, []);
 
   return (
     <div className="nexus-project-management">
@@ -433,15 +435,17 @@ function ProjectManagement({
       {page === "list" ? (
         <>
           <div className="nexus-project-heading">
-            <div>
-              <p>관리자 / 프로젝트 관리</p>
-              <h2>프로젝트 관리</h2>
-            </div>
+
+
 
             <button
               type="button"
               className="btn btn-primary"
-              onClick={() => setPage("register")}
+              onClick={async () => {
+                setSourceQuote(null);
+                await loadCustomers();
+                setPage("register");
+              }}
             >
               + 신규 프로젝트 등록
             </button>
@@ -459,44 +463,44 @@ function ProjectManagement({
           />
 
           {listTab === "projects" && (
-          <div className="card nexus-project-panel">
+            <div className="card nexus-project-panel">
 
-            <SearchSortBar
-              searchId="project-search"
-              placeholder="프로젝트명 또는 고객사 검색"
-              search={search}
-              onSearchChange={setSearch}
-              selects={[
-                { id: "project-sort", label: "정렬 기준", value: sortOption, onChange: setSortOption, options: SORT_OPTIONS },
-              ]}
-            />
-            <FilterChips
-              label="기간 필터"
-              value={overdueOnly}
-              onChange={setOverdueOnly}
-              options={[
-                { value: false, label: "전체" },
-                { value: true, label: `기간 초과 (${overdueCount})` },
-              ]}
-            />
+              <SearchSortBar
+                searchId="project-search"
+                placeholder="프로젝트명 또는 고객사 검색"
+                search={search}
+                onSearchChange={setSearch}
+                selects={[
+                  { id: "project-sort", label: "정렬 기준", value: sortOption, onChange: setSortOption, options: SORT_OPTIONS },
+                ]}
+              />
+              <FilterChips
+                label="기간 필터"
+                value={overdueOnly}
+                onChange={setOverdueOnly}
+                options={[
+                  { value: false, label: "전체" },
+                  { value: true, label: `기간 초과 (${overdueCount})` },
+                ]}
+              />
 
-            <ProjectTable
-              startIndex={(currentPage - 1) * PROJECT_PAGE_SIZE}
-              projects={pagedProjects}
-              employees={employees}
-              isEmpty={filteredProjects.length === 0}
-              isOverdue={isOverdue}
-              onOpenProject={openDetail}
-              onManageMembers={() => navigate("/admin/members")}
-              onDeleteProject={deleteProject}
-            />
+              <ProjectTable
+                startIndex={(currentPage - 1) * PROJECT_PAGE_SIZE}
+                projects={pagedProjects}
+                employees={employees}
+                isEmpty={filteredProjects.length === 0}
+                isOverdue={isOverdue}
+                onOpenProject={openDetail}
+                onManageMembers={() => navigate("/admin/members")}
+                onDeleteProject={deleteProject}
+              />
 
-            <NumberedPager currentPage={currentPage} totalPages={totalPages} total={total} pageSize={PROJECT_PAGE_SIZE} onPage={goTo} />
-          </div>
+              <NumberedPager currentPage={currentPage} totalPages={totalPages} total={total} pageSize={PROJECT_PAGE_SIZE} onPage={goTo} />
+            </div>
           )}
 
           {listTab === "requests" && (
-            <>
+            <div className="card nexus-project-panel">
               <SearchSortBar
                 searchId="request-search"
                 placeholder="프로젝트명·요청 제목·요청자 검색"
@@ -515,15 +519,13 @@ function ProjectManagement({
                   onReject={rejectRequest}
                 />
               ) : (
-                <div className="card nexus-project-panel">
-                  <p>{pendingRequests.length > 0 ? "검색 결과가 없습니다." : "대기 중인 완료 요청이 없습니다."}</p>
-                </div>
+                <p>{pendingRequests.length > 0 ? "검색 결과가 없습니다." : "대기 중인 완료 요청이 없습니다."}</p>
               )}
-            </>
+            </div>
           )}
 
           {listTab === "quotes" && (
-            <>
+            <div className="card nexus-project-panel">
               <SearchSortBar
                 searchId="quote-search"
                 placeholder="기업명·서비스·이메일·요구사항 검색"
@@ -548,8 +550,9 @@ function ProjectManagement({
                 quotes={visibleQuotes}
                 busy={quoteBusy}
                 onChangeStatus={changeQuoteStatus}
+                onCreateProject={startProjectFromQuote}
               />
-            </>
+            </div>
           )}
         </>
 
@@ -573,8 +576,10 @@ function ProjectManagement({
 
         <ProjectRegisterForm
           customers={customers}
+          sourceQuote={sourceQuote}
           form={form}
           onChange={handleChange}
+          onCustomerChange={handleCustomerChange}
           onSubmit={registerProject}
           onBack={() => setPage("list")}
           employees={employees}

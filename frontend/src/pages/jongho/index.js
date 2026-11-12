@@ -1,5 +1,9 @@
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import './styles/jongho.css';
+import './styles/admin-unified.css';
+import './styles/admin-cmd.css';
+import '../../shared/theme.css';
+import '../../shared/components.css';
 import AdminLayout from './components/AdminLayout';
 import Dashboard from './pages/Dashboard';
 import ProjectManagement from './pages/ProjectManagement';
@@ -20,8 +24,15 @@ import getLoginUser, { clearLoginUser } from "../woojin/getLoginUser";
 function AdminRoute() {
   const navigate = useNavigate();
   const me = getLoginUser();
+  const { pathname, search } = useLocation();
 
-  if (me.isDummy || me.role !== '관리자') {
+  // 관리자가 아닌 팀장(프로젝트 담당자)도 마이페이지의 "팀원 평가하러 가기"로는 평가 화면 한 곳만 들어올 수 있어요.
+  // (주소: /admin/evaluations?from=mypage) 다른 관리자 화면은 그대로 관리자만 열려요.
+  // 실제 평가 권한(담당 PM인지)은 백엔드 /api/evaluations 가 다시 검사해요.
+  const isEvaluationFromMypage =
+    pathname === '/admin/evaluations' && new URLSearchParams(search).get('from') === 'mypage';
+
+  if (me.isDummy || (me.role !== '관리자' && !isEvaluationFromMypage)) {
     return <Navigate to="/login" replace />;
   }
 

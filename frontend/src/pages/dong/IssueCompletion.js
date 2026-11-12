@@ -80,8 +80,7 @@ export default function IssueCompletion({ admin = false, onReviewed }) {
   const visible = requests.filter(item => filter === '전체' || item.status === filter);
   return <section className="issue-completion">
     <div className="issue-completion-heading">
-      <div><h2>{admin ? '이슈 완료 요청 검토' : '이슈 완료 요청'}</h2>
-        <p>{admin ? '처리 내용을 확인하고 승인하거나 반려할 수 있습니다.' : '처리 내용을 제출하면 관리자 승인 후 이슈가 완료됩니다.'}</p></div>
+      <div><h2>{admin ? '이슈 완료 요청 검토' : '이슈 완료 요청'}</h2></div>
       <button type="button" onClick={load} disabled={busy || loading}>새로고침</button>
     </div>
     {error && <p role="alert" className="issue-completion-error">{error}</p>}

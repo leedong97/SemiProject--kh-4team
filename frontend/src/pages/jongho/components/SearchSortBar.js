@@ -1,3 +1,4 @@
+import SearchInput from "../../../shared/SearchInput";
 // 검색칸 + 선택 드롭다운(게시판, 정렬 등)을 한 줄로 보여주는 필터 바.
 // 프로젝트 관리 · 인원 관리 · 커뮤니티 관리가 같이 쓴다.
 //
@@ -8,7 +9,7 @@ export default function SearchSortBar({ searchId, placeholder, search, onSearchC
       <div className="nexus-member-toolbar">
         <div className="nexus-member-field nexus-member-field-search">
           <label htmlFor={searchId}>검색</label>
-          <input
+          <SearchInput
             id={searchId}
             className="nexus-member-search"
             placeholder={placeholder}

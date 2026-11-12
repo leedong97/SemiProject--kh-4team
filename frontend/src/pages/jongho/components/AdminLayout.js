@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { PROJECT_STATUS } from "../shared/projectConstants";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { adminRequest, getPendingProjectRequests } from "../adminApi";
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { API_BASE } from "../../../shared/config";
 import getLoginUser from "../../woojin/getLoginUser";
+import { useJongho } from "../JonghoContext";
 
+import zerynMark from "../../../assets/zeryn-logo-light.png";
 function AdminLayout({ onLogout }) {
 
   // 대기 중인 요청(완료 + 등록) 알림
-  const [pendingRequests, setPendingRequests] = useState([]);
+  // 요청·프로젝트 목록은 Context가 한 번만 받아 공유한다
+  const { completionRequests: pendingRequests = [], refreshAlerts, alertTick } = useJongho() || {};
   const [alertOpen, setAlertOpen] = useState(false);
-
-  // 상태가 '완료 요청'인 프로젝트 (요청 기록 없이 상태만 바뀐 경우도 알림에 보여준다)
-  const [completionProjects, setCompletionProjects] = useState([]);
 
   // 새 이슈 알림 (읽지 않은 '이슈' 알림, 로그인한 관리자 기준)
   const [issueAlerts, setIssueAlerts] = useState([]);
@@ -35,36 +33,26 @@ function AdminLayout({ onLogout }) {
     }
   };
 
-  const loadPendingRequests = async () => {
-    try {
-      // 프로젝트 등록은 관리자 페이지에서 직접 하므로 완료 요청만 알림에 보여준다
-      const rows = await getPendingProjectRequests('완료');
-      setPendingRequests(Array.isArray(rows) ? rows : []);
-    } catch (err) {
-      setPendingRequests([]);
-    }
-  };
-
-  const loadCompletionProjects = async () => {
-    try {
-      const rows = await adminRequest('/projects');
-      const list = Array.isArray(rows) ? rows : [];
-      setCompletionProjects(list.filter((p) => p.status === PROJECT_STATUS.REQUESTED));
-    } catch (err) {
-      setCompletionProjects([]);
-    }
-  };
-
   const loadAlerts = () => {
-    loadPendingRequests();
-    loadCompletionProjects();
+    refreshAlerts();
     loadIssueAlerts();
   };
 
+  // 30초마다 조회하지 않는다. 변경 신호가 올 때만 다시 받는다
   useEffect(() => {
-    loadAlerts();
-    const timer = setInterval(loadAlerts, 30000);
-    return () => clearInterval(timer);
+    loadIssueAlerts();
+  }, [alertTick]);
+
+  useEffect(() => {
+    const onReturn = () => {
+      if (document.visibilityState === "visible") loadAlerts();
+    };
+    window.addEventListener("focus", onReturn);
+    document.addEventListener("visibilitychange", onReturn);
+    return () => {
+      window.removeEventListener("focus", onReturn);
+      document.removeEventListener("visibilitychange", onReturn);
+    };
   }, []);
 
   // 알림 항목을 누르면 해당 프로젝트 상세로 이동
@@ -74,6 +62,9 @@ function AdminLayout({ onLogout }) {
   };
 
   const navigate = useNavigate();
+  const location = useLocation();
+  // 일반 마이페이지에서 들어온 평가 화면은 다른 관리자 메뉴를 숨깁니다.
+  const evaluationOnly = location.pathname === "/admin/evaluations" && new URLSearchParams(location.search).get("from") === "mypage";
 
   // 이슈 알림을 누르면: 읽음 처리 후 이슈 관리 화면으로 이동
   const openIssueAlert = async (n) => {
@@ -91,17 +82,22 @@ function AdminLayout({ onLogout }) {
     navigate(n.link || "/admin/issues");
   };
 
-  // 요청 기록이 이미 있는 프로젝트는 위 요청 목록에서 보이므로 중복으로 세지 않는다
-  const extraCompletionProjects = completionProjects.filter(
-    (p) => !pendingRequests.some((r) => String(r.projectId) === String(p.id))
-  );
+  // 접수 대기 견적 (Context 에서 받는 실시간 목록)
+  const { data: adminData, quotes: allQuotes, reloadAdminData } = useJongho() || {};
 
-  const openCompletionProject = (project) => {
-    setAlertOpen(false);
-    navigate(`/admin/projects?project=${project.id}`);
-  };
+  // 관리자 화면에 들어오면 (로그인 직후 포함) 서버 데이터를 한 번 다시 받는다
+  useEffect(() => {
+    if (reloadAdminData) reloadAdminData();
+  }, []);
+  const quoteAlerts = (allQuotes || []).filter((q) => q.status === "접수");
+  const waitingQuotes = quoteAlerts.length;
 
-  const alertTotal = pendingRequests.length + extraCompletionProjects.length + issueAlerts.length;
+  // 이슈 건의: 건의가 저장되면 '검토 중' 상태로 들어온다 (관리자 화면이 받은 이슈 데이터에서 셈)
+  const suggestedIssues = ((adminData && adminData.issues) || []).filter((i) => i.status === "검토 중");
+
+  const alertTotal =
+    pendingRequests.length + issueAlerts.length +
+    suggestedIssues.length + waitingQuotes;
 
   // 관리자 상단 메뉴
   const menus = [
@@ -116,8 +112,14 @@ function AdminLayout({ onLogout }) {
     { name: "업무량 분석", path: "/admin/workload" },
   ];
 
+
+  // 메뉴별 화면 제목과 설명은 공통 레이아웃에서 관리한다 (각 화면은 제목을 따로 그리지 않는다)
+  const currentMenu = menus.find((menu) => menu.end
+    ? location.pathname === menu.path
+    : location.pathname === menu.path) || menus[0];
+
   return (
-    <div className="nexus-admin-layout">
+    <div className="nexus-admin-layout cmd-admin">
 
       {/* 상단 네비게이션 */}
       <header className="nexus-admin-header">
@@ -125,14 +127,11 @@ function AdminLayout({ onLogout }) {
         <div className="nexus-header-top">
 
           <div className="nexus-logo-area">
-            {/* 일반 화면 상단과 같은 로고 이미지 (public/images/command-logo.png) */}
-            <img
-              className="admin-brand-logo"
-              src="/images/command-logo.png"
-              alt="COMMAND ERP"
-              onClick={() => navigate("/admin")}
-            />
-            <p className="admin-brand-label">ADMIN WORKSPACE</p>
+            {/* 일반 화면 상단과 같은 ZERYN 로고 + 관리자 표시 */}
+            <button type="button" className="cmd-logo cmd-admin-logo" onClick={() => navigate("/admin")} aria-label="ZERYN 관리자 대시보드">
+              <img className="cmd-logo-img" src={zerynMark} alt="" aria-hidden="true" />
+            </button>
+            <span className="cmd-admin-tag">관리자</span>
           </div>
 
           <div className="nexus-admin-user">
@@ -140,10 +139,11 @@ function AdminLayout({ onLogout }) {
               <button
                 type="button"
                 className="btn btn-outline admin-alert-button"
-                title="대기 중인 요청"
+                data-tip="대기 중인 요청"
+                aria-label={`대기 중인 요청 ${alertTotal}건`}
                 onClick={() => { setAlertOpen((prev) => !prev); loadAlerts(); }}
               >
-                🔔 요청
+                요청
                 {alertTotal > 0 && (
                   <span className="admin-alert-count">{alertTotal}</span>
                 )}
@@ -183,27 +183,39 @@ function AdminLayout({ onLogout }) {
                     </button>
                   ))}
 
-                  {extraCompletionProjects.map((project) => (
+                  {suggestedIssues.map((issue) => (
                     <button
-                      key={"completion-" + project.id}
+                      key={"suggest-" + issue.id}
                       type="button"
                       className="admin-alert-item"
-                      onClick={() => openCompletionProject(project)}
+                      onClick={() => { setAlertOpen(false); navigate("/admin/issues"); }}
                     >
-                      <span className="admin-alert-type">완료 요청</span>
-                      <strong>{project.name}</strong>
-                      <small>{project.customer || ""}</small>
+                      <span className="admin-alert-type">이슈 건의</span>
+                      <strong>{issue.title}</strong>
+                      <small>{issue.projectName || issue.priority || ""}</small>
+                    </button>
+                  ))}
+
+                  {quoteAlerts.map((q) => (
+                    <button
+                      key={"quote-" + q.id}
+                      type="button"
+                      className="admin-alert-item"
+                      onClick={() => { setAlertOpen(false); navigate("/admin/projects", { state: { tab: "quotes" } }); }}
+                    >
+                      <span className="admin-alert-type">견적 요청</span>
+                      <strong>{q.company}</strong>
+                      <small>{q.service} · {q.createdAt}</small>
                     </button>
                   ))}
                 </div>
               )}
             </div>
-
             {/* 이름에 마우스를 올리면 서브메뉴(일반 페이지 이동 / 로그아웃)가 열린다 */}
             <div className="nexus-admin-user-menu">
               <button type="button" className="nexus-admin-user-name">
                 {me.isDummy || !me.name ? "관리자" : me.name} 님
-                <span className="nexus-admin-user-caret" aria-hidden="true">▾</span>
+                <svg className="nexus-admin-user-caret" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" /></svg>
               </button>
 
               <div className="nexus-admin-user-sub">
@@ -232,7 +244,7 @@ function AdminLayout({ onLogout }) {
 
         {/* 관리자 메뉴 */}
         <nav className="nexus-admin-nav">
-          {menus.map((menu) => (
+          {(evaluationOnly ? menus.filter(menu => menu.path === "/admin/evaluations") : menus).map((menu) => (
             <NavLink
               key={menu.path}
               to={menu.path}
@@ -252,6 +264,12 @@ function AdminLayout({ onLogout }) {
 
       {/* 선택한 메뉴의 컴포넌트 표시 */}
       <main className="nexus-admin-main">
+        <div className="nexus-workspace-heading">
+          <div>
+            <h1>{currentMenu.name}</h1>
+            
+          </div>
+        </div>
         <Outlet />
       </main>
 

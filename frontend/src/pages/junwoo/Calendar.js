@@ -1,292 +1,146 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
 
-const scheduleTypeClasses = {
-  업무: "work",
-  개인: "personal",
-  휴가: "leave",
-  프로젝트: "project",
-  공지사항: "notice"
-};
+// 일정 종류 → 점 색 이름 (기존 방식 그대로: 날짜 아래 종류별 점)
+export const SCHEDULE_TYPES = [
+  { type: '업무', key: 'work' },
+  { type: '개인', key: 'personal' },
+  { type: '휴가', key: 'leave' },
+  { type: '프로젝트', key: 'project' },
+  { type: '공지사항', key: 'notice', label: '공지' },
+];
 
-function Calendar({ schedules = [] }) {
+const typeKey = (type) => SCHEDULE_TYPES.find((t) => t.type === type)?.key || 'other';
 
-  const navigate = useNavigate();
+export function toISO(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
 
-  const [month, setMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState('');
+const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
+
+// selectedDate / onSelect 는 대시보드(Home)가 가지고 있어요.
+// 날짜를 누르면 왼쪽 일정 목록이 그 날짜로 바뀌어요.
+function Calendar({ schedules = [], selectedDate, onSelect, loading }) {
+  const today = toISO(new Date());
+  const initial = selectedDate ? new Date(`${selectedDate}T00:00:00`) : new Date();
+  const [month, setMonth] = useState(new Date(initial.getFullYear(), initial.getMonth(), 1));
 
   const year = month.getFullYear();
-  const monthNumber = month.getMonth() + 1;
+  const monthIndex = month.getMonth();
 
-  // getDat()는 일요일 0부터 토요일 6까지 반환한다.
-  // 이 값을 이용해 1일 앞에 필요한 빈 칸 수를 계산한다.
-  const firstDay = new Date(year, monthNumber - 1, 1).getDay();
+  // 1일의 요일(일요일 0)만큼 앞을 비우고, 마지막 주는 다음 달 날짜로 채워요.
+  const firstDay = new Date(year, monthIndex, 1).getDay();
+  const lastDate = new Date(year, monthIndex + 1, 0).getDate();
+  const prevLast = new Date(year, monthIndex, 0).getDate();
+  const totalCells = Math.ceil((firstDay + lastDate) / 7) * 7;
 
-  // Date의 날짜에 0을 넣으면 이전 달의 마지막 날이 된다.
-  // monthNumber는 1~12이므로 현재 표시중인 달의 마지막 날짜를 얻는다.
-  const lastDate = new Date(year, monthNumber, 0).getDate();
+  const cells = Array.from({ length: totalCells }, (_, i) => {
+    const offset = i - firstDay + 1;
+    if (offset < 1) return { day: prevLast + offset, outside: true, date: toISO(new Date(year, monthIndex - 1, prevLast + offset)) };
+    if (offset > lastDate) return { day: offset - lastDate, outside: true, date: toISO(new Date(year, monthIndex + 1, offset - lastDate)) };
+    return { day: offset, outside: false, date: toISO(new Date(year, monthIndex, offset)) };
+  });
 
-  // 달력 첫 줄에서 1일 이전에 들어갈 빈 칸 배열
-  const emptyDays = Array.from({ length: firstDay });
+  // 날짜별 일정 종류(점)와 개수
+  const byDate = {};
+  schedules.forEach((item) => {
+    const entry = byDate[item.date] || (byDate[item.date] = { types: [], count: 0 });
+    entry.count += 1;
+    const t = item.type || '기타';
+    if (!entry.types.includes(t)) entry.types.push(t);
+  });
 
-  // 1일부터 해당 월의 마지막 날까지 날짜 숫자 배열 생성
-  const days = Array.from(
-    { length: lastDate },
-    (_, i) => i + 1
-  );
-
-  // 이전 달 / 다음 달
-  const changeMonth = (num) => {
-
-    // 오늘이 있는 달로 이동하고 오늘 날짜 선택
-    const goToToday = () => {
-      const now = new Date();
-
-      setMonth(new Date(now.getFullYear(), now.getMonth(), 1));
-
-      setSelectedDate(
-        `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
-      );
-    };
-
-    setMonth(new Date(year, monthNumber - 1 + num, 1));
-    setSelectedDate('');
-  };
+  const changeMonth = (num) => setMonth(new Date(year, monthIndex + num, 1));
 
   const goToToday = () => {
     const now = new Date();
-
     setMonth(new Date(now.getFullYear(), now.getMonth(), 1));
-
-    setSelectedDate(
-      `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
-    );
+    onSelect(toISO(now));
   };
 
-  // 전체 일정에서 선택한 날짜의 일정만 고른 뒤 시간순으로 정렬한다.
-  // 시간이 없으면 빈 문자열로 비교하므로 시간 없는 일정이 먼저 나온다.
-  const selectedSchedules = schedules
-    .filter(item => item.date === selectedDate)
-    .sort((a, b) => (a.time || "").localeCompare(b.time || ""));
-
-  console.log("선택한 날짜:", selectedDate);
-  console.log("해당 날짜의 일정:", selectedSchedules);
-  console.log(
-    "받아온 공지사항:",
-    schedules.filter(item =>
-      item.title.includes("[공지사항]")
-    )
-  );
+  const pick = (cell) => {
+    if (cell.outside) {
+      const d = new Date(`${cell.date}T00:00:00`);
+      setMonth(new Date(d.getFullYear(), d.getMonth(), 1));
+    }
+    onSelect(cell.date);
+  };
 
   return (
-    <div className="calendar-area">
-
-      <div className="calendar">
-
-        <div className="calendar-top">
-          <div className="calendar-month-nav">
-            <button
-              type="button"
-              aria-label="이전 달"
-              onClick={() => changeMonth(-1)}
-            >
-              ‹
-            </button>
-
-            <h2>{year}년 {monthNumber}월</h2>
-
-            <button
-              type="button"
-              aria-label="다음 달"
-              onClick={() => changeMonth(1)}
-            >
-              ›
-            </button>
-          </div>
-
-          <button
-            type="button"
-            className="calendar-today-btn"
-            onClick={goToToday}
-          >
+    <section className="cmd-panel cmd-cal" aria-labelledby="cmd-cal-title">
+      <header className="cmd-panel-head">
+        <h2 id="cmd-cal-title">
+          {year}년 {monthIndex + 1}월
+        </h2>
+        <div className="cmd-cal-nav">
+          <button type="button" className="cmd-icon-btn" aria-label="이전 달" onClick={() => changeMonth(-1)}>
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2.5 4.5 7 9 11.5" fill="none" stroke="currentColor" strokeWidth="1.8" /></svg>
+          </button>
+          <button type="button" className="cmd-text-btn" onClick={goToToday}>
             오늘
           </button>
+          <button type="button" className="cmd-icon-btn" aria-label="다음 달" onClick={() => changeMonth(1)}>
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2.5 9.5 7 5 11.5" fill="none" stroke="currentColor" strokeWidth="1.8" /></svg>
+          </button>
         </div>
+      </header>
 
-
-        {/* 일정 종류별 색상 안내 */}
-        <div className="calendar-legend">
-
-          <span>
-            <i className="legend-dot legend-dot--work"></i>
-            업무
-          </span>
-
-          <span>
-            <i className="legend-dot legend-dot--personal"></i>
-            개인
-          </span>
-
-          <span>
-            <i className="legend-dot legend-dot--leave"></i>
-            휴가
-          </span>
-
-          <span>
-            <i className="legend-dot legend-dot--project"></i>
-            프로젝트
-          </span>
-
-          <span>
-            <i className="legend-dot legend-dot--notice"></i>
-            공지사항
-          </span>
-
-        </div>
-
-
-        <div className="calendar-grid">
-
-          {['일', '월', '화', '수', '목', '금', '토'].map(day => (
-            <div key={day} className="day-name">
-              {day}
-            </div>
+      <div className="cmd-cal-grid" role="grid" aria-busy={loading || undefined}>
+        <div className="cmd-cal-row" role="row">
+          {WEEK.map((d, i) => (
+            <span key={d} role="columnheader" className={`cmd-cal-wd${i === 0 ? ' is-sun' : ''}${i === 6 ? ' is-sat' : ''}`}>
+              {d}
+            </span>
           ))}
-
-          {emptyDays.map((_, index) => (
-            <div key={`empty-${index}`} />
-          ))}
-
-          {days.map(day => {
-
-            const date =
-              `${year}-${String(monthNumber).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-            // 해당 날짜에 등록된 일정 종류 가져오기
-            const scheduleTypes = [
-              ...new Set(
-                schedules
-                  .filter(item => item.date === date)
-                  .map(item => item.type || "기타")
-              )
-            ];
-
-            return (
-              <button
-                key={day}
-                type="button"
-                className={
-                  selectedDate === date
-                    ? 'day selected'
-                    : 'day'
-                }
-                onClick={() => setSelectedDate(date)}
-              >
-                {day}
-
-
-                {/* 일정 종류별 색상 점 표시 */}
-                {scheduleTypes.length > 0 && (
-
-                  <span className="schedule-dots">
-
-                    {scheduleTypes.map(type => (
-
-                      <span
-                        key={type}
-                        className={`schedule-dot schedule-dot--${scheduleTypeClasses[type] || "other"}`}
-                        title={type}
-                      ></span>
-
-                    ))}
-
-                  </span>
-
-                )}
-
-
-              </button>
-            );
-          })}
-
         </div>
 
-      </div>
+        {Array.from({ length: totalCells / 7 }, (_, w) => (
+          <div className="cmd-cal-row" role="row" key={w}>
+            {cells.slice(w * 7, w * 7 + 7).map((cell, i) => {
+              const info = byDate[cell.date];
+              const isToday = cell.date === today;
+              const isSelected = cell.date === selectedDate;
+              const [, m, d] = cell.date.split('-');
+              const label = `${Number(m)}월 ${Number(d)}일${isToday ? ' 오늘' : ''}, ${info ? `일정 ${info.count}건 (${info.types.join(', ')})` : '일정 없음'}`;
 
-      {/* 선택한 날짜의 일정 */}
-      <div className="calendar-schedule">
-
-        <h3>
-          {selectedDate ? `${selectedDate} 일정` : '선택한 날짜의 일정'}
-        </h3>
-
-        {!selectedDate ? (
-
-          <p>날짜를 선택해 주세요.</p>
-
-        ) : (
-
-          <>
-
-            {selectedSchedules.length === 0 ? (
-
-              <p>등록된 일정이 없습니다.</p>
-
-            ) : (
-
-              <ul>
-
-                {selectedSchedules.map(item => (
-
-                  <li key={item.id}>
-
-                    <strong>{item.time || "종일"}</strong>
-
-                    <span>
-
-                      {item.type === "프로젝트" && item.projectId != null ? (
-
-                        <button
-                          type="button"
-                          className="calendar-project-link"
-                          onClick={() => navigate(`/todo/${item.projectId}`)}
-                        >
-                          {item.title}
-                        </button>
-
-                      ) : item.type === "공지사항" && item.noticeId != null ? (
-
-                        <button
-                          type="button"
-                          className="calendar-notice-link"
-                          onClick={() => navigate(`/info/${item.noticeId}`)}
-                        >
-                          {item.title}
-                        </button>
-
-                      ) : (
-
-                        item.title
-
-                      )}
-
+              return (
+                <div role="gridcell" key={cell.date} className="cmd-cal-cell">
+                  <button
+                    type="button"
+                    className={[
+                      'cmd-cal-day',
+                      cell.outside && 'is-outside',
+                      isToday && 'is-today',
+                      isSelected && 'is-selected',
+                      i === 0 && 'is-sun',
+                      i === 6 && 'is-sat',
+                    ].filter(Boolean).join(' ')}
+                    aria-label={label}
+                    aria-pressed={isSelected}
+                    onClick={() => pick(cell)}
+                  >
+                    <span className="cmd-cal-num cmd-num">{cell.day}</span>
+                    <span className="cmd-cal-dots" aria-hidden="true">
+                      {info?.types.slice(0, 4).map((t) => (
+                        <i key={t} className={`cmd-dot cmd-dot--${typeKey(t)}`} />
+                      ))}
                     </span>
-
-                  </li>
-
-                ))}
-              </ul>
-
-            )}
-
-          </>
-
-        )}
-
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
-    </div>
+      <ul className="cmd-legend" aria-label="일정 종류">
+        {SCHEDULE_TYPES.map((t) => (
+          <li key={t.key}>
+            <i className={`cmd-dot cmd-dot--${t.key}`} aria-hidden="true" />
+            {t.label || t.type}
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

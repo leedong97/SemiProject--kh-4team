@@ -11,7 +11,7 @@ function formatPhone(phone) {
   return match ? `${match[1]}-${match[2]}-${match[3]}` : phone;
 }
 
-export default function QuoteRequestList({ quotes, busy, onChangeStatus }) {
+export default function QuoteRequestList({ quotes, busy, onChangeStatus, onCreateProject }) {
   const [openIds, setOpenIds] = useState([]);
 
   const toggle = (id) =>
@@ -19,7 +19,7 @@ export default function QuoteRequestList({ quotes, busy, onChangeStatus }) {
 
   if (quotes.length === 0) {
     return (
-      <div className="card nexus-project-panel nexus-quote-card">
+      <div className="nexus-quote-list">
         <div className="nexus-quote-head">
           <strong>견적 요청</strong>
           <span className="nexus-request-count">0건</span>
@@ -30,7 +30,7 @@ export default function QuoteRequestList({ quotes, busy, onChangeStatus }) {
   }
 
   return (
-    <div className="card nexus-project-panel nexus-quote-card">
+    <div className="nexus-quote-list">
       <div className="nexus-quote-head">
         <strong>견적 요청</strong>
         <span className="nexus-request-count">{quotes.length}건</span>
@@ -51,12 +51,12 @@ export default function QuoteRequestList({ quotes, busy, onChangeStatus }) {
           </tr>
         </thead>
         <tbody>
-          {quotes.map((q) => {
+        {quotes.map((q, index) => {
             const open = openIds.includes(q.id);
             return (
               <Fragment key={q.id}>
                 <tr>
-                  <td>{q.id}</td>
+                  <td>{index + 1}</td>
                   <td>{q.company}</td>
                   <td>{q.service}</td>
                   <td>{q.applicantName || "-"}</td>
@@ -86,7 +86,22 @@ export default function QuoteRequestList({ quotes, busy, onChangeStatus }) {
                 {open && (
                   <tr className="boards-detail-row">
                     <td colSpan="10">
-                      <div className="nexus-quote-requirements">{q.requirements}</div>
+                      <div className="nexus-quote-detail">
+                        <div className="nexus-quote-requirements">{q.requirements}</div>
+                        <div className="nexus-quote-contact">
+                          <span>신청자: {q.applicantName || "-"}</span>
+                          <span>이메일: {q.email || "-"}</span>
+                          <span>전화번호: {formatPhone(q.phone)}</span>
+                          <span>예산 범위: {q.budget || "-"}</span>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-primary btn-sm"
+                          onClick={() => onCreateProject(q)}
+                        >
+                          이 견적으로 프로젝트 등록
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )}

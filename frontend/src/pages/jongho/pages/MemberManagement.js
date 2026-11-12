@@ -153,11 +153,6 @@ function MemberManagement({
     return (
         <div className="nexus-assignment">
 
-            <h1>인원 관리</h1>
-
-            <p className="nexus-assignment-description">
-                프로젝트의 담당자(팀장 이상)와 팀원을 배정합니다. 담당자는 자동으로 팀원 명단에도 포함됩니다.
-            </p>
 
             <div className="card">
                 <SearchSortBar

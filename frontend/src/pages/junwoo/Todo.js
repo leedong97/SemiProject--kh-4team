@@ -1,6 +1,9 @@
+import SearchInput from "../../shared/SearchInput";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import getLoginUser from "../woojin/getLoginUser";
+import { StationStrip } from "../../shared/subway";
+import { Priority } from "../../shared/priority";
 import "./ProjectList.css";
 
 const STATUS_TABS = [
@@ -79,13 +82,14 @@ function Todo({ todo = [] }) {
         setPage(previous => Math.min(previous, totalPages));
     }, [totalPages]);
 
-    function resetFilters() {
-        setSelectedProject("");
-        setSearch("");
-        setSearchManager("");
-        setStatus("전체");
-        setPage(1);
-    }
+    // 검색 리셋 버튼 주석
+    // function resetFilters() {
+    //     setSelectedProject("");
+    //     setSearch("");
+    //     setSearchManager("");
+    //     setStatus("전체");
+    //     setPage(1);
+    // }
 
     const listTitle =
         status === "전체"
@@ -97,17 +101,17 @@ function Todo({ todo = [] }) {
             <header className="jpl-header">
                 <div>
                     <h1>SI 프로젝트 목록</h1>
-                    <p>사내 프로젝트를 조회하고 진행 상태를 확인할 수 있습니다.</p>
                 </div>
 
                 <div className="jpl-header-actions">
-                    <button
+                    {/* 검색 리셋 버튼 주석 */}
+                    {/* <button
                         type="button"
                         className="jpl-reset"
                         onClick={resetFilters}
                     >
                         검색 리셋
-                    </button>
+                    </button> */}
 
                     <Link to="/todo/completion" className="jpl-reset">
                         프로젝트 완료 요청
@@ -139,7 +143,7 @@ function Todo({ todo = [] }) {
                 </select>
 
                 <label htmlFor="jpl-title">프로젝트 제목 검색</label>
-                <input
+                <SearchInput
                     id="jpl-title"
                     type="search"
                     placeholder="프로젝트 제목 검색"
@@ -148,7 +152,7 @@ function Todo({ todo = [] }) {
                 />
 
                 <label htmlFor="jpl-manager">프로젝트 담당자 검색</label>
-                <input
+                <SearchInput
                     id="jpl-manager"
                     type="search"
                     placeholder="담당자 이름"
@@ -207,19 +211,19 @@ function Todo({ todo = [] }) {
                                         </td>
 
                                         <td className="jpl-project-title">
-                                            <Link to={`/todo/${project.id}`}>
-                                                {project.title}
+                                            <Link to={`/todo/${project.id}`} className="jpl-project-link">
+                                                <span>{project.title}</span>
                                             </Link>
                                         </td>
 
-                                        <td>{project.priority || "보통"}</td>
+                                        <td><Priority value={project.priority} /></td>
 
                                         <td>
                                             {project.managerName || "미지정"}
                                         </td>
 
                                         <td>
-                                            {project.progress ?? 0}%
+                                            <StationStrip project={project} />
                                         </td>
 
                                         <td>

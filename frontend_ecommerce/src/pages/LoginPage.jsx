@@ -29,7 +29,7 @@ export default function LoginPage({ onLoggedIn, onNavigate }) {
       <Breadcrumb onHome={() => onNavigate("home")}>로그인</Breadcrumb>
       <div className="shop-auth-card">
         <h1>로그인</h1>
-        <p className="muted">COMMAND SOLUTIONS 고객 계정으로 로그인해요.</p>
+        <p className="muted">ZERYN 고객 계정으로 로그인해요.</p>
 
         <form onSubmit={handleSubmit} className="shop-auth-form">
           <div className="field">

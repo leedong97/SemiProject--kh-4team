@@ -1,13 +1,6 @@
 function DayList({ selectedLabel, selectedSchedules, filter, countDays, TYPE_CLASS, openEditForm, handleDelete }) {
     return (
         <>
-            <p className="mp-legend">
-                <i className="mp-dot project" /> 프로젝트 &nbsp;
-                <i className="mp-dot work" /> 업무 &nbsp;
-                <i className="mp-dot personal" /> 개인 &nbsp;
-                <i className="mp-dot leave" /> 휴가 &nbsp;
-                <span className="mp-legend-tip">이름을 누르면 기간 막대가 나오고, 막대를 누르면 바로 수정할 수 있어요</span>
-            </p>
 
             <div className="mp-day-head">
                 <h3>{selectedLabel} 일정</h3>

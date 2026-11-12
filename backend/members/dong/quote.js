@@ -1,6 +1,9 @@
 const express = require('express');
+const crypto = require('crypto');
 const db = require('../../db');
 const { requireShopAuth } = require('../../middleware/shopSession');
+const { createNotificationForManagers } = require('../../notify');
+const quoteBus = require('../../notifyBus');
 const router = express.Router();
 
 const budgets = [
@@ -38,12 +41,70 @@ router.post('/quotes', requireShopAuth, async (req, res) => {
   }
 
   try {
-    const [result] = await db.execute(
+    const connection = await db.getConnection();
+    let result;
+
+    try {
+      await connection.beginTransaction();
+
+      const [customers] = await connection.execute(
+        'SELECT customer_id FROM customers WHERE customer_name = ? LIMIT 1',
+        [company]
+      );
+
+      if (customers.length === 0) {
+        // 기존 프로젝트 등록 코드와 같은 고객 코드 생성 규칙
+        const customerCode = 'AUTO' + crypto
+          .createHash('sha256')
+          .update(company.toLowerCase())
+          .digest('hex')
+          .slice(0, 16)
+          .toUpperCase();
+
+        try {
+          await connection.execute(
+            `INSERT INTO customers (customer_code, customer_name)
+             VALUES (?, ?)`,
+            [customerCode, company]
+          );
+        } catch (error) {
+          if (error.code !== 'ER_DUP_ENTRY') throw error;
+
+          // 동시에 같은 고객사가 등록됐다면 기존 고객 사용
+          const [existing] = await connection.execute(
+            `SELECT customer_id
+             FROM customers
+             WHERE customer_name = ?
+             LIMIT 1 FOR UPDATE`,
+            [company]
+          );
+
+          if (existing.length === 0) throw error;
+        }
+      }
+
+      [result] = await connection.execute(
         `INSERT INTO shop_quote_requests
-        (member_id, service_name, company_name, contact_email, budget, requirements)
-        VALUES (?, ?, ?, ?, ?, ?)`,
+         (member_id, service_name, company_name, contact_email, budget, requirements)
+         VALUES (?, ?, ?, ?, ?, ?)`,
         [req.member.member_id, service, company, email, budget, requirements]
-    );
+      );
+
+      await connection.commit();
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+
+  const notificationLink = `/admin/projects?quoteId=${result.insertId}`;
+  await createNotificationForManagers(
+    '견적 요청',
+     `${company}의 ${service} 견적 문의가 접수되었습니다.`,
+     notificationLink
+      );
+    quoteBus.emit('quote-changed');
 
     return res.status(201).json({
       id: result.insertId,

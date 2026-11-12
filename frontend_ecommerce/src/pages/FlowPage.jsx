@@ -35,7 +35,7 @@ export default function FlowPage({ type }) {
 
       <div className="section-title" style={{ marginTop: 60 }}>
         <div>
-          <h2>COMMAND ERP 주요 기능</h2>
+          <h2>ZERYN ERP 주요 기능</h2>
           <p>프로젝트부터 이슈 관리까지, 업무에 필요한 기능을 소개합니다.</p>
         </div>
       </div>

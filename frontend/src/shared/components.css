@@ -1,0 +1,455 @@
+/* =====================================================================
+   공통 부품: 패널, 버튼, 칩, 빈 상태, 점·고리, 스켈레톤
+   ===================================================================== */
+
+.cmd-panel {
+  background: var(--cmd-bg);
+  border: 1px solid var(--cmd-rule);
+  border-radius: var(--radius-m);
+  padding: var(--sp-5) var(--sp-6);
+  min-width: 0;
+}
+
+.cmd-panel-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.cmd-panel-head h2 {
+  margin: 0;
+  font-size: var(--fs-18);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--cmd-ink);
+}
+
+.cmd-panel-sub {
+  margin: 0;
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+}
+
+.cmd-panel-sub b,
+.cmd-panel-sub .cmd-num {
+  color: var(--cmd-ink);
+  font-weight: 700;
+}
+
+.cmd-panel-more {
+  margin-left: auto;
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.cmd-panel-more::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  border-top: 1.6px solid currentColor;
+  border-right: 1.6px solid currentColor;
+  transform: translateY(-1px) rotate(45deg);
+}
+
+.cmd-panel-more:hover {
+  color: var(--cmd-ink);
+}
+
+/* 버튼 */
+.cmd-text-btn,
+.cmd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 160ms var(--ease-out), background-color 160ms var(--ease-out);
+}
+
+.cmd-text-btn:hover,
+.cmd-btn:hover {
+  border-color: var(--cmd-ink);
+}
+
+.cmd-btn--primary {
+  background: var(--cmd-ink);
+  border-color: var(--cmd-ink);
+  color: #fff;
+}
+
+.cmd-btn--primary:hover {
+  background: #000;
+}
+
+.cmd-icon-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--cmd-rule-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg);
+  color: var(--cmd-ink);
+  cursor: pointer;
+}
+
+.cmd-icon-btn:hover {
+  border-color: var(--cmd-ink);
+}
+
+button:disabled.cmd-btn,
+button:disabled.cmd-text-btn,
+button:disabled.cmd-icon-btn {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* 칩 (상태 표시) */
+.cmd-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--radius-m);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  white-space: nowrap;
+  flex: none;
+}
+
+.tone-green { --tone: var(--line-green); --tone-text: var(--green-text); --tone-tint: var(--green-tint); }
+.tone-sky { --tone: var(--line-sky); --tone-text: var(--sky-text); --tone-tint: var(--sky-tint); }
+.tone-orange { --tone: var(--line-orange); --tone-text: var(--orange-text); --tone-tint: var(--orange-tint); }
+.tone-purple { --tone: var(--line-purple); --tone-text: var(--purple-text); --tone-tint: var(--purple-tint); }
+.tone-red { --tone: var(--line-red); --tone-text: var(--red-text); --tone-tint: var(--red-tint); }
+.tone-grey { --tone: var(--cmd-faint); --tone-text: var(--cmd-mute); --tone-tint: var(--cmd-bg-2); }
+
+.cmd-chip[class*="tone-"] {
+  background: var(--tone-tint);
+  color: var(--tone-text);
+}
+
+/* 일정 종류 점 / 고리 */
+.cmd-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cmd-faint);
+  flex: none;
+}
+
+.cmd-dot--work { background: var(--cat-work); }
+.cmd-dot--personal { background: var(--cat-personal); }
+.cmd-dot--leave { background: var(--cat-leave); }
+.cmd-dot--project { background: var(--cat-project); }
+.cmd-dot--notice { background: var(--cat-notice); }
+
+.cmd-ring {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 3px solid var(--cmd-faint);
+  background: #fff;
+  flex: none;
+}
+
+.cmd-ring--work { border-color: var(--cat-work); }
+.cmd-ring--personal { border-color: var(--cat-personal); }
+.cmd-ring--leave { border-color: var(--cat-leave); }
+.cmd-ring--project { border-color: var(--cat-project); }
+.cmd-ring--notice { border-color: var(--cat-notice); }
+
+.cmd-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-4);
+  margin: var(--sp-4) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+}
+
+.cmd-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cmd-legend .cmd-dot {
+  width: 8px;
+  height: 8px;
+}
+
+/* 빈 상태 / 오류 */
+.cmd-empty {
+  padding: var(--sp-6) var(--sp-4);
+  border: 1px dashed var(--cmd-rule-2);
+  border-radius: var(--radius-m);
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+  text-align: center;
+}
+
+.cmd-empty p {
+  margin: 0 0 var(--sp-2);
+}
+
+.cmd-empty-title {
+  color: var(--cmd-ink);
+  font-weight: 700;
+  font-size: var(--fs-14);
+}
+
+.cmd-empty--error {
+  border-color: var(--line-red);
+  border-style: solid;
+  background: var(--red-tint);
+}
+
+.cmd-empty--error .cmd-empty-title {
+  color: var(--red-text);
+}
+
+.cmd-empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-2);
+}
+
+/* 스켈레톤 */
+.cmd-skel {
+  display: inline-block;
+  height: 12px;
+  border-radius: var(--radius-m);
+  background: linear-gradient(90deg, var(--cmd-bg-2), var(--cmd-bg-3), var(--cmd-bg-2));
+  background-size: 200% 100%;
+  animation: cmd-skel 1.2s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes cmd-skel {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+/* ---------- 프로젝트 코드표 · 진척 막대 · 상태등 ---------- */
+.cmd-code {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 6px;
+  background: var(--cmd-ink);
+  color: #fff;
+  font-family: var(--cmd-mono);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  flex: none;
+}
+
+.cmd-meter {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  white-space: nowrap;
+}
+
+.cmd-meter-track {
+  position: relative;
+  width: 72px;
+  height: 6px;
+  background: var(--cmd-bg-3);
+  overflow: hidden;
+}
+
+.cmd-meter-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--cmd-ink);
+}
+
+.cmd-meter-text {
+  min-width: 3.5ch;
+  color: var(--cmd-ink);
+  font-size: var(--fs-13);
+  font-weight: 700;
+}
+
+/* 상태등: 작은 네모 불 + 글자 */
+.cmd-lamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-13);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cmd-lamp::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  flex: none;
+}
+
+.cmd-lamp--ok { color: var(--green-text); }
+.cmd-lamp--late { color: var(--red-text); }
+.cmd-lamp--done { color: var(--cmd-mute); }
+.cmd-lamp--plan { color: var(--cmd-ink-2); }
+.cmd-lamp--now { color: var(--accent-text); }
+
+/* ---------- 한 줄 숫자 요약 (큰 숫자 카드 대신) ---------- */
+.cmd-stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-8);
+  margin: 0;
+  padding: var(--sp-4) 0;
+  border-top: 1px solid var(--cmd-rule);
+  border-bottom: 1px solid var(--cmd-rule);
+}
+
+.cmd-stat-row > div {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+}
+
+.cmd-stat-row dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-14);
+  font-weight: 600;
+}
+
+.cmd-stat-row dt::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--tone, var(--cmd-ink));
+  flex: none;
+}
+
+.cmd-stat-row dd {
+  margin: 0;
+  font-family: var(--cmd-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--cmd-ink);
+  font-size: var(--fs-20);
+  font-weight: 800;
+}
+
+.cmd-stat-row dd small {
+  margin-left: 2px;
+  color: var(--cmd-mute);
+  font-size: var(--fs-13);
+  font-weight: 600;
+}
+
+/* =====================================================================
+   3차 정리: 박스 머리줄 · 위보다 아래가 넓은 여백 · 둥근 모서리 · 우선도 색
+   ===================================================================== */
+
+/* 박스: 위 여백은 작게, 아래 여백은 넉넉하게 */
+.cmd-panel {
+  --pp-x: var(--sp-6);
+  --pp-t: var(--sp-4);
+  --pp-b: var(--sp-8);
+  padding: var(--pp-t) var(--pp-x) var(--pp-b);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+}
+
+/* 박스 머리줄: 이 박스가 무엇을 보여주는지 제목 + 개수 + 이동 링크 */
+.cmd-panel-head {
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  margin: calc(var(--pp-t) * -1) calc(var(--pp-x) * -1) var(--sp-5);
+  padding: var(--sp-3) var(--pp-x);
+  background: var(--cmd-bg-2);
+  border-bottom: 1px solid var(--cmd-rule-2);
+}
+
+.cmd-panel-head h2 {
+  font-size: var(--fs-16);
+  font-weight: 800;
+}
+
+/* 개수 */
+.cmd-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: var(--radius-s);
+  background: var(--cmd-ink);
+  color: var(--accent);
+  font-size: var(--fs-12);
+  font-weight: 700;
+}
+
+/* 우선도: 긴급 빨강 / 높음 주황 / 보통 회색 / 낮음 옅은 회색 */
+.cmd-prio {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--radius-s);
+  background: var(--cmd-bg-2);
+  color: var(--cmd-ink-2);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  white-space: nowrap;
+  flex: none;
+}
+
+.cmd-prio[data-prio="긴급"] {
+  background: var(--prio-urgent);
+  color: #fff;
+}
+
+.cmd-prio[data-prio="높음"] {
+  background: var(--orange-tint);
+  color: var(--orange-text);
+}
+
+.cmd-prio[data-prio="낮음"] {
+  background: none;
+  color: var(--cmd-faint);
+  box-shadow: inset 0 0 0 1px var(--cmd-rule-2);
+}
+
+/* 작은 불빛 네모도 아주 조금 둥글게 */
+:is(.cmd-lamp, .dep-lamp, .cmd-stat-row dt, .hr-employee-status, .jpl-status, .issue-status, .cmd-code, .cmd-count)::before {
+  border-radius: 1px;
+}
+
+/* 막대 그래프 그라데이션 (프로젝트 진척 막대) */
+.cmd-meter-fill {
+  background: var(--bar-ink);
+}

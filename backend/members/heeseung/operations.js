@@ -117,6 +117,8 @@ router.get('/issues', async (req, res) => {
                 i.issue_status AS status,
                 i.issue_priority AS priority,
                 i.assigned_employee_id AS assigneeId,
+                i.reporter_id AS reporterId,
+                reporter.employee_name AS reporterName,
                 e.employee_name AS assigneeName,
                 DATE_FORMAT(i.issue_due_date, '%Y-%m-%d') AS due,
                 DATE_FORMAT(i.issue_created_at, '%Y-%m-%d') AS createdAt,
@@ -127,6 +129,8 @@ router.get('/issues', async (req, res) => {
             FROM issues i
             LEFT JOIN employees e
                 ON i.assigned_employee_id = e.employee_id
+            LEFT JOIN employees reporter
+                ON i.reporter_id = reporter.employee_id
             LEFT JOIN projects p
                 ON p.project_id = i.project_id
             LEFT JOIN customers c
@@ -158,6 +162,11 @@ router.post('/issues', async (req, res) => {
         return res.status(400).json({ message: '마감일 형식 오류' });
     }
     try {
+        // 건의자는 요청 본문의 선택값이 아닌 인증된 로그인 직원으로 고정합니다.
+        const reporterId = Number(req.user && req.user.employee_id);
+        if (!Number.isInteger(reporterId) || reporterId <= 0) {
+            return res.status(401).json({ message: '로그인 직원 정보를 확인할 수 없습니다.' });
+        }
         const [projects] = await pool.query('SELECT project_id FROM projects WHERE project_id = ?', [projectId]);
         if (!projects.length) return res.status(404).json({ message: '프로젝트가 없습니다.' });
         if (assigneeId != null) {
@@ -168,10 +177,10 @@ router.post('/issues', async (req, res) => {
             (project_id, reporter_id, assigned_employee_id, issue_title, issue_description,
              issue_priority, issue_status, issue_due_date)
             VALUES (?, ?, ?, ?, ?, ?, '접수', ?)`,
-            [Number(projectId), req.user.employee_id, assigneeId || null,
+            [Number(projectId), reporterId, assigneeId || null,
             title.trim(), String(description || ''), priority, due || null]);
-        // 알림: 담당자로 지정된 직원에게 알려요 (본인이 본인을 지정한 경우는 제외)
-        if (assigneeId != null && String(assigneeId) !== String(req.user.employee_id)) {
+        // 알림: 담당자로 지정된 직원에게 알려요 (회의 결정: 본인이 본인을 지정해도 알림을 받아요)
+        if (assigneeId != null) {
             await createNotification(assigneeId, '이슈', '새 이슈 "' + title.trim() + '"의 담당자로 지정됐어요.', '/issue/' + result.insertId);
         }
         // 새 이슈 등록 후 연결된 사용자 화면의 목록 갱신
@@ -237,8 +246,37 @@ router.patch('/issues/:id', async (req, res) => {
         const params = keys.map(k => values[k] === '' ? null : values[k]);
         if (values.status === '완료') sets.push('issue_resolved_at = NOW()');
         if (values.status === '재오픈') sets.push('issue_resolved_at = NULL');
-        const [result] = await pool.query('UPDATE issues SET ' + sets.join(', ') + ' WHERE issue_id = ?', [...params, id]);
-        if (!result.affectedRows) return res.status(404).json({ message: '이슈가 없습니다.' });
+        if (!beforeIssue.length) {
+            return res.status(404).json({ message: '이슈가 없습니다.' });
+        }
+
+        let condition = '';
+        const conditionParams = [];
+
+        if (values.status !== undefined) {
+            // 마감일도 함께 수정하면 이번에 입력한 날짜로 판단합니다.
+            const hasDuePatch = keys.includes('due');
+            const dueExpression = hasDuePatch ? '?' : 'issue_due_date';
+
+            condition = ` AND (issue_status = ? OR ${dueExpression} IS NOT NULL)`;
+            conditionParams.push(values.status);
+
+            if (hasDuePatch) {
+                conditionParams.push(values.due || null);
+            }
+        }
+
+        const [result] = await pool.query(
+            'UPDATE issues SET ' + sets.join(', ') +
+            ' WHERE issue_id = ?' + condition,
+            [...params, id, ...conditionParams]
+        );
+
+        if (!result.affectedRows) {
+            return res.status(400).json({
+                message: '마감일을 먼저 입력해야 처리 상태를 변경할 수 있습니다.'
+            });
+        }
         // 알림: 상태가 바뀌면 등록자와 담당자에게, 담당자가 바뀌면 새 담당자에게 알려요 (처리한 본인은 제외)
         const before = beforeIssue[0];
 
@@ -254,17 +292,15 @@ router.patch('/issues/:id', async (req, res) => {
         }
 
         if (before) {
-            const actorId = String(req.user.employee_id);
             const link = '/issue/' + id;
             if (values.status !== undefined && values.status !== before.issue_status) {
-                const targets = [...new Set([before.reporter_id, before.assigned_employee_id].filter(v => v != null).map(String))]
-                    .filter(v => v !== actorId);
+                // 회의 결정: 상태를 바꾼 본인도 보고자/담당자이면 알림을 받아요 (Set 으로 같은 사람은 한 번만)
+                const targets = [...new Set([before.reporter_id, before.assigned_employee_id].filter(v => v != null).map(String))];
                 for (const target of targets) {
                     await createNotification(target, '이슈', '이슈 "' + before.issue_title + '"의 상태가 ' + values.status + '(으)로 바뀌었어요.', link);
                 }
             }
-            if (values.assigneeId != null && String(values.assigneeId) !== String(before.assigned_employee_id) &&
-                String(values.assigneeId) !== actorId) {
+            if (values.assigneeId != null && String(values.assigneeId) !== String(before.assigned_employee_id)) {
                 await createNotification(values.assigneeId, '이슈', '이슈 "' + before.issue_title + '"의 담당자로 지정됐어요.', link);
             }
         }
@@ -310,9 +346,9 @@ router.post('/issues/:id/comments', async (req, res) => {
         const [result] = await pool.query(
             'INSERT INTO nexus_issue_comments (issue_id, employee_id, content) VALUES (?, ?, ?)',
             [issueId, req.user.employee_id, content]);
-        // 본인에게는 알림을 보내지 않습니다. 기존 알림 탭에서 확인할 수 있습니다.
+        // 회의 결정: 본인이 담당자인 이슈에 본인이 코멘트를 남겨도 알림을 받아요.
         const assigneeId = issues[0].assigned_employee_id;
-        if (assigneeId && String(assigneeId) !== String(req.user.employee_id)) {
+        if (assigneeId) {
             const [authors] = await pool.query('SELECT employee_name FROM employees WHERE employee_id = ?', [req.user.employee_id]);
             const authorName = authors[0]?.employee_name || '직원';
             await createNotification(assigneeId, '이슈',

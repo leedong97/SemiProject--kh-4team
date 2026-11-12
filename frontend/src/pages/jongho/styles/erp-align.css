@@ -1,0 +1,41 @@
+/* 희승 화면(인사·이슈·평가)을 종호 화면과 같은 여백으로 맞춘다.
+   희승 파일은 건드리지 않고, .merge-erp-module 래퍼 안에서만 덮어쓴다.
+   기준값은 종호 쪽 값: 페이지 여백은 .nexus-admin-main, 카드 20px, 표 셀 14px 15px */
+
+/* 1) 화면 여백: 바깥 .nexus-admin-main 이 이미 여백을 주므로 화면 자체 여백은 제거 (여백이 두 번 쌓이던 문제) */
+.merge-erp-module > .hr-management,
+.merge-erp-module > .issue-Management,
+.merge-erp-module > .employee-evaluation {
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
+
+/* 2) 카드(패널): 종호 .card 와 같은 20px, 카드 사이 간격 16px */
+.merge-erp-module .hr-management .panel,
+.merge-erp-module .issue-Management .panel,
+.merge-erp-module .employee-evaluation .ev2026-panel {
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+/* 3) 섹션 머리글: 아래 여백을 종호 헤더와 비슷하게 */
+.merge-erp-module .hr-management .section-head,
+.merge-erp-module .issue-Management .section-head {
+  margin: 0 0 18px;
+  padding: 0 0 16px;
+}
+.merge-erp-module .employee-evaluation .ev-header {
+  margin: 0 0 18px;
+  padding: 0 0 16px;
+}
+
+/* 4) 표 셀: 종호 표와 같은 14px 15px */
+.merge-erp-module .hr-management table th,
+.merge-erp-module .hr-management table td,
+.merge-erp-module .issue-Management table th,
+.merge-erp-module .issue-Management table td,
+.merge-erp-module .employee-evaluation table th,
+.merge-erp-module .employee-evaluation table td {
+  padding: 14px 15px;
+}

@@ -22,9 +22,6 @@ function MyInfoTab({ user, pw, pwMsg, minPwLength, handlePwChange, handlePwSubmi
                     <input value={user.rank} readOnly />
                 </label>
             </div>
-            <p className="mp-note">
-                이름·사원번호·부서·직급은 확인만 할 수 있어요. 변경이 필요하면 관리자에게 요청해 주세요.
-            </p>
 
             <ContactForm user={user} />
 
@@ -67,9 +64,6 @@ function MyInfoTab({ user, pw, pwMsg, minPwLength, handlePwChange, handlePwSubmi
 
                 <button type="submit" className="mp-submit">비밀번호 변경</button>
             </form>
-            <p className="mp-note">
-                현재 비밀번호를 확인한 뒤, 새 비밀번호는 암호화되어 저장돼요.
-            </p>
         </section>
     );
 }

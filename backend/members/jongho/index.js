@@ -9,6 +9,14 @@ const adminGuardRouter = express.Router();
 
 // 1) 로그인한 직원인지 확인 (Authorization: Bearer 토큰)
 // 2) 관리자 계정인지 확인
+// EventSource 는 헤더를 붙일 수 없어서, 실시간 견적 주소에 한해 ?token= 을 Authorization 으로 옮긴다
+adminGuardRouter.use((req, res, next) => {
+  if (req.path === '/quote-requests/events' && req.query.token && !req.headers.authorization) {
+    req.headers.authorization = 'Bearer ' + req.query.token;
+  }
+  next();
+});
+
 adminGuardRouter.use(requireAuth, requireManager);
 
 // 등록자(created_by) 등에 쓰는 번호는 고정값이 아니라 로그인한 관리자 번호

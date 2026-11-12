@@ -1,25 +1,43 @@
-import { useEffect, useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import getLoginUser, { clearLoginUser } from '../pages/woojin/getLoginUser';
 import { API_BASE } from './config';
+import './theme.css';
+import './components.css';
 import './shell.css';
+import './pages.css';
+import './mypage.css';
+import zerynMark from '../assets/zeryn-logo-light.png';
 
-// 안 읽은 알림 수를 몇 ms마다 서버에 물어볼지 (3000 = 3초)
-const NOTI_POLL_MS = 3000;
+// 안 읽은 알림 수를 몇 ms마다 서버에 물어볼지 (10000 = 10초)
+const NOTI_POLL_MS = 10000;
 
-// 팀 공통 틀: 위쪽 메뉴바 + 아래 페이지가 들어갈 12칸 그리드
+// 상단 메뉴 목록 (주소, 이름)
+const MENUS = [
+  { to: '/', label: '대시보드', end: true },
+  { to: '/todo', label: '프로젝트' },
+  { to: '/issue', label: '이슈관리' },
+  { to: '/info', label: '공지사항' },
+  { to: '/community', label: '커뮤니티' },
+];
+
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+function todayLabel() {
+  const d = new Date();
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} (${WEEKDAYS[d.getDay()]})`;
+}
+
+// 팀 공통 틀: 위쪽 메뉴바 + 아래에 각 페이지가 들어가요
 // (여기를 바꾸면 모두의 화면이 바뀌니, 바꾸기 전에 팀에 먼저 알려주세요)
 function TeamShell() {
-  // 마이페이지와 같은 출처: 로그인 정보가 있으면 진짜 직원, 없으면 shared/user.js 더미
+  // 로그인 정보가 있으면 진짜 직원, 없으면 shared/user.js 더미
   const user = getLoginUser();
-  // 관리자 계정이면 관리자 화면(/admin)으로 돌아가는 메뉴를 보여줘요
-  // 현재 주소에 맞는 메뉴에 'active'(파란 하이라이트)를 붙여요
-  const path = useLocation().pathname.toLowerCase();
-  const on = (prefix) => path === prefix || path.startsWith(prefix + '/');
   const isAdmin = !user.isDummy && user.role === '관리자';
+  const { pathname } = useLocation();
 
-  // 이름 옆에 보여줄 '안 읽은 알림 수' (더미 사용자는 서버에 직원이 없으니 묻지 않아요)
+  // 안 읽은 알림 수 (더미 사용자는 서버에 묻지 않아요)
   const [unreadCount, setUnreadCount] = useState(0);
   useEffect(() => {
     if (user.isDummy) return undefined;
@@ -28,77 +46,116 @@ function TeamShell() {
       axios
         .get(`${API_BASE}/api/notifications`, { params: { employeeId: user.id } })
         .then((res) => setUnreadCount(res.data.unreadCount || 0))
-        .catch(() => {}); // 실패해도 화면은 그대로 (다음 3초 뒤에 다시 시도)
+        .catch(() => {}); // 실패해도 화면은 그대로 (다음 주기에 다시 시도)
     };
 
     load();
     const timerId = setInterval(load, NOTI_POLL_MS);
-    return () => clearInterval(timerId); // 화면이 사라지면 타이머 정리
+    return () => clearInterval(timerId);
   }, [user.id, user.isDummy]);
 
+  // 계정 메뉴 열림/닫힘
+  const [menuOpen, setMenuOpen] = useState(false);
+  const accountRef = useRef(null);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const onDown = (e) => {
+      if (accountRef.current && !accountRef.current.contains(e.target)) setMenuOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [menuOpen]);
+
+  const unreadText = unreadCount > 99 ? '99+' : String(unreadCount);
+
   return (
-    <div className="team-shell">
+    <div className="team-shell cmd-shell">
+      <a className="cmd-skip" href="#cmd-main">본문으로 건너뛰기</a>
 
-      <Link to="/" className="company-logo">
-        <img
-          src="/images/command-logo.png"
-          alt="COMMAND ERP"
-        />
-      </Link>
-
-      <div className={'dash-menu' + (path === '/' ? ' active' : '')}>
-        <h3>
-          <Link to="/">대시보드</Link>
-        </h3>
-      </div>
-
-      <div className={'todo-menu' + (on('/todo') ? ' active' : '')}>
-        <h3>
-          <Link to='/todo'>프로젝트</Link>
-        </h3>
-      </div>
-
-      <div className={'issue-menu' + (on('/issue') ? ' active' : '')}>
-        <h3>
-          <Link to='/issue'>이슈관리</Link>
-        </h3>
-      </div>
-
-      <div className={'info-menu' + (on('/info') ? ' active' : '')}>
-        <h3>
-          <Link to='/info'>공지사항</Link>
-        </h3>
-      </div>
-
-      <div className={'community-menu' + (on('/community') ? ' active' : '')}>
-        <h3>
-          <Link to="/community">
-            커뮤니티
+      <header className="cmd-header">
+        <div className="cmd-header-inner">
+          <Link to="/" className="cmd-logo" aria-label="ZERYN 대시보드">
+            <img className="cmd-logo-img" src={zerynMark} alt="" aria-hidden="true" />
           </Link>
-        </h3>
-      </div>
 
-      <div className='my-name' tabIndex={0}>
-        <h4>
-          <Link to="/mypage">
-            {user.name} {user.rank}
-            {unreadCount > 0 && (
-              <span className="noti-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
-            )}
-          </Link>
-        </h4>
+          <nav className="cmd-nav" aria-label="주 메뉴">
+            <ul>
+              {MENUS.map((m) => (
+                <li key={m.to}>
+                  <NavLink to={m.to} end={m.end}>
+                    {m.label}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        <div className='log'>
-          {isAdmin && (
-            <h4><Link to="/admin" style={{ display: "block", color: "inherit", textDecoration: "none" }}>관리자 페이지</Link></h4>
-          )}
-          <h4><Link to="/login" onClick={clearLoginUser} style={{ display: "block", color: "inherit", textDecoration: "none" }}>로그아웃</Link></h4>
+          <div className="cmd-header-meta">
+            <span className="cmd-date">{todayLabel()}</span>
+
+            <Link
+              to="/mypage?tab=noti"
+              className="cmd-noti"
+              aria-label={unreadCount > 0 ? `읽지 않은 알림 ${unreadText}개` : '알림'}
+            >
+              알림
+              {unreadCount > 0 && <span className="cmd-noti-count" aria-hidden="true">{unreadText}</span>}
+            </Link>
+
+            <div className="cmd-account" ref={accountRef}>
+              <button
+                type="button"
+                className="cmd-account-trigger"
+                aria-haspopup="true"
+                aria-expanded={menuOpen}
+                aria-controls="cmd-account-menu"
+                onClick={() => setMenuOpen((v) => !v)}
+              >
+                <span className="cmd-account-name">{user.name}</span>
+                <span className="cmd-account-rank">{user.rank}</span>
+                <svg className="cmd-chevron" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+                  <path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                </svg>
+              </button>
+
+              {menuOpen && (
+                <div className="cmd-account-menu" id="cmd-account-menu">
+                  <p className="cmd-account-team">{[user.division, user.team].filter(Boolean).join(' · ') || '소속 정보 없음'}</p>
+                  <Link to="/mypage">마이페이지</Link>
+                  {isAdmin && <Link to="/admin">관리자 페이지</Link>}
+                  <Link
+                    to="/login"
+                    onClick={() => {
+                      clearLoginUser();
+                      sessionStorage.removeItem('nexus_token'); // 관리자 인증 토큰도 정리
+                    }}
+                    className="cmd-logout"
+                  >
+                    로그아웃
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* 각 사람의 페이지가 여기(그리드 안)에 들어와요 */}
-      <Outlet />
-
+      {/* 각 사람의 페이지가 여기에 들어와요 */}
+      <main id="cmd-main" className="cmd-main" tabIndex={-1}>
+        <Outlet />
+      </main>
     </div>
   );
 }

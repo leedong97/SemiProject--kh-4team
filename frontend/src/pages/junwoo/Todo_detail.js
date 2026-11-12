@@ -1,6 +1,7 @@
 import { API_BASE } from '../../shared/config';
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import { Priority } from "../../shared/priority";
 
 function Todo_detail({ todo = [], onViewTodo }) {
     const { id } = useParams();
@@ -108,7 +109,6 @@ function Todo_detail({ todo = [], onViewTodo }) {
             <div className="todo-detail-header">
                 <div>
                     <h1>프로젝트 상세정보</h1>
-                    <p>등록된 프로젝트의 내용을 확인할 수 있습니다.</p>
                 </div>
                 <button onClick={() => navigate("/todo")}>목록으로</button>
             </div>
@@ -137,7 +137,7 @@ function Todo_detail({ todo = [], onViewTodo }) {
 
                 <div className="todo-detail-row">
                     <strong>우선순위</strong>
-                    <span>{item.priority || "-"}</span>
+                    <span>{item.priority ? <Priority value={item.priority} /> : "-"}</span>
                 </div>
 
                 <div className="todo-detail-row">

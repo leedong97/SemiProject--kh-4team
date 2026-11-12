@@ -1,3 +1,4 @@
+import SearchInput from "../../../shared/SearchInput";
 import React, { useState, useEffect } from "react";
 import "./IssueManagement.css";
 import { erpRequest } from "../erpApi";
@@ -17,6 +18,7 @@ export default function IssueManagement({
     const loginUserName = loginUser.name || loginUser.employee_name || "임시 사용자";
 
     // 1. 이슈 등록 입력값
+    const [searchResetKey, setSearchResetKey] = useState(0);
     const [title, setTitle] = useState("");
     const [assigneeId, setAssigneeId] = useState("");
     const [due, setDue] = useState("");
@@ -70,6 +72,7 @@ export default function IssueManagement({
                     number: Number(item.id),
                     projectId: item.projectId == null ? null : Number(item.projectId),
                     assigneeId: item.assigneeId == null ? null : Number(item.assigneeId),
+                    reporterId: item.reporterId == null ? null : Number(item.reporterId),
                     due: item.due || '',
                     comments: [], history: [], workLogs: []
                 };
@@ -223,6 +226,8 @@ export default function IssueManagement({
         setCurrentPage(1);
 
         setSearch("");
+
+        setSearchResetKey((key) => key + 1);
         setStatusFilter("전체");
         setPriorityFilter("전체");
         setAssigneeFilter("전체");
@@ -534,10 +539,6 @@ export default function IssueManagement({
 
     return <section className="issue-Management">
         {/* 페이지 제목 */}
-        <div className="section-head">
-            <h2>이슈 관리</h2>
-            <p>프로젝트별 이슈 현황 및 작업 관리</p>
-        </div>
         <div className="issue-stats">
             <div className="panel issue-stat-card">
                 <span>전체 이슈</span>
@@ -560,7 +561,6 @@ export default function IssueManagement({
         <details className="issue-workload-panel panel issue-optional-section">
             <summary>
                 <span className="issue-workload-title">건의자별 업무량</span>
-                <span className="issue-workload-hint">프로젝트 참여 직원 기준 · 클릭하여 이슈 필터</span>
             </summary>
             <div className="issue-workload-body">
                 {employeeWorkload.length === 0 ? <p className="issue-workload-empty">{memberLoading ? "프로젝트 참여 직원을 불러오는 중입니다." : memberError ? "참여 직원 조회 오류: " + memberError : "프로젝트 참여 직원이 없습니다. DB의 팀원 배정 정보를 확인해 주세요."}</p> : <div className="issue-workload-list">
@@ -597,7 +597,7 @@ export default function IssueManagement({
         </details>
         {/* 관리자 우선 확인: 긴급 이슈와 마감 임박 이슈 */}
         <details className="issue-alert-wrapper issue-optional-section">
-            <summary>긴급 · 마감 임박 이슈 <span>펼쳐서 확인</span></summary>
+            <summary>긴급 · 마감 임박 이슈</summary>
             <div className="issue-alert-grid">
                 <div className="issue-alert-panel">
                     <h3>긴급 이슈</h3>
@@ -647,7 +647,7 @@ export default function IssueManagement({
             <IssueCompletion admin onReviewed={() => loadIssues()} />
         </details>
         <div className="issue-toolbar">
-            <input className="search" placeholder="이슈 제목 검색" value={search} onChange={e => {
+            <SearchInput key={searchResetKey} className="search" placeholder="이슈 제목 검색" value={search} onChange={e => {
                 setSearch(e.target.value);
                 setCurrentPage(1);
             }} />
@@ -666,7 +666,7 @@ export default function IssueManagement({
                     </option>)}
                 </select>
                 <select value={assigneeId} onChange={e => setAssigneeId(e.target.value)}>
-                    <option value="">건의자 미지정</option>
+                    <option value="">담당자 미지정</option>
                     {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>
                         {employee.name || employee.employee_name}
                     </option>)}
@@ -766,7 +766,7 @@ export default function IssueManagement({
                             <div><span>프로젝트명</span><strong>{getProjectInfo(issue).name}</strong></div>
                             <div><span>고객사</span><strong>{getProjectInfo(issue).customer}</strong></div>
                             <div><span>프로젝트 마감일</span><strong>{getProjectInfo(issue).endDate}</strong></div>
-                            <div><span>건의자</span><strong>{employeeName(issue.assigneeId)}</strong></div>
+                            <div><span>건의자</span><strong>{issue.reporterName || employeeName(issue.reporterId)}</strong></div>
                         </div>
                     </div>
                 </div>
@@ -795,12 +795,7 @@ export default function IssueManagement({
                     <div className="form-row">
                         <label>
                             건의자
-                            <select value={issue.assigneeId || ""} onChange={e => changeAssignee(issue, e.target.value)}>
-                                <option value="">미지정</option>
-                                {employees.map(employee => <option key={employee.id || employee.employee_id} value={employee.id || employee.employee_id}>
-                                    {employee.name || employee.employee_name}
-                                </option>)}
-                            </select>
+                            <strong>{issue.reporterName || employeeName(issue.reporterId)}</strong>
                         </label>
                         <label>
                             마감일

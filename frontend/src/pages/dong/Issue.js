@@ -1,12 +1,15 @@
+import SearchInput from "../../shared/SearchInput";
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Priority } from "../../shared/priority";
 
 // 수정: projects, issues, setIssues를 App에서 전달받는다.
 function Issue({ projects, issues, setIssues }) {
 
 
     const navigate = useNavigate();
+    const [searchResetKey, setSearchResetKey] = useState(0);
     const [selectedProject, setSelectedProject] = useState("");
     const [search, setSearch] = useState("");
     const [searchPerson, setSearchPerson] = useState("")
@@ -20,6 +23,7 @@ function Issue({ projects, issues, setIssues }) {
     const handleProjectChange = (e) => {
         setSelectedProject(e.target.value);
         setSearch("");
+        setSearchResetKey((key) => key + 1);
     };
 
     const filteredIssues = issues.filter((issue) => {
@@ -69,9 +73,6 @@ function Issue({ projects, issues, setIssues }) {
             <div className="issue-header">
                 <div>
                     <h1>SI 프로젝트 이슈 목록</h1>
-                    <p>
-                        프로젝트별 이슈를 조회하고 관리할 수 있습니다.
-                    </p>
                 </div>
 
                 <div className="issue-header-actions">
@@ -109,13 +110,13 @@ function Issue({ projects, issues, setIssues }) {
                     이슈 제목 검색
                 </label>
 
-                <input id="issue-search" type="text" placeholder="이슈 제목 검색" value={search} onChange={(e) => setSearch(e.target.value)} />
+                <SearchInput key={searchResetKey} id="issue-search" type="text" placeholder="이슈 제목 검색" value={search} onChange={(e) => setSearch(e.target.value)} />
 
                 <label htmlFor="issue-search">
                     이슈 건의자 검색
                 </label>
 
-                <input id="issue-search" type="text" placeholder="건의자 이름" value={searchPerson} onChange={(e) => setSearchPerson(e.target.value)} />
+                <SearchInput key={searchResetKey} id="issue-search" type="text" placeholder="건의자 이름" value={searchPerson} onChange={(e) => setSearchPerson(e.target.value)} />
             </section>
 
 
@@ -177,16 +178,27 @@ function Issue({ projects, issues, setIssues }) {
                                     <tr key={issue.id}>
                                         <td className="issue-row-number">{startIndex + index + 1}</td>
                                         <td>{issue.customerName || "-"}</td>
-                                        <td>{project?.name || "-"}</td>
+                                        <td>
+                                            {project ? (
+                                                <span className="issue-project">
+                                                    <span>{project.name}</span>
+                                                </span>
+                                            ) : "-"}
+                                        </td>
                                         {/*수정: 제목 클릭 시 상세 페이지 이동 */}
                                         <td>
                                             <button className="issue-title-link" onClick={() => navigate(`/issue/${issue.id}`)} >
                                                 {issue.title}
                                             </button>
                                         </td>
-                                        <td>{issue.priority || "보통"}</td>
+                                        <td><Priority value={issue.priority} /></td>
                                         <td>{issue.reporterName || "-"}</td>
-                                        <td>{issue.status || "-"}</td>
+                                        <td>
+                                            {/* 상태별 노선색 칩 (색은 shared/pages.css) */}
+                                            <span className="issue-status" data-status={issue.status || ""}>
+                                                {issue.status || "-"}
+                                            </span>
+                                        </td>
                                     </tr>
                                 );
                             })

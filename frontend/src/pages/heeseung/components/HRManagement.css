@@ -15,29 +15,12 @@
 
 /* ============================================
    1. 인사 관리 전체 화면
-============================================ */
-
-.hr-management {
-    --hr-primary: #245fe6;
-    --hr-primary-hover: #1b4bc2;
-    --hr-text: #172338;
-    --hr-muted: #64748b;
-    --hr-border: #e2e8f0;
-    --hr-background: #f7f9fc;
-    --hr-white: #ffffff;
-    width: 100%;
-    min-width: 0;
-    padding: 28px;
-    box-sizing: border-box;
-    background: var(--hr-background);
-    color: var(--hr-text);
-    font-family: "Pretendard",
+============================================ */.hr-management { --hr-primary: #245fe6; --hr-primary-hover: #1b4bc2; --hr-text: #172338; --hr-muted: #64748b; --hr-border: #e2e8f0; --hr-background: #f7f9fc; --hr-white: #ffffff; width: 100%; min-width: 0; box-sizing: border-box; background: var(--hr-background); color: var(--hr-text); font-family: "Pretendard",
         "Noto Sans KR",
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
-        sans-serif;
-}
+        sans-serif; margin: 0; padding: 0; }
 
 /* 내부 요소 크기 계산 통일 */
 
@@ -49,16 +32,7 @@
 
 /* ============================================
    2. 페이지 제목
-============================================ */
-
-.hr-management .section-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 26px;
-    padding: 6px 0 20px;
-    border-bottom: 1px solid var(--hr-border);
-}
+============================================ */ .hr-management .section-head { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--hr-border); margin: 0 0 20px; padding: 0 0 16px; }
 
 .hr-management .hr-eyebrow {
     display: inline-block;
@@ -67,51 +41,17 @@
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 1.5px;
-}
-
-.hr-management .section-head h2 {
-    margin: 0 0 9px;
-    color: #0f172a;
-    font-size: 30px;
-    font-weight: 800;
-    letter-spacing: -1px;
-}
-
-.hr-management .section-head p {
-    margin: 0;
-    color: var(--hr-muted);
-    font-size: 14px;
-    line-height: 1.7;
-}
+} .hr-management .section-head h2 { margin: 0 0 9px; color: #0f172a; font-size: 24px; font-weight: 800; letter-spacing: -1px; } .hr-management .section-head p { margin: 0; color: var(--hr-muted); font-size: 14px; line-height: 1.7; }
 
 /* ============================================
    3. 공통 카드
-============================================ */
-
-.hr-management .panel {
-    min-width: 0;
-    margin-bottom: 22px;
-    padding: 26px;
-    background: var(--hr-white);
-    border: 1px solid var(--hr-border);
-    border-radius: 16px;
-    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.025);
-    transition: border-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
+============================================ */.hr-management .panel { min-width: 0; background: var(--hr-white); border: 1px solid var(--hr-border); border-radius: 16px; box-shadow: 0 3px 12px rgba(15, 23, 42, 0.025); transition: border-color 0.2s ease,
+        box-shadow 0.2s ease; padding: 20px; margin: 0 0 16px; }
 
 .hr-management .panel:hover {
     border-color: #d6ddeb;
     box-shadow: 0 6px 20px rgba(15, 23, 42, 0.04);
-}
-
-.hr-management .panel h3 {
-    margin: 0 0 18px;
-    color: #172338;
-    font-size: 18px;
-    font-weight: 750;
-    letter-spacing: -0.4px;
-}
+} .hr-management .panel h3 { margin: 0 0 18px; color: #172338; font-size: 18px; font-weight: 750; letter-spacing: -0.4px; }
 
 .hr-management .panel>h3:first-child {
     padding-bottom: 16px;
@@ -196,16 +136,7 @@
     box-shadow: 0 0 0 3px rgba(36, 95, 230, 0.09);
 }
 
-/* 날짜 입력 영역 */
-
-.hr-management form.form-row>label {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    color: #475569;
-    font-size: 12px;
-    font-weight: 650;
-}
+/* 날짜 입력 영역 */ .hr-management form.form-row>label { display: flex; flex-direction: column; gap: 8px; color: #475569; font-size: 13px; font-weight: 650; }
 
 .hr-management form.form-row>label input {
     width: 100%;
@@ -222,26 +153,9 @@
 
 /* ============================================
    5. 버튼 공통
-============================================ */
-
-.hr-management button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 44px;
-    padding: 0 20px;
-    background: var(--hr-primary);
-    color: #ffffff;
-    border: 1px solid transparent;
-    border-radius: 9px;
-    font-size: 13px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: background 0.2s ease,
+============================================ */ .hr-management button { display: inline-flex; align-items: center; justify-content: center; background: var(--hr-primary); color: #ffffff; border: 1px solid transparent; border-radius: 9px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.2s ease,
         transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
+        box-shadow 0.2s ease; min-height: 40px; padding: 0 16px; }
 
 .hr-management button:hover {
     background: var(--hr-primary-hover);
@@ -502,13 +416,7 @@
     align-items: center;
     gap: 9px;
     flex-shrink: 0;
-}
-
-.hr-management .hr-actions button {
-    min-width: 70px;
-    min-height: 38px;
-    padding: 0 14px;
-}
+} .hr-management .hr-actions button { min-width: 70px; min-height: 40px; padding: 0 16px; }
 
 /* ============================================
    9. 태블릿 화면
@@ -711,14 +619,8 @@
     border-collapse: collapse;
     min-width: 780px;
     font-size: 13px;
-}
-
-.hr-staff-table th,
-.hr-staff-table td {
-    padding: 12px 10px;
-    border-bottom: 1px solid #e8edf5;
-    text-align: left;
-}
+}.hr-staff-table th,
+.hr-staff-table td { border-bottom: 1px solid #e8edf5; text-align: left; padding: 14px 15px; }
 
 .hr-staff-table th {
     background: #f5f6fc;
@@ -728,14 +630,7 @@
 .hr-inline-actions {
     display: flex;
     gap: 5px;
-}
-
-.hr-inline-actions button,
-.hr-enhanced-heading button {
-    padding: 7px 10px;
-    font-size: 12px;
-    white-space: nowrap;
-}
+} .hr-inline-actions button, .hr-enhanced-heading button { font-size: 12px; white-space: nowrap; min-height: 40px; padding: 0 16px; }
 
 .hr-active,
 .hr-retired {
@@ -868,13 +763,7 @@
     display: grid;
     gap: 18px;
     min-width: 0;
-}
-
-.hr-management .hr-overview-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
-}
+} .hr-management .hr-overview-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 
 .hr-management .hr-overview-card {
     background: #fff;
@@ -954,16 +843,7 @@
     flex-wrap: wrap;
     gap: 8px;
     margin: 16px 0;
-}
-
-.hr-detail-tabs button {
-    border: 1px solid #ddd9ef;
-    border-radius: 8px;
-    background: #fff;
-    color: #342b52;
-    padding: 9px 13px;
-    cursor: pointer;
-}
+} .hr-detail-tabs button { border: 1px solid #ddd9ef; border-radius: 8px; background: #fff; color: #342b52; cursor: pointer; min-height: 40px; padding: 0 16px; }
 
 .hr-detail-tabs button.active {
     background: #7154cf;
@@ -1017,25 +897,7 @@
         transition-duration: .01ms !important;
         animation-duration: .01ms !important;
     }
-}
-
-.hr-management {
-    max-width: 1520px;
-    margin-inline: auto;
-    padding: 32px clamp(18px, 2.5vw, 40px) 64px;
-}
-
-.hr-management .section-head {
-    margin-bottom: 24px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--ui-line);
-}
-
-.hr-management .section-head h2 {
-    font-size: clamp(25px, 2vw, 32px);
-    letter-spacing: -.035em;
-    color: var(--ui-ink);
-}
+}.hr-management { max-width: 1520px; margin: 0; padding: 0; } .hr-management .section-head { border-bottom: 1px solid var(--ui-line); margin: 0 0 20px; padding: 0 0 16px; } .hr-management .section-head h2 { font-size: 24px; letter-spacing: -.035em; color: var(--ui-ink); }
 
 .hr-management .hr-eyebrow {
     font-size: 11px;
@@ -1076,15 +938,7 @@
 
 .hr-management .hr-overview-card strong {
     font-variant-numeric: tabular-nums;
-}
-
-.hr-management .hr-filters {
-    gap: 10px;
-    padding: 12px;
-    background: #f8faff;
-    border: 1px solid #eaf0fa;
-    border-radius: 14px;
-}
+} .hr-management .hr-filters { gap: 12px; padding: 12px; background: #f8faff; border: 1px solid #eaf0fa; border-radius: 14px; }
 
 .hr-management .hr-filters :is(input, select) {
     background: #fff;
@@ -1101,20 +955,7 @@
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-}
-
-.hr-management .hr-staff-table th {
-    position: sticky;
-    top: 0;
-    background: #f3f7fd;
-    color: #52627a;
-    font-size: 12px;
-    white-space: nowrap;
-}
-
-.hr-management .hr-staff-table td {
-    border-bottom: 1px solid #edf1f6;
-}
+} .hr-management .hr-staff-table th { position: sticky; top: 0; background: #f3f7fd; color: #52627a; font-size: 13px; white-space: nowrap; } .hr-management .hr-staff-table td { border-bottom: 1px solid #edf1f6; font-size: 14px; }
 
 .hr-management .hr-staff-table tbody tr:hover td {
     background: #f7faff;
@@ -1204,13 +1045,7 @@
     font-size: 13px;
     font-weight: 500;
     color: #64748b;
-}
-
-.hr-management .hr-detail-profile p {
-    margin: 0;
-    font-size: 13px;
-    color: #64748b;
-}
+} .hr-management .hr-detail-profile p { margin: 0; font-size: 14px; color: #64748b; }
 
 .hr-management .hr-detail-close {
     padding: 9px 14px;
@@ -1226,18 +1061,7 @@
     gap: 6px;
     overflow-x: auto;
     border-bottom: 1px solid #e2e8f0;
-}
-
-.hr-management .hr-detail-tabs button {
-    padding: 12px 14px;
-    border: 0;
-    border-bottom: 2px solid transparent;
-    background: transparent;
-    color: #64748b;
-    font-weight: 600;
-    white-space: nowrap;
-    cursor: pointer;
-}
+} .hr-management .hr-detail-tabs button { border: 0; border-bottom: 2px solid transparent; background: transparent; color: #64748b; font-weight: 600; white-space: nowrap; cursor: pointer; min-height: 40px; padding: 0 16px; }
 
 .hr-management .hr-detail-tabs button.active {
     color: #4338ca;
@@ -1371,15 +1195,7 @@
     background: #f8fafc;
     color: #334155;
     font-size: 14px;
-}
-
-.hr-db-notice button {
-    padding: 6px 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    background: #fff;
-    cursor: pointer;
-}
+} .hr-db-notice button { border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; cursor: pointer; min-height: 40px; padding: 0 16px; }
 
 
 /* ===== 인사관리 상태 및 버튼 가독성 개선 ===== */
@@ -1418,15 +1234,7 @@
     color: #991b1b;
     background: #fee2e2;
     border-color: #fca5a5;
-}
-
-.hr-management .hr-inline-actions button {
-    font-weight: 750;
-    border-radius: 7px;
-    min-height: 34px;
-    border: 1px solid transparent;
-    opacity: 1;
-}
+} .hr-management .hr-inline-actions button { font-weight: 750; border-radius: 7px; border: 1px solid transparent; opacity: 1; min-height: 40px; padding: 0 16px; }
 
 .hr-management .hr-inline-actions .hr-action-detail {
     background: #e0f2fe !important;
@@ -1444,18 +1252,7 @@
     background: #fee2e2 !important;
     border-color: #f87171 !important;
     color: #991b1b !important;
-}
-
-.hr-management .hr-db-notice button {
-    padding: 9px 16px;
-    min-height: 38px;
-    background: #1d4ed8 !important;
-    border: 1px solid #1e40af !important;
-    color: #ffffff !important;
-    font-weight: 800;
-    opacity: 1;
-    box-shadow: 0 2px 5px rgba(30, 64, 175, .16);
-}
+} .hr-management .hr-db-notice button { background: #1d4ed8 !important; border: 1px solid #1e40af !important; color: #ffffff !important; font-weight: 800; opacity: 1; box-shadow: 0 2px 5px rgba(30, 64, 175, .16); min-height: 40px; padding: 0 16px; }
 
 .hr-management .hr-db-notice button:hover:not(:disabled) {
     background: #1e40af !important;
@@ -1546,14 +1343,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
-}
-
-.hr-management .hr-vacation-button {
-    cursor: pointer;
-    font: inherit;
-    font-weight: 700;
-    padding: 5px 10px;
-}
+} .hr-management .hr-vacation-button { cursor: pointer; font: inherit; font-weight: 700; min-height: 40px; padding: 0 16px; }
 
 .hr-management .hr-vacation-button:hover {
     background: #bfdbfe !important;
@@ -1593,20 +1383,7 @@
     letter-spacing: 2px;
     font-weight: 800;
     color: #64748b;
-}
-
-.hr-management .hr-analytics-heading h2 {
-    margin: 7px 0 6px;
-    font-size: 25px;
-    letter-spacing: -.8px;
-    color: #15243b;
-}
-
-.hr-management .hr-analytics-heading p {
-    margin: 0;
-    color: #7b8798;
-    font-size: 13px;
-}
+} .hr-management .hr-analytics-heading h2 { margin: 7px 0 6px; font-size: 24px; letter-spacing: -.8px; color: #15243b; } .hr-management .hr-analytics-heading p { margin: 0; color: #7b8798; font-size: 14px; }
 
 .hr-management .hr-analytics-chip {
     white-space: nowrap;
@@ -1617,11 +1394,7 @@
     padding: 9px 14px;
     border-radius: 999px;
     border: 1px solid #dce9f7;
-}
-
-.hr-management .hr-analytics .hr-overview-grid {
-    gap: 16px;
-}
+} .hr-management .hr-analytics .hr-overview-grid { gap: 16px; }
 
 .hr-management .hr-analytics .hr-overview-card {
     position: relative;
@@ -1842,10 +1615,7 @@
 }
 
 
-/* ===== 통계 분석: 직원별 수치와 업무량 그래프 통합 ===== */
-.hr-management .hr-unified-panel {
-    padding: 26px 28px;
-}
+/* ===== 통계 분석: 직원별 수치와 업무량 그래프 통합 ===== */.hr-management .hr-unified-panel {  padding: 20px; margin: 0 0 16px; }
 
 .hr-management .hr-unified-heading {
     display: flex;
@@ -1857,13 +1627,7 @@
 
 .hr-management .hr-unified-heading h3 {
     margin: 0 0 7px;
-}
-
-.hr-management .hr-unified-heading p {
-    margin: 0;
-    font-size: 12px;
-    color: #8290a2;
-}
+} .hr-management .hr-unified-heading p { margin: 0; font-size: 14px; color: #8290a2; }
 
 .hr-management .hr-unified-count {
     flex-shrink: 0;
@@ -1885,18 +1649,7 @@
     border-collapse: collapse;
     table-layout: auto;
     font-size: 13px;
-}
-
-.hr-management .hr-unified-table th {
-    padding: 13px 12px;
-    text-align: center;
-    background: #f6f8fc;
-    color: #64748b;
-    font-size: 12px;
-    font-weight: 700;
-    white-space: nowrap;
-    border-bottom: 1px solid #e5ebf3;
-}
+} .hr-management .hr-unified-table th { text-align: center; background: #f6f8fc; color: #64748b; font-size: 13px; font-weight: 700; white-space: nowrap; border-bottom: 1px solid #e5ebf3; padding: 14px 15px; }
 
 .hr-management .hr-unified-table th:first-child {
     text-align: left;
@@ -1906,14 +1659,7 @@
 .hr-management .hr-unified-table th:last-child {
     min-width: 180px;
     width: 30%;
-}
-
-.hr-management .hr-unified-table td {
-    padding: 15px 12px;
-    border-bottom: 1px solid #eef1f5;
-    text-align: center;
-    color: #64748b;
-}
+} .hr-management .hr-unified-table td { border-bottom: 1px solid #eef1f5; text-align: center; color: #64748b; padding: 14px 15px; font-size: 14px; }
 
 .hr-management .hr-unified-table td:first-child {
     text-align: left;
@@ -2185,15 +1931,7 @@
     gap: 14px;
     padding: 12px;
     font-size: 12px;
-}
-
-.hr-work-pages button {
-    padding: 6px 12px;
-    border: 1px solid #dce3ed;
-    border-radius: 7px;
-    background: white;
-    cursor: pointer;
-}
+} .hr-work-pages button { border: 1px solid #dce3ed; border-radius: 7px; background: white; cursor: pointer; min-height: 40px; padding: 0 16px; }
 
 .hr-work-pages button:disabled {
     opacity: .4;
@@ -2340,11 +2078,7 @@
 }
 
 
-/* ===== 직원별 업무 현황: 의미별 컬러 디자인 ===== */
-.hr-management .hr-work-summary {
-    gap: 14px;
-    margin-top: 24px;
-}
+/* ===== 직원별 업무 현황: 의미별 컬러 디자인 ===== */ .hr-management .hr-work-summary { gap: 16px; margin-top: 24px; }
 
 .hr-management .hr-work-summary>div {
     position: relative;
@@ -2421,14 +2155,7 @@
     background: #f8fafc;
     border-left: 3px solid #94a3b8;
     line-height: 1.6;
-}
-
-.hr-management .hr-work-filters {
-    padding: 17px;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    background: #f8fbff;
-}
+} .hr-management .hr-work-filters { padding: 17px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fbff; gap: 12px; }
 
 .hr-management .hr-work-filters input:focus,
 .hr-management .hr-work-filters select:focus {
@@ -2607,13 +2334,7 @@
     font-size: 14px;
     font-weight: 750;
     color: #172338;
-}
-
-.hr-management .hr-work-list .hr-work-person small {
-    font-size: 12px;
-    font-weight: 500;
-    color: #64748b;
-}
+} .hr-management .hr-work-list .hr-work-person small { font-size: 12px; font-weight: 500; color: #64748b; }
 
 .hr-management .hr-work-list .hr-work-person-count {
     flex-shrink: 0;
@@ -2626,18 +2347,7 @@
 .hr-management .hr-work-list .hr-work-person.selected .hr-work-person-count {
     background: #dbeafe;
     color: #1d4ed8;
-}
-
-.hr-management .hr-work-pages button {
-    min-height: 34px;
-    padding: 6px 14px;
-    background: #ffffff;
-    color: #334155;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    box-shadow: none;
-    font-size: 12px;
-}
+} .hr-management .hr-work-pages button { background: #ffffff; color: #334155; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: none; font-size: 12px; min-height: 40px; padding: 0 16px; }
 
 .hr-management .hr-work-pages button:not(:disabled):hover {
     background: #eff6ff;
@@ -2928,12 +2638,7 @@
         font-size: 27px;
     }
 }
-/* 직원 신규 등록: 이슈 등록처럼 토글 버튼 + 넓은 입력 폼 */
-.hr-management .hr-employee-register-toolbar {
-    display: flex;
-    justify-content: flex-end;
-    margin: 16px 0 12px;
-}
+/* 직원 신규 등록: 이슈 등록처럼 토글 버튼 + 넓은 입력 폼 */ .hr-management .hr-employee-register-toolbar { display: flex; justify-content: flex-end; margin: 16px 0 12px; gap: 12px; }
 .hr-management .hr-register-toggle {
     border: 0;
     border-radius: 9px;
@@ -2942,34 +2647,14 @@
     padding: 11px 20px;
     font-weight: 700;
     cursor: pointer;
-}
-.hr-management .hr-new-employee-form {
-    padding: 24px;
-    margin-bottom: 20px;
-    border: 1px solid #dce2ee;
-    border-radius: 12px;
-    background: #fff;
-}
+}.hr-management .hr-new-employee-form { border: 1px solid #dce2ee; border-radius: 12px; background: #fff; padding: 20px; margin: 0 0 16px; }
 .hr-management .hr-new-employee-form h3 {
     margin: 0 0 8px;
     font-size: 18px;
 }
 .hr-management .hr-new-employee-form .muted {
     margin: 0 0 18px;
-}
-.hr-management .hr-new-employee-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px 16px;
-}
-.hr-management .hr-new-employee-grid label {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    min-width: 0;
-    font-size: 13px;
-    font-weight: 600;
-}
+} .hr-management .hr-new-employee-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; } .hr-management .hr-new-employee-grid label { display: flex; flex-direction: column; gap: 7px; min-width: 0; font-size: 13px; font-weight: 600; }
 .hr-management .hr-new-employee-grid input,
 .hr-management .hr-new-employee-grid select {
     width: 100%;
@@ -2985,12 +2670,7 @@
     display: flex;
     gap: 9px;
     margin-top: 18px;
-}
-.hr-management .hr-register-actions button {
-    border-radius: 9px;
-    padding: 11px 20px;
-    cursor: pointer;
-}
+} .hr-management .hr-register-actions button { border-radius: 9px; cursor: pointer; min-height: 40px; padding: 0 16px; }
 .hr-management .hr-register-cancel {
     background: #fff;
     color: #566074;
