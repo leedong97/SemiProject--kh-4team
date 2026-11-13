@@ -1648,3 +1648,79 @@ button.merge-kpi:hover,
   border-radius: 999px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
 }
+
+
+/* ==========================================================
+   관리자 페이지 번호 통일 (마지막에 두어서 위의 여러 규칙보다 우선)
+   - 모든 화면: 가운데 정렬, 같은 크기의 버튼
+   - 현재 쪽: 검정 바탕 + 흰 글씨 / 나머지: 흰 바탕 + 얇은 테두리
+   대상: 인원·커뮤니티(.nexus-pager), 인사(.hr-work-pages, .hr-leave-pages), 이슈(.issue-pagination)
+========================================================== */
+.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin :is(.nexus-pager, .hr-work-pages, .hr-leave-pages, .issue-pagination) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex-wrap: wrap;
+  gap: 8px !important;
+  width: 100%;
+  margin: 24px auto 8px !important;
+  padding: 0 !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin :is(.nexus-pager, .hr-work-pages, .hr-leave-pages, .issue-pagination) button {
+  min-width: 38px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--cmd-rule-2) !important;
+  border-radius: var(--radius-m);
+  background: #fff !important;
+  color: var(--cmd-ink) !important;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin :is(.nexus-pager, .hr-work-pages, .hr-leave-pages, .issue-pagination) button:hover:not(:disabled) {
+  border-color: var(--cmd-ink) !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin :is(.nexus-pager, .hr-work-pages, .hr-leave-pages, .issue-pagination) button:is(.active, .current, [aria-current="page"]) {
+  border-color: var(--cmd-ink) !important;
+  background: var(--cmd-ink) !important;
+  color: #fff !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin :is(.nexus-pager, .hr-work-pages, .hr-leave-pages, .issue-pagination) button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin :is(.nexus-pager, .hr-work-pages, .hr-leave-pages, .issue-pagination) > span {
+  color: var(--cmd-mute);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* 인사 관리 > 직원별 업무 현황: 박스를 검은 바탕 + 흰 글씨로 통일 (빨간 '기한 초과' 알림만 예외) */
+.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin .hr-management .hr-work-summary > div {
+  background: var(--cmd-ink) !important;
+  border-color: var(--cmd-ink) !important;
+  color: #fff;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin .hr-management .hr-work-summary > div :is(span, strong) {
+  color: #fff !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin .hr-management .hr-work-summary > div .hr-work-overdue-count {
+  color: #ff8a7a !important;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin .hr-management .hr-work-list .hr-work-person-count,
+.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin .hr-management .hr-work-list .hr-work-person.selected .hr-work-person-count {
+  background: var(--cmd-ink) !important;
+  color: #fff !important;
+}

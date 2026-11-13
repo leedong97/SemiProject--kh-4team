@@ -1,3 +1,4 @@
+import { API_BASE } from "../../../shared/config";
 import SearchInput from "../../../shared/SearchInput";
 import React, { useState, useEffect, useCallback } from "react";
 import "./HRManagement.css";
@@ -48,7 +49,7 @@ export default function HRManagement({
     // 휴가 배지를 클릭했을 때 기간을 보여줄 직원 번호
     const [openedLeaveEmployeeId, setOpenedLeaveEmployeeId] = useState(null);
 
-    const apiBase = (process.env.REACT_APP_API_URL || "http://localhost:3333") + "/api/hr";
+    const apiBase = API_BASE + "/api/hr";
 
     const apiRequest = useCallback(async (path, options = {}) => {
         const token = localStorage.getItem("nexus_auth_token");

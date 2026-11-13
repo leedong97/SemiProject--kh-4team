@@ -78,8 +78,8 @@ app.use('/api', (req, res) => {
   res.status(404).json({ message: 'API 경로를 찾을 수 없습니다: ' + req.method + ' ' + req.originalUrl });
 });
 
-// 7) (선택) React 빌드 결과(backend/build)가 있으면 같이 제공. 반드시 맨 마지막!
-const buildDir = path.join(__dirname, 'build');
+// 7) (선택) React 빌드 결과(frontend/build)가 있으면 같이 제공. 반드시 맨 마지막!
+const buildDir = path.join(__dirname, '..', 'frontend', 'build');
 if (fs.existsSync(buildDir)) {
   app.use(express.static(buildDir));
   app.use((req, res) => res.sendFile(path.join(buildDir, 'index.html')));

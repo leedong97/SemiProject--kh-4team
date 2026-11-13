@@ -232,9 +232,7 @@ function Issue({ projects, issues, setIssues }) {
                 </nav>
             )}
 
-            <p className="issue-footer">
-                프로젝트를 선택하면 해당 프로젝트의 이슈만 표시됩니다.
-            </p>
+     
 
         </main>
     );

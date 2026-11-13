@@ -324,6 +324,11 @@ function Mypage() {
 
     // 필터가 "전체"나 "프로젝트"일 때만 막대를 보여 줘요 (개인·업무·휴가만 보고 싶을 땐 숨겨요)
     const visibleProjectBars = filter === "전체" || filter === "프로젝트" ? projectBars : [];
+
+    // 선택한 날짜에 걸친 프로젝트도 아래 "N월 N일 일정" 목록에 보여 줘요. (읽기 전용: 수정·삭제 버튼 없음, 프로젝트는 관리자 화면에서만 바꿔요)
+    const selectedProjectItems = visibleProjectBars
+        .filter((p) => p.start <= selectedKey && selectedKey <= p.end)
+        .map((p) => ({ id: `project-${p.id}`, title: p.title, start: p.start, end: p.end, type: "프로젝트", readOnly: true }));
     // 위쪽 "진행 · 예정 프로젝트" 목록에는 기간이 지난 프로젝트(종료일이 오늘보다 이전)를 보여 주지 않아요. (달력은 지난 달을 넘겨 볼 때를 위해 그대로 둬요)
 
     // 한 주(weekKeys: 7칸의 날짜 문자열, 빈칸은 null)에 그릴 막대들을 계산
@@ -664,7 +669,7 @@ function Mypage() {
 
                     <DayList
                         selectedLabel={selectedLabel}
-                        selectedSchedules={selectedSchedules}
+                        selectedSchedules={[...selectedSchedules, ...selectedProjectItems]}
                         filter={filter}
                         countDays={countDays}
                         TYPE_CLASS={TYPE_CLASS}
