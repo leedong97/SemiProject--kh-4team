@@ -102,6 +102,7 @@
 
 /* 흰 작업판 (회색 바탕 위) */
 .cmd-dash .cmd-panel {
+  --pp-b: calc(var(--sp-8) + var(--sp-3)); /* 아래 여백: 32px → 44px 로 여유있게 */
   border: 1px solid var(--cmd-rule);
   background: var(--cmd-bg);
 }
@@ -544,8 +545,9 @@
 }
 
 .cmd-cal-num {
-  width: 30px;
-  height: 28px;
+  width: 26px;
+  height: 24px;
+  border-radius: var(--radius-m); /* 마이페이지 달력의 날짜 숫자 박스와 같은 크기·둥글기 */
   display: grid;
   place-items: center;
   font-family: var(--cmd-mono);
@@ -559,7 +561,7 @@
 .cmd-cal-day.is-outside .cmd-cal-num { color: var(--cmd-faint); font-weight: 500; }
 .cmd-cal-day.is-outside .cmd-dot { opacity: 0.5; }
 
-/* 오늘: 잉크 네모 테두리 / 선택: 잉크로 채운 네모 */
+/* 오늘: 잉크 둥근 네모 테두리 / 선택: 잉크로 채운 둥근 네모 */
 .cmd-cal-day.is-today .cmd-cal-num {
   box-shadow: inset 0 0 0 2px var(--cmd-ink);
 }

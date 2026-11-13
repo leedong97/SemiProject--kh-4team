@@ -881,9 +881,23 @@ export default function IssueManagement({
             }}>
                 이전
             </button>
-            <span>
-                {safeCurrentPage} / {totalPages}
-            </span>
+            {Array.from(
+                { length: Math.min(10, totalPages - Math.floor((safeCurrentPage - 1) / 10) * 10) },
+                (_, index) => Math.floor((safeCurrentPage - 1) / 10) * 10 + index + 1
+            ).map(pageNumber => (
+                <button
+                    type="button"
+                    key={pageNumber}
+                    className={pageNumber === safeCurrentPage ? "active" : "secondary"}
+                    aria-current={pageNumber === safeCurrentPage ? "page" : undefined}
+                    onClick={() => {
+                        setCurrentPage(pageNumber);
+                        setExpandedIssueId(null);
+                    }}
+                >
+                    {pageNumber}
+                </button>
+            ))}
             <button type="button" className="secondary" disabled={safeCurrentPage === totalPages} onClick={() => {
                 setCurrentPage(safeCurrentPage + 1);
                 setExpandedIssueId(null);

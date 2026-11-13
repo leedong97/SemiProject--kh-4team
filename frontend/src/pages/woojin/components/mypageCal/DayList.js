@@ -25,14 +25,17 @@ function DayList({ selectedLabel, selectedSchedules, filter, countDays, TYPE_CLA
                                 : `${s.start} ~ ${s.end} (${countDays(s.start, s.end)}일) · ${s.type}`}
                         </p>
                     </div>
-                    <div className="mp-actions">
-                        <button type="button" className="mp-edit" onClick={() => openEditForm(s)}>
-                            수정
-                        </button>
-                        <button type="button" className="mp-del" onClick={() => handleDelete(s.id)}>
-                            삭제
-                        </button>
-                    </div>
+                    {/* 프로젝트(readOnly)는 여기서 수정·삭제하지 않아요 */}
+                    {!s.readOnly && (
+                        <div className="mp-actions">
+                            <button type="button" className="mp-edit" onClick={() => openEditForm(s)}>
+                                수정
+                            </button>
+                            <button type="button" className="mp-del" onClick={() => handleDelete(s.id)}>
+                                삭제
+                            </button>
+                        </div>
+                    )}
                 </div>
             ))}
         </>

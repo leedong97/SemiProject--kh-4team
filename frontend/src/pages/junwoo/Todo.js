@@ -291,9 +291,7 @@ function Todo({ todo = [] }) {
                 </nav>
             )}
 
-            <p className="jpl-footer">
-                프로젝트 제목을 누르면 상세정보와 완료 요청 상태를 확인할 수 있습니다.
-            </p>
+            
         </main>
     );
 }
