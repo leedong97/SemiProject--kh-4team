@@ -200,6 +200,15 @@ function DepartureBoard({ date, schedules, loading, error, onRetry }) {
 
 /* ---------------- 내 프로젝트 코드표 ---------------- */
 
+// 이슈 상태 → 상태등 (프로젝트 줄의 상태등과 같은 색 규칙)
+function issueLamp(status) {
+  if (status === '완료') return 'done';
+  if (status === '반려' || status === '지연') return 'late';
+  if (status === '진행중' || status === '진행 중' || status === '처리중' || status === '처리 중') return 'ok';
+  return 'plan';
+}
+
+// 프로젝트 줄 아래에 이슈를 같은 표의 줄(tr)로 펼칩니다. (프로젝트 | 상태 | 진척 | 마감 칸에 그대로 맞춰요)
 function ProjectIssues({ projectId }) {
   const [state, setState] = useState({ loading: true, error: '', rows: [] });
   useEffect(() => {
@@ -214,14 +223,23 @@ function ProjectIssues({ projectId }) {
       .catch(error => { if (!controller.signal.aborted) setState({ loading: false, error: error.message, rows: [] }); });
     return () => controller.abort();
   }, [projectId]);
-  if (state.loading) return <p role="status">이슈를 불러오는 중...</p>;
-  if (state.error) return <p role="alert">{state.error}</p>;
-  if (!state.rows.length) return <p>이 프로젝트에 등록된 이슈가 없습니다.</p>;
-  return <ol className="dash-project-issue-list">{state.rows.map((issue, index) => <li key={issue.id}>
-    <span className="dash-project-issue-number" aria-hidden="true">{index + 1}.</span>
-    <Link to={`/issue/${issue.id}`}>{issue.title}</Link>
-    <span>{issue.status}</span><span>담당자: {issue.assigneeName || '미배정'}</span>
-  </li>)}</ol>;
+  const message = (text, role) => (
+    <tr className="dash-issue-row dash-issue-row--msg"><td colSpan="4" id={`project-issues-${projectId}`}><span className="dash-sub" role={role}>{text}</span></td></tr>
+  );
+  if (state.loading) return message('이슈를 불러오는 중...', 'status');
+  if (state.error) return message(state.error, 'alert');
+  if (!state.rows.length) return message('이 프로젝트에 등록된 이슈가 없습니다.');
+  return state.rows.map((issue, index) => (
+    <tr key={issue.id} className="dash-issue-row" id={index === 0 ? `project-issues-${projectId}` : undefined}>
+      <td>
+        <span className="dash-issue-no cmd-num">{index + 1}.</span>
+        <Link to={`/issue/${issue.id}`} className="dash-name">{issue.title}</Link>
+      </td>
+      <td><span className={`cmd-lamp cmd-lamp--${issueLamp(issue.status)}`}>{issue.status || '-'}</span></td>
+      <td></td>
+      <td><span className="dash-sub">담당자: {issue.assigneeName || '미배정'}</span></td>
+    </tr>
+  ));
 }
 
 function ProjectTable({ projects, title }) {
@@ -269,7 +287,7 @@ function ProjectTable({ projects, title }) {
                       <span className="dash-sub cmd-num">{p.endDate || ''}</span>
                     </td>
                   </tr>
-                  {expandedId === p.id && <tr className="dash-project-issues"><td colSpan="4" id={`project-issues-${p.id}`}><ProjectIssues projectId={p.id} /></td></tr>}
+                  {expandedId === p.id && <ProjectIssues projectId={p.id} />}
                   </Fragment>
                 );
               })}

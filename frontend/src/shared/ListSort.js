@@ -4,8 +4,8 @@ import "./ListSort.css";
 const options = {
     project: [["default", "기본순"], ["title", "프로젝트명순"], ["customer", "고객사순"], ["status", "상태순"], ["manager", "담당자순"], ["endDate", "종료일 빠른순"], ["progress", "진행률 높은순"]],
     issue: [["default", "기본순"], ["latest", "최신순"], ["title", "제목순"], ["project", "프로젝트명순"], ["status", "상태순"], ["assignee", "담당자순"], ["priority", "우선순위 높은순"]],
-    notice: [["default", "기본순 (오래된 순)"], ["latest", "최신순"], ["title", "제목순"], ["department", "작성 부서순"], ["views", "조회수 높은순"]],
-    community: [["default", "기본순 (오래된 순)"], ["latest", "최신순"], ["title", "제목순"], ["author", "작성자순"], ["comments", "댓글 많은순"]]
+    notice: [["default", "기본순"], ["latest", "최신순"], ["title", "제목순"], ["department", "작성 부서순"], ["views", "조회수 높은순"]],
+    community: [["default", "기본순"], ["latest", "최신순"], ["title", "제목순"], ["author", "작성자순"], ["comments", "댓글 많은순"]]
 };
 
 export function sortList(items, option) {

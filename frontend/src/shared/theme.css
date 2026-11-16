@@ -262,3 +262,15 @@ body:has(.woojin-frame) {
     order: 2;
   }
 }
+
+/* 펼침 목록(select)이 위로 뒤집히지 않고 항상 아래로 열리게.
+   아래 공간이 모자라면 뒤집는 대신 목록 높이를 줄이고 안에서 스크롤해요. (Chrome 135+) */
+@supports (appearance: base-select) {
+  ::picker(select) {
+    position-area: block-end span-inline-end;
+    position-try-fallbacks: none;
+    max-block-size: min(320px, 100%);
+    overflow-y: auto;
+  }
+}
+

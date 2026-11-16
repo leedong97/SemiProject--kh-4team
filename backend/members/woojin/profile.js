@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
         // SELECT: 이 직원의 전화번호와 주소만 가져온다 (employee_phone → phone, employee_address → address 별명)
         // WHERE employee_id = ?: 이 직원 번호의 줄만. ?에는 [employeeId]가 들어간다.
         const [rows] = await pool.query(
-            "SELECT employee_phone AS phone, employee_address AS address FROM employees WHERE employee_id = ?",
+            "SELECT employee_phone AS phone, employee_address AS address, employee_division AS division, employee_team AS team, employee_grade AS grade FROM employees WHERE employee_id = ?",
             [employeeId]
         );
         // rows.length === 0 : 조회된 줄이 0개 = 이 번호의 직원이 없다면
@@ -46,7 +46,7 @@ router.get("/", async (req, res) => {
         // 위 if(길이 0)에 안 걸렸으니 직원이 있다.
         // ok: true와, 첫 번째 줄(rows[0])의 phone/address를 JSON으로 화면에 응답한다.
         // || "": 값이 비어 있으면(NULL) 빈 글자로 바꾼다.
-        res.json({ ok: true, phone: rows[0].phone || "", address: rows[0].address || "" });
+        res.json({ ok: true, phone: rows[0].phone || "", address: rows[0].address || "", division: rows[0].division || "", team: rows[0].team || "", grade: rows[0].grade || "" });
     } catch (err) {//트라이 안에서 오류가 났다면
         //서버 터미널에 "연락처 조회 오류:", err.code, err.message); 이걸 띄운다
         console.error("연락처 조회 오류:", err.code, err.message);

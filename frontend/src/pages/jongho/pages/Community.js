@@ -25,7 +25,7 @@ function arrangeComments(list) {
 
 // 정렬 선택지 (프로젝트 관리·인원 관리와 같은 드롭다운 방식)
 const SORT_OPTIONS = [
-    { value: "default", label: "기본순 (오래된 순)" },
+    { value: "default", label: "기본순" },
     { value: "latest", label: "최신순" },
     { value: "title", label: "제목순" },
     { value: "author", label: "작성자순" },

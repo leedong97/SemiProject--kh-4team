@@ -744,19 +744,15 @@
   background: var(--accent-tint);
 }
 
-/* 내 프로젝트 행에서 해당 프로젝트의 이슈를 펼칩니다. */
-.cmd-shell #cmd-main .dash-project-toggle { display:inline; padding:0; border:0; background:none; color:inherit; font:inherit; font-weight:700; text-align:left; cursor:pointer; }
+/* 내 프로젝트 행에서 해당 프로젝트의 이슈를 같은 표의 줄로 펼칩니다. (표 칸과 줄 맞춤) */
+.cmd-shell #cmd-main .dash-project-toggle { display:inline; padding:0; border:0; background:none; color:var(--cmd-ink); font:inherit; font-weight:700; text-align:left; cursor:pointer; }
+.cmd-shell #cmd-main .dash-project-toggle:hover { text-decoration:underline; }
 .cmd-shell #cmd-main .dash-project-toggle:focus-visible { outline:2px solid var(--cmd-ink); outline-offset:3px; }
-.dash-project-issues > td { background:var(--cmd-bg-2); white-space:normal; }
-.dash-project-issue-list { margin:0; padding:0; list-style:none; }
-.dash-project-issue-list li { display:grid; grid-template-columns: 32px minmax(0, 1fr) auto auto; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--cmd-rule); font-size:var(--fs-13); color:var(--cmd-ink-2); }
-.dash-project-issue-list li:last-child { border-bottom:0; }
-.dash-project-issue-list a { flex:1 1 180px; overflow-wrap:anywhere; }
-
-.dash-project-issue-number { text-align:center; color:var(--cmd-mute); font-family:var(--cmd-mono); font-weight:700; }
-.dash-project-issue-list li > a { color:var(--cmd-ink); font-weight:700; text-decoration:none; }
-.dash-project-issue-list li > a:hover { text-decoration:underline; }
+.dash-table .dash-issue-row td { height:44px; padding:var(--sp-1) var(--sp-3) var(--sp-1) 0; background:var(--cmd-bg-2); border-bottom:1px solid var(--cmd-rule); font-size:var(--fs-13); vertical-align:middle; }
+.dash-table .dash-issue-row td:first-child { padding-left:var(--sp-3); }
+.dash-table .dash-issue-row:last-of-type td { border-bottom:1px solid var(--cmd-rule); }
+.dash-issue-no { display:inline-block; min-width:28px; color:var(--cmd-mute); font-family:var(--cmd-mono); font-weight:700; }
+.dash-table .dash-issue-row .dash-sub { display:inline; margin:0; }
 @media (max-width: 640px) {
-  .dash-project-issue-list li { grid-template-columns:24px minmax(0, 1fr); gap:8px; }
-  .dash-project-issue-list li > span:not(.dash-project-issue-number) { grid-column:2; }
+  .dash-table .dash-issue-row td:first-child { padding-left:var(--sp-2); }
 }

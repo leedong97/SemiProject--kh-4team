@@ -425,6 +425,13 @@ function ProjectManagement({
     }
   };
 
+  // 신규 프로젝트 등록 화면으로 이동 (목록 카드 안의 버튼이 같이 쓴다)
+  const startRegister = async () => {
+    setSourceQuote(null);
+    await loadCustomers();
+    setPage("register");
+  };
+
   return (
     <div className="nexus-project-management">
 
@@ -434,23 +441,6 @@ function ProjectManagement({
 
       {page === "list" ? (
         <>
-          <div className="nexus-project-heading">
-
-
-
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={async () => {
-                setSourceQuote(null);
-                await loadCustomers();
-                setPage("register");
-              }}
-            >
-              + 신규 프로젝트 등록
-            </button>
-          </div>
-
           <FilterChips
             label="목록 구분"
             value={listTab}
@@ -464,6 +454,16 @@ function ProjectManagement({
 
           {listTab === "projects" && (
             <div className="card nexus-project-panel">
+              <div className="nexus-project-heading">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={startRegister}
+                >
+                  + 신규 프로젝트 등록
+                </button>
+              </div>
+
 
               <SearchSortBar
                 searchId="project-search"
@@ -501,6 +501,16 @@ function ProjectManagement({
 
           {listTab === "requests" && (
             <div className="card nexus-project-panel">
+              <div className="nexus-project-heading">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={startRegister}
+                >
+                  + 신규 프로젝트 등록
+                </button>
+              </div>
+
               <SearchSortBar
                 searchId="request-search"
                 placeholder="프로젝트명·요청 제목·요청자 검색"
@@ -526,6 +536,16 @@ function ProjectManagement({
 
           {listTab === "quotes" && (
             <div className="card nexus-project-panel">
+              <div className="nexus-project-heading">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={startRegister}
+                >
+                  + 신규 프로젝트 등록
+                </button>
+              </div>
+
               <SearchSortBar
                 searchId="quote-search"
                 placeholder="기업명·서비스·이메일·요구사항 검색"

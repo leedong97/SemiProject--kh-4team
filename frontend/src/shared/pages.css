@@ -726,6 +726,25 @@
   white-space: nowrap;
 }
 
+/* 프로젝트 목록 열 너비: 한 열이 남는 폭을 다 먹지 않도록 전체를 100%로 나눠 간격을 고르게 해요
+   (ProjectList.css 의 옛 % 너비는 열이 7개 기준이라 간격이 들쭉날쭉했어요. 여기서 덮어써요) */
+.cmd-shell #cmd-main .jpl-table th:nth-child(1) { width: 6%; }
+.cmd-shell #cmd-main .jpl-table th:nth-child(2) { width: 17%; }
+.cmd-shell #cmd-main .jpl-table th:nth-child(3) { width: 27%; }
+.cmd-shell #cmd-main .jpl-table th:nth-child(4) { width: 15%; }
+.cmd-shell #cmd-main .jpl-table th:nth-child(5) { width: 20%; }
+.cmd-shell #cmd-main .jpl-table th:nth-child(6) { width: 15%; }
+
+/* 공지사항 목록 열 너비: 오른쪽 40%는 작성자·작성일자·조회수, 제목 열은 40%
+   (table-layout: fixed 로 비율을 정확히 지켜요. 번호 20% + 제목 40% + 오른쪽 세 칸 40% = 100%) */
+.cmd-shell #cmd-main .info-table { table-layout: fixed; }
+.cmd-shell #cmd-main .info-table th:nth-child(1) { width: 20%; }
+.cmd-shell #cmd-main .info-table th:nth-child(2) { width: 40%; }
+.cmd-shell #cmd-main .info-table th:nth-child(3) { width: 13%; }
+.cmd-shell #cmd-main .info-table th:nth-child(4) { width: 14%; }
+.cmd-shell #cmd-main .info-table th:nth-child(5) { width: 13%; }
+.cmd-shell #cmd-main .info-table td:nth-child(2) { overflow-wrap: anywhere; }
+
 /* 커뮤니티 글쓰기 버튼 */
 .cmd-shell #cmd-main .cmd-community .community-banner-link {
   display: inline-flex;

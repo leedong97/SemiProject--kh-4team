@@ -17,6 +17,13 @@ function parseNoticeDate(text) {
     return Number.isNaN(d.getTime()) ? null : d;
 }
 
+// 오늘 날짜를 "2026-11-16" 형식으로 돌려준다 (내 컴퓨터 시간대 기준 — toISOString 은 UTC 라 하루 어긋날 수 있어요)
+function todayKey() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, "0");
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
 function Notices() {
     const { info, addInfo, updateInfo, pinInfo, delInfo, noticeLoading, noticeError } = useJunwoo();
     const me = getLoginUser();
@@ -64,6 +71,8 @@ function Notices() {
         event.preventDefault();
         if (!title.trim() || !content.trim()) return alert("제목과 내용을 입력해주세요.");
         if (editId !== null && !eventDateLoaded) return alert("행사일을 불러온 뒤에 저장할 수 있습니다.");
+        // 새 공지의 행사일은 오늘부터만 선택 가능 (직접 입력해도 여기서 한 번 더 막아요. 날짜 문자열끼리 비교해도 순서가 맞아요)
+        if (editId === null && eventDate && eventDate < todayKey()) return alert("행사일은 오늘 이후 날짜만 선택할 수 있습니다.");
         const eventDateValue = eventDate || null;
         setSaving(true);
         try {
@@ -203,43 +212,39 @@ function Notices() {
     return (
         <div className="admin-boards">
 
-            {!formOpen && (
-                <div className="nexus-notice-form-toggle">
-                    <button type="button" className="btn btn-primary" onClick={openNewForm}>
-                        + 새 공지 작성
-                    </button>
-                </div>
-            )}
-
             {formOpen && (
                 <form className="boards-form" onSubmit={handleSubmit}>
                     <h2>{editId === null ? "새 공지사항 등록" : "공지사항 수정"}</h2>
                     {editId === null && (
                         <p>작성자: {me.isDummy ? "로그인 후 등록할 수 있습니다" : `${me.name || ""} 님`}</p>
                     )}
-                    <div className="boards-field">
-                        <label htmlFor="notice-title">제목</label>
-                        <input id="notice-title" maxLength={200} value={title}
-                            onChange={e => setTitle(e.target.value)} placeholder="제목 입력" />
+                    {/* 제목 오른쪽에 행사일을 나란히 둔다 */}
+                    <div className="nexus-notice-title-row">
+                        <div className="boards-field">
+                            <label htmlFor="notice-title">제목</label>
+                            <input id="notice-title" maxLength={200} value={title}
+                                onChange={e => setTitle(e.target.value)} placeholder="제목 입력" />
+                        </div>
+                        <div className="boards-field">
+                            <label htmlFor="notice-event-date">행사일 (선택)</label>
+                            <input id="notice-event-date" type="date" value={eventDate}
+                                min={editId === null ? todayKey() : undefined}
+                                onChange={e => setEventDate(e.target.value)} />
+                            {editId !== null && !eventDateLoaded && !eventDateError && (
+                                <small>행사일을 불러오는 중...</small>
+                            )}
+                            {eventDateError && (
+                                <small role="alert" className="nexus-notice-event-date-error">
+                                    {eventDateError}{" "}
+                                    <button type="button" onClick={() => loadEventDate(editId)}>다시 불러오기</button>
+                                </small>
+                            )}
+                        </div>
                     </div>
                     <div className="boards-field">
                         <label htmlFor="notice-content">내용</label>
                         <textarea id="notice-content" rows={6} value={content}
                             onChange={e => setContent(e.target.value)} placeholder="내용 입력" />
-                    </div>
-                    <div className="boards-field">
-                        <label htmlFor="notice-event-date">행사일 (선택)</label>
-                        <input id="notice-event-date" type="date" value={eventDate}
-                            onChange={e => setEventDate(e.target.value)} />
-                        {editId !== null && !eventDateLoaded && !eventDateError && (
-                            <small>행사일을 불러오는 중...</small>
-                        )}
-                        {eventDateError && (
-                            <small role="alert" className="nexus-notice-event-date-error">
-                                {eventDateError}{" "}
-                                <button type="button" onClick={() => loadEventDate(editId)}>다시 불러오기</button>
-                            </small>
-                        )}
                     </div>
                     <label className="boards-check">
                         <input type="checkbox" checked={pinned}
@@ -255,6 +260,13 @@ function Notices() {
             )}
 
             <div className="boards-list">
+                {!formOpen && (
+                    <div className="nexus-notice-form-toggle">
+                        <button type="button" className="btn btn-primary" onClick={openNewForm}>
+                            + 새 공지 작성
+                        </button>
+                    </div>
+                )}
                 <div className="boards-list-header">
                     <h2>공지사항 목록</h2>
                     <SearchInput value={search} onChange={e => setSearch(e.target.value)} placeholder="제목 또는 내용 검색" />

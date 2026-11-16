@@ -1632,12 +1632,59 @@ button.merge-kpi:hover,
 .nexus-admin-layout.cmd-admin.cmd-admin .nexus-project-heading:has(> button:only-child) {
   justify-content: flex-end;
   margin: 0;
-  padding: var(--sp-4) var(--sp-5) var(--sp-3);
+  padding: 0 0 var(--sp-3);
 }
+
+/* 공지 관리의 '+ 새 공지 작성' 버튼도 프로젝트 관리의 신규 등록 버튼과 같은 여백으로 */
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-notice-form-toggle {
+  justify-content: flex-end;
+  margin: 0;
+  padding: 0 0 var(--sp-3);
+}
+
+/* 공지 등록 폼: 제목 오른쪽에 행사일을 나란히 (제목은 남는 폭, 행사일은 고정 폭. 내용 칸은 그대로 넓게) */
+.nexus-admin-layout.cmd-admin.cmd-admin .boards-form .nexus-notice-title-row {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .boards-form .nexus-notice-title-row > .boards-field:first-child {
+  flex: 1 1 360px;
+  min-width: 0;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin .boards-form .nexus-notice-title-row > .boards-field:last-child {
+  flex: 0 0 220px;
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------------------
+   등록 폼 버튼은 모두 오른쪽 아래로 (공지 · 프로젝트 · 직원 · 이슈)
+   --------------------------------------------------------------------- */
+
+/* 직원 등록: [직원 등록][취소] → 오른쪽 끝에 '취소 | 직원 등록' 순서 (공지·프로젝트와 같은 순서) */
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-register-actions {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}
+
+/* 이슈 등록: 폼 맨 아래의 '이슈 등록' 버튼을 오른쪽 끝으로 */
+.nexus-admin-layout.cmd-admin.cmd-admin .issue-Management .issue-register-form > button {
+  display: block;
+  margin: var(--sp-3) 0 0 auto;
+}
+
 
 /* 막대 그래프: 밋밋한 검정 대신 그라데이션 (업무량 · 진행 막대 · 이슈 업무량) */
 .nexus-admin-layout.cmd-admin.cmd-admin :is(.nexus-workload-fill, .merge-bar-fill, .nexus-detail-fill:not(.plan):not(.planned)) {
   background: var(--bar-ink);
+}
+
+/* 인사 관리 > 직원별 업무 현황의 업무량 비교 막대도 같은 검정 그라데이션 */
+.nexus-admin-layout.cmd-admin.cmd-admin .hr-management .hr-compare-fill {
+  background: var(--bar-ink) !important;
 }
 
 .nexus-admin-layout.cmd-admin.cmd-admin .issue-workload-meter > span {
@@ -1704,23 +1751,53 @@ button.merge-kpi:hover,
   font-weight: 700;
 }
 
-/* 인사 관리 > 직원별 업무 현황: 박스를 검은 바탕 + 흰 글씨로 통일 (빨간 '기한 초과' 알림만 예외) */
-.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin .hr-management .hr-work-summary > div {
-  background: var(--cmd-ink) !important;
-  border-color: var(--cmd-ink) !important;
-  color: #fff;
-}
-
-.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin .hr-management .hr-work-summary > div :is(span, strong) {
-  color: #fff !important;
-}
-
-.nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin .hr-management .hr-work-summary > div .hr-work-overdue-count {
-  color: #ff8a7a !important;
-}
-
+/* 인사 관리 > 직원별 업무 현황: 요약 카드는 다른 화면처럼 흰 바탕 (위의 공통 카드 규칙을 따른다)
+   직원 목록의 '진행 N · 전체 N' 은 색 반전 없이 일반 글씨로 */
 .nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin .hr-management .hr-work-list .hr-work-person-count,
 .nexus-admin-layout.cmd-admin.cmd-admin.cmd-admin .hr-management .hr-work-list .hr-work-person.selected .hr-work-person-count {
-  background: var(--cmd-ink) !important;
-  color: #fff !important;
+  padding: 0;
+  border: 0;
+  background: none !important;
+  color: var(--cmd-mute) !important;
+}
+
+/* =====================================================================
+   8차: 박스 위 박스(레이어) 없애기
+   - 공지 · 프로젝트 화면은 바깥 껍데기(.admin-boards, .nexus-project-management)에
+     색 배경이 깔려 있어서 버튼·탭 줄이 따로 뜬 띠처럼 보였다. 인원 · 게시판 화면에는 없어서 들쭉날쭉.
+   - 카드 안의 표도 테두리 상자를 한 번 더 두르고 있었다.
+   => 껍데기는 투명, 카드 안 표는 테두리 없이 카드 하나만 남긴다.
+   ===================================================================== */
+
+.nexus-admin-layout.cmd-admin.cmd-admin .nexus-admin-main :is(.admin-boards, .nexus-project-management, .nexus-assignment) {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.card, .boards-list, .nexus-project-panel, .panel, .merge-panel) :is(.nexus-project-table-wrap, .boards-table-wrap, .hr-table-wrap, .merge-table-wrap, .nexus-assignment-table-wrap) {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+/* =====================================================================
+   9차(다시): 카드 안쪽 위·아래 여백을 같게 — 아래 여백(32px) 기준으로 위도 맞춘다
+   (공지 · 커뮤니티 · 프로젝트 · 인사 · 인원 관리 카드가 모두 같은 여백)
+   ===================================================================== */
+
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.merge-panel, .nexus-project-panel, .nexus-detail-panel, .panel, .boards-list, .boards-form, .nexus-assignment > .card) {
+  padding: var(--sp-8) var(--sp-5);
+}
+
+
+/* =====================================================================
+   10차: 접이식 3곳(건의자별 업무량 · 긴급·마감 임박 이슈 · 이슈 완료 요청 검토)을 같은 크기·같은 글자 줄로
+   - 앞의 .panel 여백 규칙(32px/20px)이 :is() 안의 `.nexus-assignment > .card` 때문에 우선순위가 높아서
+     7차의 padding: 0을 이기고 있었다. 클래스를 한 번 더 겹쳐서 되돌린다.
+   ===================================================================== */
+
+.nexus-admin-layout.cmd-admin.cmd-admin details.issue-optional-section.issue-optional-section {
+  padding: 0;
 }
