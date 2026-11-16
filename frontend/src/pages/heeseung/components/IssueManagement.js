@@ -1,3 +1,4 @@
+import Pagination from "../../../shared/Pagination";
 import SearchInput from "../../../shared/SearchInput";
 import React, { useState, useEffect } from "react";
 import "./IssueManagement.css";
@@ -44,7 +45,7 @@ export default function IssueManagement({
 
     // 4. 페이지네이션
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+    const itemsPerPage = 10;
 
     // 5. 이슈 처리 상태는 DB에서 조회한 값을 사용합니다.
 
@@ -166,11 +167,7 @@ export default function IssueManagement({
     // 8. 오늘 날짜 구하기
 
     function getToday() {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, "0");
-        const day = String(today.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
+        return new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
     }
 
     // 9. 직원 이름 조회
@@ -191,6 +188,10 @@ export default function IssueManagement({
 
     async function addIssue(event) {
         event.preventDefault();
+        if (due && due < getToday()) {
+            alert("마감일은 오늘 또는 이후 날짜로 선택하세요.");
+            return;
+        }
         if (!title.trim()) {
             alert("이슈 제목을 입력하세요.");
             return;
@@ -531,6 +532,9 @@ export default function IssueManagement({
     // 26. 페이지네이션
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+    useEffect(() => {
+        setCurrentPage(page => Math.min(page, totalPages));
+    }, [totalPages]);
     const safeCurrentPage = Math.min(currentPage, totalPages);
     const startIndex = (safeCurrentPage - 1) * itemsPerPage;
     const paginatedIssues = filtered.slice(startIndex, startIndex + itemsPerPage);
@@ -677,7 +681,7 @@ export default function IssueManagement({
                     <option>높음</option>
                     <option>긴급</option>
                 </select>
-                <input type="date" aria-label="마감일" value={due} onChange={e => setDue(e.target.value)} />
+                <input type="date" aria-label="마감일" min={getToday()} value={due} onChange={e => setDue(e.target.value)} />
             </div>
             <textarea className="issue-textarea" placeholder="이슈 상세 설명" value={description} onChange={e => setDescription(e.target.value)} rows={3} />
             <textarea className="issue-textarea" placeholder="오류 재현 방법" value={reproduction} onChange={e => setReproduction(e.target.value)} rows={3} />
@@ -874,23 +878,7 @@ export default function IssueManagement({
                 </div>}
             </article>;
         })}
-        <div className="issue-pagination">
-            <button type="button" className="secondary" disabled={safeCurrentPage === 1} onClick={() => {
-                setCurrentPage(safeCurrentPage - 1);
-                setExpandedIssueId(null);
-            }}>
-                이전
-            </button>
-            <span>
-                {safeCurrentPage} / {totalPages}
-            </span>
-            <button type="button" className="secondary" disabled={safeCurrentPage === totalPages} onClick={() => {
-                setCurrentPage(safeCurrentPage + 1);
-                setExpandedIssueId(null);
-            }}>
-                다음
-            </button>
-        </div>
+        <Pagination total={filtered.length} currentPage={safeCurrentPage} onPage={page => { setCurrentPage(page); setExpandedIssueId(null); }} label="이슈 목록 페이지" />
         {/* 휴지통: 삭제한 이슈를 복구할 수 있다. */}
         <details className="issue-trash">
             <summary>임시 저장 ({deletedIssues.length}건)</summary>

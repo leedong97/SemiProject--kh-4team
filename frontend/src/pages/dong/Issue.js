@@ -1,3 +1,5 @@
+import ListSort, { sortList } from "../../shared/ListSort";
+import Pagination from "../../shared/Pagination";
 import SearchInput from "../../shared/SearchInput";
 
 import React, { useEffect, useState } from "react";
@@ -15,18 +17,19 @@ function Issue({ projects, issues, setIssues }) {
     const [searchPerson, setSearchPerson] = useState("")
     const [issueView, setIssueView] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
+    const [sortOption, setSortOption] = useState("default");
     const pageSize = 10;
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [selectedProject, search, searchPerson, issueView]);
+    }, [selectedProject, search, searchPerson, issueView, sortOption]);
     const handleProjectChange = (e) => {
         setSelectedProject(e.target.value);
         setSearch("");
         setSearchResetKey((key) => key + 1);
     };
 
-    const filteredIssues = issues.filter((issue) => {
+    const filteredIssues = sortList(issues.filter((issue) => {
         const projectMatch =
             selectedProject === "" ||
             String(issue.projectId) === selectedProject;
@@ -37,26 +40,24 @@ function Issue({ projects, issues, setIssues }) {
                 .includes(search.trim().toLowerCase());
 
         const personMatch =
-            (issue.reporterName ?? "")
+            (issue.assigneeName ?? "")
                 .toLowerCase()
                 .includes(searchPerson.trim().toLowerCase());
 
         const statusMatch =
             issueView === "all" ||
+            (issueView === "received" && issue.status === "접수") ||
+            (issueView === "progress" && issue.status === "진행 중") ||
             (issueView === "review" && issue.status === "검토 중") ||
             (issueView === "completed" && issue.status === "완료");
 
         return projectMatch && titleMatch && personMatch && statusMatch;
-    });
+    }), sortOption);
     const totalPages = Math.max(1, Math.ceil(filteredIssues.length / pageSize));
     const activePage = Math.min(currentPage, totalPages);
     const startIndex = (activePage - 1) * pageSize;
     const pagedIssues = filteredIssues.slice(startIndex, startIndex + pageSize);
-    const firstPageInGroup = Math.floor((activePage - 1) / 5) * 5 + 1;
-    const pageNumbers = Array.from(
-        { length: Math.min(5, totalPages - firstPageInGroup + 1) },
-        (_, index) => firstPageInGroup + index
-    );
+
 
     // 마지막 페이지의 데이터가 삭제되면 남아 있는 마지막 페이지로 이동합니다.
     useEffect(() => {
@@ -91,6 +92,7 @@ function Issue({ projects, issues, setIssues }) {
             </div>
 
            
+            <ListSort kind="issue" value={sortOption} onChange={setSortOption} />
             <section className="issue-filter">
 
                 <label htmlFor="project-select">
@@ -112,11 +114,11 @@ function Issue({ projects, issues, setIssues }) {
 
                 <SearchInput key={searchResetKey} id="issue-search" type="text" placeholder="이슈 제목 검색" value={search} onChange={(e) => setSearch(e.target.value)} />
 
-                <label htmlFor="issue-search">
-                    이슈 건의자 검색
+                <label htmlFor="issue-assignee-search">
+                    이슈 담당자 검색
                 </label>
 
-                <SearchInput key={searchResetKey} id="issue-search" type="text" placeholder="건의자 이름" value={searchPerson} onChange={(e) => setSearchPerson(e.target.value)} />
+                <SearchInput key={searchResetKey} id="issue-assignee-search" type="text" placeholder="담당자 이름" value={searchPerson} onChange={(e) => setSearchPerson(e.target.value)} />
             </section>
 
 
@@ -125,7 +127,7 @@ function Issue({ projects, issues, setIssues }) {
 
                 <div className="issue-list-header">
                     <h3>
-                        {{ all: "전체 이슈 목록", review: "검토 중인 이슈", completed: "완료된 이슈" }[issueView]}
+                        {{ all: "전체 이슈 목록", received: "접수된 이슈", progress: "진행 중인 이슈", review: "검토 중인 이슈", completed: "완료된 이슈" }[issueView]}
                     </h3>
                     <span>{filteredIssues.length}건</span>
                 </div>
@@ -137,6 +139,9 @@ function Issue({ projects, issues, setIssues }) {
                 >
                     전체 이슈
                 </button>
+
+                <button type="button" aria-pressed={issueView === "received"} onClick={() => setIssueView("received")}>접수</button>
+                <button type="button" aria-pressed={issueView === "progress"} onClick={() => setIssueView("progress")}>진행 중</button>
 
                 <button
                     type="button"
@@ -163,7 +168,7 @@ function Issue({ projects, issues, setIssues }) {
                             <th>프로젝트</th>
                             <th>이슈제목</th>
                             <th>우선도</th>
-                            <th>건의자</th>
+                            <th>담당자</th>
                             <th>상태</th>
                         </tr>
                     </thead>
@@ -192,7 +197,7 @@ function Issue({ projects, issues, setIssues }) {
                                             </button>
                                         </td>
                                         <td><Priority value={issue.priority} /></td>
-                                        <td>{issue.reporterName || "-"}</td>
+                                        <td>{issue.assigneeName || "-"}</td>
                                         <td>
                                             {/* 상태별 노선색 칩 (색은 shared/pages.css) */}
                                             <span className="issue-status" data-status={issue.status || ""}>
@@ -213,24 +218,7 @@ function Issue({ projects, issues, setIssues }) {
                 </table>
             </section>
 
-            {filteredIssues.length > 0 && (
-                <nav className="issue-pagination" aria-label="이슈 목록 페이지">
-                    <span className="issue-pagination-summary" aria-live="polite">
-                        전체 {filteredIssues.length}건 중 {startIndex + 1}–{startIndex + pagedIssues.length}건
-                    </span>
-                    <div className="issue-pagination-buttons">
-                        <button type="button" disabled={activePage === 1}
-                            onClick={() => setCurrentPage(activePage - 1)}>이전</button>
-                        {pageNumbers.map((page) => (
-                            <button key={page} type="button" aria-label={`${page}페이지`}
-                                aria-current={activePage === page ? "page" : undefined}
-                                onClick={() => setCurrentPage(page)}>{page}</button>
-                        ))}
-                        <button type="button" disabled={activePage === totalPages}
-                            onClick={() => setCurrentPage(activePage + 1)}>다음</button>
-                    </div>
-                </nav>
-            )}
+            <Pagination total={filteredIssues.length} currentPage={activePage} onPage={setCurrentPage} label="목록 페이지" />
 
      
 

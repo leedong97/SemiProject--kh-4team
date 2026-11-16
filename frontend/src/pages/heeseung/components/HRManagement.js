@@ -1,3 +1,4 @@
+import Pagination from "../../../shared/Pagination";
 import { API_BASE } from "../../../shared/config";
 import SearchInput from "../../../shared/SearchInput";
 import React, { useState, useEffect, useCallback } from "react";
@@ -687,11 +688,7 @@ export default function HRManagement({
                     </React.Fragment>)}
                         {filteredEmployees.length === 0 && <tr><td colSpan="8">조건에 맞는 직원이 없습니다.</td></tr>}
                     </tbody></table></div>
-                <div className="hr-work-pages" aria-label="직원 목록 페이지">
-                    <button type="button" disabled={currentEmployeePage === 1} onClick={() => setEmployeePage(currentEmployeePage - 1)}>이전</button>
-                    {Array.from({ length: employeePageCount }, (_, index) => index + 1).map(page => <button type="button" key={page} className={page === currentEmployeePage ? "active" : ""} onClick={() => setEmployeePage(page)} aria-current={page === currentEmployeePage ? "page" : undefined}>{page}</button>)}
-                    <button type="button" disabled={currentEmployeePage === employeePageCount} onClick={() => setEmployeePage(currentEmployeePage + 1)}>다음</button>
-                </div>
+                <Pagination total={filteredEmployees.length} currentPage={currentEmployeePage} onPage={setEmployeePage} label="직원 목록 페이지" />
             </div>
         </div>}
 
@@ -752,7 +749,7 @@ export default function HRManagement({
                                         <span className="hr-work-person-count">진행 {open.length} · 전체 {mine.length}</span>
                                     </button>;
                                 })}
-                                {pageCount > 1 && <div className="hr-work-pages"><button type="button" disabled={page === 1} onClick={() => setWorkPage(page - 1)}>이전</button><span>{page} / {pageCount}</span><button type="button" disabled={page === pageCount} onClick={() => setWorkPage(page + 1)}>다음</button></div>}
+                                <Pagination total={visible.length} currentPage={page} onPage={setWorkPage} label="업무 목록 페이지" />
                             </div>
                             <div className="hr-work-detail">
                                 {!selected ? <div className="hr-work-placeholder"><strong>직원을 선택해 주세요</strong><p>왼쪽 목록에서 직원을 선택하면 참여 프로젝트와 담당 이슈를 확인할 수 있습니다.</p></div> : <>
@@ -818,13 +815,7 @@ export default function HRManagement({
                     {filteredRetired.length === 0 && <tr><td colSpan="7">등록된 퇴사자가 없습니다.</td></tr>}
                     </tbody>
                 </table></div>
-                <div className="hr-work-pages" aria-label="퇴사자 목록 페이지">
-                    <button type="button" disabled={currentRetiredPage === 1} onClick={() => setRetiredPage(currentRetiredPage - 1)}>이전</button>
-                    {Array.from({ length: retiredPageCount }, (_, index) => index + 1).map(page =>
-                        <button type="button" key={page} className={page === currentRetiredPage ? "active" : ""} onClick={() => setRetiredPage(page)}>{page}</button>
-                    )}
-                    <button type="button" disabled={currentRetiredPage === retiredPageCount} onClick={() => setRetiredPage(currentRetiredPage + 1)}>다음</button>
-                </div>
+                <Pagination total={filteredRetired.length} currentPage={currentRetiredPage} onPage={setRetiredPage} label="퇴사자 목록 페이지" />
             </div>
         </div>}
 
@@ -885,11 +876,7 @@ export default function HRManagement({
                     </div>;
                 })}
                 {filteredLeaves.length === 0 && pendingLeaves.length > 0 && <p className="muted">검색 조건에 맞는 휴가 신청이 없습니다.</p>}
-                {leavePageCount > 1 && <div className="hr-leave-pages">
-                    <button type="button" disabled={leavePage <= 1} onClick={() => setLeavePage(page => page - 1)}>이전</button>
-                    {Array.from({ length: leavePageCount }, (_, index) => <button type="button" key={index} className={Math.min(leavePage, leavePageCount) === index + 1 ? "active" : "secondary"} onClick={() => setLeavePage(index + 1)}>{index + 1}</button>)}
-                    <button type="button" disabled={leavePage >= leavePageCount} onClick={() => setLeavePage(page => page + 1)}>다음</button>
-                </div>}
+                <Pagination total={filteredLeaves.length} currentPage={Math.min(leavePage, leavePageCount)} onPage={setLeavePage} label="휴가 목록 페이지" />
 
             </div>
         </div>}

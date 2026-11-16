@@ -20,6 +20,7 @@ router.get('/', async (req, res) => {
                 n.title,
                 n.content,
                 COALESCE(e.employee_name, '알 수 없음') AS author,
+                COALESCE(NULLIF(TRIM(e.employee_department), ''), '부서 미지정') AS authorDepartment,
                 DATE_FORMAT(n.created_at, '%Y.%m.%d') AS date,
                 n.views,
                 n.is_pinned AS isPinned,

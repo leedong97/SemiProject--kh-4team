@@ -1,3 +1,4 @@
+import Pagination from "../../shared/Pagination";
 
 import { API_BASE } from '../../shared/config';
 import React, { useEffect, useRef, useState } from "react";
@@ -113,15 +114,15 @@ function Info_detail({ info = [], onViewInfo }) {
         .filter(other => other.id !== Number(id));
 
     // 페이지네이션
-    const totalPages = Math.ceil(otherInfo.length / 5);
+    const totalPages = Math.ceil(otherInfo.length / 10);
 
     const currentPage = Math.min(
         pages,
         Math.max(totalPages, 1)
     );
 
-    const start = (currentPage - 1) * 5;
-    const end = start + 5;
+    const start = (currentPage - 1) * 10;
+    const end = start + 10;
 
 
     // 로딩 중
@@ -334,30 +335,7 @@ function Info_detail({ info = [], onViewInfo }) {
 
 
                 {/* 다른 공지사항 페이지네이션 */}
-                {totalPages > 1 && (
-
-                    <div className="info-pages">
-
-                        {Array.from(
-                            { length: totalPages },
-                            (_, i) => i + 1
-                        ).map(num => (
-
-                            <button
-                                key={num}
-                                className={
-                                    currentPage === num ? "active" : ""
-                                }
-                                onClick={() => setPages(num)}
-                            >
-                                {num}
-                            </button>
-
-                        ))}
-
-                    </div>
-
-                )}
+                <Pagination total={otherInfo.length} currentPage={currentPage} onPage={setPages} label="목록 페이지" />
 
             </div>
 

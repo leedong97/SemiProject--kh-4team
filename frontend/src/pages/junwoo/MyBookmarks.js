@@ -1,3 +1,4 @@
+import Pagination from "../../shared/Pagination";
 import React, { useEffect, useState } from "react";
 import axios from "../dong/communityClient";
 import { Link } from "react-router-dom";
@@ -169,32 +170,7 @@ function MyBookmarks(props) {
                 </table>
             </div>
 
-            {totalPages > 1 && (
-                <nav
-                    className="community-home-pagination"
-                    aria-label="저장한 글 페이지"
-                >
-                    <button
-                        type="button"
-                        disabled={currentPage === 1}
-                        onClick={() => setPage(currentPage - 1)}
-                    >
-                        이전
-                    </button>
-
-                    <span>
-                        {currentPage} / {totalPages}
-                    </span>
-
-                    <button
-                        type="button"
-                        disabled={currentPage === totalPages}
-                        onClick={() => setPage(currentPage + 1)}
-                    >
-                        다음
-                    </button>
-                </nav>
-            )}
+            <Pagination total={bookmarks.length} currentPage={currentPage} onPage={setPage} label="저장한 글 페이지" />
         </div>
     );
 }

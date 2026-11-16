@@ -1826,3 +1826,19 @@
   overflow-y: auto;
   scrollbar-width: thin;
 }
+
+/* 프로젝트와 이슈 상세는 같은 프로젝트 상세 서식을 사용합니다. */
+.cmd-shell #cmd-main .project-style-detail .todo-detail-description p { white-space:pre-wrap; overflow-wrap:anywhere; }
+.cmd-shell #cmd-main .project-style-detail .todo-detail-row > span { min-width:0; overflow-wrap:anywhere; }
+
+/* 프로젝트·이슈 우선도: 이슈관리의 공통 배지 모양으로 고정 */
+.cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .project-style-detail) .cmd-prio {
+  display:inline-flex; align-items:center; justify-content:center;
+  box-sizing:border-box; flex:none; width:auto; min-width:0; height:22px; min-height:22px;
+  margin:0; padding:0 var(--sp-2); border:0; border-radius:var(--radius-s);
+  background:var(--cmd-bg-2); color:var(--cmd-ink-2); font-family:inherit;
+  font-size:var(--fs-12); font-weight:700; line-height:1; white-space:nowrap; box-shadow:none;
+}
+.cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .project-style-detail) .cmd-prio[data-prio="긴급"] { background:var(--prio-urgent); color:#fff; }
+.cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .project-style-detail) .cmd-prio[data-prio="높음"] { background:var(--orange-tint); color:var(--orange-text); }
+.cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .project-style-detail) .cmd-prio[data-prio="낮음"] { background:none; color:var(--cmd-faint); box-shadow:inset 0 0 0 1px var(--cmd-rule-2); }

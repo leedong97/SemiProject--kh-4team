@@ -1,16 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { API_BASE } from '../../shared/config';
+import { Link, useNavigate } from 'react-router-dom';
 import { statusLamp, StationStrip } from '../../shared/subway';
-import { Priority } from '../../shared/priority';
 import getLoginUser from '../woojin/getLoginUser';
 import Calendar, { SCHEDULE_TYPES, toISO } from './Calendar';
 import { useDashboardSchedules } from './DashboardCalendar';
 import './Dashboard.css';
 
 const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
-const OPEN_ISSUE_STATES = ['접수', '검토 중', '진행 중', '재오픈'];
-const ISSUE_TONE = { 접수: 'sky', '검토 중': 'purple', '진행 중': 'green', 재오픈: 'red' };
 const SOON_MIN = 60; // 이 시간(분) 안에 시작하면 "곧 출발"
 
 const typeKey = (type) => SCHEDULE_TYPES.find((t) => t.type === type)?.key || 'other';
@@ -69,33 +66,6 @@ function afterText(diff) {
   const h = Math.floor(diff / 60);
   const m = diff % 60;
   return m ? `${h}시간 ${m}분 후` : `${h}시간 후`;
-}
-
-// 내 이슈: 이슈관리(동협) API에서 내가 건의했거나 담당인 이슈만 골라요.
-function useMyIssues(user) {
-  const [state, setState] = useState({ issues: [], loading: true, error: '' });
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch(`${API_BASE}/api/dong/issues`, { signal: controller.signal, cache: 'no-store' })
-      .then((r) => {
-        if (!r.ok) throw new Error('이슈를 불러오지 못했어요.');
-        return r.json();
-      })
-      .then((data) => {
-        const list = Array.isArray(data) ? data : [];
-        const mine = list.filter(
-          (i) => Number(i.reporterId) === Number(user.id) || (i.assigneeName && i.assigneeName === user.name)
-        );
-        setState({ issues: mine, loading: false, error: '' });
-      })
-      .catch((e) => {
-        if (e.name !== 'AbortError') setState({ issues: [], loading: false, error: e.message });
-      });
-    return () => controller.abort();
-  }, [user.id, user.name]);
-
-  return state;
 }
 
 /* ---------------- 오늘 출발 (어두운 안내판) ---------------- */
@@ -230,8 +200,33 @@ function DepartureBoard({ date, schedules, loading, error, onRetry }) {
 
 /* ---------------- 내 프로젝트 코드표 ---------------- */
 
+function ProjectIssues({ projectId }) {
+  const [state, setState] = useState({ loading: true, error: '', rows: [] });
+  useEffect(() => {
+    const controller = new AbortController();
+    setState({ loading: true, error: '', rows: [] });
+    fetch(API_BASE + '/api/dong/issues', { signal: controller.signal, cache: 'no-store' })
+      .then(response => { if (!response.ok) throw new Error('이슈를 불러오지 못했습니다.'); return response.json(); })
+      .then(rows => {
+        if (!Array.isArray(rows)) throw new Error('이슈 응답 형식이 올바르지 않습니다.');
+        if (!controller.signal.aborted) setState({ loading: false, error: '', rows: rows.filter(issue => String(issue.projectId) === String(projectId)) });
+      })
+      .catch(error => { if (!controller.signal.aborted) setState({ loading: false, error: error.message, rows: [] }); });
+    return () => controller.abort();
+  }, [projectId]);
+  if (state.loading) return <p role="status">이슈를 불러오는 중...</p>;
+  if (state.error) return <p role="alert">{state.error}</p>;
+  if (!state.rows.length) return <p>이 프로젝트에 등록된 이슈가 없습니다.</p>;
+  return <ol className="dash-project-issue-list">{state.rows.map((issue, index) => <li key={issue.id}>
+    <span className="dash-project-issue-number" aria-hidden="true">{index + 1}.</span>
+    <Link to={`/issue/${issue.id}`}>{issue.title}</Link>
+    <span>{issue.status}</span><span>담당자: {issue.assigneeName || '미배정'}</span>
+  </li>)}</ol>;
+}
+
 function ProjectTable({ projects, title }) {
-  const navigate = useNavigate();
+  const [expandedId, setExpandedId] = useState(null);
+  const toggle = id => setExpandedId(previous => previous === id ? null : id);
   return (
     <section className="cmd-panel dash-projects" aria-labelledby="dash-projects-title">
       <header className="cmd-panel-head">
@@ -261,9 +256,10 @@ function ProjectTable({ projects, title }) {
                 const late = d !== null && d < 0 && p.status !== '완료';
                 const soon = d !== null && d >= 0 && d <= 7 && p.status !== '완료';
                 return (
-                  <tr key={p.id} onClick={() => navigate(`/todo/${p.id}`)} className="is-link">
+                  <Fragment key={p.id}>
+                  <tr onClick={() => toggle(p.id)} className="is-link">
                     <td>
-                      <Link to={`/todo/${p.id}`} className="dash-name" onClick={(e) => e.stopPropagation()}>{p.title}</Link>
+                      <button type="button" className="dash-name dash-project-toggle" aria-expanded={expandedId === p.id} aria-controls={`project-issues-${p.id}`} onClick={event => { event.stopPropagation(); toggle(p.id); }}>{p.title}</button>
                       {p.customerName && <span className="dash-sub">{p.customerName}</span>}
                     </td>
                     <td><span className={`cmd-lamp cmd-lamp--${late ? 'late' : statusLamp(p.status)}`}>{late ? '지연' : p.status || '-'}</span></td>
@@ -273,62 +269,13 @@ function ProjectTable({ projects, title }) {
                       <span className="dash-sub cmd-num">{p.endDate || ''}</span>
                     </td>
                   </tr>
+                  {expandedId === p.id && <tr className="dash-project-issues"><td colSpan="4" id={`project-issues-${p.id}`}><ProjectIssues projectId={p.id} /></td></tr>}
+                  </Fragment>
                 );
               })}
             </tbody>
           </table>
         </div>
-      )}
-    </section>
-  );
-}
-
-/* ---------------- 내 이슈 ---------------- */
-
-function IssuePanel({ issues, loading, error }) {
-  const open = issues.filter((i) => OPEN_ISSUE_STATES.includes(i.status));
-  const counts = OPEN_ISSUE_STATES.map((s) => ({ s, n: open.filter((i) => i.status === s).length })).filter(
-    (c) => c.n > 0 || c.s !== '재오픈'
-  );
-  const recent = [...open].sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 3);
-
-  return (
-    <section className="cmd-panel dash-issues" aria-labelledby="dash-issues-title">
-      <header className="cmd-panel-head">
-        <h2 id="dash-issues-title">내 이슈</h2>
-        <span className="cmd-count cmd-num">{loading ? '–' : open.length}</span>
-        <Link to="/issue" className="cmd-panel-more">전체 이슈</Link>
-      </header>
-      {error ? (
-        <div className="cmd-empty cmd-empty--error" role="alert"><p className="cmd-empty-title">{error}</p></div>
-      ) : (
-        <>
-          <dl className="cmd-stat-row dash-issue-counts">
-            {counts.map(({ s, n }) => (
-              <div key={s} className={`tone-${ISSUE_TONE[s]}`}>
-                <dt>{s}</dt>
-                <dd>{loading ? '–' : n}</dd>
-              </div>
-            ))}
-          </dl>
-          {!loading && recent.length > 0 && (
-            <ul className="dash-issue-list">
-              {recent.map((i) => (
-                <li key={i.id}>
-                  <Link to={`/issue/${i.id}`}>
-                    <span className="cmd-num dash-code">ISS-{String(i.id).padStart(3, '0')}</span>
-                    <span className="dash-issue-title">{i.title}</span>
-                    <Priority value={i.priority} />
-                    <span className={`cmd-chip tone-${ISSUE_TONE[i.status] || 'sky'}`}>{i.status}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-          {!loading && open.length === 0 && (
-            <div className="cmd-empty"><p className="cmd-empty-title">처리할 이슈가 없어요</p></div>
-          )}
-        </>
       )}
     </section>
   );
@@ -368,19 +315,18 @@ function Home({ info = [], todo = [] }) {
   const user = getLoginUser();
   const [selectedDate, setSelectedDate] = useState(() => toISO(new Date()));
   const { schedules, loading, error, retry } = useDashboardSchedules();
-  const issues = useMyIssues(user);
 
-  // 내 프로젝트: 내가 담당이거나 등록한 진행 중 프로젝트, 마감이 가까운 순
+  // 내 프로젝트: 내가 담당자인 진행 중 프로젝트만, 마감이 가까운 순
   const { lines, linesTitle } = useMemo(() => {
-    const active = todo.filter((p) => p.status !== '완료');
+    const mine = todo.filter((p) =>
+      p.status !== '완료' &&
+      Number(user.id) > 0 &&
+      Number(p.managerId) === Number(user.id)
+    );
     const byDeadline = (a, b) => (parseDate(a.endDate)?.getTime() ?? Infinity) - (parseDate(b.endDate)?.getTime() ?? Infinity);
-    const mine = active.filter((p) => Number(p.managerId) === Number(user.id) || Number(p.authorId) === Number(user.id));
-    if (mine.length > 0) {
-      return { lines: [...mine].sort(byDeadline).slice(0, 5), linesTitle: '내 프로젝트' };
-    }
     return {
-      lines: [...active].sort(byDeadline).slice(0, 5),
-      linesTitle: '진행 중인 프로젝트',
+      lines: [...mine].sort(byDeadline).slice(0, 5),
+      linesTitle: '내 프로젝트',
     };
   }, [todo, user.id]);
 
@@ -407,7 +353,6 @@ function Home({ info = [], todo = [] }) {
     const d = dDay(p.endDate);
     return d !== null && d >= 0 && d <= 7;
   }).length;
-  const pinned = info.find((n) => Number(n.isPinned) === 1);
 
   return (
     <div className="cmd-dash">
@@ -425,13 +370,6 @@ function Home({ info = [], todo = [] }) {
             마감 7일 이내 <b className="cmd-num">{urgent}건</b>
           </span>
         )}
-        {pinned && (
-          <Link to={`/info/${pinned.id}`} className="dash-pinned">
-            <span className="cmd-chip tone-purple">공지</span>
-            <span className="dash-pinned-title">{pinned.title}</span>
-            <span className="dash-sub cmd-num">{pinned.date}</span>
-          </Link>
-        )}
       </div>
 
       <div className="dash-grid">
@@ -441,9 +379,8 @@ function Home({ info = [], todo = [] }) {
         </div>
 
         <div className="dash-side">
-          <Calendar schedules={schedules} selectedDate={selectedDate} onSelect={setSelectedDate} loading={loading} />
-          <IssuePanel {...issues} />
           <NoticePanel notices={sortedNotices} />
+          <Calendar schedules={schedules} selectedDate={selectedDate} onSelect={setSelectedDate} loading={loading} />
         </div>
       </div>
     </div>

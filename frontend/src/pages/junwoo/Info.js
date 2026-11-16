@@ -1,3 +1,5 @@
+import ListSort, { sortList } from "../../shared/ListSort";
+import Pagination from "../../shared/Pagination";
 import SearchInput from "../../shared/SearchInput";
 
 import React, { useState } from "react";
@@ -11,15 +13,16 @@ function Info({ info = [] }) {
     const [searchResetKey, setSearchResetKey] = useState(0);
     const [search, setSearch] = useState("");
     const [pages, setPages] = useState(1);
+    const [sortOption, setSortOption] = useState("default");
 
-    // 제목 검색 후 상단 고정 공지 우선, 같은 그룹에서는 최신순
-    const filteredInfo = [...info]
+    // 검색과 선택한 정렬을 적용한 뒤 중요 공지는 항상 상단에 표시
+    const filteredInfo = sortList([...info]
         .filter(item =>
             String(item.title ?? "")
                 .toLowerCase()
                 .includes(search.trim().toLowerCase())
         )
-        .sort((a, b) => {
+        , sortOption).sort((a, b) => {
             const aPinned = Number(a.isPinned) === 1;
             const bPinned = Number(b.isPinned) === 1;
 
@@ -28,8 +31,8 @@ function Info({ info = [] }) {
                 return aPinned ? -1 : 1;
             }
 
-            // 고정 여부가 같으면 최신 공지부터 표시
-            return Number(b.id) - Number(a.id);
+            // 같은 그룹은 선택한 정렬 순서를 유지
+            return 0;
         });
 
     // 검색 결과에 포함된 중요 공지 개수
@@ -77,6 +80,7 @@ function Info({ info = [] }) {
             </div>
 
             {/* 공지사항 검색 */}
+            <ListSort kind="notice" value={sortOption} onChange={value => { setSortOption(value); setPages(1); }} />
             <section className="info-filter">
 
                 <label htmlFor="info-search">
@@ -143,7 +147,7 @@ function Info({ info = [] }) {
                                         </button>
                                     </td>
 
-                                    <td>{item.author}</td>
+                                    <td>{item.authorDepartment || "부서 미지정"}</td>
 
                                     <td>{item.date}</td>
 
@@ -170,28 +174,7 @@ function Info({ info = [] }) {
                 </table>
 
                 {/* 페이지네이션 */}
-                {totalPages > 1 && (
-
-                    <div className="info-pages">
-
-                        {Array.from(
-                            { length: totalPages },
-                            (_, i) => i + 1
-                        ).map(num => (
-
-                            <button
-                                key={num}
-                                className={currentPage === num ? "active" : ""}
-                                onClick={() => setPages(num)}
-                            >
-                                {num}
-                            </button>
-
-                        ))}
-
-                    </div>
-
-                )}
+                <Pagination total={filteredInfo.length} currentPage={currentPage} onPage={setPages} label="목록 페이지" />
 
             </section>
 

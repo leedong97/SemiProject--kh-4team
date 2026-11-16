@@ -1125,8 +1125,8 @@ body .merge-erp-module button:hover:not(:disabled) {
   box-shadow: inset 0 0 0 1px currentColor !important;
 }
 
-/* 페이지 번호: 테두리 없는 숫자, 현재는 잉크 칸 + 앰버 숫자 */
-.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-pages, .merge-erp-module [class*="pages"], .merge-erp-module [class*="pagination"]) button {
+/* 관리자 공통 페이지 번호: 이슈관리 기준의 크기·색상·상태를 모든 목록에 적용 */
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.standard-pagination, .hr-work-pages, .merge-erp-module [class*="pages"], .merge-erp-module [class*="pagination"]) button {
   min-width: 32px;
   height: 32px;
   min-height: 32px;
@@ -1140,18 +1140,18 @@ body .merge-erp-module button:hover:not(:disabled) {
   font-weight: 700;
 }
 
-.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-pages, .merge-erp-module [class*="pages"], .merge-erp-module [class*="pagination"]) button:hover:not(:disabled) {
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.standard-pagination, .hr-work-pages, .merge-erp-module [class*="pages"], .merge-erp-module [class*="pagination"]) button:hover:not(:disabled) {
   border-color: var(--cmd-rule-2);
   background: none;
 }
 
-.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-pages, .merge-erp-module [class*="pages"], .merge-erp-module [class*="pagination"]) button:is(.active, [aria-current="page"]) {
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.standard-pagination, .hr-work-pages, .merge-erp-module [class*="pages"], .merge-erp-module [class*="pagination"]) button:is(.active, [aria-current="page"]) {
   border-color: var(--cmd-ink);
   background: var(--cmd-ink);
   color: var(--accent);
 }
 
-.nexus-admin-layout.cmd-admin.cmd-admin :is(.hr-work-pages, .merge-erp-module [class*="pages"], .merge-erp-module [class*="pagination"]) button:disabled {
+.nexus-admin-layout.cmd-admin.cmd-admin :is(.standard-pagination, .hr-work-pages, .merge-erp-module [class*="pages"], .merge-erp-module [class*="pagination"]) button:disabled {
   opacity: 0.4;
 }
 
