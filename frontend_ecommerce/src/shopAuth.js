@@ -1,5 +1,8 @@
 // 쇼핑몰 고객 인증 도우미: 서버 주소, 서버 호출(fetch), 로그인 정보 저장(sessionStorage)
-export const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3333";
+// 🔴 수정: 배포할 때는 현재 접속한 서버, 개발할 때는 개발용 서버 사용
+export const API_BASE = import.meta.env.PROD
+  ? window.location.origin
+  : (import.meta.env.VITE_API_URL || "http://localhost:3333");
 
 const TOKEN_KEY = "shop_token_key";
 const MEMBER_KEY = "shop_member_key";
