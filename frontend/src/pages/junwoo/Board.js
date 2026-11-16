@@ -1,3 +1,5 @@
+import ListSort, { sortList } from "../../shared/ListSort";
+import Pagination from "../../shared/Pagination";
 import SearchInput from "../../shared/SearchInput";
 import React, { useState, useRef, useCallback } from "react";
 import PostForm from "./PostForm";
@@ -51,6 +53,7 @@ function Board(props) {
 
     // 페이지네이션 기능
     const [page, setPage] = useState(1);
+    const [sortOption, setSortOption] = useState("default");
     const postsPerPage = 10;
 
     const [searchText, setSearchText] = useState("");
@@ -519,21 +522,8 @@ function Board(props) {
         return false;
     });
 
-    // 최신순 정렬
-    boardPosts.sort(function (a, b) {
-        let aTime = 0;
-        let bTime = 0;
-
-        if (a.createdAt) {
-            aTime = new Date(a.createdAt).getTime();
-        }
-
-        if (b.createdAt) {
-            bTime = new Date(b.createdAt).getTime();
-        }
-
-        return bTime - aTime;
-    });
+    const orderedPosts = sortList(boardPosts, sortOption);
+    boardPosts.splice(0, boardPosts.length, ...orderedPosts);
 
     // ===================================
     // 페이지 계산
@@ -558,27 +548,15 @@ function Board(props) {
     const currentPosts = boardPosts.slice(startIndex, endIndex);
 
     // 페이지 번호 배열
-    const pageNumbers = [];
 
-    for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-    }
 
     // ===================================
     // 페이지 이동
     // ===================================
 
-    function showPreviousPage() {
-        if (currentPage > 1) {
-            setPage(currentPage - 1);
-        }
-    }
 
-    function showNextPage() {
-        if (currentPage < totalPages) {
-            setPage(currentPage + 1);
-        }
-    }
+
+
 
     let emptyMessage = "등록된 게시글이 없습니다.";
 
@@ -675,58 +653,7 @@ function Board(props) {
     // 페이지 번호 버튼
     // ===================================
 
-    let pagination = null;
-
-    if (totalPages > 1) {
-        pagination = (
-            <nav
-                className="community-home-pagination"
-                aria-label="게시판 페이지"
-            >
-                <button
-                    type="button"
-                    disabled={currentPage === 1}
-                    onClick={showPreviousPage}
-                >
-                    이전
-                </button>
-
-                {pageNumbers.map(function (pageNumber) {
-                    let buttonClass = "";
-                    let currentPageLabel;
-
-                    if (pageNumber === currentPage) {
-                        buttonClass = "community-home-page-active";
-                        currentPageLabel = "page";
-                    }
-
-                    function movePage() {
-                        setPage(pageNumber);
-                    }
-
-                    return (
-                        <button
-                            key={pageNumber}
-                            type="button"
-                            className={buttonClass}
-                            aria-current={currentPageLabel}
-                            onClick={movePage}
-                        >
-                            {pageNumber}
-                        </button>
-                    );
-                })}
-
-                <button
-                    type="button"
-                    disabled={currentPage === totalPages}
-                    onClick={showNextPage}
-                >
-                    다음
-                </button>
-            </nav>
-        );
-    }
+    const pagination = <Pagination total={boardPosts.length} currentPage={currentPage} onPage={setPage} label="게시글 목록 페이지" />;
 
     // ===================================
     // 선택한 게시판 버튼 표시
@@ -936,6 +863,7 @@ function Board(props) {
                     </span>
                 </div>
 
+                <ListSort kind="community" value={sortOption} onChange={value => { setSortOption(value); setPage(1); }} />
                 {postList}
 
                 {pagination}

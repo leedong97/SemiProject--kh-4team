@@ -1,7 +1,8 @@
+import { API_BASE as SERVER_BASE } from "../../../shared/config";
 import SearchInput from "../../../shared/SearchInput";
 import React, { useEffect, useState } from "react";
 import "./EmployeeEvaluation.css";
-const API_BASE = (process.env.REACT_APP_API_URL || "http://localhost:3333") + "/api/evaluations";
+const API_BASE = SERVER_BASE + "/api/evaluations";
 const initialForm = { projectId: "", employeeId: "", period: "2026년 4분기", projectScore: 60, issueScore: 60, scheduleScore: 60, teamworkScore: 60, feedback: "" };
 export default function EmployeeEvaluation() {
     const [context, setContext] = useState({ projects: [], members: [], employees: [], loginId: null, loginRole: "" });

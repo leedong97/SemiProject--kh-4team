@@ -1,3 +1,5 @@
+import Pagination from "../../../shared/Pagination";
+import { API_BASE } from "../../../shared/config";
 import SearchInput from "../../../shared/SearchInput";
 import React, { useState, useEffect, useCallback } from "react";
 import "./HRManagement.css";
@@ -9,17 +11,6 @@ export default function HRManagement({
 }) {
     // 현재 선택한 탭: 직원 관리 / 업무 관리 / 휴가 관리 / 통계 분석
     const [activeTab, setActiveTab] = useState("employees");
-
-    // 직원 등록 입력값
-    const [name, setName] = useState("");
-    const [team, setTeam] = useState("개발팀");
-    const [position, setPosition] = useState("");
-    const [rank, setRank] = useState("사원");
-    const [employeeCode, setEmployeeCode] = useState("");
-    const [employeeEmail, setEmployeeEmail] = useState("");
-    const [initialPassword, setInitialPassword] = useState("");
-    // 이슈 등록 화면처럼 버튼을 누르면 직원 등록 폼을 펼칩니다.
-    const [showEmployeeRegister, setShowEmployeeRegister] = useState(false);
 
     // 실제 DB 연동: 토큰은 로그인 후 nexus_auth_token에 저장합니다.
     const [dbEmployees, setDbEmployees] = useState([]);
@@ -48,7 +39,7 @@ export default function HRManagement({
     // 휴가 배지를 클릭했을 때 기간을 보여줄 직원 번호
     const [openedLeaveEmployeeId, setOpenedLeaveEmployeeId] = useState(null);
 
-    const apiBase = (process.env.REACT_APP_API_URL || "http://localhost:3333") + "/api/hr";
+    const apiBase = API_BASE + "/api/hr";
 
     const apiRequest = useCallback(async (path, options = {}) => {
         const token = localStorage.getItem("nexus_auth_token");
@@ -80,12 +71,18 @@ export default function HRManagement({
             setDbEvaluations(evaluationRows);
             setDbEmployees(employeeRows.map(employee => ({
                 id: employee.employee_id,
+                employeeCode: employee.employee_code,
                 name: employee.employee_name,
                 team: employee.employee_department,
                 department: employee.employee_department,
                 position: employee.employee_position,
                 rank: employee.employee_grade,
                 salary: employee.employee_salary,
+                phone: employee.employee_phone,
+                division: employee.employee_division,
+                teamName: employee.employee_team,
+                address: employee.employee_address,
+                role: employee.employee_role,
                 status: employee.display_status,
                 hireDate: employee.employee_hire_date,
                 retirementDate: employee.employee_retired_at
@@ -169,6 +166,13 @@ export default function HRManagement({
     const [editTeam, setEditTeam] = useState("");
     const [editRank, setEditRank] = useState("");
     const [editSalary, setEditSalary] = useState("");
+    // 수정창에서 함께 고치는 연락처·소속 칸 (DB: employee_phone / employee_division / employee_team / employee_address)
+    const [editPhone, setEditPhone] = useState("");
+    const [editDivision, setEditDivision] = useState("");
+    const [editTeamName, setEditTeamName] = useState("");
+    const [editAddress, setEditAddress] = useState("");
+    // 권한: 일반 사용자 / 관리자 (DB: employee_role)
+    const [editRole, setEditRole] = useState("일반 사용자");
     const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
     const [detailTab, setDetailTab] = useState("summary");
     const evaluations = dbReady ? dbEvaluations : [];
@@ -198,9 +202,17 @@ export default function HRManagement({
     const filteredEmployees = employees.filter(employee => {
         const keyword = employeeSearch.trim().toLowerCase();
         const nameMatch = String(employee.name || "").toLowerCase().includes(keyword);
+        const codeMatch = String(employee.employeeCode || "").toLowerCase().includes(keyword);
         const teamMatch = departmentFilter === "전체" || (employee.team || employee.department || "미지정") === departmentFilter;
-        return nameMatch && teamMatch && employee.status !== "퇴사";
+        return (nameMatch || codeMatch) && teamMatch && employee.status !== "퇴사";
     }).sort((a, b) => {
+        if (employeeSort === "employeeCode") {
+            return String(a.employeeCode || "").localeCompare(
+                String(b.employeeCode || ""),
+                "ko",
+                { numeric: true, sensitivity: "base" }
+            );
+        }
         if (employeeSort === "salaryDesc") return Number(b.salary || 0) - Number(a.salary || 0);
         if (employeeSort === "hireDesc") return String(b.hireDate || "").localeCompare(String(a.hireDate || ""));
         if (employeeSort === "rank") return String(a.rank || "").localeCompare(String(b.rank || ""), "ko");
@@ -342,18 +354,69 @@ export default function HRManagement({
             return;
         }
         setEditingEmployee(employee);
+        // DB 값 그대로 담는다. 값이 비어 있으면 빈 문자열(선택창은 "선택" 안내 항목이 보인다)
         setEditTeam(employee.team || employee.department || "");
-        setEditRank(employee.rank || "사원");
+        setEditRank(employee.rank || "");
         setEditSalary(employee.salary == null ? "" : String(employee.salary));
+        setEditPhone(employee.phone || "");
+        setEditDivision(employee.division || "");
+        setEditTeamName(employee.teamName || "");
+        setEditAddress(employee.address || "");
+        setEditRole(employee.role || "일반 사용자");
     }
 
-    // 직원 정보를 수정합니다. 기존 직원의 다른 속성은 그대로 보존합니다.
+    // 직원 정보를 수정합니다. 원래 값과 달라진 칸만 서버로 보냅니다.
+    // (안 바꾼 칸까지 보내면 NULL이던 연봉이 0원으로 저장되는 등 원치 않는 변화가 생기기 때문)
     async function saveEmployeeEdit(event) {
         event.preventDefault();
-        if (!editingEmployee || !editTeam.trim() || !editRank.trim()) return;
-        const salary = Number(editSalary);
-        if (!Number.isInteger(salary) || salary < 0) {
-            window.alert("연봉을 0 이상의 정수로 입력하세요.");
+        if (!editingEmployee) return;
+        const body = {};
+
+        const nextTeam = editTeam.trim();
+        if (nextTeam !== (editingEmployee.team || editingEmployee.department || "")) {
+            if (!nextTeam) { window.alert("부서를 선택하세요."); return; }
+            body.employee_department = nextTeam;
+        }
+        const nextRank = editRank.trim();
+        if (nextRank !== (editingEmployee.rank || "")) {
+            if (!nextRank) { window.alert("직급을 선택하세요."); return; }
+            body.employee_grade = nextRank;
+        }
+        const salaryText = editSalary.trim();
+        if (salaryText !== (editingEmployee.salary == null ? "" : String(editingEmployee.salary))) {
+            const salary = Number(salaryText);
+            if (salaryText === "" || !Number.isInteger(salary) || salary < 0) {
+                window.alert("연봉을 0 이상의 정수로 입력하세요.");
+                return;
+            }
+            body.employee_salary = salary;
+        }
+        const nextPhone = editPhone.trim();
+        if (nextPhone !== (editingEmployee.phone || "")) {
+            if (nextPhone && !/^[0-9+\-() ]+$/.test(nextPhone)) {
+                window.alert("전화번호는 숫자, 하이픈(-), 괄호, + 만 입력할 수 있습니다.");
+                return;
+            }
+            body.employee_phone = nextPhone;
+        }
+        const nextDivision = editDivision.trim();
+        if (nextDivision !== (editingEmployee.division || "")) body.employee_division = nextDivision;
+        const nextTeamName = editTeamName.trim();
+        if (nextTeamName !== (editingEmployee.teamName || "")) body.employee_team = nextTeamName;
+        const nextAddress = editAddress.trim();
+        if (nextAddress !== (editingEmployee.address || "")) body.employee_address = nextAddress;
+
+        // 권한을 바꿀 때는 실수로 누르지 않도록 한 번 더 확인합니다.
+        if (editRole !== (editingEmployee.role || "일반 사용자")) {
+            const confirmMessage = editRole === "관리자"
+                ? editingEmployee.name + " 님에게 관리자 권한을 부여합니다.\n관리자는 관리자 페이지의 모든 기능을 사용할 수 있습니다. 계속할까요?"
+                : editingEmployee.name + " 님의 관리자 권한을 해제합니다. 계속할까요?";
+            if (!window.confirm(confirmMessage)) return;
+            body.employee_role = editRole;
+        }
+
+        if (!Object.keys(body).length) {
+            window.alert("변경된 내용이 없습니다.");
             return;
         }
         if (!dbReady) {
@@ -364,11 +427,7 @@ export default function HRManagement({
             setBusy(true);
             await apiRequest("/employees/" + editingEmployee.id, {
                 method: "PATCH",
-                body: JSON.stringify({
-                    employee_department: editTeam.trim(),
-                    employee_grade: editRank.trim(),
-                    employee_salary: salary
-                })
+                body: JSON.stringify(body)
             });
             await loadHrData();
             setEditingEmployee(null);
@@ -378,6 +437,30 @@ export default function HRManagement({
         } finally {
             setBusy(false);
         }
+    }
+
+    // 직원 수정창 (직원 표 두 곳에서 같이 씁니다)
+    function renderEmployeeEditForm() {
+        const rankOptions = [...new Set(["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표", editRank])].filter(Boolean);
+        // 본인 권한은 바꿀 수 없게 막습니다. (스스로 관리자 권한을 잃어 접근이 막히는 사고 방지 / 서버도 한 번 더 막습니다)
+        let loginId = null;
+        try {
+            const loginUser = JSON.parse(sessionStorage.getItem("erpUser") || "null");
+            loginId = loginUser ? (loginUser.employee_id ?? loginUser.id) : null;
+        } catch { loginId = null; }
+        const isSelf = loginId != null && sameId(loginId, editingEmployee.id);
+        return <form className="hr-edit-form" onSubmit={saveEmployeeEdit}>
+            <h4>{editingEmployee.name} 직원 정보 수정</h4>
+            <label>부서<select value={editTeam} onChange={e => setEditTeam(e.target.value)}><option value="" disabled>부서 선택</option>{[...new Set([...departments, editTeam])].filter(Boolean).map(x => <option key={x} value={x}>{x}</option>)}</select></label>
+            <label>직급<select value={editRank} onChange={e => setEditRank(e.target.value)}><option value="" disabled>직급 선택</option>{rankOptions.map(x => <option key={x} value={x}>{x}</option>)}</select></label>
+            <label>권한<select value={editRole} onChange={e => setEditRole(e.target.value)} disabled={isSelf} title={isSelf ? "본인의 권한은 변경할 수 없습니다." : undefined}><option value="일반 사용자">일반 사용자</option><option value="관리자">관리자</option></select></label>
+            <label>본부<input type="text" maxLength="100" value={editDivision} onChange={e => setEditDivision(e.target.value)} placeholder="본부" /></label>
+            <label>팀<input type="text" maxLength="100" value={editTeamName} onChange={e => setEditTeamName(e.target.value)} placeholder="팀" /></label>
+            <label>연봉 (원)<input type="number" min="0" value={editSalary} onChange={e => setEditSalary(e.target.value)} placeholder="미등록" /></label>
+            <label>전화번호<input type="tel" maxLength="20" value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="예: 010-1234-5678" /></label>
+            <label style={{ flexBasis: "100%" }}>주소<input type="text" maxLength="200" value={editAddress} onChange={e => setEditAddress(e.target.value)} placeholder="주소" /></label>
+            <button type="submit" disabled={busy}>저장</button><button type="button" onClick={() => setEditingEmployee(null)}>취소</button>
+        </form>;
     }
 
     // 퇴사자는 삭제하지 않고 상태와 퇴사일을 남깁니다.
@@ -456,49 +539,6 @@ export default function HRManagement({
         return /^\d{4}-\d{2}-\d{2}$/.test(dateText) && dateText >= getToday() && dateText <= getSevenDaysLater();
     }
 
-    // 직원 등록
-    async function addEmployee(event) {
-        event.preventDefault();
-        if (!name.trim()) {
-            window.alert("직원 이름을 입력하세요.");
-            return;
-        }
-
-        // 같은 팀의 동명이인 확인
-        const duplicateEmployee = employees.some(employee => employee.name === name.trim() && employee.team === team && employee.status !== "퇴사");
-        if (duplicateEmployee) {
-            const confirmed = window.confirm("같은 팀에 동일한 이름의 직원이 있습니다.\n" + "그래도 등록하시겠습니까?");
-            if (!confirmed) {
-                return;
-            }
-        }
-        // 등록 화면에서 모든 필수 정보를 한 번에 입력받습니다.
-        if (!employeeCode.trim() || !employeeEmail.trim() || initialPassword.length < 8) {
-            window.alert("사번, 이메일, 초기 비밀번호(8자 이상)를 입력하세요.");
-            return;
-        }
-        try {
-            await apiRequest("/employees", {
-                method: "POST",
-                body: JSON.stringify({
-                    employee_code: employeeCode.trim(), employee_name: name.trim(),
-                    employee_email: employeeEmail.trim(), employee_pw: initialPassword,
-                    employee_department: team, employee_grade: rank, employee_position: position.trim()
-                })
-            });
-            await loadHrData();
-            setName("");
-            setPosition("");
-            setEmployeeCode("");
-            setEmployeeEmail("");
-            setInitialPassword("");
-            setShowEmployeeRegister(false);
-            window.alert("등록되었습니다");
-        } catch (error) {
-            window.alert("직원 등록 실패: " + error.message);
-        }
-    }
-
     // 휴가 승인 및 반려
     async function approveLeave(id, status) {
         if (!dbReady) return window.alert("DB 연결 상태를 확인하세요.");
@@ -573,54 +613,24 @@ export default function HRManagement({
                     <div><h3>직원 통합 관리</h3></div>
                     <span className="hr-total">전체 {employees.length}명</span>
                 </div>
-                {/* 이슈 등록과 동일하게 버튼을 눌러 신규 직원 등록 폼을 펼칩니다. */}
-                <div className="hr-employee-register-toolbar">
-                    <button
-                        type="button"
-                        className="hr-register-toggle"
-                        onClick={() => setShowEmployeeRegister(!showEmployeeRegister)}
-                        aria-expanded={showEmployeeRegister}
-                    >
-                        {showEmployeeRegister ? "등록 취소" : "+ 신규 직원 등록"}
-                    </button>
-                </div>
-                {showEmployeeRegister && (
-                    <form className="panel hr-new-employee-form" onSubmit={addEmployee}>
-                        <h3>신규 직원 등록</h3>
-                        
-                        <div className="hr-new-employee-grid">
-                            <label>이름<input placeholder="직원 이름" value={name} onChange={e => setName(e.target.value)} required /></label>
-                            <label>직무<input placeholder="예: 프론트엔드 개발" value={position} onChange={e => setPosition(e.target.value)} /></label>
-                            <label>직급<select value={rank} onChange={e => setRank(e.target.value)}>{["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>)}</select></label>
-                            <label>부서<select value={team} onChange={e => setTeam(e.target.value)}><option>개발팀</option><option>기획팀</option><option>디자인팀</option><option>운영팀</option></select></label>
-                            <label>사번<input placeholder="예: EMP-053" value={employeeCode} onChange={e => setEmployeeCode(e.target.value)} required /></label>
-                            <label>이메일<input type="email" placeholder="example@company.com" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)} required /></label>
-                            <label>초기 비밀번호<input type="password" minLength="8" placeholder="8자 이상" value={initialPassword} onChange={e => setInitialPassword(e.target.value)} required /></label>
-                        </div>
-                        <div className="hr-register-actions">
-                            <button type="submit" disabled={busy || !dbReady}>직원 등록</button>
-                            <button type="button" className="hr-register-cancel" onClick={() => setShowEmployeeRegister(false)}>취소</button>
-                        </div>
-                    </form>
-                )}
                 <div className="hr-filters">
-                    <SearchInput aria-label="직원 이름 검색" placeholder="직원 이름 검색" value={employeeSearch} onChange={e => setEmployeeSearch(e.target.value)} />
-                    <select aria-label="부서 필터" value={departmentFilter} onChange={e => setDepartmentFilter(e.target.value)}>
+                <SearchInput aria-label="직원 이름 또는 사번 검색" placeholder="이름 또는 사번 검색" value={employeeSearch} onChange={e => setEmployeeSearch(e.target.value)} /> <select aria-label="부서 필터" value={departmentFilter} onChange={e => setDepartmentFilter(e.target.value)}>
                         <option value="전체">전체 부서</option>
                         {departments.map(x => <option key={x} value={x}>{x}</option>)}
                     </select>
                     <select aria-label="직원 정렬" value={employeeSort} onChange={e => setEmployeeSort(e.target.value)}>
                         <option value="name">이름순</option>
                         <option value="rank">직급순</option>
+                        <option value="employeeCode">사번순</option>
                         <option value="hireDesc">입사일 최신순</option>
                         <option value="salaryDesc">연봉 높은순</option>
                     </select>
                 </div>
                 <div className="hr-table-wrap"><table className="hr-staff-table">
-                    <thead><tr><th>이름</th><th>부서</th><th>직급</th><th>연봉</th><th>입사일</th><th>상태</th><th>관리</th></tr></thead>
-                    <tbody>{shownEmployees.map(employee => <React.Fragment key={employee.id}><tr>
+                     <thead><tr><th>이름</th><th>부서</th><th>직급</th><th>사번</th><th>연봉</th><th>입사일</th><th>상태</th><th>관리</th></tr></thead>                    <tbody>{shownEmployees.map(employee => <React.Fragment key={employee.id}><tr>
                         <td>{employee.name}</td><td>{employee.team || employee.department || "-"}</td>
                         <td>{employee.rank || "-"}</td>
+                        <td>{employee.employeeCode || "-"}</td>
                         <td>{employee.salary == null ? "미등록" : Number(employee.salary).toLocaleString("ko-KR") + "원"}</td>
                         <td>{formatEmployeeDate(employee.hireDate)}</td>
                         <td>
@@ -662,26 +672,16 @@ export default function HRManagement({
                             {employee.status !== "퇴사" && <><button type="button" className="hr-action-edit" onClick={() => startEmployeeEdit(employee)}>수정</button><button type="button" className="hr-danger-button" onClick={() => retireEmployee(employee)}>퇴사</button></>}
                         </div></td>
                     </tr>
-                    {editingEmployee && sameId(editingEmployee.id, employee.id) && <tr className="hr-expanded-row hr-edit-expanded-row"><td colSpan="7">
-                <form className="hr-edit-form" onSubmit={saveEmployeeEdit}>
-                    <h4>{editingEmployee.name} 직원 정보 수정</h4>
-                    <label>부서<select value={editTeam} onChange={e => setEditTeam(e.target.value)} required>{[...new Set([...departments, editTeam])].filter(Boolean).map(x => <option key={x} value={x}>{x}</option>)}</select></label>
-                    <label>직급<select value={editRank} onChange={e => setEditRank(e.target.value)}>{["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>)}</select></label>
-                    <label>연봉 (원)<input type="number" min="0" value={editSalary} onChange={e => setEditSalary(e.target.value)} placeholder="미등록" /></label>
-                    <button type="submit">저장</button><button type="button" onClick={() => setEditingEmployee(null)}>취소</button>
-                </form>
+                    {editingEmployee && sameId(editingEmployee.id, employee.id) && <tr className="hr-expanded-row hr-edit-expanded-row"><td colSpan="8">
+                {renderEmployeeEditForm()}
                     </td></tr>}
-                    {sameId(selectedEmployeeId, employee.id) && <tr className="hr-expanded-row"><td colSpan="7">
+                    {sameId(selectedEmployeeId, employee.id) && <tr className="hr-expanded-row"><td colSpan="8">
                         {renderEmployeeDetail(employee)}
                     </td></tr>}
                     </React.Fragment>)}
-                        {filteredEmployees.length === 0 && <tr><td colSpan="7">조건에 맞는 직원이 없습니다.</td></tr>}
+                        {filteredEmployees.length === 0 && <tr><td colSpan="8">조건에 맞는 직원이 없습니다.</td></tr>}
                     </tbody></table></div>
-                <div className="hr-work-pages" aria-label="직원 목록 페이지">
-                    <button type="button" disabled={currentEmployeePage === 1} onClick={() => setEmployeePage(currentEmployeePage - 1)}>이전</button>
-                    {Array.from({ length: employeePageCount }, (_, index) => index + 1).map(page => <button type="button" key={page} className={page === currentEmployeePage ? "active" : ""} onClick={() => setEmployeePage(page)} aria-current={page === currentEmployeePage ? "page" : undefined}>{page}</button>)}
-                    <button type="button" disabled={currentEmployeePage === employeePageCount} onClick={() => setEmployeePage(currentEmployeePage + 1)}>다음</button>
-                </div>
+                <Pagination total={filteredEmployees.length} currentPage={currentEmployeePage} onPage={setEmployeePage} label="직원 목록 페이지" />
             </div>
         </div>}
 
@@ -742,7 +742,7 @@ export default function HRManagement({
                                         <span className="hr-work-person-count">진행 {open.length} · 전체 {mine.length}</span>
                                     </button>;
                                 })}
-                                {pageCount > 1 && <div className="hr-work-pages"><button type="button" disabled={page === 1} onClick={() => setWorkPage(page - 1)}>이전</button><span>{page} / {pageCount}</span><button type="button" disabled={page === pageCount} onClick={() => setWorkPage(page + 1)}>다음</button></div>}
+                                <Pagination total={visible.length} currentPage={page} onPage={setWorkPage} label="업무 목록 페이지" />
                             </div>
                             <div className="hr-work-detail">
                                 {!selected ? <div className="hr-work-placeholder"><strong>직원을 선택해 주세요</strong><p>왼쪽 목록에서 직원을 선택하면 참여 프로젝트와 담당 이슈를 확인할 수 있습니다.</p></div> : <>
@@ -793,13 +793,7 @@ export default function HRManagement({
                             }}>상세</button></td>
                         </tr>
                         {editingEmployee && sameId(editingEmployee.id, employee.id) && <tr className="hr-expanded-row hr-edit-expanded-row"><td colSpan="7">
-                <form className="hr-edit-form" onSubmit={saveEmployeeEdit}>
-                    <h4>{editingEmployee.name} 직원 정보 수정</h4>
-                    <label>부서<select value={editTeam} onChange={e => setEditTeam(e.target.value)} required>{[...new Set([...departments, editTeam])].filter(Boolean).map(x => <option key={x} value={x}>{x}</option>)}</select></label>
-                    <label>직급<select value={editRank} onChange={e => setEditRank(e.target.value)}>{["사원", "대리", "과장", "차장", "팀장", "부장", "이사", "대표"].map(x => <option key={x}>{x}</option>)}</select></label>
-                    <label>연봉 (원)<input type="number" min="0" value={editSalary} onChange={e => setEditSalary(e.target.value)} placeholder="미등록" /></label>
-                    <button type="submit">저장</button><button type="button" onClick={() => setEditingEmployee(null)}>취소</button>
-                </form>
+                {renderEmployeeEditForm()}
                     </td></tr>}
                     {sameId(selectedEmployeeId, employee.id) && <tr className="hr-expanded-row"><td colSpan="7">
                             {renderEmployeeDetail(employee)}
@@ -808,13 +802,7 @@ export default function HRManagement({
                     {filteredRetired.length === 0 && <tr><td colSpan="7">등록된 퇴사자가 없습니다.</td></tr>}
                     </tbody>
                 </table></div>
-                <div className="hr-work-pages" aria-label="퇴사자 목록 페이지">
-                    <button type="button" disabled={currentRetiredPage === 1} onClick={() => setRetiredPage(currentRetiredPage - 1)}>이전</button>
-                    {Array.from({ length: retiredPageCount }, (_, index) => index + 1).map(page =>
-                        <button type="button" key={page} className={page === currentRetiredPage ? "active" : ""} onClick={() => setRetiredPage(page)}>{page}</button>
-                    )}
-                    <button type="button" disabled={currentRetiredPage === retiredPageCount} onClick={() => setRetiredPage(currentRetiredPage + 1)}>다음</button>
-                </div>
+                <Pagination total={filteredRetired.length} currentPage={currentRetiredPage} onPage={setRetiredPage} label="퇴사자 목록 페이지" />
             </div>
         </div>}
 
@@ -875,11 +863,7 @@ export default function HRManagement({
                     </div>;
                 })}
                 {filteredLeaves.length === 0 && pendingLeaves.length > 0 && <p className="muted">검색 조건에 맞는 휴가 신청이 없습니다.</p>}
-                {leavePageCount > 1 && <div className="hr-leave-pages">
-                    <button type="button" disabled={leavePage <= 1} onClick={() => setLeavePage(page => page - 1)}>이전</button>
-                    {Array.from({ length: leavePageCount }, (_, index) => <button type="button" key={index} className={Math.min(leavePage, leavePageCount) === index + 1 ? "active" : "secondary"} onClick={() => setLeavePage(index + 1)}>{index + 1}</button>)}
-                    <button type="button" disabled={leavePage >= leavePageCount} onClick={() => setLeavePage(page => page + 1)}>다음</button>
-                </div>}
+                <Pagination total={filteredLeaves.length} currentPage={Math.min(leavePage, leavePageCount)} onPage={setLeavePage} label="휴가 목록 페이지" />
 
             </div>
         </div>}
@@ -891,7 +875,6 @@ export default function HRManagement({
                     <span className="hr-analytics-eyebrow">HR INSIGHTS</span>
                     <h2>인사 통계 대시보드</h2>
                 </div>
-                <span className="hr-analytics-chip">실시간 데이터 기준</span>
             </div>
             <div className="hr-overview-grid">
                 <div className="hr-overview-card hr-overview-total"><span>전체 직원</span><strong>{employees.length}명</strong></div>
@@ -906,7 +889,6 @@ export default function HRManagement({
                         <h3>직원별 업무 현황</h3>
                         
                     </div>
-                    <span className="hr-unified-count">재직 직원 {employees.filter(employee => employee.status !== "퇴사").length}명</span>
                 </div>
                 {(() => {
                     // 퇴사자를 제외한 직원만 분석합니다.

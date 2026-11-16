@@ -85,10 +85,11 @@ function AdminLayout({ onLogout }) {
   // 접수 대기 견적 (Context 에서 받는 실시간 목록)
   const { data: adminData, quotes: allQuotes, reloadAdminData } = useJongho() || {};
 
-  // 관리자 화면에 들어오면 (로그인 직후 포함) 서버 데이터를 한 번 다시 받는다
+  // 관리자 화면에 들어오면 (로그인 직후 포함) 서버 데이터를 다시 받는다.
+  // 메뉴를 옮길 때마다 다시 받는다: 인사관리에서 퇴사·수정한 내용이 대시보드 등 다른 화면에 바로 맞춰지도록
   useEffect(() => {
     if (reloadAdminData) reloadAdminData();
-  }, []);
+  }, [location.pathname]);
   const quoteAlerts = (allQuotes || []).filter((q) => q.status === "접수");
   const waitingQuotes = quoteAlerts.length;
 

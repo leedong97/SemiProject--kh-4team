@@ -1,6 +1,23 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_BASE } from "../../../../shared/config";
 import ContactForm from "./ContactForm";
 
 function MyInfoTab({ user, pw, pwMsg, minPwLength, handlePwChange, handlePwSubmit }) {
+    // 로그인할 때 저장해 둔 값은 그 뒤에 관리자가 부서·직급을 바꿔도 그대로라서,
+    // 이 탭을 열 때마다 서버에서 최신 값을 받아 와요. (못 받아오면 저장해 둔 값을 그대로 보여 줘요)
+    const [fresh, setFresh] = useState(null);
+    useEffect(() => {
+        if (user.isDummy) return;
+        axios
+            .get(`${API_BASE}/api/profile`, { params: { employeeId: user.id } })
+            .then((res) => setFresh({ division: res.data.division, team: res.data.team, rank: res.data.grade }))
+            .catch(() => {});
+    }, [user.id, user.isDummy]);
+    const division = (fresh && fresh.division) || user.division;
+    const team = (fresh && fresh.team) || user.team;
+    const rank = (fresh && fresh.rank) || user.rank;
+
     return (
         <section className="mp-panel">
             <h3>내 개인정보</h3>
@@ -15,11 +32,11 @@ function MyInfoTab({ user, pw, pwMsg, minPwLength, handlePwChange, handlePwSubmi
                 </label>
                 <label>
                     부서
-                    <input value={`${user.division} / ${user.team}`} readOnly />
+                    <input value={`${division} / ${team}`} readOnly />
                 </label>
                 <label>
                     직급
-                    <input value={user.rank} readOnly />
+                    <input value={rank} readOnly />
                 </label>
             </div>
 

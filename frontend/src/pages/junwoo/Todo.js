@@ -1,3 +1,5 @@
+import ListSort, { sortList } from "../../shared/ListSort";
+import Pagination from "../../shared/Pagination";
 import SearchInput from "../../shared/SearchInput";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -24,12 +26,13 @@ function Todo({ todo = [] }) {
     const [searchManager, setSearchManager] = useState("");
     const [status, setStatus] = useState("전체");
     const [page, setPage] = useState(1);
+    const [sortOption, setSortOption] = useState("default");
 
     useEffect(() => {
         setPage(1);
-    }, [selectedProject, search, searchManager, status]);
+    }, [selectedProject, search, searchManager, status, sortOption]);
 
-    const filteredProjects = todo
+    const filteredProjects = sortList(todo
         .filter(project => {
             const matchesProject =
                 selectedProject === "" ||
@@ -54,7 +57,7 @@ function Todo({ todo = [] }) {
                 matchesStatus
             );
         })
-        .sort((a, b) => Number(b.id) - Number(a.id));
+        , sortOption);
 
     const totalPages = Math.max(
         1,
@@ -69,14 +72,7 @@ function Todo({ todo = [] }) {
         startIndex + PAGE_SIZE
     );
 
-    const firstPage = Math.floor((currentPage - 1) / 5) * 5 + 1;
 
-    const pageNumbers = Array.from(
-        {
-            length: Math.min(5, totalPages - firstPage + 1)
-        },
-        (_, index) => firstPage + index
-    );
 
     useEffect(() => {
         setPage(previous => Math.min(previous, totalPages));
@@ -124,6 +120,7 @@ function Todo({ todo = [] }) {
                 <span>조회된 프로젝트 {filteredProjects.length}개</span>
             </div>
 
+            <ListSort kind="project" value={sortOption} onChange={setSortOption} />
             <section className="jpl-filter" aria-label="프로젝트 검색">
                 <label htmlFor="jpl-project">프로젝트 선택</label>
                 <select
@@ -193,7 +190,6 @@ function Todo({ todo = [] }) {
                                 <th scope="col">번호</th>
                                 <th scope="col">클라이언트</th>
                                 <th scope="col">프로젝트</th>
-                                <th scope="col">우선도</th>
                                 <th scope="col">담당자</th>
                                 <th scope="col">진행률</th>
                                 <th scope="col">상태</th>
@@ -216,7 +212,7 @@ function Todo({ todo = [] }) {
                                             </Link>
                                         </td>
 
-                                        <td><Priority value={project.priority} /></td>
+                                     
 
                                         <td>
                                             {project.managerName || "미지정"}
@@ -238,7 +234,7 @@ function Todo({ todo = [] }) {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={7} className="jpl-empty">
+                                    <td colSpan={6} className="jpl-empty">
                                         조회된 프로젝트가 없습니다.
                                     </td>
                                 </tr>
@@ -248,50 +244,9 @@ function Todo({ todo = [] }) {
                 </div>
             </section>
 
-            {filteredProjects.length > 0 && (
-                <nav className="jpl-pagination" aria-label="프로젝트 목록 페이지">
-                    <span aria-live="polite">
-                        전체 {filteredProjects.length}건 중{" "}
-                        {startIndex + 1}–{startIndex + pageItems.length}건
-                    </span>
+            <Pagination total={filteredProjects.length} currentPage={currentPage} onPage={setPage} label="목록 페이지" />
 
-                    <div className="jpl-page-buttons">
-                        <button
-                            type="button"
-                            disabled={currentPage === 1}
-                            onClick={() => setPage(currentPage - 1)}
-                        >
-                            이전
-                        </button>
-
-                        {pageNumbers.map(number => (
-                            <button
-                                key={number}
-                                type="button"
-                                aria-label={`${number}페이지`}
-                                aria-current={
-                                    currentPage === number
-                                        ? "page"
-                                        : undefined
-                                }
-                                onClick={() => setPage(number)}
-                            >
-                                {number}
-                            </button>
-                        ))}
-
-                        <button
-                            type="button"
-                            disabled={currentPage === totalPages}
-                            onClick={() => setPage(currentPage + 1)}
-                        >
-                            다음
-                        </button>
-                    </div>
-                </nav>
-            )}
-
-            
+          
         </main>
     );
 }

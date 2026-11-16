@@ -357,3 +357,19 @@
     justify-content: center;
     text-decoration: none;
 }
+/* 프로젝트 선택: 화살표가 아래로 내려가지 않도록 한 줄로 정렬 */
+@supports (appearance: base-select) {
+    .team-shell .junwoo-project-list .jpl-filter #jpl-project {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+
+    .team-shell .junwoo-project-list .jpl-filter #jpl-project::picker-icon {
+        margin-inline-start: auto;
+        flex-shrink: 0;
+        align-self: center;
+    }
+}

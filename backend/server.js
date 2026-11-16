@@ -78,13 +78,51 @@ app.use('/api', (req, res) => {
   res.status(404).json({ message: 'API 경로를 찾을 수 없습니다: ' + req.method + ' ' + req.originalUrl });
 });
 
-// 7) (선택) React 빌드 결과(backend/build)가 있으면 같이 제공. 반드시 맨 마지막!
+// 7) (선택) React 빌드 결과(frontend/build)가 있으면 같이 제공. 반드시 맨 마지막!
+// 7) React 빌드 파일 제공
+// 🔴 수정: AWS ZIP 구조에 맞게 backend/build 사용
+// 🔴 수정: 이커머스 빌드 파일이 들어 있는 폴더
+const shopBuildDir = path.join(__dirname, 'shop-build');
+
+// 🔴 수정: 이커머스 전용 도메인의 첫 화면을 /shop/으로 연결
+app.get('/', (req, res, next) => {
+  const hostname = (req.headers.host || '')
+    .split(':')[0]
+    .toLowerCase();
+
+  if (hostname === 'zerynecommerce.kro.kr') {
+    return res.redirect('/shop/');
+  }
+
+  // 기존 ERP 주소로 접속하면 기존 처리로 넘기기
+  next();
+});
+
+// 🔴 수정: 이커머스의 HTML, CSS, JavaScript, 이미지 제공
+app.use('/shop', express.static(shopBuildDir));
+
+// 🔴 수정: /shop/ 아래의 페이지를 직접 열거나 새로고침할 때 처리
+app.get('/shop/*', (req, res) => {
+  res.sendFile(path.join(shopBuildDir, 'index.html'));
+});
 const buildDir = path.join(__dirname, 'build');
+
+
+// 🔴 추가: AWS 배포 경로 확인용 로그
+console.log('[배포 진단] __dirname:', __dirname);
+console.log('[배포 진단] build 경로:', buildDir);
+console.log('[배포 진단] build 폴더 존재:', fs.existsSync(buildDir));
+console.log('[배포 진단] index.html 존재:',
+  fs.existsSync(path.join(buildDir, 'index.html')));
+
+// 기존 React 빌드 제공 코드
 if (fs.existsSync(buildDir)) {
   app.use(express.static(buildDir));
   app.use((req, res) => res.sendFile(path.join(buildDir, 'index.html')));
 } else {
-  app.get('/', (req, res) => res.send('COMMAND ERP 서버 실행 중! (React 는 http://localhost:3000)'));
+  app.get('/', (req, res) =>
+    res.send('COMMAND ERP 서버 실행 중! (React 는 http://localhost:3000)')
+  );
 }
 
 // 8) 서버 켜기 - 파일을 직접 실행했을 때만 (테스트에서 require 하면 켜지지 않음)

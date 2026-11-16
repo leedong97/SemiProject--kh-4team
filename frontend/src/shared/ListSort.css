@@ -1,0 +1,4 @@
+.cmd-shell #cmd-main .general-list-sort { display:flex; align-items:center; justify-content:flex-end; gap:8px; margin:12px 0; flex-wrap:wrap; }
+.cmd-shell #cmd-main .general-list-sort label { font-size:13px; font-weight:700; color:var(--cmd-ink-2); }
+.cmd-shell #cmd-main .general-list-sort select { display:flex; align-items:center; justify-content:space-between; min-width:160px; height:40px; padding:0 12px; border:1px solid var(--cmd-rule-2); border-radius:var(--radius-m); background:var(--cmd-bg); color:var(--cmd-ink); }
+.cmd-shell #cmd-main .general-list-sort select::picker-icon { margin-inline-start:auto; }

@@ -726,6 +726,25 @@
   white-space: nowrap;
 }
 
+/* 프로젝트 목록 열 너비: 한 열이 남는 폭을 다 먹지 않도록 전체를 100%로 나눠 간격을 고르게 해요
+   (ProjectList.css 의 옛 % 너비는 열이 7개 기준이라 간격이 들쭉날쭉했어요. 여기서 덮어써요) */
+.cmd-shell #cmd-main .jpl-table th:nth-child(1) { width: 6%; }
+.cmd-shell #cmd-main .jpl-table th:nth-child(2) { width: 17%; }
+.cmd-shell #cmd-main .jpl-table th:nth-child(3) { width: 27%; }
+.cmd-shell #cmd-main .jpl-table th:nth-child(4) { width: 15%; }
+.cmd-shell #cmd-main .jpl-table th:nth-child(5) { width: 20%; }
+.cmd-shell #cmd-main .jpl-table th:nth-child(6) { width: 15%; }
+
+/* 공지사항 목록 열 너비: 오른쪽 40%는 작성자·작성일자·조회수, 제목 열은 40%
+   (table-layout: fixed 로 비율을 정확히 지켜요. 번호 20% + 제목 40% + 오른쪽 세 칸 40% = 100%) */
+.cmd-shell #cmd-main .info-table { table-layout: fixed; }
+.cmd-shell #cmd-main .info-table th:nth-child(1) { width: 20%; }
+.cmd-shell #cmd-main .info-table th:nth-child(2) { width: 40%; }
+.cmd-shell #cmd-main .info-table th:nth-child(3) { width: 13%; }
+.cmd-shell #cmd-main .info-table th:nth-child(4) { width: 14%; }
+.cmd-shell #cmd-main .info-table th:nth-child(5) { width: 13%; }
+.cmd-shell #cmd-main .info-table td:nth-child(2) { overflow-wrap: anywhere; }
+
 /* 커뮤니티 글쓰기 버튼 */
 .cmd-shell #cmd-main .cmd-community .community-banner-link {
   display: inline-flex;
@@ -1827,44 +1846,18 @@
   scrollbar-width: thin;
 }
 
+/* 프로젝트와 이슈 상세는 같은 프로젝트 상세 서식을 사용합니다. */
+.cmd-shell #cmd-main .project-style-detail .todo-detail-description p { white-space:pre-wrap; overflow-wrap:anywhere; }
+.cmd-shell #cmd-main .project-style-detail .todo-detail-row > span { min-width:0; overflow-wrap:anywhere; }
 
-/* ==========================================================
-   직원용 화면 페이지 번호도 관리자 화면과 같은 모양으로 통일 (맨 아래 = 위 규칙보다 우선)
-   - 현재 쪽: 검정 바탕 + 흰 글씨 / 나머지(이전·다음 포함): 흰 바탕 + 얇은 테두리
-   대상: 프로젝트(.jpl-pagination) · 이슈(.issue-pagination) · 공지(.info-pages) · 커뮤니티(.community-home-pagination)
-========================================================== */
-.cmd-shell #cmd-main :is(.jpl-pagination, .issue-pagination, .issue-pagination-buttons, .jpl-page-buttons, .info-pages, .todo-pages, .community-home-pagination) {
-  gap: 8px !important;
+/* 프로젝트·이슈 우선도: 이슈관리의 공통 배지 모양으로 고정 */
+.cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .project-style-detail) .cmd-prio {
+  display:inline-flex; align-items:center; justify-content:center;
+  box-sizing:border-box; flex:none; width:auto; min-width:0; height:22px; min-height:22px;
+  margin:0; padding:0 var(--sp-2); border:0; border-radius:var(--radius-s);
+  background:var(--cmd-bg-2); color:var(--cmd-ink-2); font-family:inherit;
+  font-size:var(--fs-12); font-weight:700; line-height:1; white-space:nowrap; box-shadow:none;
 }
-
-.cmd-shell #cmd-main :is(.jpl-pagination, .issue-pagination, .issue-pagination-buttons, .jpl-page-buttons, .info-pages, .todo-pages, .community-home-pagination) button {
-  min-width: 38px;
-  height: 38px;
-  min-height: 38px;
-  padding: 0 14px;
-  border: 1px solid var(--cmd-rule-2) !important;
-  border-radius: var(--radius-m);
-  background: #fff !important;
-  color: var(--cmd-ink) !important;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1;
-  box-shadow: none !important;
-  cursor: pointer;
-}
-
-.cmd-shell #cmd-main :is(.jpl-pagination, .issue-pagination, .issue-pagination-buttons, .jpl-page-buttons, .info-pages, .todo-pages, .community-home-pagination) button:hover:not(:disabled) {
-  border-color: var(--cmd-ink) !important;
-}
-
-.cmd-shell #cmd-main :is(.jpl-pagination, .issue-pagination, .issue-pagination-buttons, .jpl-page-buttons, .info-pages, .todo-pages, .community-home-pagination) button:is(.active, .current, [aria-current="page"]) {
-  border-color: var(--cmd-ink) !important;
-  background: var(--cmd-ink) !important;
-  color: #fff !important;
-}
-
-.cmd-shell #cmd-main :is(.jpl-pagination, .issue-pagination, .issue-pagination-buttons, .jpl-page-buttons, .info-pages, .todo-pages, .community-home-pagination) button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
+.cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .project-style-detail) .cmd-prio[data-prio="긴급"] { background:var(--prio-urgent); color:#fff; }
+.cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .project-style-detail) .cmd-prio[data-prio="높음"] { background:var(--orange-tint); color:var(--orange-text); }
+.cmd-shell #cmd-main :is(.junwoo-project-list, .issue-page, .project-style-detail) .cmd-prio[data-prio="낮음"] { background:none; color:var(--cmd-faint); box-shadow:inset 0 0 0 1px var(--cmd-rule-2); }

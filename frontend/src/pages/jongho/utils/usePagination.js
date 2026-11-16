@@ -12,6 +12,9 @@ export default function usePagination(items, pageSize, resetKeys = []) {
   }, resetKeys);
 
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  useEffect(() => {
+    setPage(previous => Math.min(previous, totalPages));
+  }, [totalPages]);
   const currentPage = Math.min(page, totalPages);
   const pageItems = items.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 

@@ -1,3 +1,4 @@
+import Pagination from "../../shared/Pagination";
 import React, { useEffect, useState } from "react";
 import axios from "../dong/communityClient";
 import { API_BASE } from "../../shared/config";
@@ -84,23 +85,11 @@ function MyComments(props) {
 
     const currentComments = comments.slice(startIndex, endIndex);
 
-    const pageNumbers = [];
 
-    for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-    }
 
-    function showPreviousPage() {
-        if (currentPage > 1) {
-            setPage(currentPage - 1);
-        }
-    }
 
-    function showNextPage() {
-        if (currentPage < totalPages) {
-            setPage(currentPage + 1);
-        }
-    }
+
+
 
     function formatDate(value) {
         if (!value) {
@@ -114,58 +103,7 @@ function MyComments(props) {
     // 페이지 버튼
     // ===================================
 
-    let pagination = null;
-
-    if (totalPages > 1) {
-        pagination = (
-            <nav
-                className="community-home-pagination"
-                aria-label="내 댓글 페이지"
-            >
-                <button
-                    type="button"
-                    disabled={currentPage === 1}
-                    onClick={showPreviousPage}
-                >
-                    이전
-                </button>
-
-                {pageNumbers.map(function (pageNumber) {
-                    let buttonClass = "";
-                    let currentPageLabel;
-
-                    if (pageNumber === currentPage) {
-                        buttonClass = "community-home-page-active";
-                        currentPageLabel = "page";
-                    }
-
-                    function movePage() {
-                        setPage(pageNumber);
-                    }
-
-                    return (
-                        <button
-                            key={pageNumber}
-                            type="button"
-                            className={buttonClass}
-                            aria-current={currentPageLabel}
-                            onClick={movePage}
-                        >
-                            {pageNumber}
-                        </button>
-                    );
-                })}
-
-                <button
-                    type="button"
-                    disabled={currentPage === totalPages}
-                    onClick={showNextPage}
-                >
-                    다음
-                </button>
-            </nav>
-        );
-    }
+    const pagination = <Pagination total={comments.length} currentPage={currentPage} onPage={setPage} label="게시글 목록 페이지" />;
 
     // ===================================
     // 로딩 / 오류 / 댓글 없음

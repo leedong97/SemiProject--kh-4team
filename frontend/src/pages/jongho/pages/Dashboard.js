@@ -17,7 +17,8 @@ export default function Dashboard({ projects = [], data }) {
     const cards = [
         { title: "전체 프로젝트", value: projects.length, detail: `진행 중 ${active.length}개`, path: "/admin/projects" },
         { title: "미완료 이슈", value: openIssues.length, detail: `기한 초과 ${overdue.length}건`, path: "/admin/issues" },
-        { title: "재직 직원", value: data.employees.filter(e => e.status === "재직").length, detail: "인사 정보 보기", path: "/admin/employees" },
+        // 인사관리 화면과 같은 기준: 퇴사를 뺀 모든 직원(휴직자 포함)을 재직 직원으로 센다
+        { title: "재직 직원", value: data.employees.filter(e => e.status && e.status !== "퇴사").length, detail: "인사 정보 보기", path: "/admin/employees" },
         { title: "평가 승인 대기", value: pending.length, detail: "승인 요청 확인", path: "/admin/evaluations" }
     ];
     const employeeName = id => data.employees.find(e => String(e.id) === String(id))?.name || "미배정";

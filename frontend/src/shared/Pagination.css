@@ -1,0 +1,48 @@
+/* 일반 이슈관리와 같은 공통 페이지 이동 UI */
+.standard-pagination.standard-pagination {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 12px; margin-top: 20px; width: 100%;
+}
+.standard-pagination .standard-pagination-summary { color: #617792; font-size: 13px; }
+.standard-pagination .standard-pagination-buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; }
+.standard-pagination.standard-pagination .standard-pagination-buttons button {
+    min-width: 40px; min-height: 44px; padding: 8px 12px; border: 1px solid #dce9f8;
+    border-radius: 8px; background: #fff; color: #617792; font-size: 14px; cursor: pointer;
+}
+.standard-pagination.standard-pagination .standard-pagination-buttons button:hover:not(:disabled) { border-color: #a9d0ff; background: #f0f7ff; color: #087bdf; }
+.standard-pagination.standard-pagination .standard-pagination-buttons button[aria-current="page"] { border-color: #1689ec; background: #1689ec; color: #fff; }
+.standard-pagination.standard-pagination .standard-pagination-buttons button[aria-current="page"]:hover { border-color: #087bdf; background: #087bdf; color: #fff; }
+.standard-pagination.standard-pagination .standard-pagination-buttons button:disabled { border-color: #e4ebf4; background: #f7f9fc; color: #9aa9bc; cursor: default; }
+.standard-pagination.standard-pagination .standard-pagination-buttons button:focus-visible { outline: 2px solid #1689ec; outline-offset: 2px; }
+
+/* 일반 페이지도 관리자 이슈관리와 같은 크기와 색상을 사용합니다. */
+.team-shell .standard-pagination.standard-pagination .standard-pagination-buttons button {
+    min-width: 32px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0 var(--sp-2, 8px);
+    border: 1px solid transparent;
+    border-radius: var(--radius-m, 10px);
+    background: none;
+    color: var(--cmd-ink-2, #343a43);
+    font-family: var(--cmd-mono, monospace);
+    font-size: var(--fs-13, 13px);
+    font-weight: 700;
+}
+.team-shell .standard-pagination.standard-pagination .standard-pagination-buttons button:hover:not(:disabled) {
+    border-color: var(--cmd-rule-2, #c3c8cf);
+    background: none;
+    color: var(--cmd-ink-2, #343a43);
+}
+.team-shell .standard-pagination.standard-pagination .standard-pagination-buttons button[aria-current="page"],
+.team-shell .standard-pagination.standard-pagination .standard-pagination-buttons button[aria-current="page"]:hover {
+    border-color: var(--cmd-ink, #14171c);
+    background: var(--cmd-ink, #14171c);
+    color: var(--accent, #f2a900);
+}
+.team-shell .standard-pagination.standard-pagination .standard-pagination-buttons button:disabled {
+    border-color: transparent;
+    background: none;
+    color: var(--cmd-ink-2, #343a43);
+    opacity: 0.4;
+}

@@ -1,3 +1,4 @@
+import Pagination from "../../shared/Pagination";
 import { API_BASE } from '../../shared/config';
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
@@ -71,17 +72,17 @@ function Todo_detail({ todo = [], onViewTodo }) {
     // 담당자 이름
     const members = item?.memberNames ?? [];
 
-    // 다른 프로젝트 목록 및 페이지네이션 (5개씩)
+    // 다른 프로젝트 목록 및 페이지네이션 (10개씩)
     const otherTodo = todo.filter(other => other.id !== Number(id));
-    const totalPages = Math.ceil(otherTodo.length / 5);
+    const totalPages = Math.ceil(otherTodo.length / 10);
     const currentPage = Math.min(pages, Math.max(totalPages, 1));
-    const start = (currentPage - 1) * 5;
-    const end = start + 5;
+    const start = (currentPage - 1) * 10;
+    const end = start + 10;
 
     // 데이터가 도착하기 전에는 상세 화면을 그리지 않는다.
     if (loading) {
         return (
-            <main className="todo-page todo-detail-page">
+            <main className="todo-page todo-detail-page project-style-detail">
                 <h2>프로젝트를 불러오는 중입니다...</h2>
             </main>
         );
@@ -90,7 +91,7 @@ function Todo_detail({ todo = [], onViewTodo }) {
     // 조회 실패 또는 데이터가 없는 경우
     if (error || !item) {
         return (
-            <main className="todo-page todo-detail-page">
+            <main className="todo-page todo-detail-page project-style-detail">
                 <h2>{error || "존재하지 않는 프로젝트입니다."}</h2>
 
                 <button
@@ -104,7 +105,7 @@ function Todo_detail({ todo = [], onViewTodo }) {
     }
 
     return (
-        <main className="todo-page todo-detail-page">
+        <main className="todo-page todo-detail-page project-style-detail">
             {/* 상세보기 상단 */}
             <div className="todo-detail-header">
                 <div>
@@ -211,19 +212,7 @@ function Todo_detail({ todo = [], onViewTodo }) {
                     <p className="todo-empty">다른 프로젝트가 없습니다.</p>
                 )}
 
-                {totalPages > 1 && (
-                    <div className="todo-pages">
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
-                            <button
-                                key={num}
-                                className={currentPage === num ? "active" : ""}
-                                onClick={() => setPages(num)}
-                            >
-                                {num}
-                            </button>
-                        ))}
-                    </div>
-                )}
+                <Pagination total={otherTodo.length} currentPage={currentPage} onPage={setPages} label="목록 페이지" />
             </div>
 
             {/* 하단 목록 버튼 */}

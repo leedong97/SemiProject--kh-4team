@@ -158,8 +158,16 @@ router.post('/issues', async (req, res) => {
     if (assigneeId != null && (!Number.isInteger(Number(assigneeId)) || Number(assigneeId) <= 0)) {
         return res.status(400).json({ message: '담당자 번호 오류' });
     }
-    if (due && !/^\d{4}-\d{2}-\d{2}$/.test(due)) {
-        return res.status(400).json({ message: '마감일 형식 오류' });
+    if (due) {
+        const parsedDue = new Date(due + 'T00:00:00.000Z');
+        if (typeof due !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(due) ||
+            Number.isNaN(parsedDue.getTime()) || parsedDue.toISOString().slice(0, 10) !== due) {
+            return res.status(400).json({ message: '마감일 형식 오류' });
+        }
+        const today = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+        if (due < today) {
+            return res.status(400).json({ message: '마감일은 오늘 또는 이후 날짜로 선택하세요.' });
+        }
     }
     try {
         // 건의자는 요청 본문의 선택값이 아닌 인증된 로그인 직원으로 고정합니다.

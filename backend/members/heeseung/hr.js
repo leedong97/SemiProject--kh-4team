@@ -31,7 +31,7 @@ router.get("/employees", async (req, res) => {
         const order = sort[req.query.sort] || "e.employee_id ASC";
         const [rows] = await pool.query(`SELECT e.employee_id, e.employee_code, e.employee_name, e.employee_department,
             e.employee_division, e.employee_team, e.employee_position, e.employee_grade,
-            e.employee_role, e.employee_status, e.employee_salary,
+            e.employee_role, e.employee_status, e.employee_salary, e.employee_phone, e.employee_address,
             DATE_FORMAT(e.employee_hire_date, '%Y-%m-%d') AS employee_hire_date,
             DATE_FORMAT(e.employee_retired_at, '%Y-%m-%d') AS employee_retired_at, ${statusSql} AS display_status
             FROM employees e WHERE e.employee_status <> '퇴사' ORDER BY ${order}`);
@@ -50,28 +50,75 @@ router.get("/retired", async (req, res) => {
 });
 router.patch("/employees/:id", async (req, res) => {
     const id = Number(req.params.id);
-    const fields = { employee_department: "부서", employee_grade: "직급", employee_salary: "연봉" };
+    // 수정할 수 있는 칸 목록(화이트리스트). label=화면에 보일 이름, max=최대 글자 수,
+    // nullable=비우면 NULL로 저장, fallback=비우면 이 글자로 저장, allowed=이 값들 중에서만 허용
+    const fields = {
+        employee_department: { label: "부서", max: 100 },
+        employee_grade: { label: "직급", max: 20 },
+        employee_role: { label: "권한", allowed: ["일반 사용자", "관리자"] },
+        employee_salary: { label: "연봉" },
+        employee_phone: { label: "전화번호", max: 20, nullable: true },
+        employee_address: { label: "주소", max: 200, nullable: true },
+        employee_division: { label: "본부", max: 100, fallback: "미배정" },
+        employee_team: { label: "팀", max: 100, fallback: "미배정" }
+    };
     if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ message: "직원 번호 오류" });
     const keys = Object.keys(req.body || {});
     if (!keys.length || keys.some(k => !fields[k])) return res.status(400).json({ message: "수정 항목 오류" });
+
+    // 값 검사와 정리: after[칸] = DB에 넣을 최종 값
+    const after = {};
     for (const key of keys) {
-        const value = req.body[key];
-        if (key === "employee_salary" && (!Number.isInteger(value) || value < 0 || value > 2147483647)) return res.status(400).json({ message: "연봉 값 오류" });
-        if (key !== "employee_salary" && (typeof value !== "string" || !value.trim() || value.length > (key === "employee_grade" ? 20 : 100))) return res.status(400).json({ message: "문자 입력값 오류" });
+        const rule = fields[key];
+        let value = req.body[key];
+        if (key === "employee_salary") {
+            if (!Number.isInteger(value) || value < 0 || value > 2147483647) return res.status(400).json({ message: "연봉 값 오류" });
+        } else {
+            if (typeof value !== "string") return res.status(400).json({ message: rule.label + " 입력값 오류" });
+            value = value.trim();
+            if (!value) {
+                if (rule.nullable) value = null;
+                else if (rule.fallback) value = rule.fallback;
+                else return res.status(400).json({ message: rule.label + "을(를) 입력하세요." });
+            }
+            if (rule.allowed && !rule.allowed.includes(value)) return res.status(400).json({ message: rule.label + " 값 오류" });
+            if (value && value.length > rule.max) return res.status(400).json({ message: rule.label + "은(는) " + rule.max + "자 이하로 입력하세요." });
+            if (key === "employee_phone" && value && !/^[0-9+\-() ]+$/.test(value)) return res.status(400).json({ message: "전화번호 형식 오류" });
+        }
+        after[key] = value;
     }
+
+    // 본인 권한은 바꿀 수 없다 (스스로 관리자 권한을 잃으면 관리자 페이지에 못 들어오는 사고 방지)
+    if ("employee_role" in after && id === Number(req.user.employee_id) && after.employee_role !== req.user.employee_role) {
+        return res.status(400).json({ message: "본인의 권한은 변경할 수 없습니다." });
+    }
+
     let conn;
     try {
         conn = await pool.getConnection(); await conn.beginTransaction();
-        const [rows] = await conn.query("SELECT employee_department, employee_grade, employee_salary, employee_status FROM employees WHERE employee_id = ? FOR UPDATE", [id]);
+        const [rows] = await conn.query("SELECT employee_role, employee_department, employee_grade, employee_salary, employee_phone, employee_address, employee_division, employee_team, employee_status FROM employees WHERE employee_id = ? FOR UPDATE", [id]);
         if (!rows[0] || rows[0].employee_status === "퇴사") { await conn.rollback(); return res.status(404).json({ message: "수정할 직원이 없습니다." }); }
         for (const key of keys) {
-            const before = rows[0][key]; const after = req.body[key];
-            if (String(before ?? "") === String(after)) continue;
-            await conn.query(`UPDATE employees SET ${key} = ? WHERE employee_id = ?`, [after, id]);
-            await conn.query("INSERT INTO employee_change_logs (employee_id, changed_by, field_name, old_value, new_value) VALUES (?, ?, ?, ?, ?)", [id, req.user.employee_id, key, before == null ? null : String(before), String(after)]);
+            // 바뀐 칸만 UPDATE (칸 이름은 위 화이트리스트에 있는 것만 들어온다)
+            if (String(rows[0][key] ?? "") === String(after[key] ?? "")) continue;
+            await conn.query(`UPDATE employees SET ${key} = ? WHERE employee_id = ?`, [after[key], id]);
         }
-        await conn.commit(); res.json({ message: "직원 정보 수정 완료" });
-    } catch (error) { if (conn) await conn.rollback(); console.error(error); res.status(500).json({ message: "직원 수정 실패: 변경 이력 테이블 구조를 확인하세요." }); }
+        // 부서만 바꿨다면 마이페이지·프로젝트 관리가 읽는 팀·본부 칸도 같이 맞춘다 (본부는 같은 팀 직원의 값을 따른다)
+        // 본부·팀을 직접 입력한 경우에는 입력값을 존중하므로 건드리지 않는다
+        if ("employee_department" in after && !("employee_team" in after) && !("employee_division" in after) && String(rows[0].employee_department ?? "") !== String(after.employee_department)) {
+            const [sameTeam] = await conn.query("SELECT employee_division FROM employees WHERE employee_team = ? AND employee_division IS NOT NULL AND employee_division <> '미배정' LIMIT 1", [after.employee_department]);
+            await conn.query("UPDATE employees SET employee_team = ?, employee_division = COALESCE(?, employee_division) WHERE employee_id = ?", [after.employee_department, sameTeam[0] ? sameTeam[0].employee_division : null, id]);
+        }
+        await conn.commit();
+        // 권한 변경은 누가 누구에게 했는지 서버 로그에 남긴다 (별도 이력 테이블이 없어서 로그로 기록)
+        if ("employee_role" in after && String(rows[0].employee_role ?? "") !== String(after.employee_role)) {
+            console.log("[권한 변경] 관리자 #" + req.user.employee_id + " -> 직원 #" + id + ": " + rows[0].employee_role + " -> " + after.employee_role);
+        }
+        res.json({ message: "직원 정보 수정 완료" });
+    } catch (error) {
+        if (conn) await conn.rollback(); console.error(error);
+        res.status(500).json({ message: error.code === "ER_DATA_TOO_LONG" ? "입력한 값이 칸 길이보다 깁니다." : "직원 수정에 실패했습니다." });
+    }
     finally { if (conn) conn.release(); }
 });
 router.patch("/employees/:id/retire", async (req, res) => {
