@@ -445,7 +445,7 @@ export default function HRManagement({
         // 본인 권한은 바꿀 수 없게 막습니다. (스스로 관리자 권한을 잃어 접근이 막히는 사고 방지 / 서버도 한 번 더 막습니다)
         let loginId = null;
         try {
-            const loginUser = JSON.parse(sessionStorage.getItem("erpUser") || "null");
+            const loginUser = JSON.parse(localStorage.getItem("erpUser") || "null");
             loginId = loginUser ? (loginUser.employee_id ?? loginUser.id) : null;
         } catch { loginId = null; }
         const isSelf = loginId != null && sameId(loginId, editingEmployee.id);

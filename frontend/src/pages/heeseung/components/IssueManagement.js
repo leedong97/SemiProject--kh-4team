@@ -690,7 +690,7 @@ export default function IssueManagement({
             </button>
         </form>}
         <div className="issue-tabs">
-            {["전체", "접수", "진행 중", "검토 중", "완료", "재오픈"].map(status => <button type="button" key={status} className={statusFilter === status ? "active" : "secondary"} onClick={() => {
+            {["전체", "접수", "진행 중", "검토 중", "완료"].map(status => <button type="button" key={status} className={statusFilter === status ? "active" : "secondary"} onClick={() => {
                 setStatusFilter(status);
                 setCurrentPage(1);
             }}>
